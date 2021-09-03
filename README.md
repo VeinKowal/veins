@@ -37,7 +37,7 @@ import 'veinsjs/dist/veins.min.js'
 ```
 
 Alternatively, we provide a bundle you can directly include in your html files
-that exposes `itowns` in `window`:
+that exposes `Veins` in `window`:
 
 ```html
 <script src="node_modules/veinsjs/dist/veins.min.js"></script>
