@@ -9,7 +9,8 @@
   },
   "keywords": [
     "threejs",
-    "itowns"
+    "itowns",
+    "webgl"
   ],
   "author": "guoweiyu",
   "license": "ISC",
