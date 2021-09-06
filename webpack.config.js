@@ -2,6 +2,9 @@ const path = require('path');
 const WebpackBar = require('webpackbar');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
+const HOST = process.env.HOST
+const PORT = process.env.PORT && Number(process.env.PORT)
+
 module.exports = {
   mode: 'production',
   entry: './src/index',
