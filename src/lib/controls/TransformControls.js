@@ -21,7 +21,7 @@ import {
   Vector3,
 } from 'three';
 
-var TransformControls = function(camera, domElement) {
+var TransformControls = function (camera, domElement) {
   if (domElement === undefined) {
     console.warn(
       'THREE.TransformControls: The second parameter "domElement" is now mandatory.',
@@ -143,7 +143,7 @@ var TransformControls = function(camera, domElement) {
     scope.domElement.ownerDocument.addEventListener('pointerup', onPointerUp);
   }
 
-  this.dispose = function() {
+  this.dispose = function () {
     domElement.removeEventListener('pointerdown', onPointerDown);
     domElement.removeEventListener('pointermove', onPointerHover);
     scope.domElement.ownerDocument.removeEventListener(
@@ -155,14 +155,14 @@ var TransformControls = function(camera, domElement) {
       onPointerUp,
     );
 
-    this.traverse(function(child) {
+    this.traverse(function (child) {
       if (child.geometry) child.geometry.dispose();
       if (child.material) child.material.dispose();
     });
   };
 
   // Set current object
-  this.attach = function(object) {
+  this.attach = function (object) {
     this.object = object;
     this.visible = true;
 
@@ -170,7 +170,7 @@ var TransformControls = function(camera, domElement) {
   };
 
   // Detatch from object
-  this.detach = function() {
+  this.detach = function () {
     this.object = undefined;
     this.visible = false;
     this.axis = null;
@@ -183,11 +183,11 @@ var TransformControls = function(camera, domElement) {
     var propValue = defaultValue;
 
     Object.defineProperty(scope, propName, {
-      get: function() {
+      get: function () {
         return propValue !== undefined ? propValue : defaultValue;
       },
 
-      set: function(value) {
+      set: function (value) {
         if (propValue !== value) {
           propValue = value;
           _plane[propName] = value;
@@ -205,7 +205,7 @@ var TransformControls = function(camera, domElement) {
   }
 
   // updateMatrixWorld  updates key transformation variables
-  this.updateMatrixWorld = function() {
+  this.updateMatrixWorld = function () {
     if (this.object !== undefined) {
       this.object.updateMatrixWorld();
 
@@ -227,8 +227,8 @@ var TransformControls = function(camera, domElement) {
         worldScale,
       );
 
-      parentQuaternionInv.copy(parentQuaternion).inverse();
-      worldQuaternionInv.copy(worldQuaternion).inverse();
+      parentQuaternionInv.copy(parentQuaternion).invert();
+      worldQuaternionInv.copy(worldQuaternion).invert();
     }
 
     this.camera.updateMatrixWorld();
@@ -246,7 +246,7 @@ var TransformControls = function(camera, domElement) {
     Object3D.prototype.updateMatrixWorld.call(this);
   };
 
-  this.pointerHover = function(pointer) {
+  this.pointerHover = function (pointer) {
     if (this.object === undefined || this.dragging === true) return;
 
     raycaster.setFromCamera(pointer, this.camera);
@@ -260,7 +260,7 @@ var TransformControls = function(camera, domElement) {
     }
   };
 
-  this.pointerDown = function(pointer) {
+  this.pointerDown = function (pointer) {
     if (
       this.object === undefined ||
       this.dragging === true ||
@@ -322,7 +322,7 @@ var TransformControls = function(camera, domElement) {
     }
   };
 
-  this.pointerMove = function(pointer) {
+  this.pointerMove = function (pointer) {
     var axis = this.axis;
     var mode = this.mode;
     var object = this.object;
@@ -376,7 +376,7 @@ var TransformControls = function(camera, domElement) {
       if (this.translationSnap) {
         if (space === 'local') {
           object.position.applyQuaternion(
-            _tempQuaternion.copy(quaternionStart).inverse(),
+            _tempQuaternion.copy(quaternionStart).invert(),
           );
 
           if (axis.search('X') !== -1) {
@@ -551,7 +551,7 @@ var TransformControls = function(camera, domElement) {
     this.dispatchEvent(objectChangeEvent);
   };
 
-  this.pointerUp = function(pointer) {
+  this.pointerUp = function (pointer) {
     if (pointer.button !== 0) return;
 
     if (this.dragging && this.axis !== null) {
@@ -631,35 +631,35 @@ var TransformControls = function(camera, domElement) {
 
   // TODO: deprecate
 
-  this.getMode = function() {
+  this.getMode = function () {
     return scope.mode;
   };
 
-  this.setMode = function(mode) {
+  this.setMode = function (mode) {
     scope.mode = mode;
   };
 
-  this.setTranslationSnap = function(translationSnap) {
+  this.setTranslationSnap = function (translationSnap) {
     scope.translationSnap = translationSnap;
   };
 
-  this.setRotationSnap = function(rotationSnap) {
+  this.setRotationSnap = function (rotationSnap) {
     scope.rotationSnap = rotationSnap;
   };
 
-  this.setScaleSnap = function(scaleSnap) {
+  this.setScaleSnap = function (scaleSnap) {
     scope.scaleSnap = scaleSnap;
   };
 
-  this.setSize = function(size) {
+  this.setSize = function (size) {
     scope.size = size;
   };
 
-  this.setSpace = function(space) {
+  this.setSpace = function (space) {
     scope.space = space;
   };
 
-  this.update = function() {
+  this.update = function () {
     console.warn(
       'THREE.TransformControls: update function has no more functionality and therefore has been deprecated.',
     );
@@ -672,7 +672,7 @@ TransformControls.prototype = Object.assign(Object.create(Object3D.prototype), {
   isTransformControls: true,
 });
 
-var TransformControlsGizmo = function() {
+var TransformControlsGizmo = function () {
   'use strict';
 
   Object3D.call(this);
@@ -767,7 +767,7 @@ var TransformControlsGizmo = function() {
     new Float32BufferAttribute([0, 0, 0, 1, 0, 0], 3),
   );
 
-  var CircleGeometry = function(radius, arc) {
+  var CircleGeometry = function (radius, arc) {
     var geometry = new BufferGeometry();
     var vertices = [];
 
@@ -786,7 +786,7 @@ var TransformControlsGizmo = function() {
 
   // Special geometry for transform helper. If scaled with position vector it spans from [0,0,0] to position
 
-  var TranslateHelperGeometry = function() {
+  var TranslateHelperGeometry = function () {
     var geometry = new BufferGeometry();
 
     geometry.setAttribute(
@@ -1339,11 +1339,11 @@ var TransformControlsGizmo = function() {
 
   // Creates an Object3D with gizmos described in custom hierarchy definition.
 
-  var setupGizmo = function(gizmoMap) {
+  var setupGizmo = function (gizmoMap) {
     var gizmo = new Object3D();
 
     for (var name in gizmoMap) {
-      for (var i = gizmoMap[name].length; i--; ) {
+      for (var i = gizmoMap[name].length; i--;) {
         var object = gizmoMap[name][i][0].clone();
         var position = gizmoMap[name][i][1];
         var rotation = gizmoMap[name][i][2];
@@ -1423,7 +1423,7 @@ var TransformControlsGizmo = function() {
 
   // updateMatrixWorld will update transformations and appearance of individual handles
 
-  this.updateMatrixWorld = function() {
+  this.updateMatrixWorld = function () {
     var space = this.space;
 
     if (this.mode === 'scale') space = 'local'; // scale always oriented to local rotation
@@ -1464,7 +1464,7 @@ var TransformControlsGizmo = function() {
           this.worldPosition.distanceTo(this.cameraPosition) *
           Math.min(
             (1.9 * Math.tan((Math.PI * this.camera.fov) / 360)) /
-              this.camera.zoom,
+            this.camera.zoom,
             7,
           );
       }
@@ -1556,7 +1556,7 @@ var TransformControlsGizmo = function() {
             .sub(this.worldPosition)
             .multiplyScalar(-1);
           tempVector.applyQuaternion(
-            this.worldQuaternionStart.clone().inverse(),
+            this.worldQuaternionStart.clone().invert(),
           );
           handle.scale.copy(tempVector);
           handle.visible = this.dragging;
@@ -1731,7 +1731,7 @@ var TransformControlsGizmo = function() {
         tempQuaternion2.copy(quaternion);
         alignVector
           .copy(this.eye)
-          .applyQuaternion(tempQuaternion.copy(quaternion).inverse());
+          .applyQuaternion(tempQuaternion.copy(quaternion).invert());
 
         if (handle.name.search('E') !== -1) {
           handle.quaternion.setFromRotationMatrix(
@@ -1797,7 +1797,7 @@ var TransformControlsGizmo = function() {
           handle.material.opacity = 1.0;
           handle.material.color.lerp(new Color(1, 1, 1), 0.5);
         } else if (
-          this.axis.split('').some(function(a) {
+          this.axis.split('').some(function (a) {
             return handle.name === a;
           })
         ) {
@@ -1823,7 +1823,7 @@ TransformControlsGizmo.prototype = Object.assign(
   },
 );
 
-var TransformControlsPlane = function() {
+var TransformControlsPlane = function () {
   'use strict';
 
   Mesh.call(
@@ -1851,7 +1851,7 @@ var TransformControlsPlane = function() {
   var tempMatrix = new Matrix4();
   var identityQuaternion = new Quaternion();
 
-  this.updateMatrixWorld = function() {
+  this.updateMatrixWorld = function () {
     var space = this.space;
 
     this.position.copy(this.worldPosition);

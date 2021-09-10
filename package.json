@@ -1,6 +1,6 @@
 {
   "name": "veinsjs",
-  "version": "1.0.14",
+  "version": "1.0.16",
   "description": "基于threeJS与iTowns搭建的三维可视化框架",
   "main": "src/index.ts",
   "scripts": {
@@ -24,7 +24,9 @@
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",
     "**/*.{js,jsx,ts,tsx}": "npm run lint-staged:js",
-    "**/*.{js,jsx,tsx,ts,less,md,json}": ["prettier --write"]
+    "**/*.{js,jsx,tsx,ts,less,md,json}": [
+      "prettier --write"
+    ]
   },
   "keywords": [
     "threejs",
@@ -56,6 +58,7 @@
     "@types/three": "^0.131.0",
     "buffer": "^6.0.3",
     "core-js": "2",
+    "default-passive-events": "^2.0.0",
     "itowns": "^2.33.0",
     "jszip": "^3.6.0",
     "three": "^0.127.0",

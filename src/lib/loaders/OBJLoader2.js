@@ -4,6 +4,7 @@
  */
 
 import { FileLoader, Object3D, Loader, default as THREE } from 'three';
+// import request from '@/utils/request';
 
 import { OBJLoader2Parser } from './obj2/OBJLoader2Parser.js';
 import { MeshReceiver } from './obj2/shared/MeshReceiver.js';
@@ -39,7 +40,6 @@ const OBJLoader2 = function (manager) {
 };
 
 OBJLoader2.OBJLOADER2_VERSION = '3.2.0';
-console.info('Using OBJLoader2 version: ' + OBJLoader2.OBJLOADER2_VERSION);
 
 OBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
   constructor: OBJLoader2,

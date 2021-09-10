@@ -6,6 +6,7 @@
 import { AppConfig, CreateConfig } from './type';
 import * as THREE from 'three';
 import * as itowns from 'itowns';
+import 'default-passive-events';
 import { OrbitControls } from '../../lib/controls/OrbitControls';
 import ThreeInitializer from '../Initializer/ThreeInitializer';
 import ITownsInitializer from '../Initializer/ITownsInitializer';

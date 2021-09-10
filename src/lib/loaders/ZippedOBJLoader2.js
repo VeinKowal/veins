@@ -16,7 +16,7 @@ import { MaterialHandler } from './obj2/shared/MaterialHandler.js';
  * @param {LoadingManager} [manager] The loadingManager for the loader to use. Default is {@link LoadingManager}
  * @constructor
  */
-const ZippedOBJLoader2 = function(manager) {
+const ZippedOBJLoader2 = function (manager) {
   Loader.call(this, manager);
 
   this.parser = new OBJLoader2Parser();
@@ -30,16 +30,13 @@ const ZippedOBJLoader2 = function(manager) {
 
   // as OBJLoader2 is no longer derived from OBJLoader2Parser, we need to override the default onAssetAvailable callback
   let scope = this;
-  let defaultOnAssetAvailable = function(payload) {
+  let defaultOnAssetAvailable = function (payload) {
     scope._onAssetAvailable(payload);
   };
   this.parser.setCallbackOnAssetAvailable(defaultOnAssetAvailable);
 };
 
 ZippedOBJLoader2.OBJLOADER2_VERSION = '3.1.1';
-console.info(
-  'Using OBJLoader2 version: ' + ZippedOBJLoader2.OBJLOADER2_VERSION,
-);
 
 ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
   constructor: ZippedOBJLoader2,
@@ -48,7 +45,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * See {@link OBJLoader2Parser.setLogging}
    * @return {OBJLoader2}
    */
-  setLogging: function(enabled, debug) {
+  setLogging: function (enabled, debug) {
     this.parser.setLogging(enabled, debug);
     return this;
   },
@@ -57,7 +54,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * See {@link OBJLoader2Parser.setMaterialPerSmoothingGroup}
    * @return {OBJLoader2}
    */
-  setMaterialPerSmoothingGroup: function(materialPerSmoothingGroup) {
+  setMaterialPerSmoothingGroup: function (materialPerSmoothingGroup) {
     this.parser.setMaterialPerSmoothingGroup(materialPerSmoothingGroup);
     return this;
   },
@@ -66,7 +63,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * See {@link OBJLoader2Parser.setUseOAsMesh}
    * @return {OBJLoader2}
    */
-  setUseOAsMesh: function(useOAsMesh) {
+  setUseOAsMesh: function (useOAsMesh) {
     this.parser.setUseOAsMesh(useOAsMesh);
     return this;
   },
@@ -75,7 +72,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * See {@link OBJLoader2Parser.setUseIndices}
    * @return {OBJLoader2}
    */
-  setUseIndices: function(useIndices) {
+  setUseIndices: function (useIndices) {
     this.parser.setUseIndices(useIndices);
     return this;
   },
@@ -84,7 +81,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * See {@link OBJLoader2Parser.setDisregardNormals}
    * @return {OBJLoader2}
    */
-  setDisregardNormals: function(disregardNormals) {
+  setDisregardNormals: function (disregardNormals) {
     this.parser.setDisregardNormals(disregardNormals);
     return this;
   },
@@ -95,7 +92,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * @param {string} modelName
    * @return {OBJLoader2}
    */
-  setModelName: function(modelName) {
+  setModelName: function (modelName) {
     this.modelName = modelName ? modelName : this.modelName;
     return this;
   },
@@ -106,7 +103,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * @param {Object3D} baseObject3d Object already attached to scenegraph where new meshes will be attached to
    * @return {OBJLoader2}
    */
-  setBaseObject3d: function(baseObject3d) {
+  setBaseObject3d: function (baseObject3d) {
     this.baseObject3d =
       baseObject3d === undefined || baseObject3d === null
         ? this.baseObject3d
@@ -121,7 +118,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * @param overrideExisting boolean Override existing material
    * @return {OBJLoader2}
    */
-  addMaterials: function(materials, overrideExisting) {
+  addMaterials: function (materials, overrideExisting) {
     this.materialHandler.addMaterials(materials, overrideExisting);
     return this;
   },
@@ -130,7 +127,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * See {@link OBJLoader2Parser.setCallbackOnAssetAvailable}
    * @return {OBJLoader2}
    */
-  setCallbackOnAssetAvailable: function(onAssetAvailable) {
+  setCallbackOnAssetAvailable: function (onAssetAvailable) {
     this.parser.setCallbackOnAssetAvailable(onAssetAvailable);
     return this;
   },
@@ -139,7 +136,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * See {@link OBJLoader2Parser.setCallbackOnProgress}
    * @return {OBJLoader2}
    */
-  setCallbackOnProgress: function(onProgress) {
+  setCallbackOnProgress: function (onProgress) {
     this.parser.setCallbackOnProgress(onProgress);
     return this;
   },
@@ -148,7 +145,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * See {@link OBJLoader2Parser.setCallbackOnError}
    * @return {OBJLoader2}
    */
-  setCallbackOnError: function(onError) {
+  setCallbackOnError: function (onError) {
     this.parser.setCallbackOnError(onError);
     return this;
   },
@@ -157,7 +154,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * See {@link OBJLoader2Parser.setCallbackOnLoad}
    * @return {OBJLoader2}
    */
-  setCallbackOnLoad: function(onLoad) {
+  setCallbackOnLoad: function (onLoad) {
     this.parser.setCallbackOnLoad(onLoad);
     return this;
   },
@@ -168,7 +165,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * @param {Function} [onMeshAlter]
    * @return {OBJLoader2}
    */
-  setCallbackOnMeshAlter: function(onMeshAlter) {
+  setCallbackOnMeshAlter: function (onMeshAlter) {
     this.meshReceiver._setCallbacks(
       this.parser.callbacks.onProgress,
       onMeshAlter,
@@ -182,12 +179,12 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * @param {Function} [onLoadMaterials]
    * @return {OBJLoader2}
    */
-  setCallbackOnLoadMaterials: function(onLoadMaterials) {
+  setCallbackOnLoadMaterials: function (onLoadMaterials) {
     this.materialHandler._setCallbacks(onLoadMaterials);
     return this;
   },
 
-  load: async function(zip, onLoad, onFileLoadProgress, onError, onMeshAlter) {
+  load: async function (zip, onLoad, onFileLoadProgress, onError, onMeshAlter) {
     let scope = this;
     if (
       onLoad === null ||
@@ -205,7 +202,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
       onError === undefined ||
       !(onError instanceof Function)
     ) {
-      onError = function(event) {
+      onError = function (event) {
         let errorMessage = event;
         if (event.currentTarget && event.currentTarget.statusText !== null) {
           errorMessage =
@@ -236,7 +233,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * @param {arraybuffer|string} content OBJ data as Uint8Array or String
    * @return {Object3D}
    */
-  parse: function(content) {
+  parse: function (content) {
     // fast-fail in case of illegal data
     if (content === null || content === undefined) {
       // eslint-disable-next-line
@@ -269,7 +266,7 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
     return this.baseObject3d;
   },
 
-  _onAssetAvailable: function(payload) {
+  _onAssetAvailable: function (payload) {
     if (payload.cmd !== 'assetAvailable') return;
 
     if (payload.type === 'mesh') {
