@@ -11,6 +11,7 @@ import Marker from './index';
 class ImgMarker extends Group {
   constructor(config: MarkerConfigType) {
     super();
+    this.userData.type = 'Marker';
     this.createMarker(config);
   }
 

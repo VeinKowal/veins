@@ -10,6 +10,7 @@ import { OrbitControls } from '../../lib/controls/OrbitControls';
 import ThreeInitializer from '../Initializer/ThreeInitializer';
 import ITownsInitializer from '../Initializer/ITownsInitializer';
 import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
+import { Interaction, MouseEvents } from '../../extras/Interaction';
 import ObjModelLoader from '../Loader/ObjModelLoader';
 import Marker from '../../extras/Marker';
 import ParticleSystem from '../../extras/ParticleSystem';
@@ -21,6 +22,7 @@ class App {
   scene: THREE.Scene;
   renderer: THREE.WebGLRenderer;
   cssRenderer: CSS3DRenderer;
+  interaction: Interaction;
   controls: OrbitControls[] = [];
   animate?: number;
   view?: itowns.GlobeView;
@@ -33,12 +35,14 @@ class App {
       cssRenderer,
       orbitControl,
       cssOrbitControl,
+      interaction,
     } = ThreeInitializer.init(config);
     this.camera = camera;
     this.scene = scene;
     this.renderer = renderer;
     this.cssRenderer = cssRenderer;
     this.controls = [orbitControl, cssOrbitControl];
+    this.interaction = interaction;
     this.renderDom = config.renderDom;
     this.init(config);
   }
@@ -76,6 +80,8 @@ class App {
    * @return {void} .
    */
   destroy() {
+    MouseEvents.removeAllEvents();
+    this.interaction.removeEvents();
     this.animate && cancelAnimationFrame(this.animate);
     window.removeEventListener('resize', this.onResize);
     this.scene.traverse((child: any) => {
@@ -92,9 +98,18 @@ class App {
 
   // 本组件大小发生改变时改变各分辨率
   onResize = () => {
-    ThreeInitializer.updateRender({renderDom: this.renderDom, renderer: this.renderer});
-    ThreeInitializer.updateRender({ renderDom: this.renderDom, renderer: this.cssRenderer });
-    ThreeInitializer.updateCamera({ renderDom: this.renderDom, camera: this.camera });
+    ThreeInitializer.updateRender({
+      renderDom: this.renderDom,
+      renderer: this.renderer,
+    });
+    ThreeInitializer.updateRender({
+      renderDom: this.renderDom,
+      renderer: this.cssRenderer,
+    });
+    ThreeInitializer.updateCamera({
+      renderDom: this.renderDom,
+      camera: this.camera,
+    });
   };
 
   create = (config: CreateConfig) => {

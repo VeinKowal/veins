@@ -57,7 +57,7 @@ class ObjModelLoader extends Group {
     const { url, complete, isOutline = true } = config;
     if (!url) return;
     const loader = new OBJLoader2();
-    loader.load(url, obj => {
+    loader.load(url, (obj) => {
       this.moveToCenter(obj);
       isOutline && this.addEdgeOutline(obj);
       this.add(obj);

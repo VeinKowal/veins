@@ -1,6 +1,6 @@
 {
   "name": "veinsjs",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "基于threeJS与iTowns搭建的三维可视化框架",
   "main": "src/index.ts",
   "scripts": {
@@ -8,7 +8,7 @@
     "compile": "webpack",
     "watch": "webpack --watch",
     "build": "webpack",
-    "dev": "webpack-dev-server --open",
+    "start": "webpack-dev-server --open",
     "lint:js": "eslint --cache --ext .js,.jsx,.ts,.tsx ./src",
     "lint:fix": "eslint --fix --cache --ext .js,.jsx,.ts,.tsx",
     "lint:prettier": "prettier --check \"src/**/*\" --end-of-line auto",
@@ -59,7 +59,6 @@
     "itowns": "^2.33.0",
     "jszip": "^3.6.0",
     "three": "^0.127.0",
-    "three.interaction": "^0.2.3",
     "webpackbar": "^5.0.0-3"
   }
 }

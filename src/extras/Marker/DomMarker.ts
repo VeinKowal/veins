@@ -13,6 +13,7 @@ import Marker from './index';
 class DomMarker extends Group {
   constructor(config: MarkerConfigType) {
     super();
+    this.userData.type = 'Marker';
     this.createMarker(config);
   }
 

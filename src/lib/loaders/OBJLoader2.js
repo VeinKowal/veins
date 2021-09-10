@@ -4,7 +4,6 @@
  */
 
 import { FileLoader, Object3D, Loader, default as THREE } from 'three';
-// import request from '@/utils/request';
 
 import { OBJLoader2Parser } from './obj2/OBJLoader2Parser.js';
 import { MeshReceiver } from './obj2/shared/MeshReceiver.js';

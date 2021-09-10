@@ -4,7 +4,7 @@
  *@date: 2021-05-28 15:51:08
  */
 import * as THREE from 'three';
-import { LightningStorm } from './LightningStorm.js';
+import { LightningStorm } from './LightningStorm';
 
 type ThunderConfig = {
   // 雷电的粗细

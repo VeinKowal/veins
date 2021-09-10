@@ -6,12 +6,10 @@
 import { ThreeInitializerType, ThreeInitializerReturn } from './type';
 import BaseInitializer from './BaseInitializer';
 import * as THREE from 'three';
-import {
-  CSS3DRenderer,
-} from '../../lib/renderers/CSS3DRenderer.js';
+import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
 import { OrbitControls } from '../../lib/controls/OrbitControls';
-import { Interaction } from 'three.interaction';
-import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { Interaction, MouseEvents } from '../../extras/Interaction';
+import { PerspectiveCamera, Scene, WebGLRenderer, Raycaster } from 'three';
 
 class ThreeInitializer extends BaseInitializer {
   static init(config: ThreeInitializerType): ThreeInitializerReturn {
@@ -25,6 +23,13 @@ class ThreeInitializer extends BaseInitializer {
     );
     const orbitControl = ThreeInitializer.initOrbitControl(camera, renderer);
     const interaction = new Interaction(cssRenderer, scene, camera);
+    const raycaster = MouseEvents.initMouseEvents(
+      camera,
+      cssRenderer,
+      scene,
+      new Raycaster(),
+      interaction,
+    );
 
     const initRes = {
       camera,
@@ -34,6 +39,7 @@ class ThreeInitializer extends BaseInitializer {
       interaction,
       cssRenderer,
       cssOrbitControl,
+      raycaster,
     };
 
     ThreeInitializer.initLights(scene);
@@ -102,7 +108,7 @@ class ThreeInitializer extends BaseInitializer {
 
   static removeOribitControl(controls: OrbitControls | OrbitControls[]) {
     if (Array.isArray(controls)) {
-      controls.forEach(control => {
+      controls.forEach((control) => {
         control.dispose();
       });
     } else controls.dispose();
