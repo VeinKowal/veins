@@ -250,18 +250,18 @@ var OrbitControls = function (object, domElement) {
   })();
 
   this.dispose = function () {
-    scope.domElement.removeEventListener('contextmenu', onContextMenu, false);
-    scope.domElement.removeEventListener('mousedown', onMouseDown, false);
-    scope.domElement.removeEventListener('wheel', onMouseWheel, false);
+    scope.domElement.removeEventListener('contextmenu', onContextMenu, { passive: false });
+    scope.domElement.removeEventListener('mousedown', onMouseDown, { passive: false });
+    scope.domElement.removeEventListener('wheel', onMouseWheel, { passive: false });
 
     scope.domElement.removeEventListener('touchstart', onTouchStart, false);
     scope.domElement.removeEventListener('touchend', onTouchEnd, false);
     scope.domElement.removeEventListener('touchmove', onTouchMove, false);
 
-    document.removeEventListener('mousemove', onMouseMove, false);
-    document.removeEventListener('mouseup', onMouseUp, false);
+    document.removeEventListener('mousemove', onMouseMove, { passive: false });
+    document.removeEventListener('mouseup', onMouseUp, { passive: false });
 
-    scope.domElement.removeEventListener('keydown', onKeyDown, false);
+    scope.domElement.removeEventListener('keydown', onKeyDown, { passive: false });
 
     //scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
   };
@@ -760,8 +760,8 @@ var OrbitControls = function (object, domElement) {
     }
 
     if (state !== STATE.NONE) {
-      document.addEventListener('mousemove', onMouseMove, false);
-      document.addEventListener('mouseup', onMouseUp, false);
+      document.addEventListener('mousemove', onMouseMove, { passive: false });
+      document.addEventListener('mouseup', onMouseUp, { passive: false });
 
       scope.dispatchEvent(startEvent);
     }
@@ -972,16 +972,16 @@ var OrbitControls = function (object, domElement) {
 
   //
 
-  scope.domElement.addEventListener('contextmenu', onContextMenu, false);
+  scope.domElement.addEventListener('contextmenu', onContextMenu, { passive: false });
 
-  scope.domElement.addEventListener('mousedown', onMouseDown, false);
-  scope.domElement.addEventListener('wheel', onMouseWheel, false);
+  scope.domElement.addEventListener('mousedown', onMouseDown, { passive: false });
+  scope.domElement.addEventListener('wheel', onMouseWheel, { passive: false });
 
-  scope.domElement.addEventListener('touchstart', onTouchStart, false);
-  scope.domElement.addEventListener('touchend', onTouchEnd, false);
-  scope.domElement.addEventListener('touchmove', onTouchMove, false);
+  scope.domElement.addEventListener('touchstart', onTouchStart, { passive: false });
+  scope.domElement.addEventListener('touchend', onTouchEnd, { passive: false });
+  scope.domElement.addEventListener('touchmove', onTouchMove, { passive: false });
 
-  scope.domElement.addEventListener('keydown', onKeyDown, false);
+  scope.domElement.addEventListener('keydown', onKeyDown, { passive: false });
 
   // make sure element can receive keys.
 

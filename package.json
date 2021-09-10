@@ -1,6 +1,6 @@
 {
   "name": "veinsjs",
-  "version": "1.0.16",
+  "version": "1.0.18",
   "description": "基于threeJS与iTowns搭建的三维可视化框架",
   "main": "src/index.ts",
   "scripts": {
