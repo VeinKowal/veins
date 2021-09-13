@@ -3,16 +3,18 @@
  *@author guoweiyu.
  *@date 2021-08-18 09:28:42.
  */
-import { AppConfig, CreateConfig } from './type';
+import { AppConfig, CreateConfig, FlyToTargetConfig } from './type';
 import * as THREE from 'three';
 import * as itowns from 'itowns';
+import * as TWEEN from '@tweenjs/tween.js';
 import 'default-passive-events';
 import { OrbitControls } from '../../lib/controls/OrbitControls';
 import ThreeInitializer from '../Initializer/ThreeInitializer';
 import ITownsInitializer from '../Initializer/ITownsInitializer';
 import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
 import { Interaction, MouseEvents } from '../../extras/Interaction';
-import ObjModelLoader from '../Loader/ObjModelLoader';
+import OBJModelLoader from '../Loader/OBJModelLoader';
+import GLTFModelLoader from '../Loader/GLTFModelLoader';
 import Marker from '../../extras/Marker';
 import ParticleSystem from '../../extras/ParticleSystem';
 import '../Patch/Object3D';
@@ -65,6 +67,7 @@ class App {
    * @return {void} .
    */
   run = () => {
+    TWEEN.update();
     this.animate = requestAnimationFrame(this.run);
     !this.view && this.renderer.render(this.scene, this.camera);
     this.cssRenderer.render(this.scene, this.camera);
@@ -116,9 +119,14 @@ class App {
   create = (config: CreateConfig) => {
     const { type } = config;
     if (type === 'OBJ') {
-      const obj = new ObjModelLoader(config);
+      const obj = new OBJModelLoader(config);
       this.scene.add(obj);
       return obj;
+    }
+    if (type === 'gltf') {
+      const gltf = new GLTFModelLoader(config);
+      this.scene.add(gltf);
+      return gltf;
     }
     if (type === 'MAP') {
       if (!this.view) {
@@ -141,6 +149,83 @@ class App {
       return ParticleSystem.create(config, this.scene);
     }
   };
+
+  flyToTarget(config: FlyToTargetConfig) {
+    const {
+      target,
+      isEarth,
+      up,
+      angle = [0, 0, 0],
+      radius = 0,
+      time = 2000,
+      complete,
+    } = config;
+    const { camera, controls } = this;
+    let direction = new THREE.Vector3(1, 0, 0);
+    let boxCenter = new THREE.Vector3();
+    let distance = radius;
+
+    if (!isEarth) {
+      if (Array.isArray(target)) {
+        boxCenter.fromArray(target);
+        // direction.add(boxCenter).normalize();
+      } else if (target instanceof THREE.Object3D) {
+        const box = new THREE.Box3().setFromObject(target);
+        const boxSize = box.getSize(new THREE.Vector3()).length();
+        boxCenter = box.getCenter(new THREE.Vector3());
+
+        // set the camera to frame the box
+        const sizeToFitOnScreen = boxSize;
+        const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
+        const halfFovY = THREE.MathUtils.degToRad(camera.fov * 0.5);
+        distance ||= (halfSizeToFitOnScreen * 0.6) / Math.tan(halfFovY);
+      } else {
+        return false;
+      }
+
+      // compute a unit vector that points in the direction the camera is now
+      // from the center of the box
+      const radians = angle.map((value) => (value * Math.PI) / 180);
+      direction = direction.applyEuler(new THREE.Euler().fromArray(radians));
+
+      // move the camera to a position distance units way from the center
+      // in whatever direction the camera was from the center already
+      let targetPos = new THREE.Vector3().copy(boxCenter);
+      targetPos = targetPos.add(direction.multiplyScalar(distance));
+
+      // pick some near and far values for the frustum that
+      // will contain the box.
+      // camera.near = boxSize / 100;
+      // camera.far = boxSize * 100;
+
+      camera.updateProjectionMatrix();
+
+      // fly
+      const pos = { ...camera.position };
+      const tween = new TWEEN.Tween(pos)
+        .to({ ...targetPos }, time)
+        .easing(TWEEN.Easing.Linear.None)
+        .onUpdate(() => {
+          // point the camera to look at the center of the box
+          Array.isArray(up)
+            ? camera.lookAt(...up)
+            : camera.lookAt(boxCenter.x, boxCenter.y, boxCenter.z);
+          camera.position.set(pos.x, pos.y, pos.z);
+        })
+        .onComplete(() => {
+          controls.forEach((control) => {
+            control.target.copy(boxCenter);
+            control.update();
+          });
+          complete && complete();
+        });
+      tween.start();
+    } else {
+      // TODO: iTowns相机飞行方法
+    }
+
+    return true;
+  }
 }
 
 export default App;
