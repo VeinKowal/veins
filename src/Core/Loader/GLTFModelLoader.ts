@@ -13,9 +13,11 @@ class OBJModelLoader extends ModelLoader {
     if (!url) return;
     const loader = new GLTFLoader();
     loader.load(url, (gltf: any) => {
-      this.moveToCenter(gltf);
-      isOutline && this.addEdgeOutline(gltf);
-      this.add(gltf);
+      const { scene } = gltf;
+      if (!scene) return;
+      this.moveToCenter(scene);
+      isOutline && this.addEdgeOutline(scene);
+      this.add(scene);
       complete && complete(this);
     });
   }

@@ -93,11 +93,14 @@ class App {
       geometry && geometry.dispose();
       material && material.dispose();
     });
-    this.renderer.dispose();
-    this.renderer.domElement
-      .getContext('webgl')!
-      .getExtension('WEBGL_lose_context')!
-      .loseContext();
+    if (this.renderer && this.renderer.domElement) {
+      const { domElement } = this.renderer;
+      domElement
+        .getContext('webgl')
+        ?.getExtension('WEBGL_lose_context')
+        ?.loseContext();
+      this.renderer.dispose();
+    }
   }
 
   // 本组件大小发生改变时改变各分辨率
@@ -123,7 +126,7 @@ class App {
       this.scene.add(obj);
       return obj;
     }
-    if (type === 'gltf') {
+    if (type === 'GLTF') {
       const gltf = new GLTFModelLoader(config);
       this.scene.add(gltf);
       return gltf;

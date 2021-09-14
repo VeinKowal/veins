@@ -24,10 +24,10 @@ EventDispatcher.prototype.on = function (type, fn) {
     (marker && 'isActive' in marker) ? interaction.triggerEvent(marker, 'click', e) : fn(e);
   }
   if (type === 'click') {
-    this.addEventListener(type, (e) => {
-      const { isClickEvent, mouseUpPosition } = MouseEvents;
+    this.addEventListener('pointerup', (e) => {
+      const { isClickEvent, getNormalizedCanvasRelativePosition } = MouseEvents;
       // 先判断距离再决定是否执行
-      if (!isClickEvent(mouseUpPosition)) return;
+      if (!isClickEvent(getNormalizedCanvasRelativePosition(e.data.originalEvent))) return;
       basicFn(e);
     });
   } else if (type === 'dblclick') {

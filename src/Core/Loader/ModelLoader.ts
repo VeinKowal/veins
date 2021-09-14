@@ -41,11 +41,11 @@ export default abstract class ModelLoader extends Group {
       line.visible = false;
       child.userData.line = line;
       child.cursor = 'pointer';
-      child.on('mouseover', () => {
+      child.on('pointerover', () => {
         // child.add(line);
         line.visible = true;
       });
-      child.on('mouseout', () => {
+      child.on('pointerout', () => {
         // child.remove(line);
         line.visible = false;
       });
