@@ -181,7 +181,7 @@ class App {
         const sizeToFitOnScreen = boxSize;
         const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
         const halfFovY = THREE.MathUtils.degToRad(camera.fov * 0.5);
-        distance ||= (halfSizeToFitOnScreen * 0.6) / Math.tan(halfFovY);
+        distance = distance || (halfSizeToFitOnScreen * 0.6) / Math.tan(halfFovY);
       } else {
         return false;
       }
