@@ -43,7 +43,7 @@ class ImgMarker extends Group {
       marker = new Sprite(spriteMaterial);
     } else {
       image.src = url;
-      const object = new CSS3DObject(image.cloneNode());
+      const object = new CSS3DObject(image);
       if (object) {
         const mat = new SpriteMaterial({
           sizeAttenuation: !keepSize,

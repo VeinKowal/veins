@@ -35,9 +35,9 @@ class DomMarker extends Group {
     if (!dom) return false;
 
     if (isSprite) {
-      obj = new CSS3DSprite(dom.cloneNode());
+      obj = new CSS3DSprite(dom);
     } else {
-      obj = new CSS3DObject(dom.cloneNode());
+      obj = new CSS3DObject(dom);
     }
 
     if (obj) {
