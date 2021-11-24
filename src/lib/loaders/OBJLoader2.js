@@ -108,9 +108,7 @@ OBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    */
   setBaseObject3d: function (baseObject3d) {
     this.baseObject3d =
-      baseObject3d === undefined || baseObject3d === null
-        ? this.baseObject3d
-        : baseObject3d;
+      baseObject3d === undefined || baseObject3d === null ? this.baseObject3d : baseObject3d;
     return this;
   },
 
@@ -169,10 +167,7 @@ OBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * @return {OBJLoader2}
    */
   setCallbackOnMeshAlter: function (onMeshAlter) {
-    this.meshReceiver._setCallbacks(
-      this.parser.callbacks.onProgress,
-      onMeshAlter,
-    );
+    this.meshReceiver._setCallbacks(this.parser.callbacks.onProgress, onMeshAlter);
     return this;
   },
 
@@ -198,22 +193,14 @@ OBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    */
   load: function (url, onLoad, onFileLoadProgress, onError, onMeshAlter) {
     let scope = this;
-    if (
-      onLoad === null ||
-      onLoad === undefined ||
-      !(onLoad instanceof Function)
-    ) {
+    if (onLoad === null || onLoad === undefined || !(onLoad instanceof Function)) {
       let errorMessage = 'onLoad is not a function! Aborting...';
       scope.parser.callbacks.onError(errorMessage);
       throw errorMessage;
     } else {
       this.parser.setCallbackOnLoad(onLoad);
     }
-    if (
-      onError === null ||
-      onError === undefined ||
-      !(onError instanceof Function)
-    ) {
+    if (onError === null || onError === undefined || !(onError instanceof Function)) {
       onError = function (event) {
         let errorMessage = event;
         if (event.currentTarget && event.currentTarget.statusText !== null) {
@@ -235,8 +222,7 @@ OBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
     if (urlParts.length > 2) {
       filename = urlParts[urlParts.length - 1];
       let urlPartsPath = urlParts.slice(0, urlParts.length - 1).join('/') + '/';
-      if (urlPartsPath !== undefined && urlPartsPath !== null)
-        this.path = urlPartsPath;
+      if (urlPartsPath !== undefined && urlPartsPath !== null) this.path = urlPartsPath;
     }
     if (
       onFileLoadProgress === null ||
@@ -251,27 +237,15 @@ OBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
         numericalValue = event.loaded / event.total;
         if (numericalValue > numericalValueRef) {
           numericalValueRef = numericalValue;
-          let output =
-            'Download of "' +
-            url +
-            '": ' +
-            (numericalValue * 100).toFixed(2) +
-            '%';
-          scope.parser.callbacks.onProgress(
-            'progressLoad',
-            output,
-            numericalValue,
-          );
+          let output = 'Download of "' + url + '": ' + (numericalValue * 100).toFixed(2) + '%';
+          scope.parser.callbacks.onProgress('progressLoad', output, numericalValue);
         }
       };
     }
 
     this.setCallbackOnMeshAlter(onMeshAlter);
     let fileLoaderOnLoad = function (content) {
-      scope.parser.callbacks.onLoad(
-        scope.parse(content),
-        'OBJLoader2#load: Parsing completed',
-      );
+      scope.parser.callbacks.onLoad(scope.parse(content), 'OBJLoader2#load: Parsing completed');
     };
     let fileLoader = new FileLoader(this.manager);
     fileLoader.setPath(this.path || this.resourcePath);
@@ -281,22 +255,14 @@ OBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
 
   loadZip: function (url, onLoad, onFileLoadProgress, onError, onMeshAlter) {
     let scope = this;
-    if (
-      onLoad === null ||
-      onLoad === undefined ||
-      !(onLoad instanceof Function)
-    ) {
+    if (onLoad === null || onLoad === undefined || !(onLoad instanceof Function)) {
       let errorMessage = 'onLoad is not a function! Aborting...';
       scope.parser.callbacks.onError(errorMessage);
       throw errorMessage;
     } else {
       this.parser.setCallbackOnLoad(onLoad);
     }
-    if (
-      onError === null ||
-      onError === undefined ||
-      !(onError instanceof Function)
-    ) {
+    if (onError === null || onError === undefined || !(onError instanceof Function)) {
       onError = function (event) {
         let errorMessage = event;
         if (event.currentTarget && event.currentTarget.statusText !== null) {
@@ -315,12 +281,12 @@ OBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
 
     this.setCallbackOnMeshAlter(onMeshAlter);
     request(url, { prefix: '', responseType: 'arrayBuffer' })
-      .then(buffer => zip.loadAsync(buffer))
-      .then(_zip => {
+      .then((buffer) => zip.loadAsync(buffer))
+      .then((_zip) => {
         _zip
           .file('model.obj')
           .async('arraybuffer')
-          .then(buffer =>
+          .then((buffer) =>
             scope.parser.callbacks.onLoad(
               scope.parse(buffer),
               'OBJLoader2#load: Parsing completed',

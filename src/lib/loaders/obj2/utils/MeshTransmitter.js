@@ -9,37 +9,30 @@ import { BufferGeometry } from 'three';
  *
  * @constructor
  */
-const MeshTransmitter = function() {
+const MeshTransmitter = function () {
   this.callbackDataReceiver = null;
   this.defaultGeometryType = 2;
-  this.defaultMaterials = [
-    'defaultMaterial',
-    'defaultLineMaterial',
-    'defaultPointMaterial',
-  ];
+  this.defaultMaterials = ['defaultMaterial', 'defaultLineMaterial', 'defaultPointMaterial'];
 };
 MeshTransmitter.MESH_TRANSMITTER_VERSION = '1.0.0-preview';
 
 MeshTransmitter.prototype = {
   constructor: MeshTransmitter,
 
-  setCallbackDataReceiver: function(callbackDataReceiver) {
+  setCallbackDataReceiver: function (callbackDataReceiver) {
     this.callbackDataReceiver = callbackDataReceiver;
   },
 
-  setDefaultGeometryType: function(defaultGeometryType) {
+  setDefaultGeometryType: function (defaultGeometryType) {
     this.defaultGeometryType = defaultGeometryType;
   },
 
-  walkMesh: function(rootNode) {
+  walkMesh: function (rootNode) {
     var scope = this;
-    var _walk_ = function(object3d) {
+    var _walk_ = function (object3d) {
       console.info('Walking: ' + object3d.name);
 
-      if (
-        object3d.hasOwnProperty('geometry') &&
-        object3d['geometry'] instanceof BufferGeometry
-      ) {
+      if (object3d.hasOwnProperty('geometry') && object3d['geometry'] instanceof BufferGeometry) {
         scope.handleBufferGeometry(object3d['geometry'], object3d.name);
       }
       if (object3d.hasOwnProperty('material')) {
@@ -59,7 +52,7 @@ MeshTransmitter.prototype = {
     rootNode.traverse(_walk_);
   },
 
-  handleBufferGeometry: function(bufferGeometry, objectName) {
+  handleBufferGeometry: function (bufferGeometry, objectName) {
     //			console.log ( bufferGeometry.attributes );
     var vertexBA = bufferGeometry.getAttribute('position');
     var indexBA = bufferGeometry.getIndex();
@@ -68,23 +61,14 @@ MeshTransmitter.prototype = {
     var uvBA = bufferGeometry.getAttribute('uv');
     var skinIndexBA = bufferGeometry.getAttribute('skinIndex');
     var skinWeightBA = bufferGeometry.getAttribute('skinWeight');
-    var vertexFA =
-      vertexBA !== null && vertexBA !== undefined ? vertexBA.array : null;
-    var indexUA =
-      indexBA !== null && indexBA !== undefined ? indexBA.array : null;
-    var colorFA =
-      colorBA !== null && colorBA !== undefined ? colorBA.array : null;
-    var normalFA =
-      normalBA !== null && normalBA !== undefined ? normalBA.array : null;
+    var vertexFA = vertexBA !== null && vertexBA !== undefined ? vertexBA.array : null;
+    var indexUA = indexBA !== null && indexBA !== undefined ? indexBA.array : null;
+    var colorFA = colorBA !== null && colorBA !== undefined ? colorBA.array : null;
+    var normalFA = normalBA !== null && normalBA !== undefined ? normalBA.array : null;
     var uvFA = uvBA !== null && uvBA !== undefined ? uvBA.array : null;
-    var skinIndexFA =
-      skinIndexBA !== null && skinIndexBA !== undefined
-        ? skinIndexBA.array
-        : null;
+    var skinIndexFA = skinIndexBA !== null && skinIndexBA !== undefined ? skinIndexBA.array : null;
     var skinWeightFA =
-      skinWeightBA !== null && skinWeightBA !== undefined
-        ? skinWeightBA.array
-        : null;
+      skinWeightBA !== null && skinWeightBA !== undefined ? skinWeightBA.array : null;
 
     var materialNames = [this.defaultMaterials[this.defaultGeometryType]];
     this.callbackDataReceiver(

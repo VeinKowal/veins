@@ -845,15 +845,10 @@ class InteractionManager extends EventDispatcher {
           const interactionEvent = this.configureInteractionEventForDOMEvent(
             this.eventData,
             interactionData.originalEvent,
-            interactionData
+            interactionData,
           );
 
-          this.processInteractive(
-            interactionEvent,
-            this.scene,
-            this.processPointerOverOut,
-            true
-          );
+          this.processInteractive(interactionEvent, this.scene, this.processPointerOverOut, true);
         }
       }
     }
@@ -896,7 +891,10 @@ class InteractionManager extends EventDispatcher {
         default:
           break;
       }
-    } else if (typeof mode === 'string' && !Object.prototype.hasOwnProperty.call(this.cursorStyles, mode)) {
+    } else if (
+      typeof mode === 'string' &&
+      !Object.prototype.hasOwnProperty.call(this.cursorStyles, mode)
+    ) {
       // if it mode is a string (not a Symbol) and cursorStyles doesn't have any entry
       // for the mode, then assume that the dev wants it to be CSS for the cursor.
       this.interactionDOMElement.style.cursor = mode;
@@ -970,7 +968,13 @@ class InteractionManager extends EventDispatcher {
         const child = children[i];
 
         // time to get recursive.. if this function will return if something is hit..
-        const childHit = this.processInteractive(interactionEvent, child, func, hitTest, interactiveParent);
+        const childHit = this.processInteractive(
+          interactionEvent,
+          child,
+          func,
+          hitTest,
+          interactiveParent,
+        );
 
         if (childHit) {
           // its a good idea to check if a child has lost its parent.
@@ -1005,7 +1009,10 @@ class InteractionManager extends EventDispatcher {
       // has already been hit - but only if it was interactive, otherwise we need to keep
       // looking for an interactive child, just in case we hit one
       if (hitTest && !interactionEvent.target) {
-        if (interactionEvent.intersects[0] && interactionEvent.intersects[0].object === displayObject) {
+        if (
+          interactionEvent.intersects[0] &&
+          interactionEvent.intersects[0].object === displayObject
+        ) {
           hit = true;
         }
       }
@@ -1024,7 +1031,6 @@ class InteractionManager extends EventDispatcher {
     return hit;
   }
 
-
   /**
    * Is called when the click is pressed down on the renderer element
    *
@@ -1042,7 +1048,11 @@ class InteractionManager extends EventDispatcher {
 
     const interactionData = this.getInteractionDataForPointerId(events[0]);
 
-    const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, events[0], interactionData);
+    const interactionEvent = this.configureInteractionEventForDOMEvent(
+      this.eventData,
+      events[0],
+      interactionData,
+    );
 
     interactionEvent.data.originalEvent = originalEvent;
 
@@ -1096,7 +1106,11 @@ class InteractionManager extends EventDispatcher {
 
       const interactionData = this.getInteractionDataForPointerId(event);
 
-      const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
+      const interactionEvent = this.configureInteractionEventForDOMEvent(
+        this.eventData,
+        event,
+        interactionData,
+      );
 
       interactionEvent.data.originalEvent = originalEvent;
 
@@ -1143,7 +1157,11 @@ class InteractionManager extends EventDispatcher {
           displayObject.trackedPointers[id].leftDown = true;
         }
 
-        this.triggerEvent(displayObject, isRightButton ? 'rightdown' : 'mousedown', interactionEvent);
+        this.triggerEvent(
+          displayObject,
+          isRightButton ? 'rightdown' : 'mousedown',
+          interactionEvent,
+        );
       }
     }
   }
@@ -1170,7 +1188,11 @@ class InteractionManager extends EventDispatcher {
 
       const interactionData = this.getInteractionDataForPointerId(event);
 
-      const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
+      const interactionEvent = this.configureInteractionEventForDOMEvent(
+        this.eventData,
+        event,
+        interactionData,
+      );
 
       interactionEvent.data.originalEvent = originalEvent;
 
@@ -1182,7 +1204,10 @@ class InteractionManager extends EventDispatcher {
       if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
         const isRightButton = event.button === 2;
 
-        this.emit(isRightButton ? `rightup${eventAppend}` : `mouseup${eventAppend}`, interactionEvent);
+        this.emit(
+          isRightButton ? `rightup${eventAppend}` : `mouseup${eventAppend}`,
+          interactionEvent,
+        );
       } else if (event.pointerType === 'touch') {
         this.emit(cancelled ? 'touchcancel' : `touchend${eventAppend}`, interactionEvent);
         this.releaseInteractionDataForPointerId(event.pointerId, interactionData);
@@ -1255,7 +1280,7 @@ class InteractionManager extends EventDispatcher {
 
     const isTouch = data.pointerType === 'touch';
 
-    const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
+    const isMouse = data.pointerType === 'mouse' || data.pointerType === 'pen';
 
     // Mouse only
     if (isMouse) {
@@ -1265,16 +1290,24 @@ class InteractionManager extends EventDispatcher {
 
       const test = isRightButton ? flags.RIGHT_DOWN : flags.LEFT_DOWN;
 
-      const isDown = trackingData !== undefined && (trackingData.flags & test);
+      const isDown = trackingData !== undefined && trackingData.flags & test;
 
       if (hit) {
         this.triggerEvent(displayObject, isRightButton ? 'rightup' : 'mouseup', interactionEvent);
 
         if (isDown) {
-          this.triggerEvent(displayObject, isRightButton ? 'rightclick' : 'leftclick', interactionEvent);
+          this.triggerEvent(
+            displayObject,
+            isRightButton ? 'rightclick' : 'leftclick',
+            interactionEvent,
+          );
         }
       } else if (isDown) {
-        this.triggerEvent(displayObject, isRightButton ? 'rightupoutside' : 'mouseupoutside', interactionEvent);
+        this.triggerEvent(
+          displayObject,
+          isRightButton ? 'rightupoutside' : 'mouseupoutside',
+          interactionEvent,
+        );
       }
       // update the down state of the tracking data
       if (trackingData) {
@@ -1338,21 +1371,21 @@ class InteractionManager extends EventDispatcher {
 
       const interactionData = this.getInteractionDataForPointerId(event);
 
-      const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
+      const interactionEvent = this.configureInteractionEventForDOMEvent(
+        this.eventData,
+        event,
+        interactionData,
+      );
 
       interactionEvent.data.originalEvent = originalEvent;
 
       const interactive = event.pointerType === 'touch' ? this.moveWhenInside : true;
 
-      this.processInteractive(
-        interactionEvent,
-        this.scene,
-        this.processPointerMove,
-        interactive
-      );
+      this.processInteractive(interactionEvent, this.scene, this.processPointerMove, interactive);
       this.emit('pointermove', interactionEvent);
       if (event.pointerType === 'touch') this.emit('touchmove', interactionEvent);
-      if (event.pointerType === 'mouse' || event.pointerType === 'pen') this.emit('mousemove', interactionEvent);
+      if (event.pointerType === 'mouse' || event.pointerType === 'pen')
+        this.emit('mousemove', interactionEvent);
     }
 
     if (events[0].pointerType === 'mouse') {
@@ -1375,13 +1408,14 @@ class InteractionManager extends EventDispatcher {
 
     const isTouch = data.pointerType === 'touch';
 
-    const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
+    const isMouse = data.pointerType === 'mouse' || data.pointerType === 'pen';
 
     if (isMouse) {
       this.processPointerOverOut(interactionEvent, displayObject, hit);
     }
 
-    if (isTouch && displayObject.started) this.triggerEvent(displayObject, 'touchmove', interactionEvent);
+    if (isTouch && displayObject.started)
+      this.triggerEvent(displayObject, 'touchmove', interactionEvent);
     if (!this.moveWhenInside || hit) {
       this.triggerEvent(displayObject, 'pointermove', interactionEvent);
       if (isMouse) this.triggerEvent(displayObject, 'mousemove', interactionEvent);
@@ -1410,7 +1444,11 @@ class InteractionManager extends EventDispatcher {
 
     const interactionData = this.getInteractionDataForPointerId(event);
 
-    const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
+    const interactionEvent = this.configureInteractionEventForDOMEvent(
+      this.eventData,
+      event,
+      interactionData,
+    );
 
     interactionEvent.data.originalEvent = event;
 
@@ -1439,7 +1477,7 @@ class InteractionManager extends EventDispatcher {
 
     const id = interactionEvent.data.identifier;
 
-    const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
+    const isMouse = data.pointerType === 'mouse' || data.pointerType === 'pen';
 
     let trackingData = displayObject.trackedPointers[id];
 
@@ -1491,7 +1529,11 @@ class InteractionManager extends EventDispatcher {
 
     const interactionData = this.getInteractionDataForPointerId(event);
 
-    const interactionEvent = this.configureInteractionEventForDOMEvent(this.eventData, event, interactionData);
+    const interactionEvent = this.configureInteractionEventForDOMEvent(
+      this.eventData,
+      event,
+      interactionData,
+    );
 
     interactionEvent.data.originalEvent = event;
 
@@ -1650,7 +1692,10 @@ class InteractionManager extends EventDispatcher {
 
         normalizedEvents.push(touch);
       }
-    } else if (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof window.PointerEvent))) {
+    } else if (
+      event instanceof MouseEvent &&
+      (!this.supportsPointerEvents || !(event instanceof window.PointerEvent))
+    ) {
       if (typeof event.isPrimary === 'undefined') event.isPrimary = true;
       if (typeof event.width === 'undefined') event.width = 1;
       if (typeof event.height === 'undefined') event.height = 1;

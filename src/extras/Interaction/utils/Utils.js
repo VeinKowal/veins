@@ -22,13 +22,12 @@ export const Utils = {
    * @param {*} variable a variable which you want to determine
    * @return {Boolean} type result
    */
-  isFunction: (function() {
-    const ks = _rt(function() {});
-    return function(variable) {
+  isFunction: (function () {
+    const ks = _rt(function () {});
+    return function (variable) {
       return _rt(variable) === ks;
     };
   })(),
-
 
   /**
    * determine whether it is a `undefined`

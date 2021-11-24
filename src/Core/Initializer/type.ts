@@ -1,11 +1,4 @@
-import {
-  Color,
-  Texture,
-  Scene,
-  PerspectiveCamera,
-  WebGLRenderer,
-  Raycaster,
-} from 'three';
+import { Color, Texture, Scene, PerspectiveCamera, WebGLRenderer, Raycaster } from 'three';
 import { GlobalView, Extent } from 'itowns';
 import { Interaction } from 'three.interaction';
 import { OrbitControls } from '../../lib/controls/OrbitControls';

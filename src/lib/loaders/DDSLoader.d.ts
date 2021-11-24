@@ -1,9 +1,4 @@
-import {
-  LoadingManager,
-  CompressedTextureLoader,
-  PixelFormat,
-  CompressedPixelFormat,
-} from 'three';
+import { LoadingManager, CompressedTextureLoader, PixelFormat, CompressedPixelFormat } from 'three';
 
 export interface DDS {
   mipmaps: object[];

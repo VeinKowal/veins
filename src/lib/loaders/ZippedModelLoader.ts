@@ -3,10 +3,7 @@ import { ZippedMTLLoader } from './ZippedMTLLoader.js';
 import { ZippedOBJLoader2 } from './ZippedOBJLoader2';
 import JSZip from 'jszip';
 
-export const loadZipModel = (
-  addr: string,
-  onLoad: (obj: THREE.Object3D) => void,
-) => {
+export const loadZipModel = (addr: string, onLoad: (obj: THREE.Object3D) => void) => {
   const xhr = new XMLHttpRequest();
   xhr.withCredentials = true;
   xhr.open('GET', addr, true);
@@ -20,10 +17,7 @@ export const loadZipModel = (
   xhr.send();
 };
 
-async function loadBlobModel(
-  blob: Blob,
-  onLoad: (obj: THREE.Object3D) => void,
-) {
+async function loadBlobModel(blob: Blob, onLoad: (obj: THREE.Object3D) => void) {
   const zip = new JSZip();
   await zip.loadAsync(blob);
 
@@ -39,11 +33,8 @@ async function loadBlobModel(
 
   const onMaterialLoad = (materialCreator: ZippedMTLLoader.MaterialCreator) => {
     const objLoader = new ZippedOBJLoader2();
-    objLoader.addMaterials(
-      ZippedMtlObjBridge.addMaterialsFromMtlLoader(materialCreator),
-      true,
-    );
-    objLoader.load(zip, obj => {
+    objLoader.addMaterials(ZippedMtlObjBridge.addMaterialsFromMtlLoader(materialCreator), true);
+    objLoader.load(zip, (obj) => {
       onLoad(obj);
     });
   };

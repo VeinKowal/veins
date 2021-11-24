@@ -38,11 +38,7 @@ export default class Thunder extends LightningStorm {
   private box: THREE.Box3 = new THREE.Box3();
   private static lightningColor: THREE.Color = new THREE.Color(0xb0ffff);
   private userData: Record<string, unknown> = { type: 'weather' };
-  private light: THREE.PointLight = new THREE.PointLight(
-    0xff0000,
-    1,
-    0.0000001,
-  );
+  private light: THREE.PointLight = new THREE.PointLight(0xff0000, 1, 0.0000001);
 
   constructor(config: ThunderConfig = {}) {
     super(Thunder.createThunder(config));
@@ -119,29 +115,16 @@ export default class Thunder extends LightningStorm {
         childSubray: any,
         lightningStrike: any,
       ) => {
-        lightningStrike.subrayConePosition(
-          segment,
-          parentSubray,
-          childSubray,
-          0.6,
-          0.6,
-          0.5,
-        );
+        lightningStrike.subrayConePosition(segment, parentSubray, childSubray, 0.6, 0.6, 0.5);
         rayLength = lightningStrike.rayParameters.sourceOffset.y;
-        vec1.subVectors(
-          childSubray.pos1,
-          lightningStrike.rayParameters.sourceOffset,
-        );
+        vec1.subVectors(childSubray.pos1, lightningStrike.rayParameters.sourceOffset);
         const proj = rayDirection.dot(vec1);
         vec2.copy(rayDirection).multiplyScalar(proj);
         vec1.sub(vec2);
         const scale = proj / rayLength > 0.5 ? rayLength / proj : 1;
         vec2.multiplyScalar(scale);
         vec1.add(vec2);
-        childSubray.pos1.addVectors(
-          vec1,
-          lightningStrike.rayParameters.sourceOffset,
-        );
+        childSubray.pos1.addVectors(vec1, lightningStrike.rayParameters.sourceOffset);
       },
     };
 
@@ -150,11 +133,7 @@ export default class Thunder extends LightningStorm {
     const prevPoint = new THREE.Vector3(0, 0, 1);
     const currPoint = new THREE.Vector3();
     for (let i = 1; i <= 16; i += 1) {
-      currPoint.set(
-        Math.sin((2 * Math.PI * i) / 16),
-        0,
-        Math.cos((2 * Math.PI * i) / 16),
-      );
+      currPoint.set(Math.sin((2 * Math.PI * i) / 16), 0, Math.cos((2 * Math.PI * i) / 16));
       if (i % 2 === 1) {
         currPoint.multiplyScalar(0.3);
       }
@@ -165,14 +144,8 @@ export default class Thunder extends LightningStorm {
     }
 
     const starGeometry = new THREE.BufferGeometry();
-    starGeometry.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(starVertices, 3),
-    );
-    const starMesh = new THREE.Mesh(
-      starGeometry,
-      new THREE.MeshBasicMaterial({ color: 0x020900 }),
-    );
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+    const starMesh = new THREE.Mesh(starGeometry, new THREE.MeshBasicMaterial({ color: 0x020900 }));
     starMesh.scale.multiplyScalar(60);
 
     return {

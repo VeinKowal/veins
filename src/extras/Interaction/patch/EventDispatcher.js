@@ -14,15 +14,17 @@ EventDispatcher.prototype.on = function (type, fn) {
   if (this instanceof Object3D) {
     this.interactive = true;
     this.isActived = false;
-  };
+  }
   const basicFn = (e) => {
     const { intersectedObjects, interaction } = MouseEvents;
     this.isActived = true;
 
     // 再判断路线上是否有Marker 存在就只执行Marker方法
-    const marker = intersectedObjects.find((obj) => obj.userData && obj.userData.type && obj.userData.type === 'Marker');
-    (marker && 'isActive' in marker) ? interaction.triggerEvent(marker, 'click', e) : fn(e);
-  }
+    const marker = intersectedObjects.find(
+      (obj) => obj.userData && obj.userData.type && obj.userData.type === 'Marker',
+    );
+    marker && 'isActive' in marker ? interaction.triggerEvent(marker, 'click', e) : fn(e);
+  };
   if (type === 'click') {
     this.addEventListener('pointerup', (e) => {
       const { isClickEvent, getNormalizedCanvasRelativePosition } = MouseEvents;
@@ -39,12 +41,13 @@ EventDispatcher.prototype.on = function (type, fn) {
   } else if (type === 'cancel') {
     // 保存cancel方法
     MouseEvents.cancelFnMap.set(this, () => {
-      fn()
+      fn();
       this.isActived = false;
-    })
-  } else this.addEventListener(type, (e) => {
-    basicFn(e);
-  });
+    });
+  } else
+    this.addEventListener(type, (e) => {
+      basicFn(e);
+    });
   return this;
 };
 
@@ -93,4 +96,3 @@ EventDispatcher.prototype.emit = function (type, ...argument) {
   }
   return this;
 };
-

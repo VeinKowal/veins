@@ -3,7 +3,7 @@
  * Development repository: https://github.com/kaisalmen/WWOBJLoader
  */
 
-const ObjectManipulator = function() {};
+const ObjectManipulator = function () {};
 
 ObjectManipulator.prototype = {
   constructor: ObjectManipulator,
@@ -15,22 +15,14 @@ ObjectManipulator.prototype = {
    * @param {Object} params The parameter object
    * @param {boolean} forceCreation Force the creation of a property
    */
-  applyProperties: function(objToAlter, params, forceCreation) {
+  applyProperties: function (objToAlter, params, forceCreation) {
     // fast-fail
-    if (
-      objToAlter === undefined ||
-      objToAlter === null ||
-      params === undefined ||
-      params === null
-    )
+    if (objToAlter === undefined || objToAlter === null || params === undefined || params === null)
       return;
 
     let property, funcName, values;
     for (property in params) {
-      funcName =
-        'set' +
-        property.substring(0, 1).toLocaleUpperCase() +
-        property.substring(1);
+      funcName = 'set' + property.substring(0, 1).toLocaleUpperCase() + property.substring(1);
       values = params[property];
 
       if (typeof objToAlter[funcName] === 'function') {
@@ -42,7 +34,7 @@ ObjectManipulator.prototype = {
   },
 };
 
-const DefaultWorkerPayloadHandler = function(parser) {
+const DefaultWorkerPayloadHandler = function (parser) {
   this.parser = parser;
   this.logging = {
     enabled: false,
@@ -53,7 +45,7 @@ const DefaultWorkerPayloadHandler = function(parser) {
 DefaultWorkerPayloadHandler.prototype = {
   constructor: DefaultWorkerPayloadHandler,
 
-  handlePayload: function(payload) {
+  handlePayload: function (payload) {
     if (payload.logging) {
       this.logging.enabled = payload.logging.enabled === true;
       this.logging.debug = payload.logging.debug === true;
@@ -61,10 +53,10 @@ DefaultWorkerPayloadHandler.prototype = {
     if (payload.cmd === 'parse') {
       let scope = this;
       let callbacks = {
-        callbackOnAssetAvailable: function(payload) {
+        callbackOnAssetAvailable: function (payload) {
           self.postMessage(payload);
         },
-        callbackOnProgress: function(text) {
+        callbackOnProgress: function (text) {
           if (scope.logging.enabled && scope.logging.debug)
             console.debug('WorkerRunner: progress: ' + text);
         },
@@ -103,11 +95,11 @@ DefaultWorkerPayloadHandler.prototype = {
  * Default implementation of the WorkerRunner responsible for creation and configuration of the parser within the worker.
  * @constructor
  */
-const WorkerRunner = function(payloadHandler) {
+const WorkerRunner = function (payloadHandler) {
   this.payloadHandler = payloadHandler;
 
   let scope = this;
-  let scopedRunner = function(event) {
+  let scopedRunner = function (event) {
     scope.processMessage(event.data);
   };
   self.addEventListener('message', scopedRunner, false);
@@ -121,9 +113,8 @@ WorkerRunner.prototype = {
    *
    * @param {Object} payload Raw mesh description (buffers, params, materials) used to build one to many meshes.
    */
-  processMessage: function(payload) {
-    this.payloadHandler.handlePayload &&
-      this.payloadHandler.handlePayload(payload);
+  processMessage: function (payload) {
+    this.payloadHandler.handlePayload && this.payloadHandler.handlePayload(payload);
   },
 };
 

@@ -10,7 +10,7 @@
  * @param {boolean} supportsJsmWorker
  * @constructor
  */
-const CodeBuilderInstructions = function(
+const CodeBuilderInstructions = function (
   supportsStandardWorker,
   supportsJsmWorker,
   preferJsmWorker,
@@ -29,15 +29,15 @@ const CodeBuilderInstructions = function(
 CodeBuilderInstructions.prototype = {
   constructor: CodeBuilderInstructions,
 
-  isSupportsStandardWorker: function() {
+  isSupportsStandardWorker: function () {
     return this.supportsStandardWorker;
   },
 
-  isSupportsJsmWorker: function() {
+  isSupportsJsmWorker: function () {
     return this.supportsJsmWorker;
   },
 
-  isPreferJsmWorker: function() {
+  isPreferJsmWorker: function () {
     return this.preferJsmWorker;
   },
 
@@ -46,7 +46,7 @@ CodeBuilderInstructions.prototype = {
    *
    * @param {String} jsmWorkerUrl
    */
-  setJsmWorkerUrl: function(jsmWorkerUrl) {
+  setJsmWorkerUrl: function (jsmWorkerUrl) {
     if (jsmWorkerUrl !== undefined && jsmWorkerUrl !== null) {
       this.jsmWorkerUrl = jsmWorkerUrl;
     }
@@ -56,7 +56,7 @@ CodeBuilderInstructions.prototype = {
    * Add code that is contained in addition to fragments and libraries
    * @param {String} startCode
    */
-  addStartCode: function(startCode) {
+  addStartCode: function (startCode) {
     this.startCode = startCode;
   },
 
@@ -64,7 +64,7 @@ CodeBuilderInstructions.prototype = {
    * Add code fragment that is included in the provided order
    * @param {String} code
    */
-  addCodeFragment: function(code) {
+  addCodeFragment: function (code) {
     this.codeFragments.push(code);
   },
 
@@ -72,21 +72,21 @@ CodeBuilderInstructions.prototype = {
    * Add full path to a library that is contained at the start of the worker via "importScripts"
    * @param {String} libraryPath
    */
-  addLibraryImport: function(libraryPath) {
+  addLibraryImport: function (libraryPath) {
     let libraryUrl = new URL(libraryPath, window.location.href).href;
     let code = 'importScripts( "' + libraryUrl + '" );';
     this.importStatements.push(code);
   },
 
-  getImportStatements: function() {
+  getImportStatements: function () {
     return this.importStatements;
   },
 
-  getCodeFragments: function() {
+  getCodeFragments: function () {
     return this.codeFragments;
   },
 
-  getStartCode: function() {
+  getStartCode: function () {
     return this.startCode;
   },
 };
@@ -95,10 +95,9 @@ CodeBuilderInstructions.prototype = {
  * which allows to configure the worker and receive raw mesh data during execution.
  * @class
  */
-const WorkerExecutionSupport = function() {
+const WorkerExecutionSupport = function () {
   // check worker support first
-  if (window.Worker === undefined)
-    throw 'This browser does not support web workers!';
+  if (window.Worker === undefined) throw 'This browser does not support web workers!';
   if (window.Blob === undefined) throw 'This browser does not support Blob!';
   if (typeof window.URL.createObjectURL !== 'function')
     throw 'This browser does not support Object creation from URL!';
@@ -106,22 +105,19 @@ const WorkerExecutionSupport = function() {
   this._reset();
 };
 WorkerExecutionSupport.WORKER_SUPPORT_VERSION = '3.2.0';
-console.info(
-  'Using WorkerSupport version: ' +
-    WorkerExecutionSupport.WORKER_SUPPORT_VERSION,
-);
+console.info('Using WorkerSupport version: ' + WorkerExecutionSupport.WORKER_SUPPORT_VERSION);
 
 WorkerExecutionSupport.prototype = {
   constructor: WorkerExecutionSupport,
 
-  _reset: function() {
+  _reset: function () {
     this.logging = {
       enabled: false,
       debug: false,
     };
 
     let scope = this;
-    let scopeTerminate = function() {
+    let scopeTerminate = function () {
       scope._terminate();
     };
     this.worker = {
@@ -151,7 +147,7 @@ WorkerExecutionSupport.prototype = {
    * @param {boolean} enabled True or false.
    * @param {boolean} debug True or false.
    */
-  setLogging: function(enabled, debug) {
+  setLogging: function (enabled, debug) {
     this.logging.enabled = enabled === true;
     this.logging.debug = debug === true;
     this.worker.logging = enabled === true;
@@ -163,7 +159,7 @@ WorkerExecutionSupport.prototype = {
    *
    * @param {boolean} forceWorkerDataCopy True or false.
    */
-  setForceWorkerDataCopy: function(forceWorkerDataCopy) {
+  setForceWorkerDataCopy: function (forceWorkerDataCopy) {
     this.worker.forceWorkerDataCopy = forceWorkerDataCopy === true;
     return this;
   },
@@ -173,7 +169,7 @@ WorkerExecutionSupport.prototype = {
    *
    * @param {boolean} terminateWorkerOnLoad True or false.
    */
-  setTerminateWorkerOnLoad: function(terminateWorkerOnLoad) {
+  setTerminateWorkerOnLoad: function (terminateWorkerOnLoad) {
     this.worker.terminateWorkerOnLoad = terminateWorkerOnLoad === true;
     if (
       this.worker.terminateWorkerOnLoad &&
@@ -195,7 +191,7 @@ WorkerExecutionSupport.prototype = {
    * @param {Function} onAssetAvailable The function for processing the data, e.g. {@link MeshReceiver}.
    * @param {Function} [onLoad] The function that is called when parsing is complete.
    */
-  updateCallbacks: function(onAssetAvailable, onLoad) {
+  updateCallbacks: function (onAssetAvailable, onLoad) {
     if (onAssetAvailable !== undefined && onAssetAvailable !== null) {
       this.worker.callbacks.onAssetAvailable = onAssetAvailable;
     }
@@ -205,7 +201,7 @@ WorkerExecutionSupport.prototype = {
     this._verifyCallbacks();
   },
 
-  _verifyCallbacks: function() {
+  _verifyCallbacks: function () {
     if (
       this.worker.callbacks.onAssetAvailable === undefined ||
       this.worker.callbacks.onAssetAvailable === null
@@ -220,7 +216,7 @@ WorkerExecutionSupport.prototype = {
    *
    * @param {CodeBuilderInstructions} codeBuilderInstructions
    */
-  buildWorker: function(codeBuilderInstructions) {
+  buildWorker: function (codeBuilderInstructions) {
     let jsmSuccess = false;
 
     if (
@@ -241,7 +237,7 @@ WorkerExecutionSupport.prototype = {
    * @return {boolean} Whether loading of jsm worker was successful
    * @private
    */
-  _buildWorkerJsm: function(codeBuilderInstructions) {
+  _buildWorkerJsm: function (codeBuilderInstructions) {
     let jsmSuccess = true;
     let timeLabel = 'buildWorkerJsm';
     let workerAvailable = this._buildWorkerCheckPreconditions(true, timeLabel);
@@ -279,16 +275,16 @@ WorkerExecutionSupport.prototype = {
    * @param {CodeBuilderInstructions} codeBuilderInstructions
    * @private
    */
-  _buildWorkerStandard: function(codeBuilderInstructions) {
+  _buildWorkerStandard: function (codeBuilderInstructions) {
     let timeLabel = 'buildWorkerStandard';
     let workerAvailable = this._buildWorkerCheckPreconditions(false, timeLabel);
     if (!workerAvailable) {
       let concatenateCode = '';
-      codeBuilderInstructions.getImportStatements().forEach(function(element) {
+      codeBuilderInstructions.getImportStatements().forEach(function (element) {
         concatenateCode += element + '\n';
       });
       concatenateCode += '\n';
-      codeBuilderInstructions.getCodeFragments().forEach(function(element) {
+      codeBuilderInstructions.getCodeFragments().forEach(function (element) {
         concatenateCode += element + '\n';
       });
       concatenateCode += '\n';
@@ -308,7 +304,7 @@ WorkerExecutionSupport.prototype = {
     }
   },
 
-  _buildWorkerCheckPreconditions: function(requireJsmWorker, timeLabel) {
+  _buildWorkerCheckPreconditions: function (requireJsmWorker, timeLabel) {
     let workerAvailable = false;
     if (this.isWorkerLoaded(requireJsmWorker)) {
       workerAvailable = true;
@@ -325,17 +321,12 @@ WorkerExecutionSupport.prototype = {
     return workerAvailable;
   },
 
-  _configureWorkerCommunication: function(
-    worker,
-    haveJsmWorker,
-    defaultGeometryType,
-    timeLabel,
-  ) {
+  _configureWorkerCommunication: function (worker, haveJsmWorker, defaultGeometryType, timeLabel) {
     this.worker.native = worker;
     this.worker.jsmWorker = haveJsmWorker;
 
     let scope = this;
-    let scopedReceiveWorkerMessage = function(event) {
+    let scopedReceiveWorkerMessage = function (event) {
       scope._receiveWorkerMessage(event);
     };
     this.worker.native.onmessage = scopedReceiveWorkerMessage;
@@ -354,18 +345,17 @@ WorkerExecutionSupport.prototype = {
    * @param {boolean} requireJsmWorker
    * @return {boolean|*}
    */
-  isWorkerLoaded: function(requireJsmWorker) {
+  isWorkerLoaded: function (requireJsmWorker) {
     return (
       this.worker.native !== null &&
-      ((requireJsmWorker && this.worker.jsmWorker) ||
-        (!requireJsmWorker && !this.worker.jsmWorker))
+      ((requireJsmWorker && this.worker.jsmWorker) || (!requireJsmWorker && !this.worker.jsmWorker))
     );
   },
 
   /**
    * Executed in worker scope
    */
-  _receiveWorkerMessage: function(event) {
+  _receiveWorkerMessage: function (event) {
     // fast-fail in case of error
     if (event.type === 'error') {
       console.error(event);
@@ -397,12 +387,7 @@ WorkerExecutionSupport.prototype = {
         break;
 
       case 'error':
-        console.error(
-          'WorkerSupport [' +
-            workerRunnerName +
-            ']: Reported error: ' +
-            payload.msg,
-        );
+        console.error('WorkerSupport [' + workerRunnerName + ']: Reported error: ' + payload.msg);
         this.worker.queuedMessage = null;
         this.worker.started = false;
         if (this.worker.callbacks.onLoad !== null) {
@@ -422,10 +407,7 @@ WorkerExecutionSupport.prototype = {
 
       default:
         console.error(
-          'WorkerSupport [' +
-            workerRunnerName +
-            ']: Received unknown command: ' +
-            payload.cmd,
+          'WorkerSupport [' + workerRunnerName + ']: Received unknown command: ' + payload.cmd,
         );
         break;
     }
@@ -436,7 +418,7 @@ WorkerExecutionSupport.prototype = {
    *
    * @param {Object} payload Raw mesh description (buffers, params, materials) used to build one to many meshes.
    */
-  executeParallel: function(payload, transferables) {
+  executeParallel: function (payload, transferables) {
     payload.cmd = 'parse';
     payload.usesMeshDisassembler = this.worker.workerRunner.usesMeshDisassembler;
     payload.defaultGeometryType = this.worker.workerRunner.defaultGeometryType;
@@ -445,7 +427,7 @@ WorkerExecutionSupport.prototype = {
     this._postMessage();
   },
 
-  _verifyWorkerIsAvailable: function(payload, transferables) {
+  _verifyWorkerIsAvailable: function (payload, transferables) {
     this._verifyCallbacks();
     let ready = true;
     if (this.worker.queuedMessage !== null) {
@@ -454,43 +436,33 @@ WorkerExecutionSupport.prototype = {
     } else {
       this.worker.queuedMessage = {
         payload: payload,
-        transferables:
-          transferables === undefined || transferables === null
-            ? []
-            : transferables,
+        transferables: transferables === undefined || transferables === null ? [] : transferables,
       };
       this.worker.started = true;
     }
     return ready;
   },
 
-  _postMessage: function() {
+  _postMessage: function () {
     if (this.worker.queuedMessage !== null) {
       if (this.worker.queuedMessage.payload.data.input instanceof ArrayBuffer) {
         let transferables = [];
         if (this.worker.forceWorkerDataCopy) {
-          transferables.push(
-            this.worker.queuedMessage.payload.data.input.slice(0),
-          );
+          transferables.push(this.worker.queuedMessage.payload.data.input.slice(0));
         } else {
           transferables.push(this.worker.queuedMessage.payload.data.input);
         }
         if (this.worker.queuedMessage.transferables.length > 0) {
-          transferables = transferables.concat(
-            this.worker.queuedMessage.transferables,
-          );
+          transferables = transferables.concat(this.worker.queuedMessage.transferables);
         }
-        this.worker.native.postMessage(
-          this.worker.queuedMessage.payload,
-          transferables,
-        );
+        this.worker.native.postMessage(this.worker.queuedMessage.payload, transferables);
       } else {
         this.worker.native.postMessage(this.worker.queuedMessage.payload);
       }
     }
   },
 
-  _terminate: function() {
+  _terminate: function () {
     this.worker.native.terminate();
     this._reset();
   },

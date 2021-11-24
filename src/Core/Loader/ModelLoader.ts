@@ -10,11 +10,6 @@ import { LineSegmentsGeometry } from '../../lib/lines/LineSegmentsGeometry';
 import { Group, Object3D, BoxHelper, Mesh, EdgesGeometry } from 'three';
 
 export default abstract class ModelLoader extends Group {
-  constructor(config: ModelLoaderType) {
-    super();
-    this.load(config);
-  }
-
   // 将模型放在【0，0，0】点
   moveToCenter = (model: Object3D) => {
     const box = new BoxHelper(model);
@@ -39,7 +34,7 @@ export default abstract class ModelLoader extends Group {
       const line = new LineSegments2(lineGeo, lintMat);
       model.add(line);
       line.visible = false;
-      child.userData.line = line;
+      child.line = line;
       child.cursor = 'pointer';
       child.on('pointerover', () => {
         // child.add(line);

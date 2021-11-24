@@ -24,9 +24,7 @@ export default class Snow extends THREE.Points {
   private clock: THREE.Clock = new THREE.Clock();
   private box: THREE.Box3 = new THREE.Box3();
   material: SnowMaterial = new SnowMaterial();
-  constructor(
-    config: SnowConfig = { length: 4000, height: 5000, scale: 1, size: 1 },
-  ) {
+  constructor(config: SnowConfig = { length: 4000, height: 5000, scale: 1, size: 1 }) {
     super();
     this.createSnow(config);
     this.userData.type = 'weather';
@@ -47,35 +45,17 @@ export default class Snow extends THREE.Points {
         position.setZ(i, position.getZ(i) - velocity.getZ(i));
 
         // 如果雪花运动到范围外 修改位置坐标到范围内 修改velocity 修改预定运动轨迹
-        if (
-          position.getX(i) < this.box.min.x ||
-          position.getX(i) > this.box.max.x
-        ) {
-          position.setX(
-            i,
-            Math.random() * (this.box.max.x - this.box.min.x) + this.box.min.x,
-          );
+        if (position.getX(i) < this.box.min.x || position.getX(i) > this.box.max.x) {
+          position.setX(i, Math.random() * (this.box.max.x - this.box.min.x) + this.box.min.x);
           velocity.setX(i, (Math.random() - 0.5) / 3);
         }
 
-        if (
-          position.getY(i) < this.box.min.y ||
-          position.getY(i) > this.box.max.y
-        ) {
-          position.setY(
-            i,
-            Math.random() * (this.box.max.y - this.box.min.y) + this.box.min.y,
-          );
+        if (position.getY(i) < this.box.min.y || position.getY(i) > this.box.max.y) {
+          position.setY(i, Math.random() * (this.box.max.y - this.box.min.y) + this.box.min.y);
         }
 
-        if (
-          position.getZ(i) < this.box.min.z ||
-          position.getZ(i) > this.box.max.z
-        ) {
-          position.setZ(
-            i,
-            Math.random() * (this.box.max.z - this.box.min.z) + this.box.min.z,
-          );
+        if (position.getZ(i) < this.box.min.z || position.getZ(i) > this.box.max.z) {
+          position.setZ(i, Math.random() * (this.box.max.z - this.box.min.z) + this.box.min.z);
           velocity.setZ(i, (Math.random() - 0.5) / 3);
         }
       }
@@ -104,15 +84,13 @@ export default class Snow extends THREE.Points {
 
     const material = new SnowMaterial({
       size: size ? size * 20 : 20,
-      map: new THREE.TextureLoader().load(
-        require('../assets/weather/snow.png'),
-      ),
+      map: new THREE.TextureLoader().load(require('../assets/weather/snow.png')),
       blending: THREE.AdditiveBlending,
       depthTest: false,
       transparent: true,
     });
 
-    material.onBeforeCompile = shader => {
+    material.onBeforeCompile = (shader) => {
       const getFoot = `
             uniform float top;
             uniform float bottom;
@@ -148,14 +126,8 @@ export default class Snow extends THREE.Points {
             vec3 transformed = vec3( foot.x, y, foot.y );
             // vec3 transformed = vec3( position );
             `;
-      shader.vertexShader = shader.vertexShader.replace(
-        '#include <common>',
-        getFoot,
-      );
-      shader.vertexShader = shader.vertexShader.replace(
-        '#include <begin_vertex>',
-        begin_vertex,
-      );
+      shader.vertexShader = shader.vertexShader.replace('#include <common>', getFoot);
+      shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', begin_vertex);
 
       shader.uniforms.cameraPosition = {
         value: new THREE.Vector3(0, 200, 0),
@@ -223,14 +195,7 @@ export default class Snow extends THREE.Points {
 
       uvs.push(1, 1, 0, 1, 0, 0, 1, 0);
 
-      indices.push(
-        i * 4 + 0,
-        i * 4 + 1,
-        i * 4 + 2,
-        i * 4 + 0,
-        i * 4 + 2,
-        i * 4 + 3,
-      );
+      indices.push(i * 4 + 0, i * 4 + 1, i * 4 + 2, i * 4 + 0, i * 4 + 2, i * 4 + 3);
 
       velocity.push(
         (Math.random() - 0.5) / 3,
@@ -241,22 +206,10 @@ export default class Snow extends THREE.Points {
       );
     }
 
-    geometry.setAttribute(
-      'position',
-      new THREE.BufferAttribute(new Float32Array(vertices), 3),
-    );
-    geometry.setAttribute(
-      'normal',
-      new THREE.BufferAttribute(new Float32Array(normals), 3),
-    );
-    geometry.setAttribute(
-      'uv',
-      new THREE.BufferAttribute(new Float32Array(uvs), 2),
-    );
-    geometry.setAttribute(
-      'velocity',
-      new THREE.BufferAttribute(new Float32Array(velocity), 3),
-    );
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+    geometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(normals), 3));
+    geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), 2));
+    geometry.setAttribute('velocity', new THREE.BufferAttribute(new Float32Array(velocity), 3));
     geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(indices), 1));
 
     // 使初始雪花位置错开

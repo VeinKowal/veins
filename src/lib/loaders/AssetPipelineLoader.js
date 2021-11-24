@@ -12,7 +12,7 @@ import { ObjectManipulator } from './obj2/worker/parallel/WorkerRunner.js';
  * @param {AssetPipeline} assetPipeline
  * @constructor
  */
-const AssetPipelineLoader = function(name, assetPipeline) {
+const AssetPipelineLoader = function (name, assetPipeline) {
   this.name = name;
   this.assetPipeline = assetPipeline;
   this.baseObject3d = undefined;
@@ -20,8 +20,7 @@ const AssetPipelineLoader = function(name, assetPipeline) {
 };
 AssetPipelineLoader.ASSET_PIPELINE_LOADER_VERSION = '1.0.0-alpha';
 console.info(
-  'Using AssetPipelineLoader version: ' +
-    AssetPipelineLoader.ASSET_PIPELINE_LOADER_VERSION,
+  'Using AssetPipelineLoader version: ' + AssetPipelineLoader.ASSET_PIPELINE_LOADER_VERSION,
 );
 
 AssetPipelineLoader.prototype = {
@@ -32,7 +31,7 @@ AssetPipelineLoader.prototype = {
    * @param {Object3D} baseObject3d
    * @returns {AssetPipelineLoader}
    */
-  setBaseObject3d: function(baseObject3d) {
+  setBaseObject3d: function (baseObject3d) {
     this.baseObject3d = baseObject3d;
     return this;
   },
@@ -41,7 +40,7 @@ AssetPipelineLoader.prototype = {
    *
    * @param {Function} onComplete
    */
-  setOnComplete: function(onComplete) {
+  setOnComplete: function (onComplete) {
     this.onComplete = onComplete;
   },
 
@@ -49,7 +48,7 @@ AssetPipelineLoader.prototype = {
    *
    * @return {AssetPipelineLoader}
    */
-  run: function() {
+  run: function () {
     this.assetPipeline.initPipeline(this.name, this.onComplete);
     this.assetPipeline.runPipeline(this.baseObject3d);
     return this;
@@ -60,7 +59,7 @@ AssetPipelineLoader.prototype = {
  * The AssetPipeline defines a set of {@link AssetTask} that need to be executed one after the other and return a {@link Object3D}.
  * @constructor
  */
-const AssetPipeline = function() {
+const AssetPipeline = function () {
   this.name = null;
   this.onComplete = null;
   this.assetTasks = new Map();
@@ -72,7 +71,7 @@ AssetPipeline.prototype = {
    * @param {AssetTask} assetTask
    * @returns {AssetPipeline}
    */
-  addAssetTask: function(assetTask) {
+  addAssetTask: function (assetTask) {
     this.assetTasks.set(assetTask.getName(), assetTask);
     return this;
   },
@@ -83,11 +82,11 @@ AssetPipeline.prototype = {
    * @param {string} name Name of the pipeline
    * @return {AssetPipeline}
    */
-  initPipeline: function(name, onComplete) {
+  initPipeline: function (name, onComplete) {
     this.name = name;
     this.onComplete = onComplete;
     let assetTaskBefore = null;
-    this.assetTasks.forEach(function(assetTask, key) {
+    this.assetTasks.forEach(function (assetTask, key) {
       if (assetTaskBefore !== null) {
         assetTask.setTaskBefore(assetTaskBefore);
         assetTaskBefore.setTaskAfter(assetTask);
@@ -105,16 +104,16 @@ AssetPipeline.prototype = {
    * @param {Object3D} baseObject3d
    * @return {AssetPipeline}
    */
-  runPipeline: function(baseObject3d) {
-    let onComplete = x => console.log('Done loading: ' + x);
+  runPipeline: function (baseObject3d) {
+    let onComplete = (x) => console.log('Done loading: ' + x);
     let scope = this;
     if (scope.onComplete !== undefined && scope.onComplete !== null) {
       onComplete = scope.onComplete;
     }
     loadResources(this.assetTasks)
-      .then(x => processAssets(x, this.assetTasks))
-      .then(x => onComplete(scope.name, 'Completed Loading'))
-      .catch(x => console.error(x));
+      .then((x) => processAssets(x, this.assetTasks))
+      .then((x) => onComplete(scope.name, 'Completed Loading'))
+      .catch((x) => console.error(x));
 
     function processAssets(loadResults, assetTasks) {
       console.log('Count of loaded resources: ' + loadResults.length);
@@ -131,9 +130,7 @@ AssetPipeline.prototype = {
       let index = 0;
       for (let assetTask of assetTasks.values()) {
         if (assetTask.getResourceDescriptor()) {
-          loadPromises[index] = await assetTask.loadResource(
-            assetTask.getName(),
-          );
+          loadPromises[index] = await assetTask.loadResource(assetTask.getName());
           index++;
         }
       }
@@ -149,7 +146,7 @@ AssetPipeline.prototype = {
  * @param {String} name
  * @constructor
  */
-const AssetTask = function(name) {
+const AssetTask = function (name) {
   this.name = name;
   this.resourceDescriptor = undefined;
   this.assetLoader = {
@@ -174,7 +171,7 @@ AssetTask.prototype = {
    *
    * @returns {String}
    */
-  getName: function() {
+  getName: function () {
     return this.name;
   },
 
@@ -184,7 +181,7 @@ AssetTask.prototype = {
    * @param {String} processFunctionName
    * @returns {AssetTask}
    */
-  setProcessFunctionName: function(processFunctionName) {
+  setProcessFunctionName: function (processFunctionName) {
     this.assetLoader.processFunctionName = processFunctionName;
     return this;
   },
@@ -194,7 +191,7 @@ AssetTask.prototype = {
    * @param {ResourceDescriptor} resourceDescriptor
    * @returns {AssetTask}
    */
-  setResourceDescriptor: function(resourceDescriptor) {
+  setResourceDescriptor: function (resourceDescriptor) {
     this.resourceDescriptor = resourceDescriptor;
     return this;
   },
@@ -203,28 +200,28 @@ AssetTask.prototype = {
    *
    * @returns {ResourceDescriptor}
    */
-  getResourceDescriptor: function() {
+  getResourceDescriptor: function () {
     return this.resourceDescriptor;
   },
 
-  setTaskBefore: function(assetTask) {
+  setTaskBefore: function (assetTask) {
     this.relations.before = assetTask;
   },
 
-  setTaskAfter: function(assetTask) {
+  setTaskAfter: function (assetTask) {
     this.relations.after = assetTask;
   },
 
-  setLinker: function(linker) {
+  setLinker: function (linker) {
     this.linker = linker;
     this.setProcessFunctionName('link');
   },
 
-  isLinker: function() {
+  isLinker: function () {
     return this.linker;
   },
 
-  getProcessResult: function() {
+  getProcessResult: function () {
     return this.processResult;
   },
 
@@ -234,7 +231,7 @@ AssetTask.prototype = {
    * @param {Object} [loaderConfig]
    * @returns {AssetTask}
    */
-  setAssetHandlerRef: function(assetHandlerRef, assetHandlerConfig) {
+  setAssetHandlerRef: function (assetHandlerRef, assetHandlerConfig) {
     this.assetLoader.ref = assetHandlerRef;
     if (assetHandlerConfig !== undefined && assetHandlerConfig !== null) {
       this.assetLoader.config = assetHandlerConfig;
@@ -242,7 +239,7 @@ AssetTask.prototype = {
     return this;
   },
 
-  setAssetHandler: function(assetHandler) {
+  setAssetHandler: function (assetHandler) {
     if (assetHandler) {
       this.assetLoader.instance = assetHandler;
     }
@@ -252,7 +249,7 @@ AssetTask.prototype = {
   /**
    *
    */
-  init: function() {
+  init: function () {
     console.log(this.name + ': Performing init');
     if (this.assetLoader.instance === null && this.assetLoader.ref !== null) {
       this.assetLoader.instance = Object.create(this.assetLoader.ref.prototype);
@@ -265,12 +262,12 @@ AssetTask.prototype = {
     }
   },
 
-  loadResource: async function() {
+  loadResource: async function () {
     let response = await FileLoadingExecutor.loadFileAsync({
       resourceDescriptor: this.getResourceDescriptor(),
       instanceNo: 0,
       description: 'loadAssets',
-      reportCallback: report => console.log(report.detail.text),
+      reportCallback: (report) => console.log(report.detail.text),
     });
     this.resourceDescriptor = response;
     return response;
@@ -279,15 +276,13 @@ AssetTask.prototype = {
   /**
    *
    */
-  process: function() {
+  process: function () {
     if (!this.isLinker()) {
-      this.processResult = this.assetLoader.instance[
-        this.assetLoader.processFunctionName
-      ](this.resourceDescriptor.content.data);
+      this.processResult = this.assetLoader.instance[this.assetLoader.processFunctionName](
+        this.resourceDescriptor.content.data,
+      );
     } else {
-      this.processResult = this.assetLoader.instance[
-        this.assetLoader.processFunctionName
-      ](
+      this.processResult = this.assetLoader.instance[this.assetLoader.processFunctionName](
         this.relations.before.processResult,
         this.relations.after.assetLoader.instance,
       );

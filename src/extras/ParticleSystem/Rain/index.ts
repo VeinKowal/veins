@@ -57,13 +57,11 @@ export default class Rain extends THREE.Mesh {
     const material = new RainMaterial({
       transparent: true,
       opacity: 0.8,
-      map: new THREE.TextureLoader().load(
-        require('../assets/weather/rain.png'),
-      ),
+      map: new THREE.TextureLoader().load(require('../assets/weather/rain.png')),
       depthWrite: false,
     });
 
-    material.onBeforeCompile = shader => {
+    material.onBeforeCompile = (shader) => {
       const getFoot = `
             uniform float top;
             uniform float bottom;
@@ -99,14 +97,8 @@ export default class Rain extends THREE.Mesh {
             vec3 transformed = vec3( foot.x, y, foot.y );
             // vec3 transformed = vec3( position );
             `;
-      shader.vertexShader = shader.vertexShader.replace(
-        '#include <common>',
-        getFoot,
-      );
-      shader.vertexShader = shader.vertexShader.replace(
-        '#include <begin_vertex>',
-        begin_vertex,
-      );
+      shader.vertexShader = shader.vertexShader.replace('#include <common>', getFoot);
+      shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', begin_vertex);
 
       shader.uniforms.cameraPosition = {
         value: new THREE.Vector3(0, 200, 0),
@@ -176,28 +168,12 @@ export default class Rain extends THREE.Mesh {
 
       uvs.push(1, 1, 0, 1, 0, 0, 1, 0);
 
-      indices.push(
-        i * 4 + 0,
-        i * 4 + 1,
-        i * 4 + 2,
-        i * 4 + 0,
-        i * 4 + 2,
-        i * 4 + 3,
-      );
+      indices.push(i * 4 + 0, i * 4 + 1, i * 4 + 2, i * 4 + 0, i * 4 + 2, i * 4 + 3);
     }
 
-    geometry.setAttribute(
-      'position',
-      new THREE.BufferAttribute(new Float32Array(vertices), 3),
-    );
-    geometry.setAttribute(
-      'normal',
-      new THREE.BufferAttribute(new Float32Array(normals), 3),
-    );
-    geometry.setAttribute(
-      'uv',
-      new THREE.BufferAttribute(new Float32Array(uvs), 2),
-    );
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+    geometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(normals), 3));
+    geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), 2));
     geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(indices), 1));
 
     this.geometry = geometry;

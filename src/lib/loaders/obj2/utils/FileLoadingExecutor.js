@@ -7,12 +7,7 @@ import { FileLoader } from 'three';
 import { Zlib } from '../../../libs/gunzip.module.min.js';
 
 const FileLoadingExecutor = {
-  loadFileAsync: function({
-    resourceDescriptor,
-    instanceNo,
-    description,
-    reportCallback,
-  }) {
+  loadFileAsync: function ({ resourceDescriptor, instanceNo, description, reportCallback }) {
     let scope = this;
     return new Promise((resolveFunction, rejectFunction) => {
       scope.loadFile(
@@ -27,7 +22,7 @@ const FileLoadingExecutor = {
     });
   },
 
-  loadFile: function(params, onCompleteFileLoading) {
+  loadFile: function (params, onCompleteFileLoading) {
     let numericalValueRef = 0;
     let numericalValue = 0;
     let resourceDescriptor = params.resourceDescriptor;
@@ -42,16 +37,8 @@ const FileLoadingExecutor = {
       numericalValue = event.loaded / event.total;
       if (numericalValue > numericalValueRef) {
         numericalValueRef = numericalValue;
-        let output =
-          'Download of "' +
-          url +
-          '": ' +
-          (numericalValue * 100).toFixed(2) +
-          '%';
-        if (
-          params.reportCallback !== undefined &&
-          params.reportCallback !== null
-        ) {
+        let output = 'Download of "' + url + '": ' + (numericalValue * 100).toFixed(2) + '%';
+        if (params.reportCallback !== undefined && params.reportCallback !== null) {
           params.reportCallback({
             detail: {
               type: 'progressLoad',
@@ -82,12 +69,7 @@ const FileLoadingExecutor = {
 
     let fileLoader = new FileLoader();
     fileLoader.setResponseType('arraybuffer');
-    fileLoader.load(
-      url,
-      processResourcesProxy,
-      scopedOnReportProgress,
-      scopedOnReportError,
-    );
+    fileLoader.load(url, processResourcesProxy, scopedOnReportProgress, scopedOnReportError);
   },
 };
 

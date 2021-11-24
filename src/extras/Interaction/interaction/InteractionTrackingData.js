@@ -23,7 +23,7 @@ export default class InteractionTrackingData {
     if (yn) {
       this._flags = this._flags | flag;
     } else {
-      this._flags = this._flags & (~flag);
+      this._flags = this._flags & ~flag;
     }
   }
 

@@ -13,10 +13,9 @@ import {
 import { LineSegmentsGeometry } from './LineSegmentsGeometry.js';
 import { LineMaterial } from './LineMaterial.js';
 
-var LineSegments2 = function(geometry, material) {
+var LineSegments2 = function (geometry, material) {
   if (geometry === undefined) geometry = new LineSegmentsGeometry();
-  if (material === undefined)
-    material = new LineMaterial({ color: Math.random() * 0xffffff });
+  if (material === undefined) material = new LineMaterial({ color: Math.random() * 0xffffff });
 
   Mesh.call(this, geometry, material);
 
@@ -28,7 +27,7 @@ LineSegments2.prototype = Object.assign(Object.create(Mesh.prototype), {
 
   isLineSegments2: true,
 
-  computeLineDistances: (function() {
+  computeLineDistances: (function () {
     // for backwards-compatability, but could be a method of LineSegmentsGeometry...
 
     var start = new Vector3();
@@ -49,11 +48,7 @@ LineSegments2.prototype = Object.assign(Object.create(Mesh.prototype), {
         lineDistances[j + 1] = lineDistances[j] + start.distanceTo(end);
       }
 
-      var instanceDistanceBuffer = new InstancedInterleavedBuffer(
-        lineDistances,
-        2,
-        1,
-      ); // d0, d1
+      var instanceDistanceBuffer = new InstancedInterleavedBuffer(lineDistances, 2, 1); // d0, d1
 
       geometry.setAttribute(
         'instanceDistanceStart',
@@ -68,7 +63,7 @@ LineSegments2.prototype = Object.assign(Object.create(Mesh.prototype), {
     };
   })(),
 
-  raycast: (function() {
+  raycast: (function () {
     var start = new Vector4();
     var end = new Vector4();
 
@@ -90,9 +85,7 @@ LineSegments2.prototype = Object.assign(Object.create(Mesh.prototype), {
       }
 
       var threshold =
-        raycaster.params.Line2 !== undefined
-          ? raycaster.params.Line2.threshold || 0
-          : 0;
+        raycaster.params.Line2 !== undefined ? raycaster.params.Line2.threshold || 0 : 0;
 
       var ray = raycaster.ray;
       var camera = raycaster.camera;
@@ -112,9 +105,7 @@ LineSegments2.prototype = Object.assign(Object.create(Mesh.prototype), {
 
       // clip space is [ - 1, 1 ] so multiply by two to get the full
       // width in clip space
-      var ssMaxWidth =
-        2.0 *
-        Math.max(lineWidth / resolution.width, lineWidth / resolution.height);
+      var ssMaxWidth = 2.0 * Math.max(lineWidth / resolution.width, lineWidth / resolution.height);
 
       //
 
@@ -124,15 +115,10 @@ LineSegments2.prototype = Object.assign(Object.create(Mesh.prototype), {
       }
 
       sphere.copy(geometry.boundingSphere).applyMatrix4(matrixWorld);
-      var distanceToSphere = Math.max(
-        camera.near,
-        sphere.distanceToPoint(ray.origin),
-      );
+      var distanceToSphere = Math.max(camera.near, sphere.distanceToPoint(ray.origin));
 
       // get the w component to scale the world space line width
-      clipToWorldVector
-        .set(0, 0, -distanceToSphere, 1.0)
-        .applyMatrix4(camera.projectionMatrix);
+      clipToWorldVector.set(0, 0, -distanceToSphere, 1.0).applyMatrix4(camera.projectionMatrix);
       clipToWorldVector.multiplyScalar(1.0 / clipToWorldVector.w);
       clipToWorldVector.applyMatrix4(camera.projectionMatrixInverse);
 
@@ -152,15 +138,10 @@ LineSegments2.prototype = Object.assign(Object.create(Mesh.prototype), {
       }
 
       box.copy(geometry.boundingBox).applyMatrix4(matrixWorld);
-      var distanceToBox = Math.max(
-        camera.near,
-        box.distanceToPoint(ray.origin),
-      );
+      var distanceToBox = Math.max(camera.near, box.distanceToPoint(ray.origin));
 
       // get the w component to scale the world space line width
-      clipToWorldVector
-        .set(0, 0, -distanceToBox, 1.0)
-        .applyMatrix4(camera.projectionMatrix);
+      clipToWorldVector.set(0, 0, -distanceToBox, 1.0).applyMatrix4(camera.projectionMatrix);
       clipToWorldVector.multiplyScalar(1.0 / clipToWorldVector.w);
       clipToWorldVector.applyMatrix4(camera.projectionMatrixInverse);
 

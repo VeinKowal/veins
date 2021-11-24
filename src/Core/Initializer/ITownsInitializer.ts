@@ -23,15 +23,11 @@ class ITownsInitializer extends BaseInitializer {
       range: 25000000,
     };
 
-    const view = new itowns.GlobeView(
-      config.renderDom,
-      placement || initPlacement,
-      {
-        renderer: renderer,
-        scene3D: scene,
-        camera: camera,
-      },
-    );
+    const view = new itowns.GlobeView(config.renderDom, placement || initPlacement, {
+      renderer: renderer,
+      scene3D: scene,
+      camera: camera,
+    });
 
     return view;
   }

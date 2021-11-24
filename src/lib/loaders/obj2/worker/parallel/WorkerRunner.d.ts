@@ -1,11 +1,7 @@
 export class ObjectManipulator {
   constructor();
 
-  applyProperties(
-    objToAlter: object,
-    params: object,
-    forceCreation: boolean,
-  ): void;
+  applyProperties(objToAlter: object, params: object, forceCreation: boolean): void;
 }
 
 export class DefaultWorkerPayloadHandler {

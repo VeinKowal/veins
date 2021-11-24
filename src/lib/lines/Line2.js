@@ -2,10 +2,9 @@ import { LineSegments2 } from './LineSegments2.js';
 import { LineGeometry } from './LineGeometry.js';
 import { LineMaterial } from './LineMaterial.js';
 
-var Line2 = function(geometry, material) {
+var Line2 = function (geometry, material) {
   if (geometry === undefined) geometry = new LineGeometry();
-  if (material === undefined)
-    material = new LineMaterial({ color: Math.random() * 0xffffff });
+  if (material === undefined) material = new LineMaterial({ color: Math.random() * 0xffffff });
 
   LineSegments2.call(this, geometry, material);
 

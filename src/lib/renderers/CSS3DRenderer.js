@@ -19,12 +19,9 @@ class CSS3DObject extends Object3D {
 
     this.element.setAttribute('draggable', false);
 
-    this.addEventListener('removed', function() {
-      this.traverse(function(object) {
-        if (
-          object.element instanceof Element &&
-          object.element.parentNode !== null
-        ) {
+    this.addEventListener('removed', function () {
+      this.traverse(function (object) {
+        if (object.element instanceof Element && object.element.parentNode !== null) {
           object.element.parentNode.removeChild(object.element);
         }
       });
@@ -89,20 +86,18 @@ class CSS3DRenderer {
 
     domElement.appendChild(cameraElement);
 
-    this.getSize = function() {
+    this.getSize = function () {
       return {
         width: _width,
         height: _height,
       };
     };
 
-    this.render = function(scene, camera) {
+    this.render = function (scene, camera) {
       const fov = camera.projectionMatrix.elements[5] * _heightHalf;
 
       if (cache.camera.fov !== fov) {
-        domElement.style.perspective = camera.isPerspectiveCamera
-          ? fov + 'px'
-          : '';
+        domElement.style.perspective = camera.isPerspectiveCamera ? fov + 'px' : '';
         cache.camera.fov = fov;
       }
 
@@ -126,18 +121,9 @@ class CSS3DRenderer {
           epsilon(ty) +
           'px)' +
           getCameraCSSMatrix(camera.matrixWorldInverse)
-        : 'translateZ(' +
-          fov +
-          'px)' +
-          getCameraCSSMatrix(camera.matrixWorldInverse);
+        : 'translateZ(' + fov + 'px)' + getCameraCSSMatrix(camera.matrixWorldInverse);
 
-      const style =
-        cameraCSSMatrix +
-        'translate(' +
-        _widthHalf +
-        'px,' +
-        _heightHalf +
-        'px)';
+      const style = cameraCSSMatrix + 'translate(' + _widthHalf + 'px,' + _heightHalf + 'px)';
 
       if (cache.camera.style !== style) {
         cameraElement.style.transform = style;
@@ -148,7 +134,7 @@ class CSS3DRenderer {
       renderObject(scene, scene, camera, cameraCSSMatrix);
     };
 
-    this.setSize = function(width, height) {
+    this.setSize = function (width, height) {
       _width = width;
       _height = height;
       _widthHalf = _width / 2;
@@ -257,8 +243,7 @@ class CSS3DRenderer {
           _matrix.copy(camera.matrixWorldInverse);
           _matrix.transpose();
 
-          if (object.rotation2D !== 0)
-            _matrix.multiply(_matrix2.makeRotationZ(object.rotation2D));
+          if (object.rotation2D !== 0) _matrix.multiply(_matrix2.makeRotationZ(object.rotation2D));
 
           object.matrixWorld.decompose(_position, _quaternion, _scale);
           _matrix.setPosition(_position);

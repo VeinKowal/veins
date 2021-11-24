@@ -10,7 +10,7 @@
  * You can pass in a random number generator object if you like.
  * It is assumed to have a random() method.
  */
-var SimplexNoise = function(r) {
+var SimplexNoise = function (r) {
   if (r == undefined) r = Math;
   this.grad3 = [
     [1, 1, 0],
@@ -145,19 +145,19 @@ var SimplexNoise = function(r) {
   ];
 };
 
-SimplexNoise.prototype.dot = function(g, x, y) {
+SimplexNoise.prototype.dot = function (g, x, y) {
   return g[0] * x + g[1] * y;
 };
 
-SimplexNoise.prototype.dot3 = function(g, x, y, z) {
+SimplexNoise.prototype.dot3 = function (g, x, y, z) {
   return g[0] * x + g[1] * y + g[2] * z;
 };
 
-SimplexNoise.prototype.dot4 = function(g, x, y, z, w) {
+SimplexNoise.prototype.dot4 = function (g, x, y, z, w) {
   return g[0] * x + g[1] * y + g[2] * z + g[3] * w;
 };
 
-SimplexNoise.prototype.noise = function(xin, yin) {
+SimplexNoise.prototype.noise = function (xin, yin) {
   var n0, n1, n2; // Noise contributions from the three corners
   // Skew the input space to determine which simplex cell we're in
   var F2 = 0.5 * (Math.sqrt(3.0) - 1.0);
@@ -224,7 +224,7 @@ SimplexNoise.prototype.noise = function(xin, yin) {
 };
 
 // 3D simplex noise
-SimplexNoise.prototype.noise3d = function(xin, yin, zin) {
+SimplexNoise.prototype.noise3d = function (xin, yin, zin) {
   var n0, n1, n2, n3; // Noise contributions from the four corners
   // Skew the input space to determine which simplex cell we're in
   var F3 = 1.0 / 3.0;
@@ -358,7 +358,7 @@ SimplexNoise.prototype.noise3d = function(xin, yin, zin) {
 };
 
 // 4D simplex noise
-SimplexNoise.prototype.noise4d = function(x, y, z, w) {
+SimplexNoise.prototype.noise4d = function (x, y, z, w) {
   // For faster and easier lookups
   var grad4 = this.grad4;
   var simplex = this.simplex;

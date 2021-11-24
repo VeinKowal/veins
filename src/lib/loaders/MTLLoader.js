@@ -17,7 +17,7 @@ import {
   Vector2,
 } from 'three';
 
-var MTLLoader = function(manager) {
+var MTLLoader = function (manager) {
   Loader.call(this, manager);
 };
 
@@ -37,7 +37,7 @@ MTLLoader.prototype = Object.assign(Object.create(Loader.prototype), {
    * @note In order for relative texture references to resolve correctly
    * you must call setResourcePath() explicitly prior to load.
    */
-  load: function(url, onLoad, onProgress, onError) {
+  load: function (url, onLoad, onProgress, onError) {
     var scope = this;
 
     var path = this.path === '' ? LoaderUtils.extractUrlBase(url) : this.path;
@@ -46,7 +46,7 @@ MTLLoader.prototype = Object.assign(Object.create(Loader.prototype), {
     loader.setPath(this.path);
     loader.load(
       url,
-      function(text) {
+      function (text) {
         onLoad(scope.parse(text, path));
       },
       onProgress,
@@ -54,7 +54,7 @@ MTLLoader.prototype = Object.assign(Object.create(Loader.prototype), {
     );
   },
 
-  setMaterialOptions: function(value) {
+  setMaterialOptions: function (value) {
     this.materialOptions = value;
     return this;
   },
@@ -70,7 +70,7 @@ MTLLoader.prototype = Object.assign(Object.create(Loader.prototype), {
    * @note In order for relative texture references to resolve correctly
    * you must call setResourcePath() explicitly prior to parse.
    */
-  parse: function(text, path) {
+  parse: function (text, path) {
     var lines = text.split('\n');
     var info = {};
     var delimiter_pattern = /\s+/;
@@ -134,7 +134,7 @@ MTLLoader.prototype = Object.assign(Object.create(Loader.prototype), {
  * @constructor
  */
 
-MTLLoader.MaterialCreator = function(baseUrl, options) {
+MTLLoader.MaterialCreator = function (baseUrl, options) {
   this.baseUrl = baseUrl || '';
   this.options = options;
   this.materialsInfo = {};
@@ -143,8 +143,7 @@ MTLLoader.MaterialCreator = function(baseUrl, options) {
   this.nameLookup = {};
 
   this.side = this.options && this.options.side ? this.options.side : FrontSide;
-  this.wrap =
-    this.options && this.options.wrap ? this.options.wrap : RepeatWrapping;
+  this.wrap = this.options && this.options.wrap ? this.options.wrap : RepeatWrapping;
 };
 
 MTLLoader.MaterialCreator.prototype = {
@@ -152,23 +151,23 @@ MTLLoader.MaterialCreator.prototype = {
 
   crossOrigin: 'anonymous',
 
-  setCrossOrigin: function(value) {
+  setCrossOrigin: function (value) {
     this.crossOrigin = value;
     return this;
   },
 
-  setManager: function(value) {
+  setManager: function (value) {
     this.manager = value;
   },
 
-  setMaterials: function(materialsInfo) {
+  setMaterials: function (materialsInfo) {
     this.materialsInfo = this.convert(materialsInfo);
     this.materials = {};
     this.materialsArray = [];
     this.nameLookup = {};
   },
 
-  convert: function(materialsInfo) {
+  convert: function (materialsInfo) {
     if (!this.options) return materialsInfo;
 
     var converted = {};
@@ -220,17 +219,17 @@ MTLLoader.MaterialCreator.prototype = {
     return converted;
   },
 
-  preload: function() {
+  preload: function () {
     for (var mn in this.materialsInfo) {
       this.create(mn);
     }
   },
 
-  getIndex: function(materialName) {
+  getIndex: function (materialName) {
     return this.nameLookup[materialName];
   },
 
-  getAsArray: function() {
+  getAsArray: function () {
     var index = 0;
 
     for (var mn in this.materialsInfo) {
@@ -242,7 +241,7 @@ MTLLoader.MaterialCreator.prototype = {
     return this.materialsArray;
   },
 
-  create: function(materialName) {
+  create: function (materialName) {
     if (this.materials[materialName] === undefined) {
       this.createMaterial_(materialName);
     }
@@ -250,7 +249,7 @@ MTLLoader.MaterialCreator.prototype = {
     return this.materials[materialName];
   },
 
-  createMaterial_: function(materialName) {
+  createMaterial_: function (materialName) {
     // Create material
 
     var scope = this;
@@ -393,7 +392,7 @@ MTLLoader.MaterialCreator.prototype = {
     return this.materials[materialName];
   },
 
-  getTextureParams: function(value, matParams) {
+  getTextureParams: function (value, matParams) {
     var texParams = {
       scale: new Vector2(1, 1),
       offset: new Vector2(0, 0),
@@ -412,20 +411,14 @@ MTLLoader.MaterialCreator.prototype = {
     pos = items.indexOf('-s');
 
     if (pos >= 0) {
-      texParams.scale.set(
-        parseFloat(items[pos + 1]),
-        parseFloat(items[pos + 2]),
-      );
+      texParams.scale.set(parseFloat(items[pos + 1]), parseFloat(items[pos + 2]));
       items.splice(pos, 4); // we expect 3 parameters here!
     }
 
     pos = items.indexOf('-o');
 
     if (pos >= 0) {
-      texParams.offset.set(
-        parseFloat(items[pos + 1]),
-        parseFloat(items[pos + 2]),
-      );
+      texParams.offset.set(parseFloat(items[pos + 1]), parseFloat(items[pos + 2]));
       items.splice(pos, 4); // we expect 3 parameters here!
     }
 
@@ -433,10 +426,9 @@ MTLLoader.MaterialCreator.prototype = {
     return texParams;
   },
 
-  loadTexture: function(url, mapping, onLoad, onProgress, onError) {
+  loadTexture: function (url, mapping, onLoad, onProgress, onError) {
     var texture;
-    var manager =
-      this.manager !== undefined ? this.manager : DefaultLoadingManager;
+    var manager = this.manager !== undefined ? this.manager : DefaultLoadingManager;
     var loader = manager.getHandler(url);
 
     if (loader === null) {

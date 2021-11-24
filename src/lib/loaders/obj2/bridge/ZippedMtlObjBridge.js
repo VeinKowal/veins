@@ -11,12 +11,9 @@ const ZippedMtlObjBridge = {
    * @param processResult
    * @param assetLoader
    */
-  link: function(processResult, assetLoader) {
+  link: function (processResult, assetLoader) {
     if (typeof assetLoader.addMaterials === 'function') {
-      assetLoader.addMaterials(
-        this.addMaterialsFromMtlLoader(processResult),
-        true,
-      );
+      assetLoader.addMaterials(this.addMaterialsFromMtlLoader(processResult), true);
     }
   },
 
@@ -25,7 +22,7 @@ const ZippedMtlObjBridge = {
    *
    * @param Instance of {@link MTLLoader.MaterialCreator}
    */
-  addMaterialsFromMtlLoader: function(materialCreator) {
+  addMaterialsFromMtlLoader: function (materialCreator) {
     let newMaterials = {};
     if (materialCreator instanceof ZippedMTLLoader.MaterialCreator) {
       materialCreator.preload();

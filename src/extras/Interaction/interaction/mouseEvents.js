@@ -42,8 +42,8 @@ class MouseEvents {
         const f = fn.bind(t);
         f();
       }
-    })
-  }
+    });
+  };
 
   // pointerup事件注册 记录射线选中的所有物体
   static pointerUpHandler = (e) => {
@@ -51,20 +51,17 @@ class MouseEvents {
     MouseEvents.mouseUpPosition = mouseUpPosition;
     if (MouseEvents.isClickEvent(mouseUpPosition)) {
       MouseEvents.raycaster.setFromCamera(mouseUpPosition, MouseEvents.camera);
-      MouseEvents.intersectedObjects = MouseEvents.raycaster.intersectObjects(MouseEvents.target ?? [], MouseEvents.recursive);
+      MouseEvents.intersectedObjects = MouseEvents.raycaster.intersectObjects(
+        MouseEvents.target ?? [],
+        MouseEvents.recursive,
+      );
       if (MouseEvents.intersectedObjects.length === 0) MouseEvents.reductCancelFn();
     } else {
       MouseEvents.intersectedObjects = [];
     }
   };
 
-  static initMouseEvents(
-    camera,
-    render,
-    scene,
-    raycaster,
-    interaction
-  ) {
+  static initMouseEvents(camera, render, scene, raycaster, interaction) {
     const { domElement } = render;
     MouseEvents.target = scene.children;
     MouseEvents.domElement = domElement;
@@ -72,24 +69,16 @@ class MouseEvents {
     MouseEvents.raycaster = raycaster;
     MouseEvents.recursive = true;
     MouseEvents.interaction = interaction;
-    domElement.addEventListener(
-      'pointerdown', MouseEvents.pointerDownHandler
-    );
-    domElement.addEventListener(
-      'pointerup', MouseEvents.pointerUpHandler
-    );
+    domElement.addEventListener('pointerdown', MouseEvents.pointerDownHandler);
+    domElement.addEventListener('pointerup', MouseEvents.pointerUpHandler);
     return raycaster;
   }
 
   static removeAllEvents = () => {
     MouseEvents.cancelFnMap.clear();
-    MouseEvents.domElement.removeEventListener(
-      'pointerdown', MouseEvents.pointerDownHandler
-    );
-    MouseEvents.domElement.removeEventListener(
-      'pointerup', MouseEvents.pointerUpHandler
-    );
-  }
+    MouseEvents.domElement.removeEventListener('pointerdown', MouseEvents.pointerDownHandler);
+    MouseEvents.domElement.removeEventListener('pointerup', MouseEvents.pointerUpHandler);
+  };
 }
 
 export default MouseEvents;

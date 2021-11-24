@@ -11,7 +11,7 @@ import {
   VertexColors,
 } from 'three';
 
-const MaterialHandler = function() {
+const MaterialHandler = function () {
   this.logging = {
     enabled: false,
     debug: false,
@@ -32,12 +32,12 @@ MaterialHandler.prototype = {
    * @param {boolean} enabled True or false.
    * @param {boolean} debug True or false.
    */
-  setLogging: function(enabled, debug) {
+  setLogging: function (enabled, debug) {
     this.logging.enabled = enabled === true;
     this.logging.debug = debug === true;
   },
 
-  _setCallbacks: function(onLoadMaterials) {
+  _setCallbacks: function (onLoadMaterials) {
     if (
       onLoadMaterials !== undefined &&
       onLoadMaterials !== null &&
@@ -52,7 +52,7 @@ MaterialHandler.prototype = {
    *
    * @param overrideExisting boolean Override existing material
    */
-  createDefaultMaterials: function(overrideExisting) {
+  createDefaultMaterials: function (overrideExisting) {
     let defaultMaterial = new MeshStandardMaterial({ color: 0xdcf1ff });
     defaultMaterial.name = 'defaultMaterial';
 
@@ -70,9 +70,7 @@ MaterialHandler.prototype = {
 
     let runtimeMaterials = {};
     runtimeMaterials[defaultMaterial.name] = defaultMaterial;
-    runtimeMaterials[
-      defaultVertexColorMaterial.name
-    ] = defaultVertexColorMaterial;
+    runtimeMaterials[defaultVertexColorMaterial.name] = defaultVertexColorMaterial;
     runtimeMaterials[defaultLineMaterial.name] = defaultLineMaterial;
     runtimeMaterials[defaultPointMaterial.name] = defaultPointMaterial;
 
@@ -85,21 +83,15 @@ MaterialHandler.prototype = {
    * @param {Object} materialPayload Material update instructions
    * @returns {Object} Map of {@link Material}
    */
-  addPayloadMaterials: function(materialPayload) {
+  addPayloadMaterials: function (materialPayload) {
     let material, materialName;
-    let materialCloneInstructions =
-      materialPayload.materials.materialCloneInstructions;
+    let materialCloneInstructions = materialPayload.materials.materialCloneInstructions;
     let newMaterials = {};
 
-    if (
-      materialCloneInstructions !== undefined &&
-      materialCloneInstructions !== null
-    ) {
+    if (materialCloneInstructions !== undefined && materialCloneInstructions !== null) {
       let materialNameOrg = materialCloneInstructions.materialNameOrg;
       materialNameOrg =
-        materialNameOrg !== undefined && materialNameOrg !== null
-          ? materialNameOrg
-          : '';
+        materialNameOrg !== undefined && materialNameOrg !== null ? materialNameOrg : '';
       let materialOrg = this.materials[materialNameOrg];
       if (materialOrg) {
         material = materialOrg.clone();
@@ -113,19 +105,13 @@ MaterialHandler.prototype = {
         newMaterials[materialName] = material;
       } else {
         if (this.logging.enabled) {
-          console.info(
-            'Requested material "' + materialNameOrg + '" is not available!',
-          );
+          console.info('Requested material "' + materialNameOrg + '" is not available!');
         }
       }
     }
 
     let materials = materialPayload.materials.serializedMaterials;
-    if (
-      materials !== undefined &&
-      materials !== null &&
-      Object.keys(materials).length > 0
-    ) {
+    if (materials !== undefined && materials !== null && Object.keys(materials).length > 0) {
       let loader = new MaterialLoader();
       let materialJson;
       for (materialName in materials) {
@@ -133,11 +119,7 @@ MaterialHandler.prototype = {
         if (materialJson !== undefined && materialJson !== null) {
           material = loader.parse(materialJson);
           if (this.logging.enabled) {
-            console.info(
-              'De-serialized material with name "' +
-                materialName +
-                '" will be added.',
-            );
+            console.info('De-serialized material with name "' + materialName + '" will be added.');
           }
           this.materials[materialName] = material;
           newMaterials[materialName] = material;
@@ -157,15 +139,11 @@ MaterialHandler.prototype = {
    * @param overrideExisting boolean Override existing material
    * @param newMaterials [Object] with named {@link Material}
    */
-  addMaterials: function(materials, overrideExisting, newMaterials) {
+  addMaterials: function (materials, overrideExisting, newMaterials) {
     if (newMaterials === undefined || newMaterials === null) {
       newMaterials = {};
     }
-    if (
-      materials !== undefined &&
-      materials !== null &&
-      Object.keys(materials).length > 0
-    ) {
+    if (materials !== undefined && materials !== null && Object.keys(materials).length > 0) {
       let material;
       let existingMaterial;
       let add;
@@ -197,7 +175,7 @@ MaterialHandler.prototype = {
    *
    * @returns {Object} Map of {@link Material}
    */
-  getMaterials: function() {
+  getMaterials: function () {
     return this.materials;
   },
 
@@ -206,7 +184,7 @@ MaterialHandler.prototype = {
    * @param {String} materialName
    * @returns {Material}
    */
-  getMaterial: function(materialName) {
+  getMaterial: function (materialName) {
     return this.materials[materialName];
   },
 
@@ -215,7 +193,7 @@ MaterialHandler.prototype = {
    *
    * @returns {Object} Map of Materials in JSON representation
    */
-  getMaterialsJSON: function() {
+  getMaterialsJSON: function () {
     let materialsJSON = {};
     let material;
     for (let materialName in this.materials) {
@@ -229,7 +207,7 @@ MaterialHandler.prototype = {
   /**
    * Removes all materials
    */
-  clearMaterials: function() {
+  clearMaterials: function () {
     this.materials = {};
   },
 };

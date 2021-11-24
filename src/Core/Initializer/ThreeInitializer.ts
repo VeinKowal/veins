@@ -17,10 +17,7 @@ class ThreeInitializer extends BaseInitializer {
     const scene = ThreeInitializer.initScene(config);
     const cssRenderer = ThreeInitializer.initCSSRender(config);
     const renderer = ThreeInitializer.initRenderer(config);
-    const cssOrbitControl = ThreeInitializer.initOrbitControl(
-      camera,
-      cssRenderer,
-    );
+    const cssOrbitControl = ThreeInitializer.initOrbitControl(camera, cssRenderer);
     const orbitControl = ThreeInitializer.initOrbitControl(camera, renderer);
     const interaction = new Interaction(cssRenderer, scene, camera);
     const raycaster = MouseEvents.initMouseEvents(
@@ -77,12 +74,7 @@ class ThreeInitializer extends BaseInitializer {
   }
 
   private static initRenderer(config: ThreeInitializerType): WebGLRenderer {
-    const {
-      antialias = true,
-      alpha = true,
-      logarithmicDepthBuffer = true,
-      renderDom,
-    } = config;
+    const { antialias = true, alpha = true, logarithmicDepthBuffer = true, renderDom } = config;
     const { clientWidth: width, clientHeight: height } = renderDom;
     const renderer = new THREE.WebGLRenderer({
       antialias,
@@ -116,19 +108,13 @@ class ThreeInitializer extends BaseInitializer {
   }
 
   // 处理窗口大小变化事件
-  static updateRender(config: {
-    renderDom: HTMLElement;
-    renderer: WebGLRenderer;
-  }) {
+  static updateRender(config: { renderDom: HTMLElement; renderer: WebGLRenderer }) {
     const { renderDom, renderer } = config;
     const { clientWidth: width, clientHeight: height } = renderDom;
     renderer.setSize(width, height);
   }
 
-  static updateCamera(config: {
-    renderDom: HTMLElement;
-    camera: PerspectiveCamera;
-  }) {
+  static updateCamera(config: { renderDom: HTMLElement; camera: PerspectiveCamera }) {
     const { renderDom, camera } = config;
     const { clientWidth: width, clientHeight: height } = renderDom;
     camera.aspect = height === 0 ? 1 : width / height;

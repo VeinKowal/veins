@@ -8,7 +8,7 @@
  * @param {String} name
  * @constructor
  */
-const ResourceDescriptor = function(name) {
+const ResourceDescriptor = function (name) {
   this.name = name !== undefined && name !== null ? name : 'Unnamed_Resource';
   this.content = {
     data: null,
@@ -36,7 +36,7 @@ ResourceDescriptor.prototype = {
    * @param url
    * @return {ResourceDescriptor}
    */
-  setUrl: function(url) {
+  setUrl: function (url) {
     this.url = url === undefined || url === null ? this.name : url;
     this.url = new URL(this.url, window.location.href).href;
     this.filename = this.url;
@@ -44,12 +44,10 @@ ResourceDescriptor.prototype = {
     if (urlParts.length > 2) {
       this.filename = urlParts[urlParts.length - 1];
       let urlPartsPath = urlParts.slice(0, urlParts.length - 1).join('/') + '/';
-      if (urlPartsPath !== undefined && urlPartsPath !== null)
-        this.path = urlPartsPath;
+      if (urlPartsPath !== undefined && urlPartsPath !== null) this.path = urlPartsPath;
     }
     let filenameParts = this.filename.split('.');
-    if (filenameParts.length > 1)
-      this.extension = filenameParts[filenameParts.length - 1];
+    if (filenameParts.length > 1) this.extension = filenameParts[filenameParts.length - 1];
     return this;
   },
 
@@ -58,7 +56,7 @@ ResourceDescriptor.prototype = {
    * @param needStringOutput
    * @return {ResourceDescriptor}
    */
-  setNeedStringOutput: function(needStringOutput) {
+  setNeedStringOutput: function (needStringOutput) {
     this.content.needStringOutput = needStringOutput;
     return this;
   },
@@ -68,7 +66,7 @@ ResourceDescriptor.prototype = {
    * @param {boolean} compressed
    * @return {ResourceDescriptor}
    */
-  setCompressed: function(compressed) {
+  setCompressed: function (compressed) {
     this.content.compressed = compressed;
     return this;
   },
@@ -77,7 +75,7 @@ ResourceDescriptor.prototype = {
    *
    * @return {boolean}
    */
-  isCompressed: function() {
+  isCompressed: function () {
     return this.content.compressed;
   },
 
@@ -87,7 +85,7 @@ ResourceDescriptor.prototype = {
    * @param parseAsync
    * @return {ResourceDescriptor}
    */
-  configureAsync: function(loadAsync, parseAsync) {
+  configureAsync: function (loadAsync, parseAsync) {
     this.async.parse = parseAsync === true;
     // Loading in Worker is currently only allowed when async parse is performed!!!!
     this.async.load = loadAsync === true && this.async.parse;
@@ -98,7 +96,7 @@ ResourceDescriptor.prototype = {
    *
    * @param buffer
    */
-  setBuffer: function(buffer) {
+  setBuffer: function (buffer) {
     // fast-fail on unset input
     if (buffer === null) return;
     if (
@@ -133,7 +131,7 @@ ResourceDescriptor.prototype = {
    * @param object
    * @param transferables
    */
-  setInputDataOption: function(name, object, transferables) {
+  setInputDataOption: function (name, object, transferables) {
     if (!Array.isArray(transferables)) transferables = [];
     this.content.dataOptions[name] = {
       name: name,
@@ -149,7 +147,7 @@ ResourceDescriptor.prototype = {
    * @param callbackOnProcessResult
    * @return {ResourceDescriptor}
    */
-  setCallbackOnProcessResult: function(callbackOnProcessResult) {
+  setCallbackOnProcessResult: function (callbackOnProcessResult) {
     this.callbackOnProcessResult = callbackOnProcessResult;
     return this;
   },
@@ -158,7 +156,7 @@ ResourceDescriptor.prototype = {
    *
    * @return {*}
    */
-  getCallbackOnProcessResult: function() {
+  getCallbackOnProcessResult: function () {
     return this.callbackOnProcessResult;
   },
 
@@ -166,7 +164,7 @@ ResourceDescriptor.prototype = {
    *
    * @return {ResourceDescriptor}
    */
-  createSendable: function() {
+  createSendable: function () {
     let copy = new ResourceDescriptor(this.name);
     copy.url = this.url;
     copy.filename = this.filename;

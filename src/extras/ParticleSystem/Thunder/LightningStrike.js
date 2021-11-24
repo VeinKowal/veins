@@ -127,8 +127,7 @@ class LightningStrike extends BufferGeometry {
 
     if (
       this.rayParameters.isEternal ||
-      (this.rayParameters.birthTime <= time &&
-        time <= this.rayParameters.deathTime)
+      (this.rayParameters.birthTime <= time && time <= this.rayParameters.deathTime)
     ) {
       this.updateMesh(time);
 
@@ -157,17 +156,12 @@ class LightningStrike extends BufferGeometry {
 
     // These parameters cannot change after lightning creation:
     this.maxIterations =
-      rayParameters.maxIterations !== undefined
-        ? Math.floor(rayParameters.maxIterations)
-        : 9;
+      rayParameters.maxIterations !== undefined ? Math.floor(rayParameters.maxIterations) : 9;
     rayParameters.maxIterations = this.maxIterations;
-    this.isStatic =
-      rayParameters.isStatic !== undefined ? rayParameters.isStatic : false;
+    this.isStatic = rayParameters.isStatic !== undefined ? rayParameters.isStatic : false;
     rayParameters.isStatic = this.isStatic;
     this.ramification =
-      rayParameters.ramification !== undefined
-        ? Math.floor(rayParameters.ramification)
-        : 5;
+      rayParameters.ramification !== undefined ? Math.floor(rayParameters.ramification) : 5;
     rayParameters.ramification = this.ramification;
     this.maxSubrayRecursion =
       rayParameters.maxSubrayRecursion !== undefined
@@ -175,14 +169,9 @@ class LightningStrike extends BufferGeometry {
         : 3;
     rayParameters.maxSubrayRecursion = this.maxSubrayRecursion;
     this.recursionProbability =
-      rayParameters.recursionProbability !== undefined
-        ? rayParameters.recursionProbability
-        : 0.6;
+      rayParameters.recursionProbability !== undefined ? rayParameters.recursionProbability : 0.6;
     rayParameters.recursionProbability = this.recursionProbability;
-    this.generateUVs =
-      rayParameters.generateUVs !== undefined
-        ? rayParameters.generateUVs
-        : false;
+    this.generateUVs = rayParameters.generateUVs !== undefined ? rayParameters.generateUVs : false;
     rayParameters.generateUVs = this.generateUVs;
 
     // Random generator
@@ -289,10 +278,7 @@ class LightningStrike extends BufferGeometry {
     this.setAttribute('position', this.positionAttribute);
 
     if (this.generateUVs) {
-      this.uvsAttribute = new Float32BufferAttribute(
-        new Float32Array(this.uvs),
-        2,
-      );
+      this.uvsAttribute = new Float32BufferAttribute(new Float32Array(this.uvs), 2);
       this.setAttribute('uv', this.uvsAttribute);
     }
 
@@ -338,19 +324,13 @@ class LightningStrike extends BufferGeometry {
       if (time < subray.birthTime) {
         //&& ( ! this.rayParameters.isEternal || scope.currentSubray.recursion > 0 ) ) {
         return;
-      } else if (
-        this.rayParameters.isEternal &&
-        scope.currentSubray.recursion == 0
-      ) {
+      } else if (this.rayParameters.isEternal && scope.currentSubray.recursion == 0) {
         // Eternal rays don't propagate nor vanish, but its subrays do
         scope.createPrism(segment);
 
         scope.onDecideSubrayCreation(segment, scope);
       } else if (time < subray.endPropagationTime) {
-        if (
-          scope.timeFraction >=
-          segment.fraction0 * subray.propagationTimeFactor
-        ) {
+        if (scope.timeFraction >= segment.fraction0 * subray.propagationTimeFactor) {
           // Ray propagation has arrived to this segment
           scope.createPrism(segment);
 
@@ -364,8 +344,7 @@ class LightningStrike extends BufferGeometry {
       } else {
         if (
           scope.timeFraction <=
-          subray.vanishingTimeFactor +
-            segment.fraction1 * (1 - subray.vanishingTimeFactor)
+          subray.vanishingTimeFactor + segment.fraction1 * (1 - subray.vanishingTimeFactor)
         ) {
           // Segment has not yet vanished
           scope.createPrism(segment);
@@ -394,8 +373,7 @@ class LightningStrike extends BufferGeometry {
     subray.vanishingTimeFactor = rayParameters.vanishingTimeFactor;
 
     subray.maxIterations = this.maxIterations;
-    subray.seed =
-      rayParameters.noiseSeed !== undefined ? rayParameters.noiseSeed : 0;
+    subray.seed = rayParameters.noiseSeed !== undefined ? rayParameters.noiseSeed : 0;
     subray.recursion = 0;
   }
   fractalRay(time, segmentCallback) {
@@ -428,8 +406,7 @@ class LightningStrike extends BufferGeometry {
       subray.linPos0.set(random1(), random1(), random1()).multiplyScalar(1000);
       subray.linPos1.set(random1(), random1(), random1()).multiplyScalar(1000);
 
-      this.timeFraction =
-        (time - subray.birthTime) / (subray.deathTime - subray.birthTime);
+      this.timeFraction = (time - subray.birthTime) / (subray.deathTime - subray.birthTime);
 
       this.currentSegmentIndex = 0;
       this.isInitialSegment = true;
@@ -449,8 +426,7 @@ class LightningStrike extends BufferGeometry {
       segment.positionVariationFactor = 1 - subray.straightness;
 
       this.subrayProbability =
-        (this.ramification *
-          Math.pow(this.recursionProbability, subray.recursion)) /
+        (this.ramification * Math.pow(this.recursionProbability, subray.recursion)) /
         (1 << subray.maxIterations);
 
       this.fractalRayRecursive(segment);
@@ -479,8 +455,7 @@ class LightningStrike extends BufferGeometry {
     var middleRadius = (segment.radius0 + segment.radius1) * 0.5;
     var middleFraction = (segment.fraction0 + segment.fraction1) * 0.5;
 
-    var timeDimension =
-      this.time * this.currentSubray.timeScale * Math.pow(2, segment.iteration);
+    var timeDimension = this.time * this.currentSubray.timeScale * Math.pow(2, segment.iteration);
 
     this.middlePos.lerpVectors(segment.pos0, segment.pos1, 0.5);
     this.middleLinPos.lerpVectors(segment.linPos0, segment.linPos1, 0.5);
@@ -560,33 +535,25 @@ class LightningStrike extends BufferGeometry {
   }
   createTriangleVerticesWithoutUVs(pos, up, forwards, radius) {
     // Create an equilateral triangle (only vertices)
-    this.side
-      .crossVectors(up, forwards)
-      .multiplyScalar(radius * LightningStrike.COS30DEG);
+    this.side.crossVectors(up, forwards).multiplyScalar(radius * LightningStrike.COS30DEG);
     this.down.copy(up).multiplyScalar(-radius * LightningStrike.SIN30DEG);
 
     var p = this.vPos;
     var v = this.vertices;
 
-    p.copy(pos)
-      .sub(this.side)
-      .add(this.down);
+    p.copy(pos).sub(this.side).add(this.down);
 
     v[this.currentCoordinate++] = p.x;
     v[this.currentCoordinate++] = p.y;
     v[this.currentCoordinate++] = p.z;
 
-    p.copy(pos)
-      .add(this.side)
-      .add(this.down);
+    p.copy(pos).add(this.side).add(this.down);
 
     v[this.currentCoordinate++] = p.x;
     v[this.currentCoordinate++] = p.y;
     v[this.currentCoordinate++] = p.z;
 
-    p.copy(up)
-      .multiplyScalar(radius)
-      .add(pos);
+    p.copy(up).multiplyScalar(radius).add(pos);
 
     v[this.currentCoordinate++] = p.x;
     v[this.currentCoordinate++] = p.y;
@@ -596,18 +563,14 @@ class LightningStrike extends BufferGeometry {
   }
   createTriangleVerticesWithUVs(pos, up, forwards, radius, u) {
     // Create an equilateral triangle (only vertices)
-    this.side
-      .crossVectors(up, forwards)
-      .multiplyScalar(radius * LightningStrike.COS30DEG);
+    this.side.crossVectors(up, forwards).multiplyScalar(radius * LightningStrike.COS30DEG);
     this.down.copy(up).multiplyScalar(-radius * LightningStrike.SIN30DEG);
 
     var p = this.vPos;
     var v = this.vertices;
     var uv = this.uvs;
 
-    p.copy(pos)
-      .sub(this.side)
-      .add(this.down);
+    p.copy(pos).sub(this.side).add(this.down);
 
     v[this.currentCoordinate++] = p.x;
     v[this.currentCoordinate++] = p.y;
@@ -616,9 +579,7 @@ class LightningStrike extends BufferGeometry {
     uv[this.currentUVCoordinate++] = u;
     uv[this.currentUVCoordinate++] = 0;
 
-    p.copy(pos)
-      .add(this.side)
-      .add(this.down);
+    p.copy(pos).add(this.side).add(this.down);
 
     v[this.currentCoordinate++] = p.x;
     v[this.currentCoordinate++] = p.y;
@@ -627,9 +588,7 @@ class LightningStrike extends BufferGeometry {
     uv[this.currentUVCoordinate++] = u;
     uv[this.currentUVCoordinate++] = 0.5;
 
-    p.copy(up)
-      .multiplyScalar(radius)
-      .add(pos);
+    p.copy(up).multiplyScalar(radius).add(pos);
 
     v[this.currentCoordinate++] = p.x;
     v[this.currentCoordinate++] = p.y;
@@ -666,7 +625,7 @@ class LightningStrike extends BufferGeometry {
   createDefaultSubrayCreationCallbacks() {
     var random1 = this.randomGenerator.random;
 
-    this.onDecideSubrayCreation = function(segment, lightningStrike) {
+    this.onDecideSubrayCreation = function (segment, lightningStrike) {
       // Decide subrays creation at parent (sub)ray segment
       var subray = lightningStrike.currentSubray;
 
@@ -676,11 +635,7 @@ class LightningStrike extends BufferGeometry {
       var phase0 =
         lightningStrike.rayParameters.isEternal && subray.recursion == 0
           ? -random1() * period
-          : MathUtils.lerp(
-              subray.birthTime,
-              subray.endPropagationTime,
-              segment.fraction0,
-            ) -
+          : MathUtils.lerp(subray.birthTime, subray.endPropagationTime, segment.fraction0) -
             random1() * period;
 
       var phase = lightningStrike.time - phase0;
@@ -711,16 +666,11 @@ class LightningStrike extends BufferGeometry {
         childSubray.recursion = subray.recursion + 1;
         childSubray.maxIterations = Math.max(1, subray.maxIterations - 1);
 
-        childSubray.linPos0
-          .set(random1(), random1(), random1())
-          .multiplyScalar(1000);
-        childSubray.linPos1
-          .set(random1(), random1(), random1())
-          .multiplyScalar(1000);
+        childSubray.linPos0.set(random1(), random1(), random1()).multiplyScalar(1000);
+        childSubray.linPos1.set(random1(), random1(), random1()).multiplyScalar(1000);
         childSubray.up0.copy(subray.up0);
         childSubray.up1.copy(subray.up1);
-        childSubray.radius0 =
-          segment.radius0 * lightningStrike.rayParameters.radius0Factor;
+        childSubray.radius0 = segment.radius0 * lightningStrike.rayParameters.radius0Factor;
         childSubray.radius1 = Math.min(
           lightningStrike.rayParameters.minRadius,
           segment.radius1 * lightningStrike.rayParameters.radius1Factor,
@@ -730,14 +680,8 @@ class LightningStrike extends BufferGeometry {
         childSubray.deathTime = childSubray.birthTime + period * dutyCycle;
 
         if (!lightningStrike.rayParameters.isEternal && subray.recursion == 0) {
-          childSubray.birthTime = Math.max(
-            childSubray.birthTime,
-            subray.birthTime,
-          );
-          childSubray.deathTime = Math.min(
-            childSubray.deathTime,
-            subray.deathTime,
-          );
+          childSubray.birthTime = Math.max(childSubray.birthTime, subray.birthTime);
+          childSubray.deathTime = Math.min(childSubray.deathTime, subray.deathTime);
         }
 
         childSubray.timeScale = subray.timeScale * 2;
@@ -746,12 +690,7 @@ class LightningStrike extends BufferGeometry {
         childSubray.propagationTimeFactor = subray.propagationTimeFactor;
         childSubray.vanishingTimeFactor = subray.vanishingTimeFactor;
 
-        lightningStrike.onSubrayCreation(
-          segment,
-          subray,
-          childSubray,
-          lightningStrike,
-        );
+        lightningStrike.onSubrayCreation(segment, subray, childSubray, lightningStrike);
 
         lightningStrike.randomGenerator.setSeed(parentSeed);
       }
@@ -762,25 +701,13 @@ class LightningStrike extends BufferGeometry {
     var vec3Side = new Vector3();
     var vec4Up = new Vector3();
 
-    this.onSubrayCreation = function(
-      segment,
-      parentSubray,
-      childSubray,
-      lightningStrike,
-    ) {
+    this.onSubrayCreation = function (segment, parentSubray, childSubray, lightningStrike) {
       // Decide childSubray origin and destination positions (pos0 and pos1) and possibly other properties of childSubray
       // Just use the default cone position generator
-      lightningStrike.subrayCylinderPosition(
-        segment,
-        parentSubray,
-        childSubray,
-        0.5,
-        0.6,
-        0.2,
-      );
+      lightningStrike.subrayCylinderPosition(segment, parentSubray, childSubray, 0.5, 0.6, 0.2);
     };
 
-    this.subrayConePosition = function(
+    this.subrayConePosition = function (
       segment,
       parentSubray,
       childSubray,
@@ -794,8 +721,7 @@ class LightningStrike extends BufferGeometry {
       vec1Pos.subVectors(parentSubray.pos1, parentSubray.pos0);
       vec2Forward.copy(vec1Pos).normalize();
       vec1Pos.multiplyScalar(
-        segment.fraction0 +
-          (1 - segment.fraction0) * (random1() * heightFactor),
+        segment.fraction0 + (1 - segment.fraction0) * (random1() * heightFactor),
       );
       var length = vec1Pos.length();
       vec3Side.crossVectors(parentSubray.up0, vec2Forward);
@@ -807,15 +733,13 @@ class LightningStrike extends BufferGeometry {
         .copy(vec3Side)
         .add(vec4Up)
         .multiplyScalar(
-          length *
-            sideWidthFactor *
-            (minSideWidthFactor + random1() * (1 - minSideWidthFactor)),
+          length * sideWidthFactor * (minSideWidthFactor + random1() * (1 - minSideWidthFactor)),
         )
         .add(vec1Pos)
         .add(parentSubray.pos0);
     };
 
-    this.subrayCylinderPosition = function(
+    this.subrayCylinderPosition = function (
       segment,
       parentSubray,
       childSubray,
@@ -829,8 +753,7 @@ class LightningStrike extends BufferGeometry {
       vec1Pos.subVectors(parentSubray.pos1, parentSubray.pos0);
       vec2Forward.copy(vec1Pos).normalize();
       vec1Pos.multiplyScalar(
-        segment.fraction0 +
-          (1 - segment.fraction0) * ((2 * random1() - 1) * heightFactor),
+        segment.fraction0 + (1 - segment.fraction0) * ((2 * random1() - 1) * heightFactor),
       );
       var length = vec1Pos.length();
       vec3Side.crossVectors(parentSubray.up0, vec2Forward);
@@ -842,9 +765,7 @@ class LightningStrike extends BufferGeometry {
         .copy(vec3Side)
         .add(vec4Up)
         .multiplyScalar(
-          length *
-            sideWidthFactor *
-            (minSideWidthFactor + random1() * (1 - minSideWidthFactor)),
+          length * sideWidthFactor * (minSideWidthFactor + random1() * (1 - minSideWidthFactor)),
         )
         .add(vec1Pos)
         .add(parentSubray.pos0);
@@ -901,9 +822,7 @@ class LightningStrike extends BufferGeometry {
     return this;
   }
   clone() {
-    return new this.constructor(
-      LightningStrike.copyParameters({}, this.rayParameters),
-    );
+    return new this.constructor(LightningStrike.copyParameters({}, this.rayParameters));
   }
   static createRandomGenerator() {
     var numSeeds = 2053;
@@ -916,7 +835,7 @@ class LightningStrike extends BufferGeometry {
     var generator = {
       currentSeed: 0,
 
-      random: function() {
+      random: function () {
         var value = seeds[generator.currentSeed];
 
         generator.currentSeed = (generator.currentSeed + 1) % numSeeds;
@@ -924,11 +843,11 @@ class LightningStrike extends BufferGeometry {
         return value;
       },
 
-      getSeed: function() {
+      getSeed: function () {
         return generator.currentSeed / numSeeds;
       },
 
-      setSeed: function(seed) {
+      setSeed: function (seed) {
         generator.currentSeed = Math.floor(seed * numSeeds) % numSeeds;
       },
     };
@@ -939,7 +858,7 @@ class LightningStrike extends BufferGeometry {
     source = source || {};
     dest = dest || {};
 
-    var vecCopy = function(v) {
+    var vecCopy = function (v) {
       if (source === dest) {
         return v;
       } else {
@@ -948,30 +867,19 @@ class LightningStrike extends BufferGeometry {
     };
 
     (dest.sourceOffset =
-      source.sourceOffset !== undefined
-        ? vecCopy(source.sourceOffset)
-        : new Vector3(0, 100, 0)),
+      source.sourceOffset !== undefined ? vecCopy(source.sourceOffset) : new Vector3(0, 100, 0)),
       (dest.destOffset =
-        source.destOffset !== undefined
-          ? vecCopy(source.destOffset)
-          : new Vector3(0, 0, 0)),
+        source.destOffset !== undefined ? vecCopy(source.destOffset) : new Vector3(0, 0, 0)),
       (dest.timeScale = source.timeScale !== undefined ? source.timeScale : 1),
-      (dest.roughness =
-        source.roughness !== undefined ? source.roughness : 0.9),
-      (dest.straightness =
-        source.straightness !== undefined ? source.straightness : 0.7),
-      (dest.up0 =
-        source.up0 !== undefined ? vecCopy(source.up0) : new Vector3(0, 0, 1));
-    (dest.up1 =
-      source.up1 !== undefined ? vecCopy(source.up1) : new Vector3(0, 0, 1)),
+      (dest.roughness = source.roughness !== undefined ? source.roughness : 0.9),
+      (dest.straightness = source.straightness !== undefined ? source.straightness : 0.7),
+      (dest.up0 = source.up0 !== undefined ? vecCopy(source.up0) : new Vector3(0, 0, 1));
+    (dest.up1 = source.up1 !== undefined ? vecCopy(source.up1) : new Vector3(0, 0, 1)),
       (dest.radius0 = source.radius0 !== undefined ? source.radius0 : 1),
       (dest.radius1 = source.radius1 !== undefined ? source.radius1 : 1),
-      (dest.radius0Factor =
-        source.radius0Factor !== undefined ? source.radius0Factor : 0.5),
-      (dest.radius1Factor =
-        source.radius1Factor !== undefined ? source.radius1Factor : 0.2),
-      (dest.minRadius =
-        source.minRadius !== undefined ? source.minRadius : 0.2),
+      (dest.radius0Factor = source.radius0Factor !== undefined ? source.radius0Factor : 0.5),
+      (dest.radius1Factor = source.radius1Factor !== undefined ? source.radius1Factor : 0.2),
+      (dest.minRadius = source.minRadius !== undefined ? source.minRadius : 0.2),
       // These parameters should not be changed after lightning creation. They can be changed but the ray will change its form abruptly:
       (dest.isEternal =
         source.isEternal !== undefined
@@ -980,32 +888,21 @@ class LightningStrike extends BufferGeometry {
       (dest.birthTime = source.birthTime),
       (dest.deathTime = source.deathTime),
       (dest.propagationTimeFactor =
-        source.propagationTimeFactor !== undefined
-          ? source.propagationTimeFactor
-          : 0.1),
+        source.propagationTimeFactor !== undefined ? source.propagationTimeFactor : 0.1),
       (dest.vanishingTimeFactor =
-        source.vanishingTimeFactor !== undefined
-          ? source.vanishingTimeFactor
-          : 0.9),
-      (dest.subrayPeriod =
-        source.subrayPeriod !== undefined ? source.subrayPeriod : 4),
-      (dest.subrayDutyCycle =
-        source.subrayDutyCycle !== undefined ? source.subrayDutyCycle : 0.6);
+        source.vanishingTimeFactor !== undefined ? source.vanishingTimeFactor : 0.9),
+      (dest.subrayPeriod = source.subrayPeriod !== undefined ? source.subrayPeriod : 4),
+      (dest.subrayDutyCycle = source.subrayDutyCycle !== undefined ? source.subrayDutyCycle : 0.6);
 
     // These parameters cannot change after lightning creation:
-    dest.maxIterations =
-      source.maxIterations !== undefined ? source.maxIterations : 9;
+    dest.maxIterations = source.maxIterations !== undefined ? source.maxIterations : 9;
     dest.isStatic = source.isStatic !== undefined ? source.isStatic : false;
-    dest.ramification =
-      source.ramification !== undefined ? source.ramification : 5;
+    dest.ramification = source.ramification !== undefined ? source.ramification : 5;
     dest.maxSubrayRecursion =
       source.maxSubrayRecursion !== undefined ? source.maxSubrayRecursion : 3;
     dest.recursionProbability =
-      source.recursionProbability !== undefined
-        ? source.recursionProbability
-        : 0.6;
-    dest.generateUVs =
-      source.generateUVs !== undefined ? source.generateUVs : false;
+      source.recursionProbability !== undefined ? source.recursionProbability : 0.6;
+    dest.generateUVs = source.generateUVs !== undefined ? source.generateUVs : false;
     (dest.randomGenerator = source.randomGenerator),
       (dest.noiseSeed = source.noiseSeed),
       (dest.onDecideSubrayCreation = source.onDecideSubrayCreation),

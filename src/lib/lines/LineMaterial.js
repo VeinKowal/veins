@@ -1,10 +1,4 @@
-import {
-  ShaderLib,
-  ShaderMaterial,
-  UniformsLib,
-  UniformsUtils,
-  Vector2,
-} from 'three';
+import { ShaderLib, ShaderMaterial, UniformsLib, UniformsUtils, Vector2 } from 'three';
 
 /**
  * parameters = {
@@ -30,11 +24,7 @@ UniformsLib.line = {
 };
 
 ShaderLib['line'] = {
-  uniforms: UniformsUtils.merge([
-    UniformsLib.common,
-    UniformsLib.fog,
-    UniformsLib.line,
-  ]),
+  uniforms: UniformsUtils.merge([UniformsLib.common, UniformsLib.fog, UniformsLib.line]),
 
   vertexShader: `
 		#include <common>
@@ -262,7 +252,7 @@ ShaderLib['line'] = {
 		`,
 };
 
-var LineMaterial = function(parameters) {
+var LineMaterial = function (parameters) {
   ShaderMaterial.call(this, {
     type: 'LineMaterial',
 
@@ -280,11 +270,11 @@ var LineMaterial = function(parameters) {
     color: {
       enumerable: true,
 
-      get: function() {
+      get: function () {
         return this.uniforms.diffuse.value;
       },
 
-      set: function(value) {
+      set: function (value) {
         this.uniforms.diffuse.value = value;
       },
     },
@@ -292,11 +282,11 @@ var LineMaterial = function(parameters) {
     linewidth: {
       enumerable: true,
 
-      get: function() {
+      get: function () {
         return this.uniforms.linewidth.value;
       },
 
-      set: function(value) {
+      set: function (value) {
         this.uniforms.linewidth.value = value;
       },
     },
@@ -304,11 +294,11 @@ var LineMaterial = function(parameters) {
     dashScale: {
       enumerable: true,
 
-      get: function() {
+      get: function () {
         return this.uniforms.dashScale.value;
       },
 
-      set: function(value) {
+      set: function (value) {
         this.uniforms.dashScale.value = value;
       },
     },
@@ -316,11 +306,11 @@ var LineMaterial = function(parameters) {
     dashSize: {
       enumerable: true,
 
-      get: function() {
+      get: function () {
         return this.uniforms.dashSize.value;
       },
 
-      set: function(value) {
+      set: function (value) {
         this.uniforms.dashSize.value = value;
       },
     },
@@ -328,11 +318,11 @@ var LineMaterial = function(parameters) {
     dashOffset: {
       enumerable: true,
 
-      get: function() {
+      get: function () {
         return this.uniforms.dashOffset.value;
       },
 
-      set: function(value) {
+      set: function (value) {
         this.uniforms.dashOffset.value = value;
       },
     },
@@ -340,11 +330,11 @@ var LineMaterial = function(parameters) {
     gapSize: {
       enumerable: true,
 
-      get: function() {
+      get: function () {
         return this.uniforms.gapSize.value;
       },
 
-      set: function(value) {
+      set: function (value) {
         this.uniforms.gapSize.value = value;
       },
     },
@@ -352,11 +342,11 @@ var LineMaterial = function(parameters) {
     opacity: {
       enumerable: true,
 
-      get: function() {
+      get: function () {
         return this.uniforms.opacity.value;
       },
 
-      set: function(value) {
+      set: function (value) {
         this.uniforms.opacity.value = value;
       },
     },
@@ -364,11 +354,11 @@ var LineMaterial = function(parameters) {
     resolution: {
       enumerable: true,
 
-      get: function() {
+      get: function () {
         return this.uniforms.resolution.value;
       },
 
-      set: function(value) {
+      set: function (value) {
         this.uniforms.resolution.value.copy(value);
       },
     },
@@ -376,11 +366,11 @@ var LineMaterial = function(parameters) {
     alphaToCoverage: {
       enumerable: true,
 
-      get: function() {
+      get: function () {
         return Boolean('ALPHA_TO_COVERAGE' in this.defines);
       },
 
-      set: function(value) {
+      set: function (value) {
         if (Boolean(value) !== Boolean('ALPHA_TO_COVERAGE' in this.defines)) {
           this.needsUpdate = true;
         }

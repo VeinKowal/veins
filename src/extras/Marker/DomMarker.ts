@@ -21,16 +21,7 @@ class DomMarker extends Group {
     let object: CSS3DObject;
     let obj: Sprite;
 
-    const {
-      isSprite,
-      dom,
-      localPosition,
-      id,
-      parent,
-      complete,
-      size,
-      keepSize = false,
-    } = config;
+    const { isSprite, dom, localPosition, id, parent, complete, size, keepSize = false } = config;
 
     if (!dom) return false;
 

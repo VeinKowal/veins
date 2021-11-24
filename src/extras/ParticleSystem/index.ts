@@ -24,10 +24,10 @@ class ParticleSystem {
   static clearAllParticleEffect(scene: Scene): void {
     // 清空天气效果
     const sceneChildren: any[] = [];
-    scene.children.forEach(child => {
+    scene.children.forEach((child) => {
       sceneChildren.push(child);
     });
-    sceneChildren.forEach(child => {
+    sceneChildren.forEach((child) => {
       if (child.userData && child.userData.type === 'weather') {
         scene.remove(child);
       }
@@ -43,7 +43,7 @@ class ParticleSystem {
 
   // 添加指定天气效果
   static setparticleEffect = (effect: any[], scene: Scene) => {
-    effect.forEach(e => {
+    effect.forEach((e) => {
       // 如果是雾天
       if (e instanceof FogExp2) {
         ParticleSystem.clearFog(scene);
@@ -60,8 +60,7 @@ class ParticleSystem {
   // 定义注册方法
   private static loginUpdateFunction = (f: updateFunction, name: string) => {
     // 注册
-    ParticleSystem.updateFunctions &&
-      ParticleSystem.updateFunctions.set(name, f);
+    ParticleSystem.updateFunctions && ParticleSystem.updateFunctions.set(name, f);
   };
 
   // 创建粒子效果
@@ -75,17 +74,14 @@ class ParticleSystem {
     const particles: any[] = [];
 
     // 添加更新方法
-    effect.forEach(el => {
+    effect.forEach((el) => {
       const particle = el();
       // 保存
       particles.push(particle);
 
-      ParticleSystem.loginUpdateFunction(
-        (sce: Scene, cam: PerspectiveCamera) => {
-          !(particle instanceof FogExp2) && particle.update(cam.position);
-        },
-        particle.constructor.name,
-      );
+      ParticleSystem.loginUpdateFunction((sce: Scene, cam: PerspectiveCamera) => {
+        !(particle instanceof FogExp2) && particle.update(cam.position);
+      }, particle.constructor.name);
     });
 
     ParticleSystem.setparticleEffect(particles, scene);

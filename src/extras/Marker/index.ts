@@ -39,8 +39,7 @@ export default class Marker extends Object3D {
     obj.onAfterRender = (renderer: Renderer, scene: Scene, camera: any) => {
       const ps = obj.position;
       const pc = camera.position;
-      const distance =
-        ((ps.x - pc.x) ** 2 + (ps.y - pc.y) ** 2 + (ps.z - pc.z) ** 2) ** 0.5;
+      const distance = ((ps.x - pc.x) ** 2 + (ps.y - pc.y) ** 2 + (ps.z - pc.z) ** 2) ** 0.5;
       const scale = distance / 100;
       // 根据相机与节点位置更改marker大小 以此保证大小尽量不因为距离改变.
       keepSize && obj.scale.set(scale, scale, scale);
