@@ -9,15 +9,21 @@ import ModelLoader from './ModelLoader';
 
 class OBJModelLoader extends ModelLoader {
   load(config: OBJModelLoaderType) {
-    const { url, complete, isOutline = true } = config;
+    const { url, complete, isOutline = true, process } = config;
     if (!url) return;
     const loader = new OBJLoader2();
-    loader.load(url, (obj) => {
-      this.moveToCenter(obj);
-      isOutline && this.addEdgeOutline(obj);
-      this.add(obj);
-      complete && complete(this);
-    });
+    loader.load(
+      url,
+      (obj) => {
+        this.moveToCenter(obj);
+        isOutline && this.addEdgeOutline(obj);
+        this.add(obj);
+        complete && complete(this);
+      },
+      (info) => {
+        process && process(info);
+      },
+    );
   }
 }
 

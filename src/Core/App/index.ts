@@ -117,13 +117,11 @@ class App {
     if (type === 'OBJ') {
       const obj = new OBJModelLoader();
       obj.load(config);
-      this.scene.add(obj);
       return obj;
     }
     if (type === 'GLTF') {
       const gltf = new GLTFModelLoader();
       gltf.load(config);
-      this.scene.add(gltf);
       return gltf;
     }
     if (type === 'MAP') {

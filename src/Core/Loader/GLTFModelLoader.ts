@@ -9,17 +9,23 @@ import { GLTFLoader } from '../../lib/loaders/GLTFLoader';
 
 class OBJModelLoader extends ModelLoader {
   load(config: GLTFModelLoaderType) {
-    const { url, complete, isOutline = true } = config;
+    const { url, complete, isOutline = true, process } = config;
     if (!url) return;
     const loader = new GLTFLoader();
-    loader.load(url, (gltf: any) => {
-      const { scene } = gltf;
-      if (!scene) return;
-      this.moveToCenter(scene);
-      isOutline && this.addEdgeOutline(scene);
-      this.add(scene);
-      complete && complete(this);
-    });
+    loader.load(
+      url,
+      (gltf: any) => {
+        const { scene } = gltf;
+        if (!scene) return;
+        this.moveToCenter(scene);
+        isOutline && this.addEdgeOutline(scene);
+        this.add(scene);
+        complete && complete(this);
+      },
+      (info) => {
+        process && process(info);
+      },
+    );
   }
 }
 
