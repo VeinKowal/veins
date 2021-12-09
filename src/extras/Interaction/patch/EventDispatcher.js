@@ -14,6 +14,10 @@ EventDispatcher.prototype.on = function (type, fn) {
   if (this instanceof Object3D) {
     this.interactive = true;
     this.isActived = false;
+    if (!('events' in this)) this.events = new Map();
+  } else {
+    console.error('不允许注册鼠标事件');
+    return this;
   }
   const basicFn = (e) => {
     const { intersectedObjects, interaction } = MouseEvents;
@@ -26,28 +30,32 @@ EventDispatcher.prototype.on = function (type, fn) {
     marker && 'isActive' in marker ? interaction.triggerEvent(marker, 'click', e) : fn(e);
   };
   if (type === 'click') {
-    this.addEventListener('pointerup', (e) => {
+    const event = (e) => {
       const { isClickEvent, getNormalizedCanvasRelativePosition } = MouseEvents;
       // 先判断距离再决定是否执行
       if (!isClickEvent(getNormalizedCanvasRelativePosition(e.data.originalEvent))) return;
       basicFn(e);
-    });
+    }
+    this.events.set(fn, event);
+    this.addEventListener('pointerup', event);
   } else if (type === 'dblclick') {
-    this.addEventListener('click', (e) => {
+    const event = (e) => {
       if (e.data.originalEvent.detail === 2) {
         basicFn(e);
       }
-    });
+    };
+    this.events.set(fn, event);
+    this.addEventListener('click', event);
   } else if (type === 'cancel') {
     // 保存cancel方法
     MouseEvents.cancelFnMap.set(this, () => {
       fn();
       this.isActived = false;
     });
-  } else
-    this.addEventListener(type, (e) => {
-      basicFn(e);
-    });
+  } else {
+    this.events.set(fn, basicFn);
+    this.addEventListener(type, basicFn);
+  }
   return this;
 };
 
@@ -59,7 +67,13 @@ EventDispatcher.prototype.on = function (type, fn) {
  * @return {this} this
  */
 EventDispatcher.prototype.off = function (type, fn) {
-  this.removeEventListener(type, fn);
+  let event = null;
+  if ('events' in this) {
+    event = this.events.get(fn);
+    this.events.delete(fn);
+  }
+  if (type === 'click') type = 'pointerup';
+  event ? this.removeEventListener(type, event) : this.removeEventListener(type, fn);
   return this;
 };
 
