@@ -192,6 +192,12 @@ class App {
       const tween = new TWEEN.Tween(pos)
         .to({ ...targetPos }, time)
         .easing(TWEEN.Easing.Linear.None)
+        .onStart(() => {
+          controls.forEach((control) => {
+            control.target.copy(boxCenter);
+            control.update();
+          });
+        })
         .onUpdate(() => {
           // point the camera to look at the center of the box
           Array.isArray(up)
