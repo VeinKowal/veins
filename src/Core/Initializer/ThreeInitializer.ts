@@ -8,6 +8,7 @@ import BaseInitializer from './BaseInitializer';
 import * as THREE from 'three';
 import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
 import { OrbitControls } from '../../lib/controls/OrbitControls';
+// import { OrbitControls } from '../../lib/controls/OrbitControl';
 import { Interaction, MouseEvents } from '../../extras/Interaction';
 import { PerspectiveCamera, Scene, WebGLRenderer, Raycaster } from 'three';
 

@@ -147,7 +147,7 @@ export default class Wind extends THREE.Mesh {
     const material = new WindMaterial({
       transparent: true,
       opacity: 0.3,
-      map: new THREE.TextureLoader().load(require('../assets/weather/wind.png')),
+      map: new THREE.TextureLoader().load('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAB4CAYAAAAg79h0AAACCUlEQVRYhbVYi47DMAgzbff//9u1y2mnERHHJDndHdK0R1xjCJBoVkoBgA3A+4Oht9fxAWxisdrxeVlgKoSxI7BENgd+P+RMUAz+2zHT46BdPc2adhIOCsKipmkKogt2aVFTDFsK54XmAdZknEiIbYGKUDHJ6B6DMmlSMDRnUpEh0zR0xxFJ4dHktjBIunuILDfuR8KbbVl293egMqjzLjqMSiUugBMahcuec6b/TUFTDTNQsy3TPPkGy56bCZdM0+h+3XeW7V0UbyvuuuaUDbE8x3fkVjWpER3dy77rBuzM3c9AW6Ylgg4uMsVkK8frvlIFW1K+S6CmzfH5YsTin5vTfCg8FRxBTA/WtgkAfze1JZ1NRSPkCPQeX5XphR5QgzgIEK1WKF8clDVMmdkI1PTdjKmCVPmaAgF6unyD7mxWxqK7mD5jmgp3kJzhDrr08zkTVNe8QU+KJlqdT9fgJoYIysyiu3Q8q+jUvdwypi5P96A6q6YziS7V1CxGd08BAoPOSauXUTK7FChAk4JTJLG7+F2j8NldNqZrMpU1RXcNtqW6y5iqxSpITyoVnQS5u/SkWt7gJZBKQVfjZ7LYMS27y3KV1lPHxAOD6wlqYDC4RBAyoJqZMgXZVGmutdn0bS5+nMxuwvCxIY1TMDw26r1kFB1fSCPz7dGpG4af6rf/ZeIL3OYFAL4AxjDgy+FcJmUAAAAASUVORK5CYII='),
       depthWrite: true,
       side: THREE.DoubleSide,
     });

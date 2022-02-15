@@ -57,7 +57,7 @@ export default class Rain extends THREE.Mesh {
     const material = new RainMaterial({
       transparent: true,
       opacity: 0.8,
-      map: new THREE.TextureLoader().load(require('../assets/weather/rain.png')),
+      map: new THREE.TextureLoader().load('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAACACAYAAADQxeN6AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ1IDc5LjE2MzQ5OSwgMjAxOC8wOC8xMy0xNjo0MDoyMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjdBQjhCODQwQ0JDMjExRUFCRTU3RDA0RDU0RjMzRTREIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjdBQjhCODQxQ0JDMjExRUFCRTU3RDA0RDU0RjMzRTREIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6N0FCOEI4M0VDQkMyMTFFQUJFNTdEMDRENTRGMzNFNEQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6N0FCOEI4M0ZDQkMyMTFFQUJFNTdEMDRENTRGMzNFNEQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5mqkn7AAACRElEQVR42sxZQU4DMQyMk72UV/MYDvyjv4Aj4g9cyrBFrVhFHnsScmilqK0ar5PJeBy7BqCMvmqZeD240dZ9t2AuPCPrjOw20Q4G6I3qwQjkIRfmCc5e78bUqPcWAtGOm41AYehZ9IAtODPJU02WJ51TYZ4jIzAkvT2ZA3cKBLrPpniC83Rk6FkEwih66eH2yJXIUyEwIyPsMTzg8DBdXgq5BUgaM2qOF4l70TvUeEJm1Bx4q0crj0b9RCiMAFGlMHKRcdDbEwt1ip4FZyWHuwQ5iHTJYikHYSr+I+iFauQyQF1ecahkWX6yGTUaljB2TvRwLQj3kqHnGbtAbAncYVKzLMt7jGDsNoV7Rbl8bIQJZTY0kO0JJMtjGY1aoA1DnlKFnQ6NYe612eUxQTEVvaJoxJJwlxJ1i0RfEctQnj1PhXjBjEbI8ZQubzo0lp2ThF5EpXR5YEUnA0Iuhdos5BbcY9dB3oIlQWU5RhkBp6iUU43ECCQlnpzUoIaGV+qlOTfioFR9yoyQC5SqlOBLw33omlNJKEyHhpxqpLKhkctuGu7RJX7djeVftQZmzmmoDG9EH0xtAUHtfDRSnBT1nIaMphKAxzWpomY9lqp0CaS2lpFOVVqGR03Bofse1LYWnPYqVN2z0T0NBSHr70l9IyjLs6BnKV9zJDWyoGywpT3L7+7O1xtcvH18dGDUg0Jd3z89o9duYs/6lz9IgPt42sd5HxdnnG+//849Gl3HaR/P+3jbx9c+3m/fT8d59th/8PwIMAC28xE/4wZCqAAAAABJRU5ErkJggg=='),
       depthWrite: false,
     });
 
@@ -77,11 +77,11 @@ export default class Rain extends THREE.Mesh {
 
                 float a = angle(camera.x - normal.x, camera.y - normal.y);
 
-                pos.x > normal.x ? a -= 0.785 : a += 0.785; 
+                pos.x > normal.x ? a -= 0.785 : a += 0.785;
 
                 position.x = cos(a) * distanceLen;
                 position.y = sin(a) * distanceLen;
-                
+
                 return position + normal;
             }
             `;
