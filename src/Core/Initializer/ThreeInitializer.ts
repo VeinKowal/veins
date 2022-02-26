@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
 import { OrbitControls } from '../../lib/controls/OrbitControls';
 // import { OrbitControls } from '../../lib/controls/OrbitControl';
+import skyBoxConfig from '../../lib/skyBox/config';
 import { Interaction, MouseEvents } from '../../extras/Interaction';
 import { PerspectiveCamera, Scene, WebGLRenderer, Raycaster } from 'three';
 
@@ -18,7 +19,11 @@ class ThreeInitializer extends BaseInitializer {
     const scene = ThreeInitializer.initScene(config);
     const cssRenderer = ThreeInitializer.initCSSRender(config);
     const renderer = ThreeInitializer.initRenderer(config);
-    const cssOrbitControl = ThreeInitializer.initOrbitControl(camera, cssRenderer);
+    ThreeInitializer.initSkyBox(config.skyBox, scene);
+    const cssOrbitControl = ThreeInitializer.initOrbitControl(
+      camera,
+      cssRenderer,
+    );
     const orbitControl = ThreeInitializer.initOrbitControl(camera, renderer);
     const interaction = new Interaction(cssRenderer, scene, camera);
     const raycaster = MouseEvents.initMouseEvents(
@@ -47,7 +52,14 @@ class ThreeInitializer extends BaseInitializer {
   private static initCamera(config: ThreeInitializerType): PerspectiveCamera {
     const { renderDom } = config;
     const { clientWidth: width, clientHeight: height } = renderDom;
-    return new THREE.PerspectiveCamera(30, width / height, 0.1, 1000000);
+    const camera = new THREE.PerspectiveCamera(
+      30,
+      width / height,
+      0.1,
+      1000000,
+    );
+    camera.up = new THREE.Vector3(0, 1, 0);
+    return camera;
   }
 
   private static initScene(config: ThreeInitializerType): Scene {
@@ -75,7 +87,12 @@ class ThreeInitializer extends BaseInitializer {
   }
 
   private static initRenderer(config: ThreeInitializerType): WebGLRenderer {
-    const { antialias = true, alpha = true, logarithmicDepthBuffer = true, renderDom } = config;
+    const {
+      antialias = true,
+      alpha = true,
+      logarithmicDepthBuffer = true,
+      renderDom,
+    } = config;
     const { clientWidth: width, clientHeight: height } = renderDom;
     const renderer = new THREE.WebGLRenderer({
       antialias,
@@ -101,7 +118,7 @@ class ThreeInitializer extends BaseInitializer {
 
   static removeOribitControl(controls: OrbitControls | OrbitControls[]) {
     if (Array.isArray(controls)) {
-      controls.forEach((control) => {
+      controls.forEach(control => {
         control.dispose();
       });
     } else controls.dispose();
@@ -109,13 +126,19 @@ class ThreeInitializer extends BaseInitializer {
   }
 
   // 处理窗口大小变化事件
-  static updateRender(config: { renderDom: HTMLElement; renderer: WebGLRenderer }) {
+  static updateRender(config: {
+    renderDom: HTMLElement;
+    renderer: WebGLRenderer;
+  }) {
     const { renderDom, renderer } = config;
     const { clientWidth: width, clientHeight: height } = renderDom;
     renderer.setSize(width, height);
   }
 
-  static updateCamera(config: { renderDom: HTMLElement; camera: PerspectiveCamera }) {
+  static updateCamera(config: {
+    renderDom: HTMLElement;
+    camera: PerspectiveCamera;
+  }) {
     const { renderDom, camera } = config;
     const { clientWidth: width, clientHeight: height } = renderDom;
     camera.aspect = height === 0 ? 1 : width / height;
@@ -144,6 +167,19 @@ class ThreeInitializer extends BaseInitializer {
       directionalLight2,
       sunLight,
     };
+  }
+
+  private static initSkyBox(name: string | undefined, scene: THREE.Scene) {
+    if (!name) return;
+    const boxList = Object.keys(skyBoxConfig);
+    const boxIndex = boxList.indexOf(name);
+    if (boxIndex !== -1) {
+      const urls = skyBoxConfig[name];
+      new THREE.CubeTextureLoader().load(urls, texture => {
+        // texture.encoding = THREE.sRGBEncoding;
+        scene.background = texture;
+      });
+    }
   }
 }
 

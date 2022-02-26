@@ -4,7 +4,7 @@ export type AppConfig = {
   renderDom: HTMLDivElement;
   url?: String;
   background?: Color | string | number | Texture;
-  skyBox?: String;
+  skyBox?: string;
   complete?: Function;
 };
 
