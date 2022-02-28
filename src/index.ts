@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as ITOWNS from 'itowns';
+import * as ITOWNS from './lib/basic/itowns';;
 
 export { THREE as three };
 export { ITOWNS as iTowns };

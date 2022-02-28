@@ -16,7 +16,7 @@ EventDispatcher.prototype.on = function (type, fn) {
     this.isActived = false;
     if (!('events' in this)) this.events = new Map();
   } else {
-    console.error('不允许注册鼠标事件');
+    // console.error('不允许注册鼠标事件');
     return this;
   }
   const basicFn = (e) => {

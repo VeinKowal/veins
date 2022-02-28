@@ -5,7 +5,7 @@
  */
 import { ITownsInitializerType, ITownsInitializerReturn } from './type';
 import BaseInitializer from './BaseInitializer';
-import * as itowns from 'itowns';
+import * as itowns from '../../lib/basic/itowns';
 
 class ITownsInitializer extends BaseInitializer {
   static init(config: ITownsInitializerType): ITownsInitializerReturn {

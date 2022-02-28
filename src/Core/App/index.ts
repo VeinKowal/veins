@@ -5,7 +5,7 @@
  */
 import { AppConfig, CreateConfig, FlyToTargetConfig } from './type';
 import * as THREE from 'three';
-import * as itowns from 'itowns';
+import * as itowns from '../../lib/basic/itowns';
 import * as TWEEN from '@tweenjs/tween.js';
 // import 'default-passive-events';
 import { OrbitControls } from '../../lib/controls/OrbitControls';
