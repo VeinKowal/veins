@@ -1,63 +1,46 @@
-function GLBufferAttribute( buffer, type, itemSize, elementSize, count ) {
+function GLBufferAttribute(buffer, type, itemSize, elementSize, count) {
+  this.buffer = buffer;
+  this.type = type;
+  this.itemSize = itemSize;
+  this.elementSize = elementSize;
+  this.count = count;
 
-	this.buffer = buffer;
-	this.type = type;
-	this.itemSize = itemSize;
-	this.elementSize = elementSize;
-	this.count = count;
-
-	this.version = 0;
-
+  this.version = 0;
 }
 
-Object.defineProperty( GLBufferAttribute.prototype, 'needsUpdate', {
+Object.defineProperty(GLBufferAttribute.prototype, 'needsUpdate', {
+  set: function (value) {
+    if (value === true) this.version++;
+  },
+});
 
-	set: function ( value ) {
+Object.assign(GLBufferAttribute.prototype, {
+  isGLBufferAttribute: true,
 
-		if ( value === true ) this.version ++;
+  setBuffer: function (buffer) {
+    this.buffer = buffer;
 
-	}
+    return this;
+  },
 
-} );
+  setType: function (type, elementSize) {
+    this.type = type;
+    this.elementSize = elementSize;
 
-Object.assign( GLBufferAttribute.prototype, {
+    return this;
+  },
 
-	isGLBufferAttribute: true,
+  setItemSize: function (itemSize) {
+    this.itemSize = itemSize;
 
-	setBuffer: function ( buffer ) {
+    return this;
+  },
 
-		this.buffer = buffer;
+  setCount: function (count) {
+    this.count = count;
 
-		return this;
-
-	},
-
-	setType: function ( type, elementSize ) {
-
-		this.type = type;
-		this.elementSize = elementSize;
-
-		return this;
-
-	},
-
-	setItemSize: function ( itemSize ) {
-
-		this.itemSize = itemSize;
-
-		return this;
-
-	},
-
-	setCount: function ( count ) {
-
-		this.count = count;
-
-		return this;
-
-	},
-
-} );
-
+    return this;
+  },
+});
 
 export { GLBufferAttribute };

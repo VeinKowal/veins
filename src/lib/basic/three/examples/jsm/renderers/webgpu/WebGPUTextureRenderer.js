@@ -1,40 +1,30 @@
 import { WebGLRenderTarget } from 'three';
 
 class WebGPUTextureRenderer {
+  constructor(renderer, options = {}) {
+    this.renderer = renderer;
 
-	constructor( renderer, options = {} ) {
+    // @TODO: Consider to introduce WebGPURenderTarget or rename WebGLRenderTarget to just RenderTarget
 
-		this.renderer = renderer;
+    this.renderTarget = new WebGLRenderTarget(options);
+  }
 
-		// @TODO: Consider to introduce WebGPURenderTarget or rename WebGLRenderTarget to just RenderTarget
+  getTexture() {
+    return this.renderTarget.texture;
+  }
 
-		this.renderTarget = new WebGLRenderTarget( options );
+  setSize(width, height) {
+    this.renderTarget.setSize(width, height);
+  }
 
-	}
+  render(scene, camera) {
+    const renderer = this.renderer;
+    const renderTarget = this.renderTarget;
 
-	getTexture() {
-
-		return this.renderTarget.texture;
-
-	}
-
-	setSize( width, height ) {
-
-		this.renderTarget.setSize( width, height );
-
-	}
-
-	render( scene, camera ) {
-
-		const renderer = this.renderer;
-		const renderTarget = this.renderTarget;
-
-		renderer.setRenderTarget( renderTarget );
-		renderer.render( scene, camera );
-		renderer.setRenderTarget( null );
-
-	}
-
+    renderer.setRenderTarget(renderTarget);
+    renderer.render(scene, camera);
+    renderer.setRenderTarget(null);
+  }
 }
 
 export default WebGPUTextureRenderer;

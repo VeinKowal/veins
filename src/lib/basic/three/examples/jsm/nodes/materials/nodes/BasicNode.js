@@ -2,177 +2,158 @@ import { Node } from '../../core/Node.js';
 import { ColorNode } from '../../inputs/ColorNode.js';
 
 function BasicNode() {
+  Node.call(this);
 
-	Node.call( this );
-
-	this.color = new ColorNode( 0xFFFFFF );
-
+  this.color = new ColorNode(0xffffff);
 }
 
-BasicNode.prototype = Object.create( Node.prototype );
+BasicNode.prototype = Object.create(Node.prototype);
 BasicNode.prototype.constructor = BasicNode;
 BasicNode.prototype.nodeType = 'Basic';
 
-BasicNode.prototype.generate = function ( builder ) {
+BasicNode.prototype.generate = function (builder) {
+  var code;
 
-	var code;
+  if (builder.isShader('vertex')) {
+    var position = this.position
+      ? this.position.analyzeAndFlow(builder, 'v3', { cache: 'position' })
+      : undefined;
 
-	if ( builder.isShader( 'vertex' ) ) {
+    builder.addParsCode(
+      [
+        'varying vec3 vViewPosition;',
 
-		var position = this.position ? this.position.analyzeAndFlow( builder, 'v3', { cache: 'position' } ) : undefined;
+        '#ifndef FLAT_SHADED',
 
-		builder.addParsCode( [
-			'varying vec3 vViewPosition;',
+        ' varying vec3 vNormal;',
 
-			'#ifndef FLAT_SHADED',
+        '#endif',
+      ].join('\n'),
+    );
 
-			' varying vec3 vNormal;',
+    var output = [
+      '#include <beginnormal_vertex>',
+      '#include <defaultnormal_vertex>',
 
-			'#endif',
-		].join( '\n' ) );
+      '#ifndef FLAT_SHADED', // Normal computed with derivatives when FLAT_SHADED
 
-		var output = [
-			'#include <beginnormal_vertex>',
-			'#include <defaultnormal_vertex>',
+      ' vNormal = normalize( transformedNormal );',
 
-			'#ifndef FLAT_SHADED', // Normal computed with derivatives when FLAT_SHADED
+      '#endif',
 
-			' vNormal = normalize( transformedNormal );',
+      '#include <begin_vertex>',
+    ];
 
-			'#endif',
+    if (position) {
+      output.push(
+        position.code,
+        position.result ? 'transformed = ' + position.result + ';' : '',
+      );
+    }
 
-			'#include <begin_vertex>',
-		];
+    output.push(
+      '#include <morphtarget_vertex>',
+      '#include <skinning_vertex>',
+      '#include <project_vertex>',
+      '#include <fog_vertex>',
+      '#include <logdepthbuf_vertex>',
+      '#include <clipping_planes_vertex>',
 
-		if ( position ) {
+      '	vViewPosition = - mvPosition.xyz;',
 
-			output.push(
-				position.code,
-				position.result ? 'transformed = ' + position.result + ';' : ''
-			);
+      '#include <worldpos_vertex>',
+      '#include <shadowmap_vertex>',
+    );
 
-		}
+    code = output.join('\n');
+  } else {
+    // Analyze all nodes to reuse generate codes
+    this.color.analyze(builder, { slot: 'color' });
 
-		output.push(
-			'#include <morphtarget_vertex>',
-			'#include <skinning_vertex>',
-			'#include <project_vertex>',
-			'#include <fog_vertex>',
-			'#include <logdepthbuf_vertex>',
-			'#include <clipping_planes_vertex>',
+    if (this.alpha) this.alpha.analyze(builder);
+    if (this.mask) this.mask.analyze(builder);
 
-			'	vViewPosition = - mvPosition.xyz;',
+    // Build code
+    var color = this.color.flow(builder, 'c', { slot: 'color' });
+    var alpha = this.alpha ? this.alpha.flow(builder, 'f') : undefined;
+    var mask = this.mask ? this.mask.flow(builder, 'b') : undefined;
 
-			'#include <worldpos_vertex>',
-			'#include <shadowmap_vertex>'
-		);
+    builder.requires.transparent = alpha !== undefined;
 
-		code = output.join( '\n' );
+    builder.addParsCode(
+      [
+        'varying vec3 vViewPosition;',
 
-	} else {
+        '#ifndef FLAT_SHADED',
 
-		// Analyze all nodes to reuse generate codes
-		this.color.analyze( builder, { slot: 'color' } );
+        ' varying vec3 vNormal;',
 
-		if ( this.alpha ) this.alpha.analyze( builder );
-		if ( this.mask ) this.mask.analyze( builder );
+        '#endif',
+      ].join('\n'),
+    );
 
-		// Build code
-		var color = this.color.flow( builder, 'c', { slot: 'color' } );
-		var alpha = this.alpha ? this.alpha.flow( builder, 'f' ) : undefined;
-		var mask = this.mask ? this.mask.flow( builder, 'b' ) : undefined;
+    var output = [
+      // add before: prevent undeclared normal
+      '#include <normal_fragment_begin>',
 
-		builder.requires.transparent = alpha !== undefined;
+      color.code,
+    ];
 
-		builder.addParsCode( [
-			'varying vec3 vViewPosition;',
+    if (mask) {
+      output.push(mask.code, 'if ( ! ' + mask.result + ' ) discard;');
+    }
 
-			'#ifndef FLAT_SHADED',
+    if (alpha) {
+      output.push(
+        alpha.code,
+        '#ifdef ALPHATEST',
 
-			' varying vec3 vNormal;',
+        ' if ( ' + alpha.result + ' <= ALPHATEST ) discard;',
 
-			'#endif',
-		].join( '\n' ) );
+        '#endif',
+      );
+    }
 
-		var output = [
-			// add before: prevent undeclared normal
-			'#include <normal_fragment_begin>',
+    if (alpha) {
+      output.push(
+        'gl_FragColor = vec4(' + color.result + ', ' + alpha.result + ' );',
+      );
+    } else {
+      output.push('gl_FragColor = vec4(' + color.result + ', 1.0 );');
+    }
 
-			color.code,
-		];
+    code = output.join('\n');
+  }
 
-		if ( mask ) {
-
-			output.push(
-				mask.code,
-				'if ( ! ' + mask.result + ' ) discard;'
-			);
-
-		}
-
-		if ( alpha ) {
-
-			output.push(
-				alpha.code,
-				'#ifdef ALPHATEST',
-
-				' if ( ' + alpha.result + ' <= ALPHATEST ) discard;',
-
-				'#endif'
-			);
-
-		}
-
-		if ( alpha ) {
-
-			output.push( 'gl_FragColor = vec4(' + color.result + ', ' + alpha.result + ' );' );
-
-		} else {
-
-			output.push( 'gl_FragColor = vec4(' + color.result + ', 1.0 );' );
-
-		}
-
-		code = output.join( '\n' );
-
-	}
-
-	return code;
-
+  return code;
 };
 
-BasicNode.prototype.copy = function ( source ) {
+BasicNode.prototype.copy = function (source) {
+  Node.prototype.copy.call(this, source);
 
-	Node.prototype.copy.call( this, source );
+  this.color = source.color;
 
-	this.color = source.color;
+  if (source.position) this.position = source.position;
+  if (source.alpha) this.alpha = source.alpha;
+  if (source.mask) this.mask = source.mask;
 
-	if ( source.position ) this.position = source.position;
-	if ( source.alpha ) this.alpha = source.alpha;
-	if ( source.mask ) this.mask = source.mask;
-
-	return this;
-
+  return this;
 };
 
-BasicNode.prototype.toJSON = function ( meta ) {
+BasicNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = this.createJSONNode(meta);
 
-	if ( ! data ) {
+    data.color = this.color.toJSON(meta).uuid;
 
-		data = this.createJSONNode( meta );
+    if (this.position) data.position = this.position.toJSON(meta).uuid;
+    if (this.alpha) data.alpha = this.alpha.toJSON(meta).uuid;
+    if (this.mask) data.mask = this.mask.toJSON(meta).uuid;
+  }
 
-		data.color = this.color.toJSON( meta ).uuid;
-
-		if ( this.position ) data.position = this.position.toJSON( meta ).uuid;
-		if ( this.alpha ) data.alpha = this.alpha.toJSON( meta ).uuid;
-		if ( this.mask ) data.mask = this.mask.toJSON( meta ).uuid;
-
-	}
-
-	return data;
-
+  return data;
 };
 
 export { BasicNode };

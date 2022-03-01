@@ -9,123 +9,115 @@ const _lightPositionWorld = /*@__PURE__*/ new Vector3();
 const _lookTarget = /*@__PURE__*/ new Vector3();
 
 class LightShadow {
+  constructor(camera) {
+    this.camera = camera;
 
-	constructor( camera ) {
+    this.bias = 0;
+    this.normalBias = 0;
+    this.radius = 1;
 
-		this.camera = camera;
+    this.mapSize = new Vector2(512, 512);
 
-		this.bias = 0;
-		this.normalBias = 0;
-		this.radius = 1;
+    this.map = null;
+    this.mapPass = null;
+    this.matrix = new Matrix4();
 
-		this.mapSize = new Vector2( 512, 512 );
+    this.autoUpdate = true;
+    this.needsUpdate = false;
 
-		this.map = null;
-		this.mapPass = null;
-		this.matrix = new Matrix4();
+    this._frustum = new Frustum();
+    this._frameExtents = new Vector2(1, 1);
 
-		this.autoUpdate = true;
-		this.needsUpdate = false;
+    this._viewportCount = 1;
 
-		this._frustum = new Frustum();
-		this._frameExtents = new Vector2( 1, 1 );
+    this._viewports = [new Vector4(0, 0, 1, 1)];
+  }
 
-		this._viewportCount = 1;
+  getViewportCount() {
+    return this._viewportCount;
+  }
 
-		this._viewports = [
+  getFrustum() {
+    return this._frustum;
+  }
 
-			new Vector4( 0, 0, 1, 1 )
+  updateMatrices(light) {
+    const shadowCamera = this.camera;
+    const shadowMatrix = this.matrix;
 
-		];
+    _lightPositionWorld.setFromMatrixPosition(light.matrixWorld);
+    shadowCamera.position.copy(_lightPositionWorld);
 
-	}
+    _lookTarget.setFromMatrixPosition(light.target.matrixWorld);
+    shadowCamera.lookAt(_lookTarget);
+    shadowCamera.updateMatrixWorld();
 
-	getViewportCount() {
+    _projScreenMatrix.multiplyMatrices(
+      shadowCamera.projectionMatrix,
+      shadowCamera.matrixWorldInverse,
+    );
+    this._frustum.setFromProjectionMatrix(_projScreenMatrix);
 
-		return this._viewportCount;
+    shadowMatrix.set(
+      0.5,
+      0.0,
+      0.0,
+      0.5,
+      0.0,
+      0.5,
+      0.0,
+      0.5,
+      0.0,
+      0.0,
+      0.5,
+      0.5,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+    );
 
-	}
+    shadowMatrix.multiply(shadowCamera.projectionMatrix);
+    shadowMatrix.multiply(shadowCamera.matrixWorldInverse);
+  }
 
-	getFrustum() {
+  getViewport(viewportIndex) {
+    return this._viewports[viewportIndex];
+  }
 
-		return this._frustum;
+  getFrameExtents() {
+    return this._frameExtents;
+  }
 
-	}
+  copy(source) {
+    this.camera = source.camera.clone();
 
-	updateMatrices( light ) {
+    this.bias = source.bias;
+    this.radius = source.radius;
 
-		const shadowCamera = this.camera;
-		const shadowMatrix = this.matrix;
+    this.mapSize.copy(source.mapSize);
 
-		_lightPositionWorld.setFromMatrixPosition( light.matrixWorld );
-		shadowCamera.position.copy( _lightPositionWorld );
+    return this;
+  }
 
-		_lookTarget.setFromMatrixPosition( light.target.matrixWorld );
-		shadowCamera.lookAt( _lookTarget );
-		shadowCamera.updateMatrixWorld();
+  clone() {
+    return new this.constructor().copy(this);
+  }
 
-		_projScreenMatrix.multiplyMatrices( shadowCamera.projectionMatrix, shadowCamera.matrixWorldInverse );
-		this._frustum.setFromProjectionMatrix( _projScreenMatrix );
+  toJSON() {
+    const object = {};
 
-		shadowMatrix.set(
-			0.5, 0.0, 0.0, 0.5,
-			0.0, 0.5, 0.0, 0.5,
-			0.0, 0.0, 0.5, 0.5,
-			0.0, 0.0, 0.0, 1.0
-		);
+    if (this.bias !== 0) object.bias = this.bias;
+    if (this.normalBias !== 0) object.normalBias = this.normalBias;
+    if (this.radius !== 1) object.radius = this.radius;
+    if (this.mapSize.x !== 512 || this.mapSize.y !== 512)
+      object.mapSize = this.mapSize.toArray();
 
-		shadowMatrix.multiply( shadowCamera.projectionMatrix );
-		shadowMatrix.multiply( shadowCamera.matrixWorldInverse );
+    object.camera = this.camera.toJSON(false).object;
+    delete object.camera.matrix;
 
-	}
-
-	getViewport( viewportIndex ) {
-
-		return this._viewports[ viewportIndex ];
-
-	}
-
-	getFrameExtents() {
-
-		return this._frameExtents;
-
-	}
-
-	copy( source ) {
-
-		this.camera = source.camera.clone();
-
-		this.bias = source.bias;
-		this.radius = source.radius;
-
-		this.mapSize.copy( source.mapSize );
-
-		return this;
-
-	}
-
-	clone() {
-
-		return new this.constructor().copy( this );
-
-	}
-
-	toJSON() {
-
-		const object = {};
-
-		if ( this.bias !== 0 ) object.bias = this.bias;
-		if ( this.normalBias !== 0 ) object.normalBias = this.normalBias;
-		if ( this.radius !== 1 ) object.radius = this.radius;
-		if ( this.mapSize.x !== 512 || this.mapSize.y !== 512 ) object.mapSize = this.mapSize.toArray();
-
-		object.camera = this.camera.toJSON( false ).object;
-		delete object.camera.matrix;
-
-		return object;
-
-	}
-
+    return object;
+  }
 }
 
 export { LightShadow };

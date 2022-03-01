@@ -5,191 +5,146 @@ const _v1 = /*@__PURE__*/ new Vector3();
 const _v2 = /*@__PURE__*/ new Vector3();
 
 class LOD extends Object3D {
+  constructor() {
+    super();
 
-	constructor() {
+    this._currentLevel = 0;
 
-		super();
+    this.type = 'LOD';
 
-		this._currentLevel = 0;
+    Object.defineProperties(this, {
+      levels: {
+        enumerable: true,
+        value: [],
+      },
+      isLOD: {
+        value: true,
+      },
+    });
 
-		this.type = 'LOD';
+    this.autoUpdate = true;
+  }
 
-		Object.defineProperties( this, {
-			levels: {
-				enumerable: true,
-				value: []
-			},
-			isLOD: {
-				value: true,
-			}
-		} );
+  copy(source) {
+    super.copy(source, false);
 
-		this.autoUpdate = true;
+    const levels = source.levels;
 
-	}
+    for (let i = 0, l = levels.length; i < l; i++) {
+      const level = levels[i];
 
-	copy( source ) {
+      this.addLevel(level.object.clone(), level.distance);
+    }
 
-		super.copy( source, false );
+    this.autoUpdate = source.autoUpdate;
 
-		const levels = source.levels;
+    return this;
+  }
 
-		for ( let i = 0, l = levels.length; i < l; i ++ ) {
+  addLevel(object, distance = 0) {
+    distance = Math.abs(distance);
 
-			const level = levels[ i ];
+    const levels = this.levels;
 
-			this.addLevel( level.object.clone(), level.distance );
+    let l;
 
-		}
+    for (l = 0; l < levels.length; l++) {
+      if (distance < levels[l].distance) {
+        break;
+      }
+    }
 
-		this.autoUpdate = source.autoUpdate;
+    levels.splice(l, 0, { distance: distance, object: object });
 
-		return this;
+    this.add(object);
 
-	}
+    return this;
+  }
 
-	addLevel( object, distance = 0 ) {
+  getCurrentLevel() {
+    return this._currentLevel;
+  }
 
-		distance = Math.abs( distance );
+  getObjectForDistance(distance) {
+    const levels = this.levels;
 
-		const levels = this.levels;
+    if (levels.length > 0) {
+      let i, l;
 
-		let l;
+      for (i = 1, l = levels.length; i < l; i++) {
+        if (distance < levels[i].distance) {
+          break;
+        }
+      }
 
-		for ( l = 0; l < levels.length; l ++ ) {
+      return levels[i - 1].object;
+    }
 
-			if ( distance < levels[ l ].distance ) {
+    return null;
+  }
 
-				break;
+  raycast(raycaster, intersects) {
+    const levels = this.levels;
 
-			}
+    if (levels.length > 0) {
+      _v1.setFromMatrixPosition(this.matrixWorld);
 
-		}
+      const distance = raycaster.ray.origin.distanceTo(_v1);
 
-		levels.splice( l, 0, { distance: distance, object: object } );
+      this.getObjectForDistance(distance).raycast(raycaster, intersects);
+    }
+  }
 
-		this.add( object );
+  update(camera) {
+    const levels = this.levels;
 
-		return this;
+    if (levels.length > 1) {
+      _v1.setFromMatrixPosition(camera.matrixWorld);
+      _v2.setFromMatrixPosition(this.matrixWorld);
 
-	}
+      const distance = _v1.distanceTo(_v2) / camera.zoom;
 
-	getCurrentLevel() {
+      levels[0].object.visible = true;
 
-		return this._currentLevel;
+      let i, l;
 
-	}
+      for (i = 1, l = levels.length; i < l; i++) {
+        if (distance >= levels[i].distance) {
+          levels[i - 1].object.visible = false;
+          levels[i].object.visible = true;
+        } else {
+          break;
+        }
+      }
 
-	getObjectForDistance( distance ) {
+      this._currentLevel = i - 1;
 
-		const levels = this.levels;
+      for (; i < l; i++) {
+        levels[i].object.visible = false;
+      }
+    }
+  }
 
-		if ( levels.length > 0 ) {
+  toJSON(meta) {
+    const data = super.toJSON(meta);
 
-			let i, l;
+    if (this.autoUpdate === false) data.object.autoUpdate = false;
 
-			for ( i = 1, l = levels.length; i < l; i ++ ) {
+    data.object.levels = [];
 
-				if ( distance < levels[ i ].distance ) {
+    const levels = this.levels;
 
-					break;
+    for (let i = 0, l = levels.length; i < l; i++) {
+      const level = levels[i];
 
-				}
+      data.object.levels.push({
+        object: level.object.uuid,
+        distance: level.distance,
+      });
+    }
 
-			}
-
-			return levels[ i - 1 ].object;
-
-		}
-
-		return null;
-
-	}
-
-	raycast( raycaster, intersects ) {
-
-		const levels = this.levels;
-
-		if ( levels.length > 0 ) {
-
-			_v1.setFromMatrixPosition( this.matrixWorld );
-
-			const distance = raycaster.ray.origin.distanceTo( _v1 );
-
-			this.getObjectForDistance( distance ).raycast( raycaster, intersects );
-
-		}
-
-	}
-
-	update( camera ) {
-
-		const levels = this.levels;
-
-		if ( levels.length > 1 ) {
-
-			_v1.setFromMatrixPosition( camera.matrixWorld );
-			_v2.setFromMatrixPosition( this.matrixWorld );
-
-			const distance = _v1.distanceTo( _v2 ) / camera.zoom;
-
-			levels[ 0 ].object.visible = true;
-
-			let i, l;
-
-			for ( i = 1, l = levels.length; i < l; i ++ ) {
-
-				if ( distance >= levels[ i ].distance ) {
-
-					levels[ i - 1 ].object.visible = false;
-					levels[ i ].object.visible = true;
-
-				} else {
-
-					break;
-
-				}
-
-			}
-
-			this._currentLevel = i - 1;
-
-			for ( ; i < l; i ++ ) {
-
-				levels[ i ].object.visible = false;
-
-			}
-
-		}
-
-	}
-
-	toJSON( meta ) {
-
-		const data = super.toJSON( meta );
-
-		if ( this.autoUpdate === false ) data.object.autoUpdate = false;
-
-		data.object.levels = [];
-
-		const levels = this.levels;
-
-		for ( let i = 0, l = levels.length; i < l; i ++ ) {
-
-			const level = levels[ i ];
-
-			data.object.levels.push( {
-				object: level.object.uuid,
-				distance: level.distance
-			} );
-
-		}
-
-		return data;
-
-	}
-
+    return data;
+  }
 }
-
 
 export { LOD };

@@ -7,7 +7,15 @@
  * @author ScieCode / http://github.com/sciecode
  */
 
-import { EventDispatcher, MOUSE, Quaternion, Spherical, TOUCH, Vector2, Vector3 } from 'three';
+import {
+  EventDispatcher,
+  MOUSE,
+  Quaternion,
+  Spherical,
+  TOUCH,
+  Vector2,
+  Vector3,
+} from 'three';
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
@@ -18,7 +26,9 @@ import { EventDispatcher, MOUSE, Quaternion, Spherical, TOUCH, Vector2, Vector3 
 
 var OrbitControls = function (object, domElement) {
   if (domElement === undefined)
-    console.warn('THREE.OrbitControls: The second parameter "domElement" is now mandatory.');
+    console.warn(
+      'THREE.OrbitControls: The second parameter "domElement" is now mandatory.',
+    );
   if (domElement === document)
     console.error(
       'THREE.OrbitControls: "document" should not be used as the target "domElement". Please use "renderer.domElement" instead.',
@@ -133,7 +143,10 @@ var OrbitControls = function (object, domElement) {
     var offset = new Vector3();
 
     // so camera.up is the orbit axis
-    var quat = new Quaternion().setFromUnitVectors(object.up, new Vector3(0, 1, 0));
+    var quat = new Quaternion().setFromUnitVectors(
+      object.up,
+      new Vector3(0, 1, 0),
+    );
     var quatInverse = quat.clone().invert();
 
     var lastPosition = new Vector3();
@@ -169,14 +182,20 @@ var OrbitControls = function (object, domElement) {
       );
 
       // restrict phi to be between desired limits
-      spherical.phi = Math.max(scope.minPolarAngle, Math.min(scope.maxPolarAngle, spherical.phi));
+      spherical.phi = Math.max(
+        scope.minPolarAngle,
+        Math.min(scope.maxPolarAngle, spherical.phi),
+      );
 
       spherical.makeSafe();
 
       spherical.radius *= scale;
 
       // restrict radius to be between desired limits
-      spherical.radius = Math.max(scope.minDistance, Math.min(scope.maxDistance, spherical.radius));
+      spherical.radius = Math.max(
+        scope.minDistance,
+        Math.min(scope.maxDistance, spherical.radius),
+      );
 
       // move target to panned location
 
@@ -231,9 +250,15 @@ var OrbitControls = function (object, domElement) {
   })();
 
   this.dispose = function () {
-    scope.domElement.removeEventListener('contextmenu', onContextMenu, { passive: false });
-    scope.domElement.removeEventListener('mousedown', onMouseDown, { passive: false });
-    scope.domElement.removeEventListener('wheel', onMouseWheel, { passive: false });
+    scope.domElement.removeEventListener('contextmenu', onContextMenu, {
+      passive: false,
+    });
+    scope.domElement.removeEventListener('mousedown', onMouseDown, {
+      passive: false,
+    });
+    scope.domElement.removeEventListener('wheel', onMouseWheel, {
+      passive: false,
+    });
 
     scope.domElement.removeEventListener('touchstart', onTouchStart, false);
     scope.domElement.removeEventListener('touchend', onTouchEnd, false);
@@ -242,7 +267,9 @@ var OrbitControls = function (object, domElement) {
     document.removeEventListener('mousemove', onMouseMove, { passive: false });
     document.removeEventListener('mouseup', onMouseUp, { passive: false });
 
-    scope.domElement.removeEventListener('keydown', onKeyDown, { passive: false });
+    scope.domElement.removeEventListener('keydown', onKeyDown, {
+      passive: false,
+    });
 
     //scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
   };
@@ -367,8 +394,14 @@ var OrbitControls = function (object, domElement) {
         targetDistance *= Math.tan(((scope.object.fov / 2) * Math.PI) / 180.0);
 
         // we use only clientHeight here so aspect ratio does not distort speed
-        panLeft((2 * deltaX * targetDistance) / element.clientHeight, scope.object.matrix);
-        panUp((2 * deltaY * targetDistance) / element.clientHeight, scope.object.matrix);
+        panLeft(
+          (2 * deltaX * targetDistance) / element.clientHeight,
+          scope.object.matrix,
+        );
+        panUp(
+          (2 * deltaY * targetDistance) / element.clientHeight,
+          scope.object.matrix,
+        );
       } else if (scope.object.isOrthographicCamera) {
         // orthographic
         panLeft(
@@ -448,7 +481,9 @@ var OrbitControls = function (object, domElement) {
   function handleMouseMoveRotate(event) {
     rotateEnd.set(event.clientX, event.clientY);
 
-    rotateDelta.subVectors(rotateEnd, rotateStart).multiplyScalar(scope.rotateSpeed);
+    rotateDelta
+      .subVectors(rotateEnd, rotateStart)
+      .multiplyScalar(scope.rotateSpeed);
 
     var element = scope.domElement;
 
@@ -589,7 +624,9 @@ var OrbitControls = function (object, domElement) {
       rotateEnd.set(x, y);
     }
 
-    rotateDelta.subVectors(rotateEnd, rotateStart).multiplyScalar(scope.rotateSpeed);
+    rotateDelta
+      .subVectors(rotateEnd, rotateStart)
+      .multiplyScalar(scope.rotateSpeed);
 
     var element = scope.domElement;
 
@@ -799,7 +836,12 @@ var OrbitControls = function (object, domElement) {
   }
 
   function onKeyDown(event) {
-    if (scope.enabled === false || scope.enableKeys === false || scope.enablePan === false) return;
+    if (
+      scope.enabled === false ||
+      scope.enableKeys === false ||
+      scope.enablePan === false
+    )
+      return;
 
     handleKeyDown(event);
   }
@@ -848,7 +890,8 @@ var OrbitControls = function (object, domElement) {
             break;
 
           case TOUCH.DOLLY_ROTATE:
-            if (scope.enableZoom === false && scope.enableRotate === false) return;
+            if (scope.enableZoom === false && scope.enableRotate === false)
+              return;
 
             handleTouchStartDollyRotate(event);
 
@@ -937,14 +980,22 @@ var OrbitControls = function (object, domElement) {
 
   //
 
-  scope.domElement.addEventListener('contextmenu', onContextMenu, { passive: false });
+  scope.domElement.addEventListener('contextmenu', onContextMenu, {
+    passive: false,
+  });
 
-  scope.domElement.addEventListener('mousedown', onMouseDown, { passive: false });
+  scope.domElement.addEventListener('mousedown', onMouseDown, {
+    passive: false,
+  });
   scope.domElement.addEventListener('wheel', onMouseWheel, { passive: false });
 
-  scope.domElement.addEventListener('touchstart', onTouchStart, { passive: false });
+  scope.domElement.addEventListener('touchstart', onTouchStart, {
+    passive: false,
+  });
   scope.domElement.addEventListener('touchend', onTouchEnd, { passive: false });
-  scope.domElement.addEventListener('touchmove', onTouchMove, { passive: false });
+  scope.domElement.addEventListener('touchmove', onTouchMove, {
+    passive: false,
+  });
 
   scope.domElement.addEventListener('keydown', onKeyDown, { passive: false });
 

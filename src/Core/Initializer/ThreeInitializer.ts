@@ -118,7 +118,7 @@ class ThreeInitializer extends BaseInitializer {
 
   static removeOribitControl(controls: OrbitControls | OrbitControls[]) {
     if (Array.isArray(controls)) {
-      controls.forEach(control => {
+      controls.forEach((control) => {
         control.dispose();
       });
     } else controls.dispose();
@@ -146,17 +146,22 @@ class ThreeInitializer extends BaseInitializer {
   }
 
   private static initLights(scene: THREE.Scene) {
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-    const directionalLight1 = new THREE.DirectionalLight(0xc0c0c0, 0.3);
-    const directionalLight2 = new THREE.DirectionalLight(0xc0c0c0, 0.3);
-    directionalLight1.position.set(-1000, 1000, 1000);
-    directionalLight2.position.set(1000, 1000, -1000);
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+    const directionalLight1 = new THREE.DirectionalLight(0xc0c0c0, 0.5);
+    const directionalLight2 = new THREE.DirectionalLight(0xc0c0c0, 0.5);
+    directionalLight1.position.set(1000, 1000, 1000);
+    directionalLight2.position.set(-1000, -1000, -1000);
     directionalLight1.castShadow = true;
     directionalLight2.castShadow = true;
-    const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    sunLight.castShadow = true;
+    const topLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    topLight.position.set(0, 10000000, 0);
+    topLight.castShadow = true;
+    const bottomLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    bottomLight.position.set(0, -5000000, 0);
+    bottomLight.castShadow = true;
 
-    scene.add(sunLight);
+    scene.add(topLight);
+    scene.add(bottomLight);
     scene.add(directionalLight1);
     scene.add(directionalLight2);
     scene.add(ambientLight);
@@ -165,7 +170,8 @@ class ThreeInitializer extends BaseInitializer {
       ambientLight,
       directionalLight1,
       directionalLight2,
-      sunLight,
+      topLight,
+      bottomLight,
     };
   }
 
@@ -175,7 +181,7 @@ class ThreeInitializer extends BaseInitializer {
     const boxIndex = boxList.indexOf(name);
     if (boxIndex !== -1) {
       const urls = skyBoxConfig[name];
-      new THREE.CubeTextureLoader().load(urls, texture => {
+      new THREE.CubeTextureLoader().load(urls, (texture) => {
         // texture.encoding = THREE.sRGBEncoding;
         scene.background = texture;
       });

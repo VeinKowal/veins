@@ -1,44 +1,83 @@
-"use strict";
+'use strict';
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/classCallCheck'),
+);
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/createClass'),
+);
 
-var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
+var _assertThisInitialized2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/assertThisInitialized'),
+);
 
-var _get2 = _interopRequireDefault(require("@babel/runtime/helpers/get"));
+var _get2 = _interopRequireDefault(require('@babel/runtime/helpers/get'));
 
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+var _inherits2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/inherits'),
+);
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+var _possibleConstructorReturn2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/possibleConstructorReturn'),
+);
 
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+var _getPrototypeOf2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/getPrototypeOf'),
+);
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _View2 = _interopRequireDefault(require("../View"));
+var _View2 = _interopRequireDefault(require('../View'));
 
-var _CameraUtils = _interopRequireDefault(require("../../Utils/CameraUtils"));
+var _CameraUtils = _interopRequireDefault(require('../../Utils/CameraUtils'));
 
-var _PlanarControls = _interopRequireDefault(require("../../Controls/PlanarControls"));
+var _PlanarControls = _interopRequireDefault(
+  require('../../Controls/PlanarControls'),
+);
 
-var _PlanarLayer = _interopRequireDefault(require("./Planar/PlanarLayer"));
+var _PlanarLayer = _interopRequireDefault(require('./Planar/PlanarLayer'));
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+  return function () {
+    var Super = (0, _getPrototypeOf2['default'])(Derived),
+      result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return (0, _possibleConstructorReturn2['default'])(this, result);
+  };
+}
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === 'function') return true;
+  try {
+    Boolean.prototype.valueOf.call(
+      Reflect.construct(Boolean, [], function () {}),
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
-var PlanarView = /*#__PURE__*/function (_View) {
-  (0, _inherits2["default"])(PlanarView, _View);
+var PlanarView = /*#__PURE__*/ (function (_View) {
+  (0, _inherits2['default'])(PlanarView, _View);
 
   var _super = _createSuper(PlanarView);
 
@@ -70,8 +109,9 @@ var PlanarView = /*#__PURE__*/function (_View) {
   function PlanarView(viewerDiv, extent) {
     var _this;
 
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    (0, _classCallCheck2["default"])(this, PlanarView);
+    var options =
+      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    (0, _classCallCheck2['default'])(this, PlanarView);
     THREE.Object3D.DefaultUp.set(0, 0, 1); // Setup View
 
     _this = _super.call(this, extent.crs, viewerDiv, options);
@@ -83,11 +123,15 @@ var PlanarView = /*#__PURE__*/function (_View) {
     camera3D.near = 0.1;
     camera3D.far = camera3D.isOrthographicCamera ? 2000 : 2 * max;
     camera3D.updateProjectionMatrix();
-    var tileLayer = new _PlanarLayer["default"]('planar', extent, options.object3d, options);
+    var tileLayer = new _PlanarLayer['default'](
+      'planar',
+      extent,
+      options.object3d,
+      options,
+    );
     _this.mainLoop.gfxEngine.label2dRenderer.infoTileLayer = tileLayer.info;
 
     _this.addLayer(tileLayer); // Configure camera
-
 
     var placement = options.placement || {};
 
@@ -98,24 +142,37 @@ var PlanarView = /*#__PURE__*/function (_View) {
       placement.range = placement.range || max;
     }
 
-    _CameraUtils["default"].transformCameraToLookAtTarget((0, _assertThisInitialized2["default"])(_this), camera3D, placement);
+    _CameraUtils['default'].transformCameraToLookAtTarget(
+      (0, _assertThisInitialized2['default'])(_this),
+      camera3D,
+      placement,
+    );
 
     if (!options.noControls) {
-      _this.controls = new _PlanarControls["default"]((0, _assertThisInitialized2["default"])(_this), options.controls);
+      _this.controls = new _PlanarControls['default'](
+        (0, _assertThisInitialized2['default'])(_this),
+        options.controls,
+      );
     }
 
     _this.tileLayer = tileLayer;
     return _this;
   }
 
-  (0, _createClass2["default"])(PlanarView, [{
-    key: "addLayer",
-    value: function addLayer(layer) {
-      return (0, _get2["default"])((0, _getPrototypeOf2["default"])(PlanarView.prototype), "addLayer", this).call(this, layer, this.tileLayer);
-    }
-  }]);
+  (0, _createClass2['default'])(PlanarView, [
+    {
+      key: 'addLayer',
+      value: function addLayer(layer) {
+        return (0, _get2['default'])(
+          (0, _getPrototypeOf2['default'])(PlanarView.prototype),
+          'addLayer',
+          this,
+        ).call(this, layer, this.tileLayer);
+      },
+    },
+  ]);
   return PlanarView;
-}(_View2["default"]);
+})(_View2['default']);
 
 var _default = PlanarView;
-exports["default"] = _default;
+exports['default'] = _default;

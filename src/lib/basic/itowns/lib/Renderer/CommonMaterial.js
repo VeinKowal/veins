@@ -1,21 +1,26 @@
-"use strict";
+'use strict';
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
 var _default = {
   setDefineMapping: function setDefineMapping(object, PROPERTY, mapping) {
     Object.keys(mapping).forEach(function (key) {
-      object.defines["".concat(PROPERTY, "_").concat(key)] = mapping[key];
+      object.defines[''.concat(PROPERTY, '_').concat(key)] = mapping[key];
     });
   },
-  setDefineProperty: function setDefineProperty(object, property, PROPERTY, initValue) {
+  setDefineProperty: function setDefineProperty(
+    object,
+    property,
+    PROPERTY,
+    initValue,
+  ) {
     object.defines[PROPERTY] = initValue;
     Object.defineProperty(object, property, {
       get: function get() {
@@ -26,7 +31,7 @@ var _default = {
           object.defines[PROPERTY] = value;
           object.needsUpdate = true;
         }
-      }
+      },
     });
   },
   setUniformProperty: function setUniformProperty(object, property, initValue) {
@@ -39,8 +44,8 @@ var _default = {
         if (object.uniforms[property].value != value) {
           object.uniforms[property].value = value;
         }
-      }
+      },
     });
-  }
+  },
 };
-exports["default"] = _default;
+exports['default'] = _default;

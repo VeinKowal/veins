@@ -12,7 +12,11 @@ import { BufferGeometry } from 'three';
 const MeshTransmitter = function () {
   this.callbackDataReceiver = null;
   this.defaultGeometryType = 2;
-  this.defaultMaterials = ['defaultMaterial', 'defaultLineMaterial', 'defaultPointMaterial'];
+  this.defaultMaterials = [
+    'defaultMaterial',
+    'defaultLineMaterial',
+    'defaultPointMaterial',
+  ];
 };
 MeshTransmitter.MESH_TRANSMITTER_VERSION = '1.0.0-preview';
 
@@ -32,7 +36,10 @@ MeshTransmitter.prototype = {
     var _walk_ = function (object3d) {
       console.info('Walking: ' + object3d.name);
 
-      if (object3d.hasOwnProperty('geometry') && object3d['geometry'] instanceof BufferGeometry) {
+      if (
+        object3d.hasOwnProperty('geometry') &&
+        object3d['geometry'] instanceof BufferGeometry
+      ) {
         scope.handleBufferGeometry(object3d['geometry'], object3d.name);
       }
       if (object3d.hasOwnProperty('material')) {
@@ -61,14 +68,23 @@ MeshTransmitter.prototype = {
     var uvBA = bufferGeometry.getAttribute('uv');
     var skinIndexBA = bufferGeometry.getAttribute('skinIndex');
     var skinWeightBA = bufferGeometry.getAttribute('skinWeight');
-    var vertexFA = vertexBA !== null && vertexBA !== undefined ? vertexBA.array : null;
-    var indexUA = indexBA !== null && indexBA !== undefined ? indexBA.array : null;
-    var colorFA = colorBA !== null && colorBA !== undefined ? colorBA.array : null;
-    var normalFA = normalBA !== null && normalBA !== undefined ? normalBA.array : null;
+    var vertexFA =
+      vertexBA !== null && vertexBA !== undefined ? vertexBA.array : null;
+    var indexUA =
+      indexBA !== null && indexBA !== undefined ? indexBA.array : null;
+    var colorFA =
+      colorBA !== null && colorBA !== undefined ? colorBA.array : null;
+    var normalFA =
+      normalBA !== null && normalBA !== undefined ? normalBA.array : null;
     var uvFA = uvBA !== null && uvBA !== undefined ? uvBA.array : null;
-    var skinIndexFA = skinIndexBA !== null && skinIndexBA !== undefined ? skinIndexBA.array : null;
+    var skinIndexFA =
+      skinIndexBA !== null && skinIndexBA !== undefined
+        ? skinIndexBA.array
+        : null;
     var skinWeightFA =
-      skinWeightBA !== null && skinWeightBA !== undefined ? skinWeightBA.array : null;
+      skinWeightBA !== null && skinWeightBA !== undefined
+        ? skinWeightBA.array
+        : null;
 
     var materialNames = [this.defaultMaterials[this.defaultGeometryType]];
     this.callbackDataReceiver(

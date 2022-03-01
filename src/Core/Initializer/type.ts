@@ -37,6 +37,8 @@ export type ITownsInitializerType = {
   camera: PerspectiveCamera;
   renderer: WebGLRenderer;
   placement?: Extent;
+  url?: string;
+  zoom?: [number, number];
 };
 
 export type ITownsInitializerReturn = {

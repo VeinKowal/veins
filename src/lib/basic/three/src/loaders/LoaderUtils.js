@@ -1,49 +1,37 @@
 const LoaderUtils = {
+  decodeText: function (array) {
+    if (typeof TextDecoder !== 'undefined') {
+      return new TextDecoder().decode(array);
+    }
 
-	decodeText: function ( array ) {
+    // Avoid the String.fromCharCode.apply(null, array) shortcut, which
+    // throws a "maximum call stack size exceeded" error for large arrays.
 
-		if ( typeof TextDecoder !== 'undefined' ) {
+    let s = '';
 
-			return new TextDecoder().decode( array );
+    for (let i = 0, il = array.length; i < il; i++) {
+      // Implicitly assumes little-endian.
+      s += String.fromCharCode(array[i]);
+    }
 
-		}
+    try {
+      // merges multi-byte utf-8 characters.
 
-		// Avoid the String.fromCharCode.apply(null, array) shortcut, which
-		// throws a "maximum call stack size exceeded" error for large arrays.
+      return decodeURIComponent(escape(s));
+    } catch (e) {
+      // see #16358
 
-		let s = '';
+      return s;
+    }
+  },
 
-		for ( let i = 0, il = array.length; i < il; i ++ ) {
+  extractUrlBase: function (url) {
+    const index = url.lastIndexOf('/');
 
-			// Implicitly assumes little-endian.
-			s += String.fromCharCode( array[ i ] );
+    if (index === -1) return './';
 
-		}
-
-		try {
-
-			// merges multi-byte utf-8 characters.
-
-			return decodeURIComponent( escape( s ) );
-
-		} catch ( e ) { // see #16358
-
-			return s;
-
-		}
-
-	},
-
-	extractUrlBase: function ( url ) {
-
-		const index = url.lastIndexOf( '/' );
-
-		if ( index === - 1 ) return './';
-
-		return url.substr( 0, index + 1 );
-
-	}
-
+    return url.substr(0, index + 1);
+  },
 };
 
 export { LoaderUtils };

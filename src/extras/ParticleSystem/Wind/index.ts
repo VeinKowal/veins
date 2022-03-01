@@ -61,12 +61,18 @@ export default class Wind extends THREE.Mesh {
         }
 
         // 如果风条移动到范围外 修改风条位置到范围内
-        if (position.getX(i) < this.box.min.x || position.getX(i) > this.box.max.x) {
+        if (
+          position.getX(i) < this.box.min.x ||
+          position.getX(i) > this.box.max.x
+        ) {
           const initialX = position.getX(i);
           const initialY = position.getY(i);
-          const randomX = Math.random() * (this.box.max.x - this.box.min.x) + this.box.min.x;
-          const randomY = Math.random() * (this.box.max.y - this.box.min.y) + this.box.min.y;
-          const randomZ = Math.random() * (this.box.max.z - this.box.min.z) + this.box.min.z;
+          const randomX =
+            Math.random() * (this.box.max.x - this.box.min.x) + this.box.min.x;
+          const randomY =
+            Math.random() * (this.box.max.y - this.box.min.y) + this.box.min.y;
+          const randomZ =
+            Math.random() * (this.box.max.z - this.box.min.z) + this.box.min.z;
 
           for (let j = i; j < i + 4; j += 1) {
             position.setX(j, randomX + position.getX(j) - initialX);
@@ -75,12 +81,18 @@ export default class Wind extends THREE.Mesh {
           }
         }
 
-        if (position.getY(i) < this.box.min.y || position.getY(i) > this.box.max.y) {
+        if (
+          position.getY(i) < this.box.min.y ||
+          position.getY(i) > this.box.max.y
+        ) {
           const initialX = position.getX(i);
           const initialY = position.getY(i);
-          const randomX = Math.random() * (this.box.max.x - this.box.min.x) + this.box.min.x;
-          const randomY = Math.random() * (this.box.max.y - this.box.min.y) + this.box.min.y;
-          const randomZ = Math.random() * (this.box.max.z - this.box.min.z) + this.box.min.z;
+          const randomX =
+            Math.random() * (this.box.max.x - this.box.min.x) + this.box.min.x;
+          const randomY =
+            Math.random() * (this.box.max.y - this.box.min.y) + this.box.min.y;
+          const randomZ =
+            Math.random() * (this.box.max.z - this.box.min.z) + this.box.min.z;
 
           for (let j = i; j < i + 4; j += 1) {
             position.setX(j, randomX + position.getX(j) - initialX);
@@ -89,12 +101,18 @@ export default class Wind extends THREE.Mesh {
           }
         }
 
-        if (position.getZ(i) < this.box.min.z || position.getZ(i) > this.box.max.z) {
+        if (
+          position.getZ(i) < this.box.min.z ||
+          position.getZ(i) > this.box.max.z
+        ) {
           const initialX = position.getX(i);
           const initialY = position.getY(i);
-          const randomX = Math.random() * (this.box.max.x - this.box.min.x) + this.box.min.x;
-          const randomY = Math.random() * (this.box.max.y - this.box.min.y) + this.box.min.y;
-          const randomZ = Math.random() * (this.box.max.z - this.box.min.z) + this.box.min.z;
+          const randomX =
+            Math.random() * (this.box.max.x - this.box.min.x) + this.box.min.x;
+          const randomY =
+            Math.random() * (this.box.max.y - this.box.min.y) + this.box.min.y;
+          const randomZ =
+            Math.random() * (this.box.max.z - this.box.min.z) + this.box.min.z;
 
           for (let j = i; j < i + 4; j += 1) {
             position.setX(j, randomX + position.getX(j) - initialX);
@@ -140,14 +158,20 @@ export default class Wind extends THREE.Mesh {
 
     const box = new THREE.Box3(
       new THREE.Vector3(length ? -length : -4000, 0, length ? -length : -4000),
-      new THREE.Vector3(length ? length * 2 : 8000, height || 5000, length ? length * 2 : 8000),
+      new THREE.Vector3(
+        length ? length * 2 : 8000,
+        height || 5000,
+        length ? length * 2 : 8000,
+      ),
     );
     this.box = box;
 
     const material = new WindMaterial({
       transparent: true,
       opacity: 0.3,
-      map: new THREE.TextureLoader().load('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAB4CAYAAAAg79h0AAACCUlEQVRYhbVYi47DMAgzbff//9u1y2mnERHHJDndHdK0R1xjCJBoVkoBgA3A+4Oht9fxAWxisdrxeVlgKoSxI7BENgd+P+RMUAz+2zHT46BdPc2adhIOCsKipmkKogt2aVFTDFsK54XmAdZknEiIbYGKUDHJ6B6DMmlSMDRnUpEh0zR0xxFJ4dHktjBIunuILDfuR8KbbVl293egMqjzLjqMSiUugBMahcuec6b/TUFTDTNQsy3TPPkGy56bCZdM0+h+3XeW7V0UbyvuuuaUDbE8x3fkVjWpER3dy77rBuzM3c9AW6Ylgg4uMsVkK8frvlIFW1K+S6CmzfH5YsTin5vTfCg8FRxBTA/WtgkAfze1JZ1NRSPkCPQeX5XphR5QgzgIEK1WKF8clDVMmdkI1PTdjKmCVPmaAgF6unyD7mxWxqK7mD5jmgp3kJzhDrr08zkTVNe8QU+KJlqdT9fgJoYIysyiu3Q8q+jUvdwypi5P96A6q6YziS7V1CxGd08BAoPOSauXUTK7FChAk4JTJLG7+F2j8NldNqZrMpU1RXcNtqW6y5iqxSpITyoVnQS5u/SkWt7gJZBKQVfjZ7LYMS27y3KV1lPHxAOD6wlqYDC4RBAyoJqZMgXZVGmutdn0bS5+nMxuwvCxIY1TMDw26r1kFB1fSCPz7dGpG4af6rf/ZeIL3OYFAL4AxjDgy+FcJmUAAAAASUVORK5CYII='),
+      map: new THREE.TextureLoader().load(
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAB4CAYAAAAg79h0AAACCUlEQVRYhbVYi47DMAgzbff//9u1y2mnERHHJDndHdK0R1xjCJBoVkoBgA3A+4Oht9fxAWxisdrxeVlgKoSxI7BENgd+P+RMUAz+2zHT46BdPc2adhIOCsKipmkKogt2aVFTDFsK54XmAdZknEiIbYGKUDHJ6B6DMmlSMDRnUpEh0zR0xxFJ4dHktjBIunuILDfuR8KbbVl293egMqjzLjqMSiUugBMahcuec6b/TUFTDTNQsy3TPPkGy56bCZdM0+h+3XeW7V0UbyvuuuaUDbE8x3fkVjWpER3dy77rBuzM3c9AW6Ylgg4uMsVkK8frvlIFW1K+S6CmzfH5YsTin5vTfCg8FRxBTA/WtgkAfze1JZ1NRSPkCPQeX5XphR5QgzgIEK1WKF8clDVMmdkI1PTdjKmCVPmaAgF6unyD7mxWxqK7mD5jmgp3kJzhDrr08zkTVNe8QU+KJlqdT9fgJoYIysyiu3Q8q+jUvdwypi5P96A6q6YziS7V1CxGd08BAoPOSauXUTK7FChAk4JTJLG7+F2j8NldNqZrMpU1RXcNtqW6y5iqxSpITyoVnQS5u/SkWt7gJZBKQVfjZ7LYMS27y3KV1lPHxAOD6wlqYDC4RBAyoJqZMgXZVGmutdn0bS5+nMxuwvCxIY1TMDw26r1kFB1fSCPz7dGpG4af6rf/ZeIL3OYFAL4AxjDgy+FcJmUAAAAASUVORK5CYII=',
+      ),
       depthWrite: true,
       side: THREE.DoubleSide,
     });
@@ -214,7 +238,11 @@ export default class Wind extends THREE.Mesh {
       );
 
       // 风条所吹向的方向的单位向量
-      const dectorVec = new THREE.Vector3(rotatedPoints[0].x, rotatedPoints[0].y, pos.z)
+      const dectorVec = new THREE.Vector3(
+        rotatedPoints[0].x,
+        rotatedPoints[0].y,
+        pos.z,
+      )
         .sub(new THREE.Vector3(rotatedPoints[3].x, rotatedPoints[3].y, pos.z))
         .normalize();
       // 存储该单位向量
@@ -237,13 +265,32 @@ export default class Wind extends THREE.Mesh {
 
       uvs.push(1, 1, 0, 1, 0, 0, 1, 0);
 
-      indices.push(i * 4 + 0, i * 4 + 1, i * 4 + 2, i * 4 + 0, i * 4 + 2, i * 4 + 3);
+      indices.push(
+        i * 4 + 0,
+        i * 4 + 1,
+        i * 4 + 2,
+        i * 4 + 0,
+        i * 4 + 2,
+        i * 4 + 3,
+      );
     }
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
-    geometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(normals), 3));
-    geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), 2));
-    geometry.setAttribute('velocity', new THREE.BufferAttribute(new Float32Array(velocity), 3));
+    geometry.setAttribute(
+      'position',
+      new THREE.BufferAttribute(new Float32Array(vertices), 3),
+    );
+    geometry.setAttribute(
+      'normal',
+      new THREE.BufferAttribute(new Float32Array(normals), 3),
+    );
+    geometry.setAttribute(
+      'uv',
+      new THREE.BufferAttribute(new Float32Array(uvs), 2),
+    );
+    geometry.setAttribute(
+      'velocity',
+      new THREE.BufferAttribute(new Float32Array(velocity), 3),
+    );
     geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(indices), 1));
 
     this.geometry = geometry;

@@ -1,15 +1,13 @@
 import { TempNode } from '../core/TempNode.js';
 
-function MathNode( a, bOrMethod, cOrMethod, method ) {
+function MathNode(a, bOrMethod, cOrMethod, method) {
+  TempNode.call(this);
 
-	TempNode.call( this );
+  this.a = a;
+  typeof bOrMethod !== 'string' ? (this.b = bOrMethod) : (method = bOrMethod);
+  typeof cOrMethod !== 'string' ? (this.c = cOrMethod) : (method = cOrMethod);
 
-	this.a = a;
-	typeof bOrMethod !== 'string' ? this.b = bOrMethod : method = bOrMethod;
-	typeof cOrMethod !== 'string' ? this.c = cOrMethod : method = cOrMethod;
-
-	this.method = method;
-
+  this.method = method;
 }
 
 // 1 input
@@ -59,209 +57,186 @@ MathNode.REFRACT = 'refract';
 MathNode.SMOOTHSTEP = 'smoothstep';
 MathNode.FACEFORWARD = 'faceforward';
 
-MathNode.prototype = Object.create( TempNode.prototype );
+MathNode.prototype = Object.create(TempNode.prototype);
 MathNode.prototype.constructor = MathNode;
 MathNode.prototype.nodeType = 'Math';
-MathNode.prototype.hashProperties = [ 'method' ];
+MathNode.prototype.hashProperties = ['method'];
 
-MathNode.prototype.getNumInputs = function ( /*builder*/ ) {
+MathNode.prototype.getNumInputs = function (/*builder*/) {
+  switch (this.method) {
+    case MathNode.MIX:
+    case MathNode.CLAMP:
+    case MathNode.REFRACT:
+    case MathNode.SMOOTHSTEP:
+    case MathNode.FACEFORWARD:
+      return 3;
 
-	switch ( this.method ) {
+    case MathNode.MIN:
+    case MathNode.MAX:
+    case MathNode.MOD:
+    case MathNode.STEP:
+    case MathNode.REFLECT:
+    case MathNode.DISTANCE:
+    case MathNode.DOT:
+    case MathNode.CROSS:
+    case MathNode.POW:
+      return 2;
 
-		case MathNode.MIX:
-		case MathNode.CLAMP:
-		case MathNode.REFRACT:
-		case MathNode.SMOOTHSTEP:
-		case MathNode.FACEFORWARD:
-
-			return 3;
-
-		case MathNode.MIN:
-		case MathNode.MAX:
-		case MathNode.MOD:
-		case MathNode.STEP:
-		case MathNode.REFLECT:
-		case MathNode.DISTANCE:
-		case MathNode.DOT:
-		case MathNode.CROSS:
-		case MathNode.POW:
-
-			return 2;
-
-		default:
-
-			return 1;
-
-	}
-
+    default:
+      return 1;
+  }
 };
 
-MathNode.prototype.getInputType = function ( builder ) {
+MathNode.prototype.getInputType = function (builder) {
+  var a = builder.getTypeLength(this.a.getType(builder));
+  var b = this.b ? builder.getTypeLength(this.b.getType(builder)) : 0;
+  var c = this.c ? builder.getTypeLength(this.c.getType(builder)) : 0;
 
-	var a = builder.getTypeLength( this.a.getType( builder ) );
-	var b = this.b ? builder.getTypeLength( this.b.getType( builder ) ) : 0;
-	var c = this.c ? builder.getTypeLength( this.c.getType( builder ) ) : 0;
+  if (a > b && a > c) {
+    return this.a.getType(builder);
+  } else if (b > c) {
+    return this.b.getType(builder);
+  }
 
-	if ( a > b && a > c ) {
-
-		return this.a.getType( builder );
-
-	} else if ( b > c ) {
-
-		return this.b.getType( builder );
-
-	}
-
-	return this.c.getType( builder );
-
+  return this.c.getType(builder);
 };
 
-MathNode.prototype.getType = function ( builder ) {
+MathNode.prototype.getType = function (builder) {
+  switch (this.method) {
+    case MathNode.LENGTH:
+    case MathNode.DISTANCE:
+    case MathNode.DOT:
+      return 'f';
 
-	switch ( this.method ) {
+    case MathNode.CROSS:
+      return 'v3';
+  }
 
-		case MathNode.LENGTH:
-		case MathNode.DISTANCE:
-		case MathNode.DOT:
-
-			return 'f';
-
-		case MathNode.CROSS:
-
-			return 'v3';
-
-	}
-
-	return this.getInputType( builder );
-
+  return this.getInputType(builder);
 };
 
-MathNode.prototype.generate = function ( builder, output ) {
+MathNode.prototype.generate = function (builder, output) {
+  var a,
+    b,
+    c,
+    al = this.a ? builder.getTypeLength(this.a.getType(builder)) : 0,
+    bl = this.b ? builder.getTypeLength(this.b.getType(builder)) : 0,
+    cl = this.c ? builder.getTypeLength(this.c.getType(builder)) : 0,
+    inputType = this.getInputType(builder),
+    nodeType = this.getType(builder);
 
-	var a, b, c,
-		al = this.a ? builder.getTypeLength( this.a.getType( builder ) ) : 0,
-		bl = this.b ? builder.getTypeLength( this.b.getType( builder ) ) : 0,
-		cl = this.c ? builder.getTypeLength( this.c.getType( builder ) ) : 0,
-		inputType = this.getInputType( builder ),
-		nodeType = this.getType( builder );
+  switch (this.method) {
+    // 1 input
 
-	switch ( this.method ) {
+    case MathNode.NEGATE:
+      return builder.format(
+        '( -' + this.a.build(builder, inputType) + ' )',
+        inputType,
+        output,
+      );
 
-		// 1 input
+    case MathNode.INVERT:
+      return builder.format(
+        '( 1.0 - ' + this.a.build(builder, inputType) + ' )',
+        inputType,
+        output,
+      );
 
-		case MathNode.NEGATE:
+    // 2 inputs
 
-			return builder.format( '( -' + this.a.build( builder, inputType ) + ' )', inputType, output );
+    case MathNode.CROSS:
+      a = this.a.build(builder, 'v3');
+      b = this.b.build(builder, 'v3');
 
-		case MathNode.INVERT:
+      break;
 
-			return builder.format( '( 1.0 - ' + this.a.build( builder, inputType ) + ' )', inputType, output );
+    case MathNode.STEP:
+      a = this.a.build(builder, al === 1 ? 'f' : inputType);
+      b = this.b.build(builder, inputType);
 
-			// 2 inputs
+      break;
 
-		case MathNode.CROSS:
+    case MathNode.MIN:
+    case MathNode.MAX:
+    case MathNode.MOD:
+      a = this.a.build(builder, inputType);
+      b = this.b.build(builder, bl === 1 ? 'f' : inputType);
 
-			a = this.a.build( builder, 'v3' );
-			b = this.b.build( builder, 'v3' );
+      break;
 
-			break;
+    // 3 inputs
 
-		case MathNode.STEP:
+    case MathNode.REFRACT:
+      a = this.a.build(builder, inputType);
+      b = this.b.build(builder, inputType);
+      c = this.c.build(builder, 'f');
 
-			a = this.a.build( builder, al === 1 ? 'f' : inputType );
-			b = this.b.build( builder, inputType );
+      break;
 
-			break;
+    case MathNode.MIX:
+      a = this.a.build(builder, inputType);
+      b = this.b.build(builder, inputType);
+      c = this.c.build(builder, cl === 1 ? 'f' : inputType);
 
-		case MathNode.MIN:
-		case MathNode.MAX:
-		case MathNode.MOD:
+      break;
 
-			a = this.a.build( builder, inputType );
-			b = this.b.build( builder, bl === 1 ? 'f' : inputType );
+    // default
 
-			break;
+    default:
+      a = this.a.build(builder, inputType);
+      if (this.b) b = this.b.build(builder, inputType);
+      if (this.c) c = this.c.build(builder, inputType);
 
-			// 3 inputs
+      break;
+  }
 
-		case MathNode.REFRACT:
+  // build function call
 
-			a = this.a.build( builder, inputType );
-			b = this.b.build( builder, inputType );
-			c = this.c.build( builder, 'f' );
+  var params = [];
+  params.push(a);
+  if (b) params.push(b);
+  if (c) params.push(c);
 
-			break;
+  var numInputs = this.getNumInputs(builder);
 
-		case MathNode.MIX:
+  if (params.length !== numInputs) {
+    throw Error(
+      `Arguments not match used in "${this.method}". Require ${numInputs}, currently ${params.length}.`,
+    );
+  }
 
-			a = this.a.build( builder, inputType );
-			b = this.b.build( builder, inputType );
-			c = this.c.build( builder, cl === 1 ? 'f' : inputType );
-
-			break;
-
-			// default
-
-		default:
-
-			a = this.a.build( builder, inputType );
-			if ( this.b ) b = this.b.build( builder, inputType );
-			if ( this.c ) c = this.c.build( builder, inputType );
-
-			break;
-
-	}
-
-	// build function call
-
-	var params = [];
-	params.push( a );
-	if ( b ) params.push( b );
-	if ( c ) params.push( c );
-
-	var numInputs = this.getNumInputs( builder );
-
-	if ( params.length !== numInputs ) {
-
-		throw Error( `Arguments not match used in "${this.method}". Require ${numInputs}, currently ${params.length}.` );
-
-	}
-
-	return builder.format( this.method + '( ' + params.join( ', ' ) + ' )', nodeType, output );
-
+  return builder.format(
+    this.method + '( ' + params.join(', ') + ' )',
+    nodeType,
+    output,
+  );
 };
 
-MathNode.prototype.copy = function ( source ) {
+MathNode.prototype.copy = function (source) {
+  TempNode.prototype.copy.call(this, source);
 
-	TempNode.prototype.copy.call( this, source );
+  this.a = source.a;
+  this.b = source.b;
+  this.c = source.c;
+  this.method = source.method;
 
-	this.a = source.a;
-	this.b = source.b;
-	this.c = source.c;
-	this.method = source.method;
-
-	return this;
-
+  return this;
 };
 
-MathNode.prototype.toJSON = function ( meta ) {
+MathNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = this.createJSONNode(meta);
 
-	if ( ! data ) {
+    data.a = this.a.toJSON(meta).uuid;
+    if (this.b) data.b = this.b.toJSON(meta).uuid;
+    if (this.c) data.c = this.c.toJSON(meta).uuid;
 
-		data = this.createJSONNode( meta );
+    data.method = this.method;
+  }
 
-		data.a = this.a.toJSON( meta ).uuid;
-		if ( this.b ) data.b = this.b.toJSON( meta ).uuid;
-		if ( this.c ) data.c = this.c.toJSON( meta ).uuid;
-
-		data.method = this.method;
-
-	}
-
-	return data;
-
+  return data;
 };
 
 export { MathNode };

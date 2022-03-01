@@ -23,57 +23,51 @@ import { Vector3 } from '../math/Vector3.js';
  */
 
 class MeshDistanceMaterial extends Material {
+  constructor(parameters) {
+    super();
 
-	constructor( parameters ) {
+    this.type = 'MeshDistanceMaterial';
 
-		super();
+    this.referencePosition = new Vector3();
+    this.nearDistance = 1;
+    this.farDistance = 1000;
 
-		this.type = 'MeshDistanceMaterial';
+    this.skinning = false;
+    this.morphTargets = false;
 
-		this.referencePosition = new Vector3();
-		this.nearDistance = 1;
-		this.farDistance = 1000;
+    this.map = null;
 
-		this.skinning = false;
-		this.morphTargets = false;
+    this.alphaMap = null;
 
-		this.map = null;
+    this.displacementMap = null;
+    this.displacementScale = 1;
+    this.displacementBias = 0;
 
-		this.alphaMap = null;
+    this.fog = false;
 
-		this.displacementMap = null;
-		this.displacementScale = 1;
-		this.displacementBias = 0;
+    this.setValues(parameters);
+  }
 
-		this.fog = false;
+  copy(source) {
+    super.copy(source);
 
-		this.setValues( parameters );
+    this.referencePosition.copy(source.referencePosition);
+    this.nearDistance = source.nearDistance;
+    this.farDistance = source.farDistance;
 
-	}
+    this.skinning = source.skinning;
+    this.morphTargets = source.morphTargets;
 
-	copy( source ) {
+    this.map = source.map;
 
-		super.copy( source );
+    this.alphaMap = source.alphaMap;
 
-		this.referencePosition.copy( source.referencePosition );
-		this.nearDistance = source.nearDistance;
-		this.farDistance = source.farDistance;
+    this.displacementMap = source.displacementMap;
+    this.displacementScale = source.displacementScale;
+    this.displacementBias = source.displacementBias;
 
-		this.skinning = source.skinning;
-		this.morphTargets = source.morphTargets;
-
-		this.map = source.map;
-
-		this.alphaMap = source.alphaMap;
-
-		this.displacementMap = source.displacementMap;
-		this.displacementScale = source.displacementScale;
-		this.displacementBias = source.displacementBias;
-
-		return this;
-
-	}
-
+    return this;
+  }
 }
 
 MeshDistanceMaterial.prototype.isMeshDistanceMaterial = true;

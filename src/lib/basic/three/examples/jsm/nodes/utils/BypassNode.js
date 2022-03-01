@@ -1,83 +1,63 @@
 import { Node } from '../core/Node.js';
 
-function BypassNode( code, value ) {
+function BypassNode(code, value) {
+  Node.call(this);
 
-	Node.call( this );
-
-	this.code = code;
-	this.value = value;
-
+  this.code = code;
+  this.value = value;
 }
 
-BypassNode.prototype = Object.create( Node.prototype );
+BypassNode.prototype = Object.create(Node.prototype);
 BypassNode.prototype.constructor = BypassNode;
 BypassNode.prototype.nodeType = 'Bypass';
 
-BypassNode.prototype.getType = function ( builder ) {
+BypassNode.prototype.getType = function (builder) {
+  if (this.value) {
+    return this.value.getType(builder);
+  } else if (builder.isShader('fragment')) {
+    return 'f';
+  }
 
-	if ( this.value ) {
-
-		return this.value.getType( builder );
-
-	} else if ( builder.isShader( 'fragment' ) ) {
-
-		return 'f';
-
-	}
-
-	return 'void';
-
+  return 'void';
 };
 
-BypassNode.prototype.generate = function ( builder, output ) {
+BypassNode.prototype.generate = function (builder, output) {
+  var code = this.code.build(builder, output) + ';';
 
-	var code = this.code.build( builder, output ) + ';';
+  builder.addNodeCode(code);
 
-	builder.addNodeCode( code );
-
-	if ( builder.isShader( 'vertex' ) ) {
-
-		if ( this.value ) {
-
-			return this.value.build( builder, output );
-
-		}
-
-	} else {
-
-		return this.value ? this.value.build( builder, output ) : builder.format( '0.0', 'f', output );
-
-	}
-
+  if (builder.isShader('vertex')) {
+    if (this.value) {
+      return this.value.build(builder, output);
+    }
+  } else {
+    return this.value
+      ? this.value.build(builder, output)
+      : builder.format('0.0', 'f', output);
+  }
 };
 
-BypassNode.prototype.copy = function ( source ) {
+BypassNode.prototype.copy = function (source) {
+  Node.prototype.copy.call(this, source);
 
-	Node.prototype.copy.call( this, source );
+  this.code = source.code;
+  this.value = source.value;
 
-	this.code = source.code;
-	this.value = source.value;
-
-	return this;
-
+  return this;
 };
 
-BypassNode.prototype.toJSON = function ( meta ) {
+BypassNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = this.createJSONNode(meta);
 
-	if ( ! data ) {
+    data.code = this.code.toJSON(meta).uuid;
 
-		data = this.createJSONNode( meta );
+    if (this.value) data.value = this.value.toJSON(meta).uuid;
+  }
 
-		data.code = this.code.toJSON( meta ).uuid;
-
-		if ( this.value ) data.value = this.value.toJSON( meta ).uuid;
-
-	}
-
-	return data;
-
+  return data;
 };
 
 export { BypassNode };

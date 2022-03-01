@@ -69,7 +69,6 @@ Object3D.prototype.query = function (param, recursive = true) {
 };
 
 Object3D.prototype.copy = function (source, recursive = true) {
-
   this.name = source.name;
 
   this.up.copy(source.up);
@@ -111,5 +110,3 @@ Object3D.prototype.copy = function (source, recursive = true) {
 
   return this;
 };
-
-

@@ -71,7 +71,10 @@ ZippedMTLLoader.prototype = Object.assign(Object.create(Loader.prototype), {
       }
     }
 
-    var materialCreator = new ZippedMTLLoader.MaterialCreator(resources, this.materialOptions);
+    var materialCreator = new ZippedMTLLoader.MaterialCreator(
+      resources,
+      this.materialOptions,
+    );
     materialCreator.setManager(this.manager);
     materialCreator.setMaterials(materialsInfo);
     return materialCreator;
@@ -87,7 +90,8 @@ ZippedMTLLoader.MaterialCreator = function (resources, options) {
   this.nameLookup = {};
 
   this.side = this.options && this.options.side ? this.options.side : FrontSide;
-  this.wrap = this.options && this.options.wrap ? this.options.wrap : RepeatWrapping;
+  this.wrap =
+    this.options && this.options.wrap ? this.options.wrap : RepeatWrapping;
 };
 
 ZippedMTLLoader.MaterialCreator.prototype = {
@@ -353,14 +357,20 @@ ZippedMTLLoader.MaterialCreator.prototype = {
     pos = items.indexOf('-s');
 
     if (pos >= 0) {
-      texParams.scale.set(parseFloat(items[pos + 1]), parseFloat(items[pos + 2]));
+      texParams.scale.set(
+        parseFloat(items[pos + 1]),
+        parseFloat(items[pos + 2]),
+      );
       items.splice(pos, 4); // we expect 3 parameters here!
     }
 
     pos = items.indexOf('-o');
 
     if (pos >= 0) {
-      texParams.offset.set(parseFloat(items[pos + 1]), parseFloat(items[pos + 2]));
+      texParams.offset.set(
+        parseFloat(items[pos + 1]),
+        parseFloat(items[pos + 2]),
+      );
       items.splice(pos, 4); // we expect 3 parameters here!
     }
 
@@ -370,7 +380,8 @@ ZippedMTLLoader.MaterialCreator.prototype = {
 
   loadTexture: function (url, mapping, onLoad, onProgress, onError) {
     var texture;
-    var manager = this.manager !== undefined ? this.manager : DefaultLoadingManager;
+    var manager =
+      this.manager !== undefined ? this.manager : DefaultLoadingManager;
     var loader = manager.getHandler(url);
 
     if (loader === null) {

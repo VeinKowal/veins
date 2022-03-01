@@ -11,94 +11,91 @@
  */
 
 import {
-	AnimationClip,
-	BufferAttribute,
-	FileLoader,
-	Loader,
-	NumberKeyframeTrack
+  AnimationClip,
+  BufferAttribute,
+  FileLoader,
+  Loader,
+  NumberKeyframeTrack,
 } from '../../../build/three.module.js';
 
-var MDDLoader = function ( manager ) {
-
-	Loader.call( this, manager );
-
+var MDDLoader = function (manager) {
+  Loader.call(this, manager);
 };
 
-MDDLoader.prototype = Object.assign( Object.create( Loader.prototype ), {
+MDDLoader.prototype = Object.assign(Object.create(Loader.prototype), {
+  constructor: MDDLoader,
 
-	constructor: MDDLoader,
+  load: function (url, onLoad, onProgress, onError) {
+    var scope = this;
 
-	load: function ( url, onLoad, onProgress, onError ) {
+    var loader = new FileLoader(this.manager);
+    loader.setPath(this.path);
+    loader.setResponseType('arraybuffer');
+    loader.load(
+      url,
+      function (data) {
+        onLoad(scope.parse(data));
+      },
+      onProgress,
+      onError,
+    );
+  },
 
-		var scope = this;
+  parse: function (data) {
+    var view = new DataView(data);
 
-		var loader = new FileLoader( this.manager );
-		loader.setPath( this.path );
-		loader.setResponseType( 'arraybuffer' );
-		loader.load( url, function ( data ) {
+    var totalFrames = view.getUint32(0);
+    var totalPoints = view.getUint32(4);
 
-			onLoad( scope.parse( data ) );
+    var offset = 8;
 
-		}, onProgress, onError );
+    // animation clip
 
-	},
+    var times = new Float32Array(totalFrames);
+    var values = new Float32Array(totalFrames * totalFrames).fill(0);
 
-	parse: function ( data ) {
+    for (var i = 0; i < totalFrames; i++) {
+      times[i] = view.getFloat32(offset);
+      offset += 4;
+      values[totalFrames * i + i] = 1;
+    }
 
-		var view = new DataView( data );
+    var track = new NumberKeyframeTrack(
+      '.morphTargetInfluences',
+      times,
+      values,
+    );
+    var clip = new AnimationClip('default', times[times.length - 1], [track]);
 
-		var totalFrames = view.getUint32( 0 );
-		var totalPoints = view.getUint32( 4 );
+    // morph targets
 
-		var offset = 8;
+    var morphTargets = [];
 
-		// animation clip
+    for (var i = 0; i < totalFrames; i++) {
+      var morphTarget = new Float32Array(totalPoints * 3);
 
-		var times = new Float32Array( totalFrames );
-		var values = new Float32Array( totalFrames * totalFrames ).fill( 0 );
+      for (var j = 0; j < totalPoints; j++) {
+        var stride = j * 3;
 
-		for ( var i = 0; i < totalFrames; i ++ ) {
+        morphTarget[stride + 0] = view.getFloat32(offset);
+        offset += 4; // x
+        morphTarget[stride + 1] = view.getFloat32(offset);
+        offset += 4; // y
+        morphTarget[stride + 2] = view.getFloat32(offset);
+        offset += 4; // z
+      }
 
-			times[ i ] = view.getFloat32( offset ); offset += 4;
-			values[ ( totalFrames * i ) + i ] = 1;
+      var attribute = new BufferAttribute(morphTarget, 3);
+      attribute.name = 'morph_' + i;
 
-		}
+      morphTargets.push(attribute);
+    }
 
-		var track = new NumberKeyframeTrack( '.morphTargetInfluences', times, values );
-		var clip = new AnimationClip( 'default', times[ times.length - 1 ], [ track ] );
-
-		// morph targets
-
-		var morphTargets = [];
-
-		for ( var i = 0; i < totalFrames; i ++ ) {
-
-			var morphTarget = new Float32Array( totalPoints * 3 );
-
-			for ( var j = 0; j < totalPoints; j ++ ) {
-
-				var stride = ( j * 3 );
-
-				morphTarget[ stride + 0 ] = view.getFloat32( offset ); offset += 4; // x
-				morphTarget[ stride + 1 ] = view.getFloat32( offset ); offset += 4; // y
-				morphTarget[ stride + 2 ] = view.getFloat32( offset ); offset += 4; // z
-
-			}
-
-			var attribute = new BufferAttribute( morphTarget, 3 );
-			attribute.name = 'morph_' + i;
-
-			morphTargets.push( attribute );
-
-		}
-
-		return {
-			morphTargets: morphTargets,
-			clip: clip
-		};
-
-	}
-
-} );
+    return {
+      morphTargets: morphTargets,
+      clip: clip,
+    };
+  },
+});
 
 export { MDDLoader };

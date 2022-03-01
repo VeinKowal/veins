@@ -1,35 +1,40 @@
-"use strict";
+'use strict';
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = newTileGeometry;
+exports['default'] = newTileGeometry;
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _TileGeometry = _interopRequireDefault(require("../TileGeometry"));
+var _TileGeometry = _interopRequireDefault(require('../TileGeometry'));
 
-var _Cache = _interopRequireDefault(require("../Scheduler/Cache"));
+var _Cache = _interopRequireDefault(require('../Scheduler/Cache'));
 
-var _computeBufferTileGeometry = _interopRequireDefault(require("./computeBufferTileGeometry"));
+var _computeBufferTileGeometry = _interopRequireDefault(
+  require('./computeBufferTileGeometry'),
+);
 
-var _OBB = _interopRequireDefault(require("../../Renderer/OBB"));
+var _OBB = _interopRequireDefault(require('../../Renderer/OBB'));
 
 var cacheBuffer = new Map();
-var cacheTile = new _Cache["default"]();
+var cacheTile = new _Cache['default']();
 
 function newTileGeometry(builder, params) {
   var _builder$computeShara = builder.computeSharableExtent(params.extent),
-      sharableExtent = _builder$computeShara.sharableExtent,
-      quaternion = _builder$computeShara.quaternion,
-      position = _builder$computeShara.position;
+    sharableExtent = _builder$computeShara.sharableExtent,
+    quaternion = _builder$computeShara.quaternion,
+    position = _builder$computeShara.position;
 
   var south = sharableExtent.south.toFixed(6);
-  var bufferKey = "".concat(builder.crs, "_").concat(params.disableSkirt ? 0 : 1, "_").concat(params.segment);
+  var bufferKey = ''
+    .concat(builder.crs, '_')
+    .concat(params.disableSkirt ? 0 : 1, '_')
+    .concat(params.segment);
   var promiseGeometry = cacheTile.get(south, params.level, bufferKey); // build geometry if doesn't exist
 
   if (!promiseGeometry) {
@@ -47,7 +52,7 @@ function newTileGeometry(builder, params) {
     var buffers;
 
     try {
-      buffers = (0, _computeBufferTileGeometry["default"])(params);
+      buffers = (0, _computeBufferTileGeometry['default'])(params);
     } catch (e) {
       return Promise.reject(e);
     }
@@ -69,8 +74,11 @@ function newTileGeometry(builder, params) {
       buffers.uvs[1] = new THREE.BufferAttribute(buffers.uvs[1], 1);
     }
 
-    var geometry = new _TileGeometry["default"](params, buffers);
-    geometry.OBB = new _OBB["default"](geometry.boundingBox.min, geometry.boundingBox.max);
+    var geometry = new _TileGeometry['default'](params, buffers);
+    geometry.OBB = new _OBB['default'](
+      geometry.boundingBox.min,
+      geometry.boundingBox.max,
+    );
     geometry._count = 0;
 
     geometry.dispose = function () {
@@ -84,7 +92,7 @@ function newTileGeometry(builder, params) {
         geometry.index = null;
         delete geometry.attributes.uv_0;
         THREE.BufferGeometry.prototype.dispose.call(geometry);
-        cacheTile["delete"](south, params.level, bufferKey);
+        cacheTile['delete'](south, params.level, bufferKey);
       }
     };
 
@@ -92,7 +100,7 @@ function newTileGeometry(builder, params) {
     return Promise.resolve({
       geometry: geometry,
       quaternion: quaternion,
-      position: position
+      position: position,
     });
   }
 
@@ -100,7 +108,7 @@ function newTileGeometry(builder, params) {
     return {
       geometry: geometry,
       quaternion: quaternion,
-      position: position
+      position: position,
     };
   });
 }

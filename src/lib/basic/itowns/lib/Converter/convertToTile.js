@@ -1,21 +1,25 @@
-"use strict";
+'use strict';
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _TileMesh = _interopRequireDefault(require("../Core/TileMesh"));
+var _TileMesh = _interopRequireDefault(require('../Core/TileMesh'));
 
-var _LayeredMaterial = _interopRequireDefault(require("../Renderer/LayeredMaterial"));
+var _LayeredMaterial = _interopRequireDefault(
+  require('../Renderer/LayeredMaterial'),
+);
 
-var _TileBuilder = _interopRequireDefault(require("../Core/Prefab/TileBuilder"));
+var _TileBuilder = _interopRequireDefault(
+  require('../Core/Prefab/TileBuilder'),
+);
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -55,14 +59,25 @@ var _default = {
       extent: extent,
       level: level,
       segment: layer.segments || 16,
-      disableSkirt: layer.disableSkirt
+      disableSkirt: layer.disableSkirt,
     };
-    return (0, _TileBuilder["default"])(builder, paramsGeometry).then(function (result) {
+    return (0, _TileBuilder['default'])(builder, paramsGeometry).then(function (
+      result,
+    ) {
       // build tile mesh
       result.geometry._count++;
       var crsCount = layer.tileMatrixSets.length;
-      var material = new _LayeredMaterial["default"](layer.materialOptions, crsCount);
-      var tile = new _TileMesh["default"](result.geometry, material, layer, extent, level); // Commented because layer.threejsLayer is undefined;
+      var material = new _LayeredMaterial['default'](
+        layer.materialOptions,
+        crsCount,
+      );
+      var tile = new _TileMesh['default'](
+        result.geometry,
+        material,
+        layer,
+        extent,
+        level,
+      ); // Commented because layer.threejsLayer is undefined;
       // Fix me: conflict with object3d added in view.scene;
       // tile.layers.set(layer.threejsLayer);
 
@@ -70,7 +85,9 @@ var _default = {
         // get parent extent transformation
         var pTrans = builder.computeSharableExtent(parent.extent); // place relative to his parent
 
-        result.position.sub(pTrans.position).applyQuaternion(pTrans.quaternion.invert());
+        result.position
+          .sub(pTrans.position)
+          .applyQuaternion(pTrans.quaternion.invert());
         result.quaternion.premultiply(pTrans.quaternion);
       }
 
@@ -87,6 +104,6 @@ var _default = {
 
       return tile;
     });
-  }
+  },
 };
-exports["default"] = _default;
+exports['default'] = _default;

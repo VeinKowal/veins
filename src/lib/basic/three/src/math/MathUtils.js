@@ -1,248 +1,217 @@
 const _lut = [];
 
-for ( let i = 0; i < 256; i ++ ) {
-
-	_lut[ i ] = ( i < 16 ? '0' : '' ) + ( i ).toString( 16 );
-
+for (let i = 0; i < 256; i++) {
+  _lut[i] = (i < 16 ? '0' : '') + i.toString(16);
 }
 
 let _seed = 1234567;
 
 const MathUtils = {
+  DEG2RAD: Math.PI / 180,
+  RAD2DEG: 180 / Math.PI,
+
+  generateUUID: function () {
+    // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+
+    const d0 = (Math.random() * 0xffffffff) | 0;
+    const d1 = (Math.random() * 0xffffffff) | 0;
+    const d2 = (Math.random() * 0xffffffff) | 0;
+    const d3 = (Math.random() * 0xffffffff) | 0;
+    const uuid =
+      _lut[d0 & 0xff] +
+      _lut[(d0 >> 8) & 0xff] +
+      _lut[(d0 >> 16) & 0xff] +
+      _lut[(d0 >> 24) & 0xff] +
+      '-' +
+      _lut[d1 & 0xff] +
+      _lut[(d1 >> 8) & 0xff] +
+      '-' +
+      _lut[((d1 >> 16) & 0x0f) | 0x40] +
+      _lut[(d1 >> 24) & 0xff] +
+      '-' +
+      _lut[(d2 & 0x3f) | 0x80] +
+      _lut[(d2 >> 8) & 0xff] +
+      '-' +
+      _lut[(d2 >> 16) & 0xff] +
+      _lut[(d2 >> 24) & 0xff] +
+      _lut[d3 & 0xff] +
+      _lut[(d3 >> 8) & 0xff] +
+      _lut[(d3 >> 16) & 0xff] +
+      _lut[(d3 >> 24) & 0xff];
 
-	DEG2RAD: Math.PI / 180,
-	RAD2DEG: 180 / Math.PI,
+    // .toUpperCase() here flattens concatenated strings to save heap memory space.
+    return uuid.toUpperCase();
+  },
 
-	generateUUID: function () {
+  clamp: function (value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  },
 
-		// http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+  // compute euclidian modulo of m % n
+  // https://en.wikipedia.org/wiki/Modulo_operation
 
-		const d0 = Math.random() * 0xffffffff | 0;
-		const d1 = Math.random() * 0xffffffff | 0;
-		const d2 = Math.random() * 0xffffffff | 0;
-		const d3 = Math.random() * 0xffffffff | 0;
-		const uuid = _lut[ d0 & 0xff ] + _lut[ d0 >> 8 & 0xff ] + _lut[ d0 >> 16 & 0xff ] + _lut[ d0 >> 24 & 0xff ] + '-' +
-			_lut[ d1 & 0xff ] + _lut[ d1 >> 8 & 0xff ] + '-' + _lut[ d1 >> 16 & 0x0f | 0x40 ] + _lut[ d1 >> 24 & 0xff ] + '-' +
-			_lut[ d2 & 0x3f | 0x80 ] + _lut[ d2 >> 8 & 0xff ] + '-' + _lut[ d2 >> 16 & 0xff ] + _lut[ d2 >> 24 & 0xff ] +
-			_lut[ d3 & 0xff ] + _lut[ d3 >> 8 & 0xff ] + _lut[ d3 >> 16 & 0xff ] + _lut[ d3 >> 24 & 0xff ];
+  euclideanModulo: function (n, m) {
+    return ((n % m) + m) % m;
+  },
 
-		// .toUpperCase() here flattens concatenated strings to save heap memory space.
-		return uuid.toUpperCase();
+  // Linear mapping from range <a1, a2> to range <b1, b2>
 
-	},
+  mapLinear: function (x, a1, a2, b1, b2) {
+    return b1 + ((x - a1) * (b2 - b1)) / (a2 - a1);
+  },
 
-	clamp: function ( value, min, max ) {
+  // https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/inverse-lerp-a-super-useful-yet-often-overlooked-function-r5230/
 
-		return Math.max( min, Math.min( max, value ) );
+  inverseLerp: function (x, y, value) {
+    if (x !== y) {
+      return (value - x) / (y - x);
+    } else {
+      return 0;
+    }
+  },
 
-	},
+  // https://en.wikipedia.org/wiki/Linear_interpolation
 
-	// compute euclidian modulo of m % n
-	// https://en.wikipedia.org/wiki/Modulo_operation
+  lerp: function (x, y, t) {
+    return (1 - t) * x + t * y;
+  },
 
-	euclideanModulo: function ( n, m ) {
+  // http://www.rorydriscoll.com/2016/03/07/frame-rate-independent-damping-using-lerp/
 
-		return ( ( n % m ) + m ) % m;
+  damp: function (x, y, lambda, dt) {
+    return MathUtils.lerp(x, y, 1 - Math.exp(-lambda * dt));
+  },
 
-	},
+  // https://www.desmos.com/calculator/vcsjnyz7x4
 
-	// Linear mapping from range <a1, a2> to range <b1, b2>
+  pingpong: function (x, length = 1) {
+    return length - Math.abs(MathUtils.euclideanModulo(x, length * 2) - length);
+  },
 
-	mapLinear: function ( x, a1, a2, b1, b2 ) {
+  // http://en.wikipedia.org/wiki/Smoothstep
 
-		return b1 + ( x - a1 ) * ( b2 - b1 ) / ( a2 - a1 );
+  smoothstep: function (x, min, max) {
+    if (x <= min) return 0;
+    if (x >= max) return 1;
 
-	},
+    x = (x - min) / (max - min);
 
-	// https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/inverse-lerp-a-super-useful-yet-often-overlooked-function-r5230/
+    return x * x * (3 - 2 * x);
+  },
 
-	inverseLerp: function ( x, y, value ) {
+  smootherstep: function (x, min, max) {
+    if (x <= min) return 0;
+    if (x >= max) return 1;
 
-		if ( x !== y ) {
+    x = (x - min) / (max - min);
 
-			return ( value - x ) / ( y - x );
+    return x * x * x * (x * (x * 6 - 15) + 10);
+  },
 
-		 } else {
+  // Random integer from <low, high> interval
 
-			return 0;
+  randInt: function (low, high) {
+    return low + Math.floor(Math.random() * (high - low + 1));
+  },
 
-		 }
+  // Random float from <low, high> interval
 
-	},
+  randFloat: function (low, high) {
+    return low + Math.random() * (high - low);
+  },
 
-	// https://en.wikipedia.org/wiki/Linear_interpolation
+  // Random float from <-range/2, range/2> interval
 
-	lerp: function ( x, y, t ) {
+  randFloatSpread: function (range) {
+    return range * (0.5 - Math.random());
+  },
 
-		return ( 1 - t ) * x + t * y;
+  // Deterministic pseudo-random float in the interval [ 0, 1 ]
 
-	},
+  seededRandom: function (s) {
+    if (s !== undefined) _seed = s % 2147483647;
 
-	// http://www.rorydriscoll.com/2016/03/07/frame-rate-independent-damping-using-lerp/
+    // Park-Miller algorithm
 
-	damp: function ( x, y, lambda, dt ) {
+    _seed = (_seed * 16807) % 2147483647;
 
-		return MathUtils.lerp( x, y, 1 - Math.exp( - lambda * dt ) );
+    return (_seed - 1) / 2147483646;
+  },
 
-	},
+  degToRad: function (degrees) {
+    return degrees * MathUtils.DEG2RAD;
+  },
 
-	// https://www.desmos.com/calculator/vcsjnyz7x4
+  radToDeg: function (radians) {
+    return radians * MathUtils.RAD2DEG;
+  },
 
-	pingpong: function ( x, length = 1 ) {
+  isPowerOfTwo: function (value) {
+    return (value & (value - 1)) === 0 && value !== 0;
+  },
 
-		return length - Math.abs( MathUtils.euclideanModulo( x, length * 2 ) - length );
+  ceilPowerOfTwo: function (value) {
+    return Math.pow(2, Math.ceil(Math.log(value) / Math.LN2));
+  },
 
-	},
+  floorPowerOfTwo: function (value) {
+    return Math.pow(2, Math.floor(Math.log(value) / Math.LN2));
+  },
 
-	// http://en.wikipedia.org/wiki/Smoothstep
+  setQuaternionFromProperEuler: function (q, a, b, c, order) {
+    // Intrinsic Proper Euler Angles - see https://en.wikipedia.org/wiki/Euler_angles
 
-	smoothstep: function ( x, min, max ) {
+    // rotations are applied to the axes in the order specified by 'order'
+    // rotation by angle 'a' is applied first, then by angle 'b', then by angle 'c'
+    // angles are in radians
 
-		if ( x <= min ) return 0;
-		if ( x >= max ) return 1;
+    const cos = Math.cos;
+    const sin = Math.sin;
 
-		x = ( x - min ) / ( max - min );
+    const c2 = cos(b / 2);
+    const s2 = sin(b / 2);
 
-		return x * x * ( 3 - 2 * x );
+    const c13 = cos((a + c) / 2);
+    const s13 = sin((a + c) / 2);
 
-	},
+    const c1_3 = cos((a - c) / 2);
+    const s1_3 = sin((a - c) / 2);
 
-	smootherstep: function ( x, min, max ) {
+    const c3_1 = cos((c - a) / 2);
+    const s3_1 = sin((c - a) / 2);
 
-		if ( x <= min ) return 0;
-		if ( x >= max ) return 1;
+    switch (order) {
+      case 'XYX':
+        q.set(c2 * s13, s2 * c1_3, s2 * s1_3, c2 * c13);
+        break;
 
-		x = ( x - min ) / ( max - min );
+      case 'YZY':
+        q.set(s2 * s1_3, c2 * s13, s2 * c1_3, c2 * c13);
+        break;
 
-		return x * x * x * ( x * ( x * 6 - 15 ) + 10 );
+      case 'ZXZ':
+        q.set(s2 * c1_3, s2 * s1_3, c2 * s13, c2 * c13);
+        break;
 
-	},
+      case 'XZX':
+        q.set(c2 * s13, s2 * s3_1, s2 * c3_1, c2 * c13);
+        break;
 
-	// Random integer from <low, high> interval
+      case 'YXY':
+        q.set(s2 * c3_1, c2 * s13, s2 * s3_1, c2 * c13);
+        break;
 
-	randInt: function ( low, high ) {
+      case 'ZYZ':
+        q.set(s2 * s3_1, s2 * c3_1, c2 * s13, c2 * c13);
+        break;
 
-		return low + Math.floor( Math.random() * ( high - low + 1 ) );
-
-	},
-
-	// Random float from <low, high> interval
-
-	randFloat: function ( low, high ) {
-
-		return low + Math.random() * ( high - low );
-
-	},
-
-	// Random float from <-range/2, range/2> interval
-
-	randFloatSpread: function ( range ) {
-
-		return range * ( 0.5 - Math.random() );
-
-	},
-
-	// Deterministic pseudo-random float in the interval [ 0, 1 ]
-
-	seededRandom: function ( s ) {
-
-		if ( s !== undefined ) _seed = s % 2147483647;
-
-		// Park-Miller algorithm
-
-		_seed = _seed * 16807 % 2147483647;
-
-		return ( _seed - 1 ) / 2147483646;
-
-	},
-
-	degToRad: function ( degrees ) {
-
-		return degrees * MathUtils.DEG2RAD;
-
-	},
-
-	radToDeg: function ( radians ) {
-
-		return radians * MathUtils.RAD2DEG;
-
-	},
-
-	isPowerOfTwo: function ( value ) {
-
-		return ( value & ( value - 1 ) ) === 0 && value !== 0;
-
-	},
-
-	ceilPowerOfTwo: function ( value ) {
-
-		return Math.pow( 2, Math.ceil( Math.log( value ) / Math.LN2 ) );
-
-	},
-
-	floorPowerOfTwo: function ( value ) {
-
-		return Math.pow( 2, Math.floor( Math.log( value ) / Math.LN2 ) );
-
-	},
-
-	setQuaternionFromProperEuler: function ( q, a, b, c, order ) {
-
-		// Intrinsic Proper Euler Angles - see https://en.wikipedia.org/wiki/Euler_angles
-
-		// rotations are applied to the axes in the order specified by 'order'
-		// rotation by angle 'a' is applied first, then by angle 'b', then by angle 'c'
-		// angles are in radians
-
-		const cos = Math.cos;
-		const sin = Math.sin;
-
-		const c2 = cos( b / 2 );
-		const s2 = sin( b / 2 );
-
-		const c13 = cos( ( a + c ) / 2 );
-		const s13 = sin( ( a + c ) / 2 );
-
-		const c1_3 = cos( ( a - c ) / 2 );
-		const s1_3 = sin( ( a - c ) / 2 );
-
-		const c3_1 = cos( ( c - a ) / 2 );
-		const s3_1 = sin( ( c - a ) / 2 );
-
-		switch ( order ) {
-
-			case 'XYX':
-				q.set( c2 * s13, s2 * c1_3, s2 * s1_3, c2 * c13 );
-				break;
-
-			case 'YZY':
-				q.set( s2 * s1_3, c2 * s13, s2 * c1_3, c2 * c13 );
-				break;
-
-			case 'ZXZ':
-				q.set( s2 * c1_3, s2 * s1_3, c2 * s13, c2 * c13 );
-				break;
-
-			case 'XZX':
-				q.set( c2 * s13, s2 * s3_1, s2 * c3_1, c2 * c13 );
-				break;
-
-			case 'YXY':
-				q.set( s2 * c3_1, c2 * s13, s2 * s3_1, c2 * c13 );
-				break;
-
-			case 'ZYZ':
-				q.set( s2 * s3_1, s2 * c3_1, c2 * s13, c2 * c13 );
-				break;
-
-			default:
-				console.warn( 'THREE.MathUtils: .setQuaternionFromProperEuler() encountered an unknown order: ' + order );
-
-		}
-
-	}
-
+      default:
+        console.warn(
+          'THREE.MathUtils: .setQuaternionFromProperEuler() encountered an unknown order: ' +
+            order,
+        );
+    }
+  },
 };
-
 
 export { MathUtils };

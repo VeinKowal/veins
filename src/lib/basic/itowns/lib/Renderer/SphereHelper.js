@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -20,7 +20,7 @@ function SphereHelper(radius) {
   var color = new THREE.Color(Math.random(), Math.random(), Math.random());
   this.material = new THREE.MeshBasicMaterial({
     color: color.getHex(),
-    wireframe: true
+    wireframe: true,
   });
 }
 
@@ -33,4 +33,4 @@ SphereHelper.prototype.update = function (radius) {
 };
 
 var _default = SphereHelper;
-exports["default"] = _default;
+exports['default'] = _default;

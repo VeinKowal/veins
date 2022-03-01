@@ -1,40 +1,32 @@
 import { Light } from './Light.js';
 
 class RectAreaLight extends Light {
+  constructor(color, intensity, width = 10, height = 10) {
+    super(color, intensity);
 
-	constructor( color, intensity, width = 10, height = 10 ) {
+    this.type = 'RectAreaLight';
 
-		super( color, intensity );
+    this.width = width;
+    this.height = height;
+  }
 
-		this.type = 'RectAreaLight';
+  copy(source) {
+    super.copy(source);
 
-		this.width = width;
-		this.height = height;
+    this.width = source.width;
+    this.height = source.height;
 
-	}
+    return this;
+  }
 
-	copy( source ) {
+  toJSON(meta) {
+    const data = super.toJSON(meta);
 
-		super.copy( source );
+    data.object.width = this.width;
+    data.object.height = this.height;
 
-		this.width = source.width;
-		this.height = source.height;
-
-		return this;
-
-	}
-
-	toJSON( meta ) {
-
-		const data = super.toJSON( meta );
-
-		data.object.width = this.width;
-		data.object.height = this.height;
-
-		return data;
-
-	}
-
+    return data;
+  }
 }
 
 RectAreaLight.prototype.isRectAreaLight = true;

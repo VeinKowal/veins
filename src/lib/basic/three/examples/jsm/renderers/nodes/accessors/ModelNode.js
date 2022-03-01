@@ -4,94 +4,66 @@ import Matrix3Node from '../inputs/Matrix3Node.js';
 import { NodeUpdateType } from '../core/constants.js';
 
 class ModelNode extends Node {
+  static VIEW = 'view';
+  static NORMAL = 'normal';
 
-	static VIEW = 'view';
-	static NORMAL = 'normal';
+  constructor(scope = ModelNode.VIEW) {
+    super();
 
-	constructor( scope = ModelNode.VIEW ) {
+    this.scope = scope;
 
-		super();
+    this.updateType = NodeUpdateType.Object;
 
-		this.scope = scope;
+    this._inputNode = null;
+  }
 
-		this.updateType = NodeUpdateType.Object;
+  getType() {
+    const scope = this.scope;
 
-		this._inputNode = null;
+    if (scope === ModelNode.VIEW) {
+      return 'mat4';
+    } else if (scope === ModelNode.NORMAL) {
+      return 'mat3';
+    }
+  }
 
-	}
+  update(frame) {
+    const object = frame.object;
+    const inputNode = this._inputNode;
+    const scope = this.scope;
 
-	getType() {
+    if (scope === ModelNode.VIEW) {
+      inputNode.value = object.modelViewMatrix;
+    } else if (scope === ModelNode.NORMAL) {
+      inputNode.value = object.normalMatrix;
+    }
+  }
 
-		const scope = this.scope;
+  generate(builder, output) {
+    const nodeData = builder.getDataFromNode(this);
 
-		if ( scope === ModelNode.VIEW ) {
+    let inputNode = this._inputNode;
 
-			return 'mat4';
+    if (nodeData.inputNode === undefined) {
+      const scope = this.scope;
 
-		} else if ( scope === ModelNode.NORMAL ) {
+      if (scope === ModelNode.VIEW) {
+        if (inputNode === null || inputNode.isMatrix4Node !== true) {
+          inputNode = new Matrix4Node(null);
+        }
+      } else if (scope === ModelNode.NORMAL) {
+        if (inputNode === null || inputNode.isMatrix3Node !== true) {
+          inputNode = new Matrix3Node(null);
+        }
+      }
 
-			return 'mat3';
+      this._inputNode = inputNode;
 
-		}
+      nodeData.inputNode = inputNode;
+    }
 
-	}
-
-	update( frame ) {
-
-		const object = frame.object;
-		const inputNode = this._inputNode;
-		const scope = this.scope;
-
-		if ( scope === ModelNode.VIEW ) {
-
-			inputNode.value = object.modelViewMatrix;
-
-		} else if ( scope === ModelNode.NORMAL ) {
-
-			inputNode.value = object.normalMatrix;
-
-		}
-
-	}
-
-	generate( builder, output ) {
-
-		const nodeData = builder.getDataFromNode( this );
-
-		let inputNode = this._inputNode;
-
-		if ( nodeData.inputNode === undefined ) {
-
-			const scope = this.scope;
-
-			if ( scope === ModelNode.VIEW ) {
-
-				if ( inputNode === null || inputNode.isMatrix4Node !== true ) {
-
-					inputNode = new Matrix4Node( null );
-
-				}
-
-			} else if ( scope === ModelNode.NORMAL ) {
-
-				if ( inputNode === null || inputNode.isMatrix3Node !== true ) {
-
-					inputNode = new Matrix3Node( null );
-
-				}
-
-			}
-
-			this._inputNode = inputNode;
-
-			nodeData.inputNode = inputNode;
-
-		}
-
-		return inputNode.build( builder, output );
-
-	}
-
+    return inputNode.build(builder, output);
+  }
 }
 
 export default ModelNode;

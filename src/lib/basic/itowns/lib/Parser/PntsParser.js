@@ -1,19 +1,21 @@
-"use strict";
+'use strict';
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _Utf8Decoder = _interopRequireDefault(require("../Utils/Utf8Decoder"));
+var _Utf8Decoder = _interopRequireDefault(require('../Utils/Utf8Decoder'));
 
-var _C3DTBatchTable = _interopRequireDefault(require("../Core/3DTiles/C3DTBatchTable"));
+var _C3DTBatchTable = _interopRequireDefault(
+  require('../Core/3DTiles/C3DTBatchTable'),
+);
 
 var _default = {
   /** @module PntsParser */
@@ -37,7 +39,9 @@ var _default = {
     var batchTable = {};
     var point = {}; // Magic type is unsigned char [4]
 
-    pntsHeader.magic = _Utf8Decoder["default"].decode(new Uint8Array(buffer, byteOffset, 4));
+    pntsHeader.magic = _Utf8Decoder['default'].decode(
+      new Uint8Array(buffer, byteOffset, 4),
+    );
     byteOffset += 4;
 
     if (pntsHeader.magic) {
@@ -59,44 +63,58 @@ var _default = {
 
       if (pntsHeader.FTJSONLength > 0) {
         var sizeBegin = byteOffset;
-        var jsonBuffer = buffer.slice(sizeBegin, pntsHeader.FTJSONLength + sizeBegin);
+        var jsonBuffer = buffer.slice(
+          sizeBegin,
+          pntsHeader.FTJSONLength + sizeBegin,
+        );
 
-        var content = _Utf8Decoder["default"].decode(new Uint8Array(jsonBuffer));
+        var content = _Utf8Decoder['default'].decode(
+          new Uint8Array(jsonBuffer),
+        );
 
         FTJSON = JSON.parse(content);
       } // binary table
-
 
       if (pntsHeader.FTBinaryLength > 0) {
         point = parseFeatureBinary(buffer, byteOffset, pntsHeader.FTJSONLength);
       } // batch table
 
-
       if (pntsHeader.BTJSONLength > 0) {
         // parse batch table
-        var _sizeBegin = byteOffset + pntsHeader.FTJSONLength + pntsHeader.FTBinaryLength;
+        var _sizeBegin =
+          byteOffset + pntsHeader.FTJSONLength + pntsHeader.FTBinaryLength;
 
-        var BTBuffer = buffer.slice(_sizeBegin, pntsHeader.BTJSONLength + _sizeBegin);
-        batchTable = new _C3DTBatchTable["default"](BTBuffer, pntsHeader.BTBinaryLength, FTJSON.BATCH_LENGTH, registeredExtensions);
+        var BTBuffer = buffer.slice(
+          _sizeBegin,
+          pntsHeader.BTJSONLength + _sizeBegin,
+        );
+        batchTable = new _C3DTBatchTable['default'](
+          BTBuffer,
+          pntsHeader.BTBinaryLength,
+          FTJSON.BATCH_LENGTH,
+          registeredExtensions,
+        );
       }
 
       var pnts = {
         point: point,
-        batchTable: batchTable
+        batchTable: batchTable,
       };
       return Promise.resolve(pnts);
     } else {
       throw new Error('Invalid pnts file.');
     }
-  }
+  },
 };
-exports["default"] = _default;
+exports['default'] = _default;
 
 function parseFeatureBinary(array, byteOffset, FTJSONLength) {
   // Init geometry
   var geometry = new THREE.BufferGeometry(); // init Array feature binary
 
-  var subArrayJson = _Utf8Decoder["default"].decode(new Uint8Array(array, byteOffset, FTJSONLength));
+  var subArrayJson = _Utf8Decoder['default'].decode(
+    new Uint8Array(array, byteOffset, FTJSONLength),
+  );
 
   var parseJSON = JSON.parse(subArrayJson);
   var lengthFeature;
@@ -106,15 +124,27 @@ function parseFeatureBinary(array, byteOffset, FTJSONLength) {
   }
 
   if (parseJSON.POSITION) {
-    var byteOffsetPos = parseJSON.POSITION.byteOffset + subArrayJson.length + byteOffset;
-    var positionArray = new Float32Array(array, byteOffsetPos, lengthFeature * 3);
-    geometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
+    var byteOffsetPos =
+      parseJSON.POSITION.byteOffset + subArrayJson.length + byteOffset;
+    var positionArray = new Float32Array(
+      array,
+      byteOffsetPos,
+      lengthFeature * 3,
+    );
+    geometry.setAttribute(
+      'position',
+      new THREE.BufferAttribute(positionArray, 3),
+    );
   }
 
   if (parseJSON.RGB) {
-    var byteOffsetCol = parseJSON.RGB.byteOffset + subArrayJson.length + byteOffset;
+    var byteOffsetCol =
+      parseJSON.RGB.byteOffset + subArrayJson.length + byteOffset;
     var colorArray = new Uint8Array(array, byteOffsetCol, lengthFeature * 3);
-    geometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3, true));
+    geometry.setAttribute(
+      'color',
+      new THREE.BufferAttribute(colorArray, 3, true),
+    );
   }
 
   if (parseJSON.POSITION_QUANTIZED) {
@@ -141,10 +171,11 @@ function parseFeatureBinary(array, byteOffset, FTJSONLength) {
     throw new Error('For pnts loader, BATCH_ID: not yet managed');
   } // Add RTC feature
 
-
-  var offset = parseJSON.RTC_CENTER ? new THREE.Vector3().fromArray(parseJSON.RTC_CENTER) : undefined;
+  var offset = parseJSON.RTC_CENTER
+    ? new THREE.Vector3().fromArray(parseJSON.RTC_CENTER)
+    : undefined;
   return {
     geometry: geometry,
-    offset: offset
+    offset: offset,
   };
 }

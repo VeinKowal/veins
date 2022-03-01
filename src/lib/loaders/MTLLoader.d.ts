@@ -92,7 +92,9 @@ export namespace MTLLoader {
     setCrossOrigin(value: string): this;
     setManager(value: LoadingManager): void;
     setMaterials(materialsInfo: { [key: string]: MaterialInfo }): void;
-    convert(materialsInfo: { [key: string]: MaterialInfo }): { [key: string]: MaterialInfo };
+    convert(materialsInfo: { [key: string]: MaterialInfo }): {
+      [key: string]: MaterialInfo;
+    };
     preload(): void;
     getIndex(materialName: string): Material;
     getAsArray(): Material[];

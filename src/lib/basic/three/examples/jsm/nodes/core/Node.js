@@ -1,227 +1,185 @@
 import { MathUtils } from '../../../../build/three.module.js';
 
-function Node( type ) {
+function Node(type) {
+  this.uuid = MathUtils.generateUUID();
 
-	this.uuid = MathUtils.generateUUID();
+  this.name = '';
 
-	this.name = '';
+  this.type = type;
 
-	this.type = type;
-
-	this.userData = {};
-
+  this.userData = {};
 }
 
 Node.prototype = {
+  constructor: Node,
 
-	constructor: Node,
+  isNode: true,
 
-	isNode: true,
+  hashProperties: undefined,
 
-	hashProperties: undefined,
+  analyze: function (builder, settings) {
+    settings = settings || {};
 
-	analyze: function ( builder, settings ) {
+    builder.analyzing = true;
 
-		settings = settings || {};
+    this.build(
+      builder.addFlow(settings.slot, settings.cache, settings.context),
+      'v4',
+    );
 
-		builder.analyzing = true;
+    builder.clearVertexNodeCode();
+    builder.clearFragmentNodeCode();
 
-		this.build( builder.addFlow( settings.slot, settings.cache, settings.context ), 'v4' );
+    builder.removeFlow();
 
-		builder.clearVertexNodeCode();
-		builder.clearFragmentNodeCode();
+    builder.analyzing = false;
+  },
 
-		builder.removeFlow();
+  analyzeAndFlow: function (builder, output, settings) {
+    settings = settings || {};
 
-		builder.analyzing = false;
+    this.analyze(builder, settings);
 
-	},
+    return this.flow(builder, output, settings);
+  },
 
-	analyzeAndFlow: function ( builder, output, settings ) {
+  flow: function (builder, output, settings) {
+    settings = settings || {};
 
-		settings = settings || {};
+    builder.addFlow(settings.slot, settings.cache, settings.context);
 
-		this.analyze( builder, settings );
+    var flow = {};
+    flow.result = this.build(builder, output);
+    flow.code = builder.clearNodeCode();
+    flow.extra = builder.context.extra;
 
-		return this.flow( builder, output, settings );
+    builder.removeFlow();
 
-	},
+    return flow;
+  },
 
-	flow: function ( builder, output, settings ) {
+  build: function (builder, output, uuid) {
+    output = output || this.getType(builder, output);
 
-		settings = settings || {};
+    var data = builder.getNodeData(uuid || this);
 
-		builder.addFlow( settings.slot, settings.cache, settings.context );
+    if (builder.analyzing) {
+      this.appendDepsNode(builder, data, output);
+    }
 
-		var flow = {};
-		flow.result = this.build( builder, output );
-		flow.code = builder.clearNodeCode();
-		flow.extra = builder.context.extra;
+    if (builder.nodes.indexOf(this) === -1) {
+      builder.nodes.push(this);
+    }
 
-		builder.removeFlow();
+    if (
+      this.updateFrame !== undefined &&
+      builder.updaters.indexOf(this) === -1
+    ) {
+      builder.updaters.push(this);
+    }
 
-		return flow;
+    return this.generate(builder, output, uuid);
+  },
 
-	},
+  generate: function (/* builder, output, uuid, type, ns */) {
+    // This method needs to be implemented in subclasses
+  },
 
-	build: function ( builder, output, uuid ) {
+  getHash: function () {
+    var hash = '{';
+    var prop, obj;
 
-		output = output || this.getType( builder, output );
+    for (prop in this) {
+      obj = this[prop];
 
-		var data = builder.getNodeData( uuid || this );
+      if (obj instanceof Node) {
+        hash += '"' + prop + '":' + obj.getHash() + ',';
+      }
+    }
 
-		if ( builder.analyzing ) {
+    if (this.hashProperties) {
+      for (var i = 0; i < this.hashProperties.length; i++) {
+        prop = this.hashProperties[i];
+        obj = this[prop];
 
-			this.appendDepsNode( builder, data, output );
+        hash += '"' + prop + '":"' + String(obj) + '",';
+      }
+    }
 
-		}
+    hash += '"id":"' + this.uuid + '"}';
 
-		if ( builder.nodes.indexOf( this ) === - 1 ) {
+    return hash;
+  },
 
-			builder.nodes.push( this );
+  appendDepsNode: function (builder, data, output) {
+    data.deps = (data.deps || 0) + 1;
 
-		}
+    var outputLen = builder.getTypeLength(output);
 
-		if ( this.updateFrame !== undefined && builder.updaters.indexOf( this ) === - 1 ) {
+    if (outputLen > (data.outputMax || 0) || this.getType(builder, output)) {
+      data.outputMax = outputLen;
+      data.output = output;
+    }
+  },
 
-			builder.updaters.push( this );
+  setName: function (name) {
+    this.name = name;
 
-		}
+    return this;
+  },
 
-		return this.generate( builder, output, uuid );
+  getName: function (/* builder */) {
+    return this.name;
+  },
 
-	},
+  getType: function (builder, output) {
+    return output === 'sampler2D' || output === 'samplerCube'
+      ? output
+      : this.type;
+  },
 
-	generate: function ( /* builder, output, uuid, type, ns */ ) {
+  getJSONNode: function (meta) {
+    var isRootObject = meta === undefined || typeof meta === 'string';
 
-		// This method needs to be implemented in subclasses
+    if (!isRootObject && meta.nodes[this.uuid] !== undefined) {
+      return meta.nodes[this.uuid];
+    }
+  },
 
-	},
+  copy: function (source) {
+    if (source.name !== undefined) this.name = source.name;
 
-	getHash: function () {
+    if (source.userData !== undefined)
+      this.userData = JSON.parse(JSON.stringify(source.userData));
 
-		var hash = '{';
-		var prop, obj;
+    return this;
+  },
 
-		for ( prop in this ) {
+  createJSONNode: function (meta) {
+    var isRootObject = meta === undefined || typeof meta === 'string';
 
-			obj = this[ prop ];
+    var data = {};
 
-			if ( obj instanceof Node ) {
+    if (typeof this.nodeType !== 'string')
+      throw new Error('Node does not allow serialization.');
 
-				hash += '"' + prop + '":' + obj.getHash() + ',';
+    data.uuid = this.uuid;
+    data.nodeType = this.nodeType;
 
-			}
+    if (this.name !== '') data.name = this.name;
 
-		}
+    if (JSON.stringify(this.userData) !== '{}') data.userData = this.userData;
 
-		if ( this.hashProperties ) {
+    if (!isRootObject) {
+      meta.nodes[this.uuid] = data;
+    }
 
-			for ( var i = 0; i < this.hashProperties.length; i ++ ) {
+    return data;
+  },
 
-				prop = this.hashProperties[ i ];
-				obj = this[ prop ];
-
-				hash += '"' + prop + '":"' + String( obj ) + '",';
-
-			}
-
-		}
-
-		hash += '"id":"' + this.uuid + '"}';
-
-		return hash;
-
-	},
-
-	appendDepsNode: function ( builder, data, output ) {
-
-		data.deps = ( data.deps || 0 ) + 1;
-
-		var outputLen = builder.getTypeLength( output );
-
-		if ( outputLen > ( data.outputMax || 0 ) || this.getType( builder, output ) ) {
-
-			data.outputMax = outputLen;
-			data.output = output;
-
-		}
-
-	},
-
-	setName: function ( name ) {
-
-		this.name = name;
-
-		return this;
-
-	},
-
-	getName: function ( /* builder */ ) {
-
-		return this.name;
-
-	},
-
-	getType: function ( builder, output ) {
-
-		return output === 'sampler2D' || output === 'samplerCube' ? output : this.type;
-
-	},
-
-	getJSONNode: function ( meta ) {
-
-		var isRootObject = ( meta === undefined || typeof meta === 'string' );
-
-		if ( ! isRootObject && meta.nodes[ this.uuid ] !== undefined ) {
-
-			return meta.nodes[ this.uuid ];
-
-		}
-
-	},
-
-	copy: function ( source ) {
-
-		if ( source.name !== undefined ) this.name = source.name;
-
-		if ( source.userData !== undefined ) this.userData = JSON.parse( JSON.stringify( source.userData ) );
-
-		return this;
-
-	},
-
-	createJSONNode: function ( meta ) {
-
-		var isRootObject = ( meta === undefined || typeof meta === 'string' );
-
-		var data = {};
-
-		if ( typeof this.nodeType !== 'string' ) throw new Error( 'Node does not allow serialization.' );
-
-		data.uuid = this.uuid;
-		data.nodeType = this.nodeType;
-
-		if ( this.name !== '' ) data.name = this.name;
-
-		if ( JSON.stringify( this.userData ) !== '{}' ) data.userData = this.userData;
-
-		if ( ! isRootObject ) {
-
-			meta.nodes[ this.uuid ] = data;
-
-		}
-
-		return data;
-
-	},
-
-	toJSON: function ( meta ) {
-
-		return this.getJSONNode( meta ) || this.createJSONNode( meta );
-
-	}
-
+  toJSON: function (meta) {
+    return this.getJSONNode(meta) || this.createJSONNode(meta);
+  },
 };
 
 export { Node };

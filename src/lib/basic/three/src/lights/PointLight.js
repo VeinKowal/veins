@@ -2,49 +2,39 @@ import { Light } from './Light.js';
 import { PointLightShadow } from './PointLightShadow.js';
 
 class PointLight extends Light {
+  constructor(color, intensity, distance = 0, decay = 1) {
+    super(color, intensity);
 
-	constructor( color, intensity, distance = 0, decay = 1 ) {
+    this.type = 'PointLight';
 
-		super( color, intensity );
+    this.distance = distance;
+    this.decay = decay; // for physically correct lights, should be 2.
 
-		this.type = 'PointLight';
+    this.shadow = new PointLightShadow();
+  }
 
-		this.distance = distance;
-		this.decay = decay; // for physically correct lights, should be 2.
+  get power() {
+    // intensity = power per solid angle.
+    // ref: equation (15) from https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+    return this.intensity * 4 * Math.PI;
+  }
 
-		this.shadow = new PointLightShadow();
+  set power(power) {
+    // intensity = power per solid angle.
+    // ref: equation (15) from https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+    this.intensity = power / (4 * Math.PI);
+  }
 
-	}
+  copy(source) {
+    super.copy(source);
 
-	get power() {
+    this.distance = source.distance;
+    this.decay = source.decay;
 
-		// intensity = power per solid angle.
-		// ref: equation (15) from https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
-		return this.intensity * 4 * Math.PI;
+    this.shadow = source.shadow.clone();
 
-	}
-
-	set power( power ) {
-
-		// intensity = power per solid angle.
-		// ref: equation (15) from https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
-		this.intensity = power / ( 4 * Math.PI );
-
-	}
-
-	copy( source ) {
-
-		super.copy( source );
-
-		this.distance = source.distance;
-		this.decay = source.decay;
-
-		this.shadow = source.shadow.clone();
-
-		return this;
-
-	}
-
+    return this;
+  }
 }
 
 PointLight.prototype.isPointLight = true;

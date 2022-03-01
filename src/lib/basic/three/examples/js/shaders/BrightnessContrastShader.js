@@ -6,51 +6,43 @@
  */
 
 THREE.BrightnessContrastShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    brightness: { value: 0 },
+    contrast: { value: 0 },
+  },
 
-	uniforms: {
+  vertexShader: [
+    'varying vec2 vUv;',
 
-		'tDiffuse': { value: null },
-		'brightness': { value: 0 },
-		'contrast': { value: 0 }
+    'void main() {',
 
-	},
+    '	vUv = uv;',
 
-	vertexShader: [
+    '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
 
-		'varying vec2 vUv;',
+    '}',
+  ].join('\n'),
 
-		'void main() {',
+  fragmentShader: [
+    'uniform sampler2D tDiffuse;',
+    'uniform float brightness;',
+    'uniform float contrast;',
 
-		'	vUv = uv;',
+    'varying vec2 vUv;',
 
-		'	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+    'void main() {',
 
-		'}'
+    '	gl_FragColor = texture2D( tDiffuse, vUv );',
 
-	].join( '\n' ),
+    '	gl_FragColor.rgb += brightness;',
 
-	fragmentShader: [
+    '	if (contrast > 0.0) {',
+    '		gl_FragColor.rgb = (gl_FragColor.rgb - 0.5) / (1.0 - contrast) + 0.5;',
+    '	} else {',
+    '		gl_FragColor.rgb = (gl_FragColor.rgb - 0.5) * (1.0 + contrast) + 0.5;',
+    '	}',
 
-		'uniform sampler2D tDiffuse;',
-		'uniform float brightness;',
-		'uniform float contrast;',
-
-		'varying vec2 vUv;',
-
-		'void main() {',
-
-		'	gl_FragColor = texture2D( tDiffuse, vUv );',
-
-		'	gl_FragColor.rgb += brightness;',
-
-		'	if (contrast > 0.0) {',
-		'		gl_FragColor.rgb = (gl_FragColor.rgb - 0.5) / (1.0 - contrast) + 0.5;',
-		'	} else {',
-		'		gl_FragColor.rgb = (gl_FragColor.rgb - 0.5) * (1.0 + contrast) + 0.5;',
-		'	}',
-
-		'}'
-
-	].join( '\n' )
-
+    '}',
+  ].join('\n'),
 };

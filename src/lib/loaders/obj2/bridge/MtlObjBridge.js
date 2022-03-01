@@ -13,7 +13,10 @@ const MtlObjBridge = {
    */
   link: function (processResult, assetLoader) {
     if (typeof assetLoader.addMaterials === 'function') {
-      assetLoader.addMaterials(this.addMaterialsFromMtlLoader(processResult), true);
+      assetLoader.addMaterials(
+        this.addMaterialsFromMtlLoader(processResult),
+        true,
+      );
     }
   },
 

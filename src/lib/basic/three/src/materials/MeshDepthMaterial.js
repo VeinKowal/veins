@@ -20,59 +20,53 @@ import { BasicDepthPacking } from '../constants.js';
  */
 
 class MeshDepthMaterial extends Material {
+  constructor(parameters) {
+    super();
 
-	constructor( parameters ) {
+    this.type = 'MeshDepthMaterial';
 
-		super();
+    this.depthPacking = BasicDepthPacking;
 
-		this.type = 'MeshDepthMaterial';
+    this.skinning = false;
+    this.morphTargets = false;
 
-		this.depthPacking = BasicDepthPacking;
+    this.map = null;
 
-		this.skinning = false;
-		this.morphTargets = false;
+    this.alphaMap = null;
 
-		this.map = null;
+    this.displacementMap = null;
+    this.displacementScale = 1;
+    this.displacementBias = 0;
 
-		this.alphaMap = null;
+    this.wireframe = false;
+    this.wireframeLinewidth = 1;
 
-		this.displacementMap = null;
-		this.displacementScale = 1;
-		this.displacementBias = 0;
+    this.fog = false;
 
-		this.wireframe = false;
-		this.wireframeLinewidth = 1;
+    this.setValues(parameters);
+  }
 
-		this.fog = false;
+  copy(source) {
+    super.copy(source);
 
-		this.setValues( parameters );
+    this.depthPacking = source.depthPacking;
 
-	}
+    this.skinning = source.skinning;
+    this.morphTargets = source.morphTargets;
 
-	copy( source ) {
+    this.map = source.map;
 
-		super.copy( source );
+    this.alphaMap = source.alphaMap;
 
-		this.depthPacking = source.depthPacking;
+    this.displacementMap = source.displacementMap;
+    this.displacementScale = source.displacementScale;
+    this.displacementBias = source.displacementBias;
 
-		this.skinning = source.skinning;
-		this.morphTargets = source.morphTargets;
+    this.wireframe = source.wireframe;
+    this.wireframeLinewidth = source.wireframeLinewidth;
 
-		this.map = source.map;
-
-		this.alphaMap = source.alphaMap;
-
-		this.displacementMap = source.displacementMap;
-		this.displacementScale = source.displacementScale;
-		this.displacementBias = source.displacementBias;
-
-		this.wireframe = source.wireframe;
-		this.wireframeLinewidth = source.wireframeLinewidth;
-
-		return this;
-
-	}
-
+    return this;
+  }
 }
 
 MeshDepthMaterial.prototype.isMeshDepthMaterial = true;

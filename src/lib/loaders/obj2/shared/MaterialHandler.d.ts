@@ -12,7 +12,11 @@ export class MaterialHandler {
   materials: object;
 
   createDefaultMaterials(overrideExisting: boolean): void;
-  addMaterials(materials: object, overrideExisting: boolean, newMaterials?: object): object;
+  addMaterials(
+    materials: object,
+    overrideExisting: boolean,
+    newMaterials?: object,
+  ): object;
   addPayloadMaterials(materialPayload: object): object;
   setLogging(enabled: boolean, debug: boolean): void;
   getMaterials(): object;

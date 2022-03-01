@@ -2,84 +2,70 @@ import { Cache } from './Cache.js';
 import { Loader } from './Loader.js';
 
 class ImageLoader extends Loader {
+  constructor(manager) {
+    super(manager);
+  }
 
-	constructor( manager ) {
+  load(url, onLoad, onProgress, onError) {
+    if (this.path !== undefined) url = this.path + url;
 
-		super( manager );
+    url = this.manager.resolveURL(url);
 
-	}
+    const scope = this;
 
-	load( url, onLoad, onProgress, onError ) {
+    const cached = Cache.get(url);
 
-		if ( this.path !== undefined ) url = this.path + url;
+    if (cached !== undefined) {
+      scope.manager.itemStart(url);
 
-		url = this.manager.resolveURL( url );
+      setTimeout(function () {
+        if (onLoad) onLoad(cached);
 
-		const scope = this;
+        scope.manager.itemEnd(url);
+      }, 0);
 
-		const cached = Cache.get( url );
+      return cached;
+    }
 
-		if ( cached !== undefined ) {
+    const image = document.createElementNS(
+      'http://www.w3.org/1999/xhtml',
+      'img',
+    );
 
-			scope.manager.itemStart( url );
+    function onImageLoad() {
+      image.removeEventListener('load', onImageLoad, false);
+      image.removeEventListener('error', onImageError, false);
 
-			setTimeout( function () {
+      Cache.add(url, this);
 
-				if ( onLoad ) onLoad( cached );
+      if (onLoad) onLoad(this);
 
-				scope.manager.itemEnd( url );
+      scope.manager.itemEnd(url);
+    }
 
-			}, 0 );
+    function onImageError(event) {
+      image.removeEventListener('load', onImageLoad, false);
+      image.removeEventListener('error', onImageError, false);
 
-			return cached;
+      if (onError) onError(event);
 
-		}
+      scope.manager.itemError(url);
+      scope.manager.itemEnd(url);
+    }
 
-		const image = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'img' );
+    image.addEventListener('load', onImageLoad, false);
+    image.addEventListener('error', onImageError, false);
 
-		function onImageLoad() {
+    if (url.substr(0, 5) !== 'data:') {
+      if (this.crossOrigin !== undefined) image.crossOrigin = this.crossOrigin;
+    }
 
-			image.removeEventListener( 'load', onImageLoad, false );
-			image.removeEventListener( 'error', onImageError, false );
+    scope.manager.itemStart(url);
 
-			Cache.add( url, this );
+    image.src = url;
 
-			if ( onLoad ) onLoad( this );
-
-			scope.manager.itemEnd( url );
-
-		}
-
-		function onImageError( event ) {
-
-			image.removeEventListener( 'load', onImageLoad, false );
-			image.removeEventListener( 'error', onImageError, false );
-
-			if ( onError ) onError( event );
-
-			scope.manager.itemError( url );
-			scope.manager.itemEnd( url );
-
-		}
-
-		image.addEventListener( 'load', onImageLoad, false );
-		image.addEventListener( 'error', onImageError, false );
-
-		if ( url.substr( 0, 5 ) !== 'data:' ) {
-
-			if ( this.crossOrigin !== undefined ) image.crossOrigin = this.crossOrigin;
-
-		}
-
-		scope.manager.itemStart( url );
-
-		image.src = url;
-
-		return image;
-
-	}
-
+    return image;
+  }
 }
-
 
 export { ImageLoader };

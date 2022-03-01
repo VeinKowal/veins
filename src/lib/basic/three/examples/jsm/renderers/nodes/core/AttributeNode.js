@@ -1,63 +1,47 @@
 import Node from './Node.js';
 
 class AttributeNode extends Node {
+  constructor(name, type) {
+    super(type);
 
-	constructor( name, type ) {
+    this.name = name;
+  }
 
-		super( type );
+  setAttributeName(name) {
+    this.name = name;
 
-		this.name = name;
+    return this;
+  }
 
-	}
+  getAttributeName(/*builder*/) {
+    return this.name;
+  }
 
-	setAttributeName( name ) {
+  generate(builder, output) {
+    const attributeName = this.getAttributeName(builder);
+    const attributeType = this.getType(builder);
 
-		this.name = name;
+    const attribute = builder.getAttribute(attributeName, attributeType);
 
-		return this;
+    if (builder.isShaderStage('vertex')) {
+      return builder.format(attribute.name, attribute.type, output);
+    } else {
+      const nodeData = builder.getDataFromNode(this, builder.shaderStage);
 
-	}
+      let nodeVary = nodeData.varyNode;
 
-	getAttributeName( /*builder*/ ) {
+      if (nodeVary === undefined) {
+        nodeVary = builder.getVaryFromNode(this, attribute.type);
+        nodeVary.snippet = attributeName;
 
-		return this.name;
+        nodeData.nodeVary = nodeVary;
+      }
 
-	}
+      const varyName = builder.getPropertyName(nodeVary);
 
-	generate( builder, output ) {
-
-		const attributeName = this.getAttributeName( builder );
-		const attributeType = this.getType( builder );
-
-		const attribute = builder.getAttribute( attributeName, attributeType );
-
-		if ( builder.isShaderStage( 'vertex' ) ) {
-
-			return builder.format( attribute.name, attribute.type, output );
-
-		} else {
-
-			const nodeData = builder.getDataFromNode( this, builder.shaderStage );
-
-			let nodeVary = nodeData.varyNode;
-
-			if ( nodeVary === undefined ) {
-
-				nodeVary = builder.getVaryFromNode( this, attribute.type );
-				nodeVary.snippet = attributeName;
-
-				nodeData.nodeVary = nodeVary;
-
-			}
-
-			const varyName = builder.getPropertyName( nodeVary );
-
-			return builder.format( varyName, attribute.type, output );
-
-		}
-
-	}
-
+      return builder.format(varyName, attribute.type, output);
+    }
+  }
 }
 
 export default AttributeNode;

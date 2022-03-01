@@ -1,154 +1,126 @@
 import {
-	Mesh,
-	OrthographicCamera,
-	PlaneGeometry,
-	Scene,
-	WebGLRenderTarget
+  Mesh,
+  OrthographicCamera,
+  PlaneGeometry,
+  Scene,
+  WebGLRenderTarget,
 } from '../../../../build/three.module.js';
 
 import { NodeBuilder } from '../core/NodeBuilder.js';
 import { NodeMaterial } from '../materials/NodeMaterial.js';
 import { TextureNode } from './TextureNode.js';
 
-function RTTNode( width, height, input, options ) {
+function RTTNode(width, height, input, options) {
+  options = options || {};
 
-	options = options || {};
+  this.input = input;
 
-	this.input = input;
+  this.clear = options.clear !== undefined ? options.clear : true;
 
-	this.clear = options.clear !== undefined ? options.clear : true;
+  this.renderTarget = new WebGLRenderTarget(width, height, options);
 
-	this.renderTarget = new WebGLRenderTarget( width, height, options );
+  this.material = new NodeMaterial();
 
-	this.material = new NodeMaterial();
+  this.camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  this.scene = new Scene();
 
-	this.camera = new OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
-	this.scene = new Scene();
+  this.quad = new Mesh(new PlaneGeometry(2, 2), this.material);
+  this.quad.frustumCulled = false; // Avoid getting clipped
+  this.scene.add(this.quad);
 
-	this.quad = new Mesh( new PlaneGeometry( 2, 2 ), this.material );
-	this.quad.frustumCulled = false; // Avoid getting clipped
-	this.scene.add( this.quad );
+  this.render = true;
 
-	this.render = true;
-
-	TextureNode.call( this, this.renderTarget.texture );
-
+  TextureNode.call(this, this.renderTarget.texture);
 }
 
-RTTNode.prototype = Object.create( TextureNode.prototype );
+RTTNode.prototype = Object.create(TextureNode.prototype);
 RTTNode.prototype.constructor = RTTNode;
 RTTNode.prototype.nodeType = 'RTT';
 
-RTTNode.prototype.build = function ( builder, output, uuid ) {
+RTTNode.prototype.build = function (builder, output, uuid) {
+  var rttBuilder = new NodeBuilder();
+  rttBuilder.nodes = builder.nodes;
+  rttBuilder.updaters = builder.updaters;
 
-	var rttBuilder = new NodeBuilder();
-	rttBuilder.nodes = builder.nodes;
-	rttBuilder.updaters = builder.updaters;
+  this.material.fragment.value = this.input;
+  this.material.build({ builder: rttBuilder });
 
-	this.material.fragment.value = this.input;
-	this.material.build( { builder: rttBuilder } );
-
-	return TextureNode.prototype.build.call( this, builder, output, uuid );
-
+  return TextureNode.prototype.build.call(this, builder, output, uuid);
 };
 
-RTTNode.prototype.updateFramesaveTo = function ( frame ) {
+RTTNode.prototype.updateFramesaveTo = function (frame) {
+  this.saveTo.render = false;
 
-	this.saveTo.render = false;
+  if (this.saveTo !== this.saveToCurrent) {
+    if (this.saveToMaterial) this.saveToMaterial.dispose();
 
-	if ( this.saveTo !== this.saveToCurrent ) {
+    var material = new NodeMaterial();
+    material.fragment.value = this;
+    material.build();
 
-		if ( this.saveToMaterial ) this.saveToMaterial.dispose();
+    var scene = new Scene();
 
-		var material = new NodeMaterial();
-		material.fragment.value = this;
-		material.build();
+    var quad = new Mesh(new PlaneGeometry(2, 2), material);
+    quad.frustumCulled = false; // Avoid getting clipped
+    scene.add(quad);
 
-		var scene = new Scene();
+    this.saveToScene = scene;
+    this.saveToMaterial = material;
+  }
 
-		var quad = new Mesh( new PlaneGeometry( 2, 2 ), material );
-		quad.frustumCulled = false; // Avoid getting clipped
-		scene.add( quad );
+  this.saveToCurrent = this.saveTo;
 
-		this.saveToScene = scene;
-		this.saveToMaterial = material;
-
-	}
-
-	this.saveToCurrent = this.saveTo;
-
-	frame.renderer.setRenderTarget( this.saveTo.renderTarget );
-	if ( this.saveTo.clear ) frame.renderer.clear();
-	frame.renderer.render( this.saveToScene, this.camera );
-
+  frame.renderer.setRenderTarget(this.saveTo.renderTarget);
+  if (this.saveTo.clear) frame.renderer.clear();
+  frame.renderer.render(this.saveToScene, this.camera);
 };
 
-RTTNode.prototype.updateFrame = function ( frame ) {
+RTTNode.prototype.updateFrame = function (frame) {
+  if (frame.renderer) {
+    // from the second frame
 
-	if ( frame.renderer ) {
+    if (this.saveTo && this.saveTo.render === false) {
+      this.updateFramesaveTo(frame);
+    }
 
-		// from the second frame
+    if (this.render) {
+      if (this.material.uniforms.renderTexture) {
+        this.material.uniforms.renderTexture.value = frame.renderTexture;
+      }
 
-		if ( this.saveTo && this.saveTo.render === false ) {
+      frame.renderer.setRenderTarget(this.renderTarget);
+      if (this.clear) frame.renderer.clear();
+      frame.renderer.render(this.scene, this.camera);
+    }
 
-			this.updateFramesaveTo( frame );
+    // first frame
 
-		}
-
-		if ( this.render ) {
-
-			if ( this.material.uniforms.renderTexture ) {
-
-				this.material.uniforms.renderTexture.value = frame.renderTexture;
-
-			}
-
-			frame.renderer.setRenderTarget( this.renderTarget );
-			if ( this.clear ) frame.renderer.clear();
-			frame.renderer.render( this.scene, this.camera );
-
-		}
-
-		// first frame
-
-		if ( this.saveTo && this.saveTo.render === true ) {
-
-			this.updateFramesaveTo( frame );
-
-		}
-
-	} else {
-
-		console.warn( 'RTTNode need a renderer in NodeFrame' );
-
-	}
-
+    if (this.saveTo && this.saveTo.render === true) {
+      this.updateFramesaveTo(frame);
+    }
+  } else {
+    console.warn('RTTNode need a renderer in NodeFrame');
+  }
 };
 
-RTTNode.prototype.copy = function ( source ) {
+RTTNode.prototype.copy = function (source) {
+  TextureNode.prototype.copy.call(this, source);
 
-	TextureNode.prototype.copy.call( this, source );
+  this.saveTo = source.saveTo;
 
-	this.saveTo = source.saveTo;
-
-	return this;
-
+  return this;
 };
 
-RTTNode.prototype.toJSON = function ( meta ) {
+RTTNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = TextureNode.prototype.toJSON.call(this, meta);
 
-	if ( ! data ) {
+    if (this.saveTo) data.saveTo = this.saveTo.toJSON(meta).uuid;
+  }
 
-		data = TextureNode.prototype.toJSON.call( this, meta );
-
-		if ( this.saveTo ) data.saveTo = this.saveTo.toJSON( meta ).uuid;
-
-	}
-
-	return data;
-
+  return data;
 };
 
 export { RTTNode };

@@ -1,150 +1,127 @@
 import {
-	LinearFilter,
-	Mesh,
-	OrthographicCamera,
-	PlaneGeometry,
-	RGBAFormat,
-	Scene,
-	Vector2,
-	WebGLRenderTarget
+  LinearFilter,
+  Mesh,
+  OrthographicCamera,
+  PlaneGeometry,
+  RGBAFormat,
+  Scene,
+  Vector2,
+  WebGLRenderTarget,
 } from '../../../../build/three.module.js';
 
 import { NodeMaterial } from '../materials/NodeMaterial.js';
 import { ScreenNode } from '../inputs/ScreenNode.js';
 
-function NodePostProcessing( renderer, renderTarget ) {
+function NodePostProcessing(renderer, renderTarget) {
+  if (renderTarget === undefined) {
+    var parameters = {
+      minFilter: LinearFilter,
+      magFilter: LinearFilter,
+      format: RGBAFormat,
+    };
 
-	if ( renderTarget === undefined ) {
+    var size = renderer.getDrawingBufferSize(new Vector2());
+    renderTarget = new WebGLRenderTarget(size.width, size.height, parameters);
+  }
 
-		var parameters = {
-			minFilter: LinearFilter,
-			magFilter: LinearFilter,
-			format: RGBAFormat
-		};
+  this.renderer = renderer;
+  this.renderTarget = renderTarget;
 
-		var size = renderer.getDrawingBufferSize( new Vector2() );
-		renderTarget = new WebGLRenderTarget( size.width, size.height, parameters );
+  this.output = new ScreenNode();
+  this.material = new NodeMaterial();
 
-	}
+  this.camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  this.scene = new Scene();
 
-	this.renderer = renderer;
-	this.renderTarget = renderTarget;
+  this.quad = new Mesh(new PlaneGeometry(2, 2), this.material);
+  this.quad.frustumCulled = false; // Avoid getting clipped
+  this.scene.add(this.quad);
 
-	this.output = new ScreenNode();
-	this.material = new NodeMaterial();
-
-	this.camera = new OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
-	this.scene = new Scene();
-
-	this.quad = new Mesh( new PlaneGeometry( 2, 2 ), this.material );
-	this.quad.frustumCulled = false; // Avoid getting clipped
-	this.scene.add( this.quad );
-
-	this.needsUpdate = true;
-
+  this.needsUpdate = true;
 }
 
 NodePostProcessing.prototype = {
+  constructor: NodePostProcessing,
 
-	constructor: NodePostProcessing,
+  render: function (scene, camera, frame) {
+    if (this.needsUpdate) {
+      this.material.dispose();
 
-	render: function ( scene, camera, frame ) {
+      this.material.fragment.value = this.output;
+      this.material.build();
 
-		if ( this.needsUpdate ) {
+      if (this.material.uniforms.renderTexture) {
+        this.material.uniforms.renderTexture.value = this.renderTarget.texture;
+      }
 
-			this.material.dispose();
+      this.needsUpdate = false;
+    }
 
-			this.material.fragment.value = this.output;
-			this.material.build();
+    frame
+      .setRenderer(this.renderer)
+      .setRenderTexture(this.renderTarget.texture);
 
-			if ( this.material.uniforms.renderTexture ) {
+    this.renderer.setRenderTarget(this.renderTarget);
+    this.renderer.render(scene, camera);
 
-				this.material.uniforms.renderTexture.value = this.renderTarget.texture;
+    frame.updateNode(this.material);
 
-			}
+    this.renderer.setRenderTarget(null);
+    this.renderer.render(this.scene, this.camera);
+  },
 
-			this.needsUpdate = false;
+  setPixelRatio: function (value) {
+    this.renderer.setPixelRatio(value);
 
-		}
+    var size = this.renderer.getSize(new Vector2());
 
-		frame.setRenderer( this.renderer )
-			.setRenderTexture( this.renderTarget.texture );
+    this.setSize(size.width, size.height);
+  },
 
-		this.renderer.setRenderTarget( this.renderTarget );
-		this.renderer.render( scene, camera );
+  setSize: function (width, height) {
+    var pixelRatio = this.renderer.getPixelRatio();
 
-		frame.updateNode( this.material );
+    this.renderTarget.setSize(width * pixelRatio, height * pixelRatio);
 
-		this.renderer.setRenderTarget( null );
-		this.renderer.render( this.scene, this.camera );
+    this.renderer.setSize(width, height);
+  },
 
-	},
+  copy: function (source) {
+    this.output = source.output;
 
-	setPixelRatio: function ( value ) {
+    return this;
+  },
 
-		this.renderer.setPixelRatio( value );
+  toJSON: function (meta) {
+    var isRootObject = meta === undefined || typeof meta === 'string';
 
-		var size = this.renderer.getSize( new Vector2() );
+    if (isRootObject) {
+      meta = {
+        nodes: {},
+      };
+    }
 
-		this.setSize( size.width, size.height );
+    if (meta && !meta.post) meta.post = {};
 
-	},
+    if (!meta.post[this.uuid]) {
+      var data = {};
 
-	setSize: function ( width, height ) {
+      data.uuid = this.uuid;
+      data.type = 'NodePostProcessing';
 
-		var pixelRatio = this.renderer.getPixelRatio();
+      meta.post[this.uuid] = data;
 
-		this.renderTarget.setSize( width * pixelRatio, height * pixelRatio );
+      if (this.name !== '') data.name = this.name;
 
-		this.renderer.setSize( width, height );
+      if (JSON.stringify(this.userData) !== '{}') data.userData = this.userData;
 
-	},
+      data.output = this.output.toJSON(meta).uuid;
+    }
 
-	copy: function ( source ) {
+    meta.post = this.uuid;
 
-		this.output = source.output;
-
-		return this;
-
-	},
-
-	toJSON: function ( meta ) {
-
-		var isRootObject = ( meta === undefined || typeof meta === 'string' );
-
-		if ( isRootObject ) {
-
-			meta = {
-				nodes: {}
-			};
-
-		}
-
-		if ( meta && ! meta.post ) meta.post = {};
-
-		if ( ! meta.post[ this.uuid ] ) {
-
-			var data = {};
-
-			data.uuid = this.uuid;
-			data.type = 'NodePostProcessing';
-
-			meta.post[ this.uuid ] = data;
-
-			if ( this.name !== '' ) data.name = this.name;
-
-			if ( JSON.stringify( this.userData ) !== '{}' ) data.userData = this.userData;
-
-			data.output = this.output.toJSON( meta ).uuid;
-
-		}
-
-		meta.post = this.uuid;
-
-		return meta;
-
-	}
-
+    return meta;
+  },
 };
 
 export { NodePostProcessing };

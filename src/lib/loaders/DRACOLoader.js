@@ -54,17 +54,23 @@ DRACOLoader.prototype = Object.assign(Object.create(Loader.prototype), {
 
   /** @deprecated */
   setVerbosity: function () {
-    console.warn('THREE.DRACOLoader: The .setVerbosity() method has been removed.');
+    console.warn(
+      'THREE.DRACOLoader: The .setVerbosity() method has been removed.',
+    );
   },
 
   /** @deprecated */
   setDrawMode: function () {
-    console.warn('THREE.DRACOLoader: The .setDrawMode() method has been removed.');
+    console.warn(
+      'THREE.DRACOLoader: The .setDrawMode() method has been removed.',
+    );
   },
 
   /** @deprecated */
   setSkipDequantization: function () {
-    console.warn('THREE.DRACOLoader: The .setSkipDequantization() method has been removed.');
+    console.warn(
+      'THREE.DRACOLoader: The .setSkipDequantization() method has been removed.',
+    );
   },
 
   load: function (url, onLoad, onProgress, onError) {
@@ -154,7 +160,10 @@ DRACOLoader.prototype = Object.assign(Object.create(Loader.prototype), {
         return new Promise((resolve, reject) => {
           worker._callbacks[taskID] = { resolve, reject };
 
-          worker.postMessage({ type: 'decode', id: taskID, taskConfig, buffer }, [buffer]);
+          worker.postMessage(
+            { type: 'decode', id: taskID, taskConfig, buffer },
+            [buffer],
+          );
 
           // this.debug();
         });
@@ -217,14 +226,17 @@ DRACOLoader.prototype = Object.assign(Object.create(Loader.prototype), {
   _initDecoder: function () {
     if (this.decoderPending) return this.decoderPending;
 
-    var useJS = typeof WebAssembly !== 'object' || this.decoderConfig.type === 'js';
+    var useJS =
+      typeof WebAssembly !== 'object' || this.decoderConfig.type === 'js';
     var librariesPending = [];
 
     if (useJS) {
       librariesPending.push(this._loadLibrary('draco_decoder.js', 'text'));
     } else {
       librariesPending.push(this._loadLibrary('draco_wasm_wrapper.js', 'text'));
-      librariesPending.push(this._loadLibrary('draco_decoder.wasm', 'arraybuffer'));
+      librariesPending.push(
+        this._loadLibrary('draco_decoder.wasm', 'arraybuffer'),
+      );
     }
 
     this.decoderPending = Promise.all(librariesPending).then((libraries) => {
@@ -274,7 +286,9 @@ DRACOLoader.prototype = Object.assign(Object.create(Loader.prototype), {
               break;
 
             default:
-              console.error('THREE.DRACOLoader: Unexpected message, "' + message.type + '"');
+              console.error(
+                'THREE.DRACOLoader: Unexpected message, "' + message.type + '"',
+              );
           }
         };
 
@@ -348,13 +362,21 @@ DRACOLoader.DRACOWorker = function () {
           decoderBuffer.Init(new Int8Array(buffer), buffer.byteLength);
 
           try {
-            var geometry = decodeGeometry(draco, decoder, decoderBuffer, taskConfig);
+            var geometry = decodeGeometry(
+              draco,
+              decoder,
+              decoderBuffer,
+              taskConfig,
+            );
 
             var buffers = geometry.attributes.map((attr) => attr.array.buffer);
 
             if (geometry.index) buffers.push(geometry.index.array.buffer);
 
-            self.postMessage({ type: 'decode', id: message.id, geometry }, buffers);
+            self.postMessage(
+              { type: 'decode', id: message.id, geometry },
+              buffers,
+            );
           } catch (error) {
             console.error(error);
 
@@ -386,13 +408,18 @@ DRACOLoader.DRACOWorker = function () {
       decodingStatus = decoder.DecodeBufferToMesh(decoderBuffer, dracoGeometry);
     } else if (geometryType === draco.POINT_CLOUD) {
       dracoGeometry = new draco.PointCloud();
-      decodingStatus = decoder.DecodeBufferToPointCloud(decoderBuffer, dracoGeometry);
+      decodingStatus = decoder.DecodeBufferToPointCloud(
+        decoderBuffer,
+        dracoGeometry,
+      );
     } else {
       throw new Error('THREE.DRACOLoader: Unexpected geometry type.');
     }
 
     if (!decodingStatus.ok() || dracoGeometry.ptr === 0) {
-      throw new Error('THREE.DRACOLoader: Decoding failed: ' + decodingStatus.error_msg());
+      throw new Error(
+        'THREE.DRACOLoader: Decoding failed: ' + decodingStatus.error_msg(),
+      );
     }
 
     var geometry = { index: null, attributes: [] };
@@ -412,7 +439,10 @@ DRACOLoader.DRACOWorker = function () {
         attributeID = attributeIDs[attributeName];
         attribute = decoder.GetAttributeByUniqueId(dracoGeometry, attributeID);
       } else {
-        attributeID = decoder.GetAttributeId(dracoGeometry, draco[attributeIDs[attributeName]]);
+        attributeID = decoder.GetAttributeId(
+          dracoGeometry,
+          draco[attributeIDs[attributeName]],
+        );
 
         if (attributeID === -1) continue;
 
@@ -420,7 +450,14 @@ DRACOLoader.DRACOWorker = function () {
       }
 
       geometry.attributes.push(
-        decodeAttribute(draco, decoder, dracoGeometry, attributeName, attributeType, attribute),
+        decodeAttribute(
+          draco,
+          decoder,
+          dracoGeometry,
+          attributeName,
+          attributeType,
+          attribute,
+        ),
       );
     }
 
@@ -450,7 +487,14 @@ DRACOLoader.DRACOWorker = function () {
     return geometry;
   }
 
-  function decodeAttribute(draco, decoder, dracoGeometry, attributeName, attributeType, attribute) {
+  function decodeAttribute(
+    draco,
+    decoder,
+    dracoGeometry,
+    attributeName,
+    attributeType,
+    attribute,
+  ) {
     var numComponents = attribute.num_components();
     var numPoints = dracoGeometry.num_points();
     var numValues = numPoints * numComponents;
@@ -461,43 +505,71 @@ DRACOLoader.DRACOWorker = function () {
     switch (attributeType) {
       case Float32Array:
         dracoArray = new draco.DracoFloat32Array();
-        decoder.GetAttributeFloatForAllPoints(dracoGeometry, attribute, dracoArray);
+        decoder.GetAttributeFloatForAllPoints(
+          dracoGeometry,
+          attribute,
+          dracoArray,
+        );
         array = new Float32Array(numValues);
         break;
 
       case Int8Array:
         dracoArray = new draco.DracoInt8Array();
-        decoder.GetAttributeInt8ForAllPoints(dracoGeometry, attribute, dracoArray);
+        decoder.GetAttributeInt8ForAllPoints(
+          dracoGeometry,
+          attribute,
+          dracoArray,
+        );
         array = new Int8Array(numValues);
         break;
 
       case Int16Array:
         dracoArray = new draco.DracoInt16Array();
-        decoder.GetAttributeInt16ForAllPoints(dracoGeometry, attribute, dracoArray);
+        decoder.GetAttributeInt16ForAllPoints(
+          dracoGeometry,
+          attribute,
+          dracoArray,
+        );
         array = new Int16Array(numValues);
         break;
 
       case Int32Array:
         dracoArray = new draco.DracoInt32Array();
-        decoder.GetAttributeInt32ForAllPoints(dracoGeometry, attribute, dracoArray);
+        decoder.GetAttributeInt32ForAllPoints(
+          dracoGeometry,
+          attribute,
+          dracoArray,
+        );
         array = new Int32Array(numValues);
         break;
 
       case Uint8Array:
         dracoArray = new draco.DracoUInt8Array();
-        decoder.GetAttributeUInt8ForAllPoints(dracoGeometry, attribute, dracoArray);
+        decoder.GetAttributeUInt8ForAllPoints(
+          dracoGeometry,
+          attribute,
+          dracoArray,
+        );
         array = new Uint8Array(numValues);
         break;
 
       case Uint16Array:
         dracoArray = new draco.DracoUInt16Array();
-        decoder.GetAttributeUInt16ForAllPoints(dracoGeometry, attribute, dracoArray);
+        decoder.GetAttributeUInt16ForAllPoints(
+          dracoGeometry,
+          attribute,
+          dracoArray,
+        );
         array = new Uint16Array(numValues);
         break;
 
       case Uint32Array:
         dracoArray = new draco.DracoUInt32Array();
-        decoder.GetAttributeUInt32ForAllPoints(dracoGeometry, attribute, dracoArray);
+        decoder.GetAttributeUInt32ForAllPoints(
+          dracoGeometry,
+          attribute,
+          dracoArray,
+        );
         array = new Uint32Array(numValues);
         break;
 

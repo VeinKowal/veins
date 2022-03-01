@@ -1,37 +1,74 @@
-"use strict";
+'use strict';
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/classCallCheck'),
+);
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/createClass'),
+);
 
-var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
+var _assertThisInitialized2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/assertThisInitialized'),
+);
 
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+var _inherits2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/inherits'),
+);
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+var _possibleConstructorReturn2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/possibleConstructorReturn'),
+);
 
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+var _getPrototypeOf2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/getPrototypeOf'),
+);
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _DEMUtils = _interopRequireDefault(require("../Utils/DEMUtils"));
+var _DEMUtils = _interopRequireDefault(require('../Utils/DEMUtils'));
 
-var _Coordinates = _interopRequireDefault(require("./Geographic/Coordinates"));
+var _Coordinates = _interopRequireDefault(require('./Geographic/Coordinates'));
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+  return function () {
+    var Super = (0, _getPrototypeOf2['default'])(Derived),
+      result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return (0, _possibleConstructorReturn2['default'])(this, result);
+  };
+}
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === 'function') return true;
+  try {
+    Boolean.prototype.valueOf.call(
+      Reflect.construct(Boolean, [], function () {}),
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
-var coord = new _Coordinates["default"]('EPSG:4326');
+var coord = new _Coordinates['default']('EPSG:4326');
 var rect; // set it once
 
 var STYLE_TRANSFORM = '';
@@ -68,9 +105,8 @@ if (document.documentElement.style.transform !== undefined) {
  * style. It helps sorting and prioritizing a Label during render.
  */
 
-
-var Label = /*#__PURE__*/function (_THREE$Object3D) {
-  (0, _inherits2["default"])(Label, _THREE$Object3D);
+var Label = /*#__PURE__*/ (function (_THREE$Object3D) {
+  (0, _inherits2['default'])(Label, _THREE$Object3D);
 
   var _super = _createSuper(Label);
 
@@ -88,11 +124,13 @@ var Label = /*#__PURE__*/function (_THREE$Object3D) {
   function Label() {
     var _this;
 
-    var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var content =
+      arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     var coordinates = arguments.length > 1 ? arguments[1] : undefined;
-    var style = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var style =
+      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var sprites = arguments.length > 3 ? arguments[3] : undefined;
-    (0, _classCallCheck2["default"])(this, Label);
+    (0, _classCallCheck2['default'])(this, Label);
 
     if (coordinates == undefined) {
       throw new Error('coordinates are mandatory to add a Label');
@@ -101,29 +139,33 @@ var Label = /*#__PURE__*/function (_THREE$Object3D) {
     _this = _super.call(this);
     var _visible = _this.visible; // can't do an ES6 setter/getter here
 
-    Object.defineProperty((0, _assertThisInitialized2["default"])(_this), 'visible', {
-      set: function set(v) {
-        if (v != _visible) {
-          // avoid changing the style
-          _visible = v;
-          this.content.style.display = v ? 'block' : 'none'; // TODO: add smooth transition for fade in/out
-        }
+    Object.defineProperty(
+      (0, _assertThisInitialized2['default'])(_this),
+      'visible',
+      {
+        set: function set(v) {
+          if (v != _visible) {
+            // avoid changing the style
+            _visible = v;
+            this.content.style.display = v ? 'block' : 'none'; // TODO: add smooth transition for fade in/out
+          }
+        },
+        get: function get() {
+          return _visible;
+        },
       },
-      get: function get() {
-        return _visible;
-      }
-    });
+    );
     _this.isLabel = true;
     _this.coordinates = coordinates;
     _this.projectedPosition = {
       x: 0,
-      y: 0
+      y: 0,
     };
     _this.boundaries = {
       left: 0,
       right: 0,
       top: 0,
-      bottom: 0
+      bottom: 0,
     };
     _this.content = document.createElement('div');
 
@@ -154,7 +196,7 @@ var Label = /*#__PURE__*/function (_THREE$Object3D) {
 
     _this.zoom = {
       min: style.zoom && style.zoom.min != undefined ? style.zoom.min : 2,
-      max: style.zoom && style.zoom.max != undefined ? style.zoom.max : 24
+      max: style.zoom && style.zoom.max != undefined ? style.zoom.max : 24,
     };
     _this.order = style.order || 0; // Padding value, to avoid labels being too close to each other.
 
@@ -169,77 +211,88 @@ var Label = /*#__PURE__*/function (_THREE$Object3D) {
    * @param {number} y - Y coordinates in pixels, from top.
    */
 
+  (0, _createClass2['default'])(Label, [
+    {
+      key: 'updateProjectedPosition',
+      value: function updateProjectedPosition(x, y) {
+        var X = Math.round(x);
+        var Y = Math.round(y);
 
-  (0, _createClass2["default"])(Label, [{
-    key: "updateProjectedPosition",
-    value: function updateProjectedPosition(x, y) {
-      var X = Math.round(x);
-      var Y = Math.round(y);
+        if (X != this.projectedPosition.x || Y != this.projectedPosition.y) {
+          this.projectedPosition.x = X;
+          this.projectedPosition.y = Y;
+          this.boundaries.left = x + this.offset.left - this.padding;
+          this.boundaries.right = x + this.offset.right + this.padding;
+          this.boundaries.top = y + this.offset.top - this.padding;
+          this.boundaries.bottom = y + this.offset.bottom + this.padding;
+        }
+      },
+    },
+    {
+      key: 'updateCSSPosition',
+      value: function updateCSSPosition() {
+        this.content.style[STYLE_TRANSFORM] = 'translate('
+          .concat(this.boundaries.left + this.padding, 'px, ')
+          .concat(this.boundaries.top + this.padding, 'px)');
+      },
+      /**
+       * Updates the screen dimensions of the label, using
+       * `getBoundingClientRect`.  It updates `width` and `height` property of the
+       * label, and the boundaries.
+       */
+    },
+    {
+      key: 'initDimensions',
+      value: function initDimensions() {
+        if (!this.offset) {
+          rect = this.content.getBoundingClientRect();
+          var width = Math.round(rect.width);
+          var height = Math.round(rect.height);
+          this.offset = {
+            left: width * this.anchor[0],
+            top: height * this.anchor[1],
+          };
+          this.offset.right = this.offset.left + width;
+          this.offset.bottom = this.offset.top + height;
+        }
+      },
+    },
+    {
+      key: 'update3dPosition',
+      value: function update3dPosition(crs) {
+        this.coordinates.as(crs, coord);
+        coord.toVector3(this.position);
+        this.parent.worldToLocal(this.position);
+        this.updateMatrixWorld();
+      },
+    },
+    {
+      key: 'updateElevationFromLayer',
+      value: function updateElevationFromLayer(layer) {
+        var elevation = _DEMUtils['default'].getElevationValueAt(
+          layer,
+          this.coordinates,
+          _DEMUtils['default'].FAST_READ_Z,
+        );
 
-      if (X != this.projectedPosition.x || Y != this.projectedPosition.y) {
-        this.projectedPosition.x = X;
-        this.projectedPosition.y = Y;
-        this.boundaries.left = x + this.offset.left - this.padding;
-        this.boundaries.right = x + this.offset.right + this.padding;
-        this.boundaries.top = y + this.offset.top - this.padding;
-        this.boundaries.bottom = y + this.offset.bottom + this.padding;
-      }
-    }
-  }, {
-    key: "updateCSSPosition",
-    value: function updateCSSPosition() {
-      this.content.style[STYLE_TRANSFORM] = "translate(".concat(this.boundaries.left + this.padding, "px, ").concat(this.boundaries.top + this.padding, "px)");
-    }
-    /**
-     * Updates the screen dimensions of the label, using
-     * `getBoundingClientRect`.  It updates `width` and `height` property of the
-     * label, and the boundaries.
-     */
-
-  }, {
-    key: "initDimensions",
-    value: function initDimensions() {
-      if (!this.offset) {
-        rect = this.content.getBoundingClientRect();
-        var width = Math.round(rect.width);
-        var height = Math.round(rect.height);
-        this.offset = {
-          left: width * this.anchor[0],
-          top: height * this.anchor[1]
-        };
-        this.offset.right = this.offset.left + width;
-        this.offset.bottom = this.offset.top + height;
-      }
-    }
-  }, {
-    key: "update3dPosition",
-    value: function update3dPosition(crs) {
-      this.coordinates.as(crs, coord);
-      coord.toVector3(this.position);
-      this.parent.worldToLocal(this.position);
-      this.updateMatrixWorld();
-    }
-  }, {
-    key: "updateElevationFromLayer",
-    value: function updateElevationFromLayer(layer) {
-      var elevation = _DEMUtils["default"].getElevationValueAt(layer, this.coordinates, _DEMUtils["default"].FAST_READ_Z);
-
-      if (elevation && elevation != this.coordinates.z) {
-        this.coordinates.z = elevation;
-        this.updateHorizonCullingPoint();
-        return true;
-      }
-    }
-  }, {
-    key: "updateHorizonCullingPoint",
-    value: function updateHorizonCullingPoint() {
-      if (this.horizonCullingPoint) {
-        this.getWorldPosition(this.horizonCullingPoint);
-      }
-    }
-  }]);
+        if (elevation && elevation != this.coordinates.z) {
+          this.coordinates.z = elevation;
+          this.updateHorizonCullingPoint();
+          return true;
+        }
+      },
+    },
+    {
+      key: 'updateHorizonCullingPoint',
+      value: function updateHorizonCullingPoint() {
+        if (this.horizonCullingPoint) {
+          this.getWorldPosition(this.horizonCullingPoint);
+        }
+      },
+    },
+  ]);
   return Label;
-}(THREE.Object3D);
+})(THREE.Object3D);
 
 var _default = Label;
-exports["default"] = _default;
+exports['default'] = _default;

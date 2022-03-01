@@ -97,7 +97,8 @@ CodeBuilderInstructions.prototype = {
  */
 const WorkerExecutionSupport = function () {
   // check worker support first
-  if (window.Worker === undefined) throw 'This browser does not support web workers!';
+  if (window.Worker === undefined)
+    throw 'This browser does not support web workers!';
   if (window.Blob === undefined) throw 'This browser does not support Blob!';
   if (typeof window.URL.createObjectURL !== 'function')
     throw 'This browser does not support Object creation from URL!';
@@ -105,7 +106,10 @@ const WorkerExecutionSupport = function () {
   this._reset();
 };
 WorkerExecutionSupport.WORKER_SUPPORT_VERSION = '3.2.0';
-console.info('Using WorkerSupport version: ' + WorkerExecutionSupport.WORKER_SUPPORT_VERSION);
+console.info(
+  'Using WorkerSupport version: ' +
+    WorkerExecutionSupport.WORKER_SUPPORT_VERSION,
+);
 
 WorkerExecutionSupport.prototype = {
   constructor: WorkerExecutionSupport,
@@ -321,7 +325,12 @@ WorkerExecutionSupport.prototype = {
     return workerAvailable;
   },
 
-  _configureWorkerCommunication: function (worker, haveJsmWorker, defaultGeometryType, timeLabel) {
+  _configureWorkerCommunication: function (
+    worker,
+    haveJsmWorker,
+    defaultGeometryType,
+    timeLabel,
+  ) {
     this.worker.native = worker;
     this.worker.jsmWorker = haveJsmWorker;
 
@@ -348,7 +357,8 @@ WorkerExecutionSupport.prototype = {
   isWorkerLoaded: function (requireJsmWorker) {
     return (
       this.worker.native !== null &&
-      ((requireJsmWorker && this.worker.jsmWorker) || (!requireJsmWorker && !this.worker.jsmWorker))
+      ((requireJsmWorker && this.worker.jsmWorker) ||
+        (!requireJsmWorker && !this.worker.jsmWorker))
     );
   },
 
@@ -387,7 +397,12 @@ WorkerExecutionSupport.prototype = {
         break;
 
       case 'error':
-        console.error('WorkerSupport [' + workerRunnerName + ']: Reported error: ' + payload.msg);
+        console.error(
+          'WorkerSupport [' +
+            workerRunnerName +
+            ']: Reported error: ' +
+            payload.msg,
+        );
         this.worker.queuedMessage = null;
         this.worker.started = false;
         if (this.worker.callbacks.onLoad !== null) {
@@ -407,7 +422,10 @@ WorkerExecutionSupport.prototype = {
 
       default:
         console.error(
-          'WorkerSupport [' + workerRunnerName + ']: Received unknown command: ' + payload.cmd,
+          'WorkerSupport [' +
+            workerRunnerName +
+            ']: Received unknown command: ' +
+            payload.cmd,
         );
         break;
     }
@@ -420,7 +438,8 @@ WorkerExecutionSupport.prototype = {
    */
   executeParallel: function (payload, transferables) {
     payload.cmd = 'parse';
-    payload.usesMeshDisassembler = this.worker.workerRunner.usesMeshDisassembler;
+    payload.usesMeshDisassembler =
+      this.worker.workerRunner.usesMeshDisassembler;
     payload.defaultGeometryType = this.worker.workerRunner.defaultGeometryType;
     if (!this._verifyWorkerIsAvailable(payload, transferables)) return;
 
@@ -436,7 +455,10 @@ WorkerExecutionSupport.prototype = {
     } else {
       this.worker.queuedMessage = {
         payload: payload,
-        transferables: transferables === undefined || transferables === null ? [] : transferables,
+        transferables:
+          transferables === undefined || transferables === null
+            ? []
+            : transferables,
       };
       this.worker.started = true;
     }
@@ -448,14 +470,21 @@ WorkerExecutionSupport.prototype = {
       if (this.worker.queuedMessage.payload.data.input instanceof ArrayBuffer) {
         let transferables = [];
         if (this.worker.forceWorkerDataCopy) {
-          transferables.push(this.worker.queuedMessage.payload.data.input.slice(0));
+          transferables.push(
+            this.worker.queuedMessage.payload.data.input.slice(0),
+          );
         } else {
           transferables.push(this.worker.queuedMessage.payload.data.input);
         }
         if (this.worker.queuedMessage.transferables.length > 0) {
-          transferables = transferables.concat(this.worker.queuedMessage.transferables);
+          transferables = transferables.concat(
+            this.worker.queuedMessage.transferables,
+          );
         }
-        this.worker.native.postMessage(this.worker.queuedMessage.payload, transferables);
+        this.worker.native.postMessage(
+          this.worker.queuedMessage.payload,
+          transferables,
+        );
       } else {
         this.worker.native.postMessage(this.worker.queuedMessage.payload);
       }

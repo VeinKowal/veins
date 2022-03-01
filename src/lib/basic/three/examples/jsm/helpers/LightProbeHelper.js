@@ -1,131 +1,117 @@
 import {
-	Mesh,
-	ShaderMaterial,
-	SphereGeometry
+  Mesh,
+  ShaderMaterial,
+  SphereGeometry,
 } from '../../../build/three.module.js';
 
-function LightProbeHelper( lightProbe, size ) {
+function LightProbeHelper(lightProbe, size) {
+  this.lightProbe = lightProbe;
 
-	this.lightProbe = lightProbe;
+  this.size = size;
 
-	this.size = size;
+  var material = new ShaderMaterial({
+    type: 'LightProbeHelperMaterial',
 
-	var material = new ShaderMaterial( {
+    uniforms: {
+      sh: { value: this.lightProbe.sh.coefficients }, // by reference
 
-		type: 'LightProbeHelperMaterial',
+      intensity: { value: this.lightProbe.intensity },
+    },
 
-		uniforms: {
+    vertexShader: [
+      'varying vec3 vNormal;',
 
-			sh: { value: this.lightProbe.sh.coefficients }, // by reference
+      'void main() {',
 
-			intensity: { value: this.lightProbe.intensity }
+      '	vNormal = normalize( normalMatrix * normal );',
 
-		},
+      '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
 
-		vertexShader: [
+      '}',
+    ].join('\n'),
 
-			'varying vec3 vNormal;',
+    fragmentShader: [
+      '#define RECIPROCAL_PI 0.318309886',
 
-			'void main() {',
+      'vec3 inverseTransformDirection( in vec3 normal, in mat4 matrix ) {',
 
-			'	vNormal = normalize( normalMatrix * normal );',
+      '	// matrix is assumed to be orthogonal',
 
-			'	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+      '	return normalize( ( vec4( normal, 0.0 ) * matrix ).xyz );',
 
-			'}',
+      '}',
 
-		].join( '\n' ),
+      '// source: https://graphics.stanford.edu/papers/envmap/envmap.pdf',
+      'vec3 shGetIrradianceAt( in vec3 normal, in vec3 shCoefficients[ 9 ] ) {',
 
-		fragmentShader: [
+      '	// normal is assumed to have unit length',
 
-			'#define RECIPROCAL_PI 0.318309886',
+      '	float x = normal.x, y = normal.y, z = normal.z;',
 
-			'vec3 inverseTransformDirection( in vec3 normal, in mat4 matrix ) {',
+      '	// band 0',
+      '	vec3 result = shCoefficients[ 0 ] * 0.886227;',
 
-			'	// matrix is assumed to be orthogonal',
+      '	// band 1',
+      '	result += shCoefficients[ 1 ] * 2.0 * 0.511664 * y;',
+      '	result += shCoefficients[ 2 ] * 2.0 * 0.511664 * z;',
+      '	result += shCoefficients[ 3 ] * 2.0 * 0.511664 * x;',
 
-			'	return normalize( ( vec4( normal, 0.0 ) * matrix ).xyz );',
+      '	// band 2',
+      '	result += shCoefficients[ 4 ] * 2.0 * 0.429043 * x * y;',
+      '	result += shCoefficients[ 5 ] * 2.0 * 0.429043 * y * z;',
+      '	result += shCoefficients[ 6 ] * ( 0.743125 * z * z - 0.247708 );',
+      '	result += shCoefficients[ 7 ] * 2.0 * 0.429043 * x * z;',
+      '	result += shCoefficients[ 8 ] * 0.429043 * ( x * x - y * y );',
 
-			'}',
+      '	return result;',
 
-			'// source: https://graphics.stanford.edu/papers/envmap/envmap.pdf',
-			'vec3 shGetIrradianceAt( in vec3 normal, in vec3 shCoefficients[ 9 ] ) {',
+      '}',
 
-			'	// normal is assumed to have unit length',
+      'uniform vec3 sh[ 9 ]; // sh coefficients',
 
-			'	float x = normal.x, y = normal.y, z = normal.z;',
+      'uniform float intensity; // light probe intensity',
 
-			'	// band 0',
-			'	vec3 result = shCoefficients[ 0 ] * 0.886227;',
+      'varying vec3 vNormal;',
 
-			'	// band 1',
-			'	result += shCoefficients[ 1 ] * 2.0 * 0.511664 * y;',
-			'	result += shCoefficients[ 2 ] * 2.0 * 0.511664 * z;',
-			'	result += shCoefficients[ 3 ] * 2.0 * 0.511664 * x;',
+      'void main() {',
 
-			'	// band 2',
-			'	result += shCoefficients[ 4 ] * 2.0 * 0.429043 * x * y;',
-			'	result += shCoefficients[ 5 ] * 2.0 * 0.429043 * y * z;',
-			'	result += shCoefficients[ 6 ] * ( 0.743125 * z * z - 0.247708 );',
-			'	result += shCoefficients[ 7 ] * 2.0 * 0.429043 * x * z;',
-			'	result += shCoefficients[ 8 ] * 0.429043 * ( x * x - y * y );',
+      '	vec3 normal = normalize( vNormal );',
 
-			'	return result;',
+      '	vec3 worldNormal = inverseTransformDirection( normal, viewMatrix );',
 
-			'}',
+      '	vec3 irradiance = shGetIrradianceAt( worldNormal, sh );',
 
-			'uniform vec3 sh[ 9 ]; // sh coefficients',
+      '	vec3 outgoingLight = RECIPROCAL_PI * irradiance * intensity;',
 
-			'uniform float intensity; // light probe intensity',
+      '	gl_FragColor = linearToOutputTexel( vec4( outgoingLight, 1.0 ) );',
 
-			'varying vec3 vNormal;',
+      '}',
+    ].join('\n'),
+  });
 
-			'void main() {',
+  var geometry = new SphereGeometry(1, 32, 16);
 
-			'	vec3 normal = normalize( vNormal );',
+  Mesh.call(this, geometry, material);
 
-			'	vec3 worldNormal = inverseTransformDirection( normal, viewMatrix );',
+  this.type = 'LightProbeHelper';
 
-			'	vec3 irradiance = shGetIrradianceAt( worldNormal, sh );',
-
-			'	vec3 outgoingLight = RECIPROCAL_PI * irradiance * intensity;',
-
-			'	gl_FragColor = linearToOutputTexel( vec4( outgoingLight, 1.0 ) );',
-
-			'}'
-
-		].join( '\n' )
-
-	} );
-
-	var geometry = new SphereGeometry( 1, 32, 16 );
-
-	Mesh.call( this, geometry, material );
-
-	this.type = 'LightProbeHelper';
-
-	this.onBeforeRender();
-
+  this.onBeforeRender();
 }
 
-LightProbeHelper.prototype = Object.create( Mesh.prototype );
+LightProbeHelper.prototype = Object.create(Mesh.prototype);
 LightProbeHelper.prototype.constructor = LightProbeHelper;
 
 LightProbeHelper.prototype.dispose = function () {
-
-	this.geometry.dispose();
-	this.material.dispose();
-
+  this.geometry.dispose();
+  this.material.dispose();
 };
 
 LightProbeHelper.prototype.onBeforeRender = function () {
+  this.position.copy(this.lightProbe.position);
 
-	this.position.copy( this.lightProbe.position );
+  this.scale.set(1, 1, 1).multiplyScalar(this.size);
 
-	this.scale.set( 1, 1, 1 ).multiplyScalar( this.size );
-
-	this.material.uniforms.intensity.value = this.lightProbe.intensity;
-
+  this.material.uniforms.intensity.value = this.lightProbe.intensity;
 };
 
 export { LightProbeHelper };

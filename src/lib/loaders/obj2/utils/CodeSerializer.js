@@ -25,7 +25,8 @@ const CodeSerializer = {
     let prototypeFunctions = [];
     let objectProperties = [];
     let objectFunctions = [];
-    let isExtended = basePrototypeName !== null && basePrototypeName !== undefined;
+    let isExtended =
+      basePrototypeName !== null && basePrototypeName !== undefined;
 
     if (!Array.isArray(overrideFunctions)) overrideFunctions = [];
 
@@ -39,7 +40,8 @@ const CodeSerializer = {
 
       if (name === 'constructor') {
         if (!funcInstructions.isRemoveCode()) {
-          constructorString = fullObjectName + ' = ' + funcInstructions.getCode() + ';\n\n';
+          constructorString =
+            fullObjectName + ' = ' + funcInstructions.getCode() + ';\n\n';
         }
       } else if (typeof objectPart === 'function') {
         funcTemp = overrideFunctions[name];
@@ -52,11 +54,18 @@ const CodeSerializer = {
         if (!funcInstructions.isRemoveCode()) {
           if (isExtended) {
             prototypeFunctions.push(
-              funcInstructions.getFullName() + ' = ' + funcInstructions.getCode() + ';\n\n',
+              funcInstructions.getFullName() +
+                ' = ' +
+                funcInstructions.getCode() +
+                ';\n\n',
             );
           } else {
             prototypeFunctions.push(
-              '\t' + funcInstructions.getName() + ': ' + funcInstructions.getCode() + ',\n\n',
+              '\t' +
+                funcInstructions.getName() +
+                ': ' +
+                funcInstructions.getCode() +
+                ',\n\n',
             );
           }
         }
@@ -64,7 +73,10 @@ const CodeSerializer = {
     }
     for (let name in targetPrototype) {
       objectPart = targetPrototype[name];
-      funcInstructions = new CodeSerializationInstruction(name, fullObjectName + '.' + name);
+      funcInstructions = new CodeSerializationInstruction(
+        name,
+        fullObjectName + '.' + name,
+      );
       if (typeof objectPart === 'function') {
         funcTemp = overrideFunctions[name];
         if (
@@ -77,7 +89,10 @@ const CodeSerializer = {
         }
         if (!funcInstructions.isRemoveCode()) {
           objectFunctions.push(
-            funcInstructions.getFullName() + ' = ' + funcInstructions.getCode() + ';\n\n',
+            funcInstructions.getFullName() +
+              ' = ' +
+              funcInstructions.getCode() +
+              ';\n\n',
           );
         }
       } else {
@@ -95,7 +110,10 @@ const CodeSerializer = {
         }
         if (!funcInstructions.isRemoveCode()) {
           objectProperties.push(
-            funcInstructions.getFullName() + ' = ' + funcInstructions.getCode() + ';\n',
+            funcInstructions.getFullName() +
+              ' = ' +
+              funcInstructions.getCode() +
+              ';\n',
           );
         }
       }
@@ -103,9 +121,13 @@ const CodeSerializer = {
     let objectString = constructorString + '\n\n';
     if (isExtended) {
       objectString +=
-        fullObjectName + '.prototype = Object.create( ' + basePrototypeName + '.prototype );\n';
+        fullObjectName +
+        '.prototype = Object.create( ' +
+        basePrototypeName +
+        '.prototype );\n';
     }
-    objectString += fullObjectName + '.prototype.constructor = ' + fullObjectName + ';\n';
+    objectString +=
+      fullObjectName + '.prototype.constructor = ' + fullObjectName + ';\n';
     objectString += '\n\n';
 
     for (i = 0; i < objectProperties.length; i++) {

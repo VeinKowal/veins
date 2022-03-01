@@ -1,54 +1,42 @@
-function NodeFrame( time ) {
+function NodeFrame(time) {
+  this.time = time !== undefined ? time : 0;
 
-	this.time = time !== undefined ? time : 0;
-
-	this.id = 0;
-
+  this.id = 0;
 }
 
 NodeFrame.prototype = {
+  constructor: NodeFrame,
 
-	constructor: NodeFrame,
+  update: function (delta) {
+    ++this.id;
 
-	update: function ( delta ) {
+    this.time += delta;
+    this.delta = delta;
 
-		++ this.id;
+    return this;
+  },
 
-		this.time += delta;
-		this.delta = delta;
+  setRenderer: function (renderer) {
+    this.renderer = renderer;
 
-		return this;
+    return this;
+  },
 
-	},
+  setRenderTexture: function (renderTexture) {
+    this.renderTexture = renderTexture;
 
-	setRenderer: function ( renderer ) {
+    return this;
+  },
 
-		this.renderer = renderer;
+  updateNode: function (node) {
+    if (node.frameId === this.id) return this;
 
-		return this;
+    node.updateFrame(this);
 
-	},
+    node.frameId = this.id;
 
-	setRenderTexture: function ( renderTexture ) {
-
-		this.renderTexture = renderTexture;
-
-		return this;
-
-	},
-
-	updateNode: function ( node ) {
-
-		if ( node.frameId === this.id ) return this;
-
-		node.updateFrame( this );
-
-		node.frameId = this.id;
-
-		return this;
-
-	}
-
+    return this;
+  },
 };
 
 export { NodeFrame };

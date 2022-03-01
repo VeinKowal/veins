@@ -3,232 +3,188 @@ import { FunctionNode } from '../core/FunctionNode.js';
 import { FloatNode } from '../inputs/FloatNode.js';
 import { PositionNode } from '../accessors/PositionNode.js';
 
-function CameraNode( scope, camera ) {
+function CameraNode(scope, camera) {
+  TempNode.call(this, 'v3');
 
-	TempNode.call( this, 'v3' );
-
-	this.setScope( scope || CameraNode.POSITION );
-	this.setCamera( camera );
-
+  this.setScope(scope || CameraNode.POSITION);
+  this.setCamera(camera);
 }
 
-CameraNode.Nodes = ( function () {
+CameraNode.Nodes = (function () {
+  var depthColor = new FunctionNode(
+    [
+      'float depthColor( float mNear, float mFar ) {',
 
-	var depthColor = new FunctionNode( [
-		'float depthColor( float mNear, float mFar ) {',
+      '	#ifdef USE_LOGDEPTHBUF_EXT',
 
-		'	#ifdef USE_LOGDEPTHBUF_EXT',
+      '		float depth = gl_FragDepthEXT / gl_FragCoord.w;',
 
-		'		float depth = gl_FragDepthEXT / gl_FragCoord.w;',
+      '	#else',
 
-		'	#else',
+      '		float depth = gl_FragCoord.z / gl_FragCoord.w;',
 
-		'		float depth = gl_FragCoord.z / gl_FragCoord.w;',
+      '	#endif',
 
-		'	#endif',
+      '	return 1.0 - smoothstep( mNear, mFar, depth );',
 
-		'	return 1.0 - smoothstep( mNear, mFar, depth );',
+      '}',
+    ].join('\n'),
+  );
 
-		'}'
-	].join( '\n' ) );
-
-	return {
-		depthColor: depthColor
-	};
-
-} )();
+  return {
+    depthColor: depthColor,
+  };
+})();
 
 CameraNode.POSITION = 'position';
 CameraNode.DEPTH = 'depth';
 CameraNode.TO_VERTEX = 'toVertex';
 
-CameraNode.prototype = Object.create( TempNode.prototype );
+CameraNode.prototype = Object.create(TempNode.prototype);
 CameraNode.prototype.constructor = CameraNode;
 CameraNode.prototype.nodeType = 'Camera';
 
-CameraNode.prototype.setCamera = function ( camera ) {
-
-	this.camera = camera;
-	this.updateFrame = camera !== undefined ? this.onUpdateFrame : undefined;
-
+CameraNode.prototype.setCamera = function (camera) {
+  this.camera = camera;
+  this.updateFrame = camera !== undefined ? this.onUpdateFrame : undefined;
 };
 
-CameraNode.prototype.setScope = function ( scope ) {
+CameraNode.prototype.setScope = function (scope) {
+  switch (this.scope) {
+    case CameraNode.DEPTH:
+      delete this.near;
+      delete this.far;
 
-	switch ( this.scope ) {
+      break;
+  }
 
-		case CameraNode.DEPTH:
+  this.scope = scope;
 
-			delete this.near;
-			delete this.far;
+  switch (scope) {
+    case CameraNode.DEPTH:
+      var camera = this.camera;
 
-			break;
+      this.near = new FloatNode(camera ? camera.near : 1);
+      this.far = new FloatNode(camera ? camera.far : 1200);
 
-	}
-
-	this.scope = scope;
-
-	switch ( scope ) {
-
-		case CameraNode.DEPTH:
-
-			var camera = this.camera;
-
-			this.near = new FloatNode( camera ? camera.near : 1 );
-			this.far = new FloatNode( camera ? camera.far : 1200 );
-
-			break;
-
-	}
-
+      break;
+  }
 };
 
-CameraNode.prototype.getType = function ( /* builder */ ) {
+CameraNode.prototype.getType = function (/* builder */) {
+  switch (this.scope) {
+    case CameraNode.DEPTH:
+      return 'f';
+  }
 
-	switch ( this.scope ) {
-
-		case CameraNode.DEPTH:
-
-			return 'f';
-
-	}
-
-	return this.type;
-
+  return this.type;
 };
 
-CameraNode.prototype.getUnique = function ( /* builder */ ) {
+CameraNode.prototype.getUnique = function (/* builder */) {
+  switch (this.scope) {
+    case CameraNode.DEPTH:
+    case CameraNode.TO_VERTEX:
+      return true;
+  }
 
-	switch ( this.scope ) {
-
-		case CameraNode.DEPTH:
-		case CameraNode.TO_VERTEX:
-
-			return true;
-
-	}
-
-	return false;
-
+  return false;
 };
 
-CameraNode.prototype.getShared = function ( /* builder */ ) {
+CameraNode.prototype.getShared = function (/* builder */) {
+  switch (this.scope) {
+    case CameraNode.POSITION:
+      return false;
+  }
 
-	switch ( this.scope ) {
-
-		case CameraNode.POSITION:
-
-			return false;
-
-	}
-
-	return true;
-
+  return true;
 };
 
-CameraNode.prototype.generate = function ( builder, output ) {
+CameraNode.prototype.generate = function (builder, output) {
+  var result;
 
-	var result;
+  switch (this.scope) {
+    case CameraNode.POSITION:
+      result = 'cameraPosition';
 
-	switch ( this.scope ) {
+      break;
 
-		case CameraNode.POSITION:
+    case CameraNode.DEPTH:
+      var depthColor = builder.include(CameraNode.Nodes.depthColor);
 
-			result = 'cameraPosition';
+      result =
+        depthColor +
+        '( ' +
+        this.near.build(builder, 'f') +
+        ', ' +
+        this.far.build(builder, 'f') +
+        ' )';
 
-			break;
+      break;
 
-		case CameraNode.DEPTH:
+    case CameraNode.TO_VERTEX:
+      result =
+        'normalize( ' +
+        new PositionNode(PositionNode.WORLD).build(builder, 'v3') +
+        ' - cameraPosition )';
 
-			var depthColor = builder.include( CameraNode.Nodes.depthColor );
+      break;
+  }
 
-			result = depthColor + '( ' + this.near.build( builder, 'f' ) + ', ' + this.far.build( builder, 'f' ) + ' )';
-
-			break;
-
-		case CameraNode.TO_VERTEX:
-
-			result = 'normalize( ' + new PositionNode( PositionNode.WORLD ).build( builder, 'v3' ) + ' - cameraPosition )';
-
-			break;
-
-	}
-
-	return builder.format( result, this.getType( builder ), output );
-
+  return builder.format(result, this.getType(builder), output);
 };
 
-CameraNode.prototype.onUpdateFrame = function ( /* frame */ ) {
+CameraNode.prototype.onUpdateFrame = function (/* frame */) {
+  switch (this.scope) {
+    case CameraNode.DEPTH:
+      var camera = this.camera;
 
-	switch ( this.scope ) {
+      this.near.value = camera.near;
+      this.far.value = camera.far;
 
-		case CameraNode.DEPTH:
-
-			var camera = this.camera;
-
-			this.near.value = camera.near;
-			this.far.value = camera.far;
-
-			break;
-
-	}
-
+      break;
+  }
 };
 
-CameraNode.prototype.copy = function ( source ) {
+CameraNode.prototype.copy = function (source) {
+  TempNode.prototype.copy.call(this, source);
 
-	TempNode.prototype.copy.call( this, source );
+  this.setScope(source.scope);
 
-	this.setScope( source.scope );
+  if (source.camera) {
+    this.setCamera(source.camera);
+  }
 
-	if ( source.camera ) {
+  switch (source.scope) {
+    case CameraNode.DEPTH:
+      this.near.number = source.near;
+      this.far.number = source.far;
 
-		this.setCamera( source.camera );
+      break;
+  }
 
-	}
-
-	switch ( source.scope ) {
-
-		case CameraNode.DEPTH:
-
-			this.near.number = source.near;
-			this.far.number = source.far;
-
-			break;
-
-	}
-
-	return this;
-
+  return this;
 };
 
-CameraNode.prototype.toJSON = function ( meta ) {
+CameraNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = this.createJSONNode(meta);
 
-	if ( ! data ) {
+    data.scope = this.scope;
 
-		data = this.createJSONNode( meta );
+    if (this.camera) data.camera = this.camera.uuid;
 
-		data.scope = this.scope;
+    switch (this.scope) {
+      case CameraNode.DEPTH:
+        data.near = this.near.value;
+        data.far = this.far.value;
 
-		if ( this.camera ) data.camera = this.camera.uuid;
+        break;
+    }
+  }
 
-		switch ( this.scope ) {
-
-			case CameraNode.DEPTH:
-
-				data.near = this.near.value;
-				data.far = this.far.value;
-
-				break;
-
-		}
-
-	}
-
-	return data;
-
+  return data;
 };
 
 export { CameraNode };

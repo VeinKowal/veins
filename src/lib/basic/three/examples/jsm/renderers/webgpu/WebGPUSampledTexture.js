@@ -2,66 +2,55 @@ import WebGPUBinding from './WebGPUBinding.js';
 import { GPUBindingType, GPUTextureViewDimension } from './constants.js';
 
 class WebGPUSampledTexture extends WebGPUBinding {
+  constructor(name, texture) {
+    super(name);
 
-	constructor( name, texture ) {
+    this.texture = texture;
 
-		super( name );
+    this.dimension = GPUTextureViewDimension.TwoD;
 
-		this.texture = texture;
+    this.type = GPUBindingType.SampledTexture;
+    this.visibility = GPUShaderStage.FRAGMENT;
 
-		this.dimension = GPUTextureViewDimension.TwoD;
-
-		this.type = GPUBindingType.SampledTexture;
-		this.visibility = GPUShaderStage.FRAGMENT;
-
-		this.textureGPU = null; // set by the renderer
-
-	}
-
+    this.textureGPU = null; // set by the renderer
+  }
 }
 
 WebGPUSampledTexture.prototype.isSampledTexture = true;
 
 class WebGPUSampledArrayTexture extends WebGPUSampledTexture {
+  constructor(name) {
+    super(name);
 
-	constructor( name ) {
-
-		super( name );
-
-		this.dimension = GPUTextureViewDimension.TwoDArray;
-
-	}
-
+    this.dimension = GPUTextureViewDimension.TwoDArray;
+  }
 }
 
 WebGPUSampledArrayTexture.prototype.isSampledArrayTexture = true;
 
 class WebGPUSampled3DTexture extends WebGPUSampledTexture {
+  constructor(name) {
+    super(name);
 
-	constructor( name ) {
-
-		super( name );
-
-		this.dimension = GPUTextureViewDimension.ThreeD;
-
-	}
-
+    this.dimension = GPUTextureViewDimension.ThreeD;
+  }
 }
 
 WebGPUSampled3DTexture.prototype.isSampled3DTexture = true;
 
 class WebGPUSampledCubeTexture extends WebGPUSampledTexture {
+  constructor(name) {
+    super(name);
 
-	constructor( name ) {
-
-		super( name );
-
-		this.dimension = GPUTextureViewDimension.Cube;
-
-	}
-
+    this.dimension = GPUTextureViewDimension.Cube;
+  }
 }
 
 WebGPUSampledCubeTexture.prototype.isSampledCubeTexture = true;
 
-export { WebGPUSampledTexture, WebGPUSampledArrayTexture, WebGPUSampled3DTexture, WebGPUSampledCubeTexture };
+export {
+  WebGPUSampledTexture,
+  WebGPUSampledArrayTexture,
+  WebGPUSampled3DTexture,
+  WebGPUSampledCubeTexture,
+};

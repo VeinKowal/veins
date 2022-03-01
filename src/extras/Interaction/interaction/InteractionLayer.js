@@ -749,19 +749,43 @@ class InteractionLayer extends EventDispatcher {
      */
     if (this.supportsPointerEvents) {
       window.document.addEventListener('pointermove', this.onPointerMove, true);
-      this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, true);
+      this.interactionDOMElement.addEventListener(
+        'pointerdown',
+        this.onPointerDown,
+        true,
+      );
       // pointerout is fired in addition to pointerup (for touch events) and pointercancel
       // we already handle those, so for the purposes of what we do in onPointerOut, we only
       // care about the pointerleave event
-      this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, true);
-      this.interactionDOMElement.addEventListener('pointerover', this.onPointerOver, true);
+      this.interactionDOMElement.addEventListener(
+        'pointerleave',
+        this.onPointerOut,
+        true,
+      );
+      this.interactionDOMElement.addEventListener(
+        'pointerover',
+        this.onPointerOver,
+        true,
+      );
       window.addEventListener('pointercancel', this.onPointerCancel, true);
       window.addEventListener('pointerup', this.onPointerUp, true);
     } else {
       window.document.addEventListener('mousemove', this.onPointerMove, true);
-      this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, true);
-      this.interactionDOMElement.addEventListener('mouseout', this.onPointerOut, true);
-      this.interactionDOMElement.addEventListener('mouseover', this.onPointerOver, true);
+      this.interactionDOMElement.addEventListener(
+        'mousedown',
+        this.onPointerDown,
+        true,
+      );
+      this.interactionDOMElement.addEventListener(
+        'mouseout',
+        this.onPointerOut,
+        true,
+      );
+      this.interactionDOMElement.addEventListener(
+        'mouseover',
+        this.onPointerOver,
+        true,
+      );
       window.addEventListener('mouseup', this.onPointerUp, true);
     }
 
@@ -769,10 +793,26 @@ class InteractionLayer extends EventDispatcher {
     // In a future version we should change this to being just a fallback and rely solely on
     // PointerEvents whenever available
     if (this.supportsTouchEvents) {
-      this.interactionDOMElement.addEventListener('touchstart', this.onPointerDown, true);
-      this.interactionDOMElement.addEventListener('touchcancel', this.onPointerCancel, true);
-      this.interactionDOMElement.addEventListener('touchend', this.onPointerUp, true);
-      this.interactionDOMElement.addEventListener('touchmove', this.onPointerMove, true);
+      this.interactionDOMElement.addEventListener(
+        'touchstart',
+        this.onPointerDown,
+        true,
+      );
+      this.interactionDOMElement.addEventListener(
+        'touchcancel',
+        this.onPointerCancel,
+        true,
+      );
+      this.interactionDOMElement.addEventListener(
+        'touchend',
+        this.onPointerUp,
+        true,
+      );
+      this.interactionDOMElement.addEventListener(
+        'touchmove',
+        this.onPointerMove,
+        true,
+      );
     }
 
     this.eventsAdded = true;
@@ -800,25 +840,73 @@ class InteractionLayer extends EventDispatcher {
     }
 
     if (this.supportsPointerEvents) {
-      window.document.removeEventListener('pointermove', this.onPointerMove, true);
-      this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, true);
-      this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, true);
-      this.interactionDOMElement.removeEventListener('pointerover', this.onPointerOver, true);
+      window.document.removeEventListener(
+        'pointermove',
+        this.onPointerMove,
+        true,
+      );
+      this.interactionDOMElement.removeEventListener(
+        'pointerdown',
+        this.onPointerDown,
+        true,
+      );
+      this.interactionDOMElement.removeEventListener(
+        'pointerleave',
+        this.onPointerOut,
+        true,
+      );
+      this.interactionDOMElement.removeEventListener(
+        'pointerover',
+        this.onPointerOver,
+        true,
+      );
       window.removeEventListener('pointercancel', this.onPointerCancel, true);
       window.removeEventListener('pointerup', this.onPointerUp, true);
     } else {
-      window.document.removeEventListener('mousemove', this.onPointerMove, true);
-      this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, true);
-      this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, true);
-      this.interactionDOMElement.removeEventListener('mouseover', this.onPointerOver, true);
+      window.document.removeEventListener(
+        'mousemove',
+        this.onPointerMove,
+        true,
+      );
+      this.interactionDOMElement.removeEventListener(
+        'mousedown',
+        this.onPointerDown,
+        true,
+      );
+      this.interactionDOMElement.removeEventListener(
+        'mouseout',
+        this.onPointerOut,
+        true,
+      );
+      this.interactionDOMElement.removeEventListener(
+        'mouseover',
+        this.onPointerOver,
+        true,
+      );
       window.removeEventListener('mouseup', this.onPointerUp, true);
     }
 
     if (this.supportsTouchEvents) {
-      this.interactionDOMElement.removeEventListener('touchstart', this.onPointerDown, true);
-      this.interactionDOMElement.removeEventListener('touchcancel', this.onPointerCancel, true);
-      this.interactionDOMElement.removeEventListener('touchend', this.onPointerUp, true);
-      this.interactionDOMElement.removeEventListener('touchmove', this.onPointerMove, true);
+      this.interactionDOMElement.removeEventListener(
+        'touchstart',
+        this.onPointerDown,
+        true,
+      );
+      this.interactionDOMElement.removeEventListener(
+        'touchcancel',
+        this.onPointerCancel,
+        true,
+      );
+      this.interactionDOMElement.removeEventListener(
+        'touchend',
+        this.onPointerUp,
+        true,
+      );
+      this.interactionDOMElement.removeEventListener(
+        'touchmove',
+        this.onPointerMove,
+        true,
+      );
     }
 
     this.interactionDOMElement = null;
@@ -863,7 +951,10 @@ class InteractionLayer extends EventDispatcher {
       if (this.activeInteractionData.hasOwnProperty(k)) {
         const interactionData = this.activeInteractionData[k];
 
-        if (interactionData.originalEvent && interactionData.pointerType !== 'touch') {
+        if (
+          interactionData.originalEvent &&
+          interactionData.pointerType !== 'touch'
+        ) {
           const interactionEvent = this.configureInteractionEventForDOMEvent(
             this.eventData,
             interactionData.originalEvent,
@@ -965,7 +1056,13 @@ class InteractionLayer extends EventDispatcher {
    * @param {boolean} [interactive] - Whether the displayObject is interactive
    * @return {boolean} returns true if the displayObject hit the point
    */
-  processInteractive(interactionEvent, displayObject, func, hitTest, interactive) {
+  processInteractive(
+    interactionEvent,
+    displayObject,
+    func,
+    hitTest,
+    interactive,
+  ) {
     if (!displayObject || !displayObject.visible) {
       return false;
     }
@@ -1046,7 +1143,8 @@ class InteractionLayer extends EventDispatcher {
 
       if (displayObject.interactive) {
         if (hit && !interactionEvent.target) {
-          interactionEvent.data.target = interactionEvent.target = displayObject;
+          interactionEvent.data.target = interactionEvent.target =
+            displayObject;
         }
 
         if (func) {
@@ -1084,7 +1182,12 @@ class InteractionLayer extends EventDispatcher {
 
     interactionEvent.data.originalEvent = originalEvent;
 
-    this.processInteractive(interactionEvent, this.layer.scene, this.processClick, true);
+    this.processInteractive(
+      interactionEvent,
+      this.layer.scene,
+      this.processClick,
+      true,
+    );
 
     this.emit('click', interactionEvent);
   }
@@ -1112,7 +1215,8 @@ class InteractionLayer extends EventDispatcher {
   onPointerDown(originalEvent) {
     if (!this.isAble()) return;
     // if we support touch events, then only use those for touch events, not pointer events
-    if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
+    if (this.supportsTouchEvents && originalEvent.pointerType === 'touch')
+      return;
 
     const events = this.normalizeToPointerData(originalEvent);
 
@@ -1143,7 +1247,12 @@ class InteractionLayer extends EventDispatcher {
 
       interactionEvent.data.originalEvent = originalEvent;
 
-      this.processInteractive(interactionEvent, this.layer.scene, this.processPointerDown, true);
+      this.processInteractive(
+        interactionEvent,
+        this.layer.scene,
+        this.processPointerDown,
+        true,
+      );
 
       this.emit('pointerdown', interactionEvent);
       if (event.pointerType === 'touch') {
@@ -1210,7 +1319,8 @@ class InteractionLayer extends EventDispatcher {
 
     // if the event wasn't targeting our canvas, then consider it to be pointerupoutside
     // in all cases (unless it was a pointercancel)
-    const eventAppend = originalEvent.target !== this.interactionDOMElement ? 'outside' : '';
+    const eventAppend =
+      originalEvent.target !== this.interactionDOMElement ? 'outside' : '';
 
     for (let i = 0; i < eventLen; i++) {
       const event = events[i];
@@ -1226,9 +1336,17 @@ class InteractionLayer extends EventDispatcher {
       interactionEvent.data.originalEvent = originalEvent;
 
       // perform hit testing for events targeting our canvas or cancel events
-      this.processInteractive(interactionEvent, this.layer.scene, func, cancelled || !eventAppend);
+      this.processInteractive(
+        interactionEvent,
+        this.layer.scene,
+        func,
+        cancelled || !eventAppend,
+      );
 
-      this.emit(cancelled ? 'pointercancel' : `pointerup${eventAppend}`, interactionEvent);
+      this.emit(
+        cancelled ? 'pointercancel' : `pointerup${eventAppend}`,
+        interactionEvent,
+      );
 
       if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
         const isRightButton = event.button === 2;
@@ -1238,8 +1356,14 @@ class InteractionLayer extends EventDispatcher {
           interactionEvent,
         );
       } else if (event.pointerType === 'touch') {
-        this.emit(cancelled ? 'touchcancel' : `touchend${eventAppend}`, interactionEvent);
-        this.releaseInteractionDataForPointerId(event.pointerId, interactionData);
+        this.emit(
+          cancelled ? 'touchcancel' : `touchend${eventAppend}`,
+          interactionEvent,
+        );
+        this.releaseInteractionDataForPointerId(
+          event.pointerId,
+          interactionData,
+        );
       }
     }
   }
@@ -1324,7 +1448,11 @@ class InteractionLayer extends EventDispatcher {
       const isDown = trackingData !== undefined && trackingData.flags & test;
 
       if (hit) {
-        this.triggerEvent(displayObject, isRightButton ? 'rightup' : 'mouseup', interactionEvent);
+        this.triggerEvent(
+          displayObject,
+          isRightButton ? 'rightup' : 'mouseup',
+          interactionEvent,
+        );
 
         if (isDown) {
           this.triggerEvent(
@@ -1369,7 +1497,8 @@ class InteractionLayer extends EventDispatcher {
       }
     } else if (trackingData) {
       this.triggerEvent(displayObject, 'pointerupoutside', interactionEvent);
-      if (isTouch) this.triggerEvent(displayObject, 'touchendoutside', interactionEvent);
+      if (isTouch)
+        this.triggerEvent(displayObject, 'touchendoutside', interactionEvent);
     }
     // Only remove the tracking data if there is no over/down state still associated with it
     if (trackingData && trackingData.none) {
@@ -1386,7 +1515,8 @@ class InteractionLayer extends EventDispatcher {
   onPointerMove(originalEvent) {
     if (!this.isAble()) return;
     // if we support touch events, then only use those for touch events, not pointer events
-    if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
+    if (this.supportsTouchEvents && originalEvent.pointerType === 'touch')
+      return;
 
     const events = this.normalizeToPointerData(originalEvent);
 
@@ -1411,7 +1541,8 @@ class InteractionLayer extends EventDispatcher {
 
       interactionEvent.data.originalEvent = originalEvent;
 
-      const interactive = event.pointerType === 'touch' ? this.moveWhenInside : true;
+      const interactive =
+        event.pointerType === 'touch' ? this.moveWhenInside : true;
 
       this.processInteractive(
         interactionEvent,
@@ -1420,7 +1551,8 @@ class InteractionLayer extends EventDispatcher {
         interactive,
       );
       this.emit('pointermove', interactionEvent);
-      if (event.pointerType === 'touch') this.emit('touchmove', interactionEvent);
+      if (event.pointerType === 'touch')
+        this.emit('touchmove', interactionEvent);
       if (event.pointerType === 'mouse' || event.pointerType === 'pen')
         this.emit('mousemove', interactionEvent);
     }
@@ -1455,7 +1587,8 @@ class InteractionLayer extends EventDispatcher {
       this.triggerEvent(displayObject, 'touchmove', interactionEvent);
     if (!this.moveWhenInside || hit) {
       this.triggerEvent(displayObject, 'pointermove', interactionEvent);
-      if (isMouse) this.triggerEvent(displayObject, 'mousemove', interactionEvent);
+      if (isMouse)
+        this.triggerEvent(displayObject, 'mousemove', interactionEvent);
     }
   }
 
@@ -1468,7 +1601,8 @@ class InteractionLayer extends EventDispatcher {
   onPointerOut(originalEvent) {
     if (!this.isAble()) return;
     // if we support touch events, then only use those for touch events, not pointer events
-    if (this.supportsTouchEvents && originalEvent.pointerType === 'touch') return;
+    if (this.supportsTouchEvents && originalEvent.pointerType === 'touch')
+      return;
 
     const events = this.normalizeToPointerData(originalEvent);
 
@@ -1490,7 +1624,12 @@ class InteractionLayer extends EventDispatcher {
 
     interactionEvent.data.originalEvent = event;
 
-    this.processInteractive(interactionEvent, this.layer.scene, this.processPointerOverOut, false);
+    this.processInteractive(
+      interactionEvent,
+      this.layer.scene,
+      this.processPointerOverOut,
+      false,
+    );
 
     this.emit('pointerout', interactionEvent);
     if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
@@ -1521,7 +1660,8 @@ class InteractionLayer extends EventDispatcher {
 
     // if we just moused over the display object, then we need to track that state
     if (hit && !trackingData) {
-      trackingData = displayObject.trackedPointers[id] = new InteractionTrackingData(id);
+      trackingData = displayObject.trackedPointers[id] =
+        new InteractionTrackingData(id);
     }
 
     if (trackingData === undefined) return;
@@ -1670,10 +1810,18 @@ class InteractionLayer extends EventDispatcher {
    *        with the InteractionEvent
    * @return {InteractionEvent} the interaction event that was passed in
    */
-  configureInteractionEventForDOMEvent(interactionEvent, pointerEvent, interactionData) {
+  configureInteractionEventForDOMEvent(
+    interactionEvent,
+    pointerEvent,
+    interactionData,
+  ) {
     interactionEvent.data = interactionData;
 
-    this.mapPositionToPoint(interactionData.global, pointerEvent.clientX, pointerEvent.clientY);
+    this.mapPositionToPoint(
+      interactionData.global,
+      pointerEvent.clientX,
+      pointerEvent.clientY,
+    );
 
     if (this.layer && this.layer.interactive)
       this.raycaster.setFromCamera(interactionData.global, this.layer.camera);
@@ -1686,7 +1834,10 @@ class InteractionLayer extends EventDispatcher {
 
     interactionData.originalEvent = pointerEvent;
     interactionEvent._reset();
-    interactionEvent.intersects = this.raycaster.intersectObjects(this.scene.children, true);
+    interactionEvent.intersects = this.raycaster.intersectObjects(
+      this.scene.children,
+      true,
+    );
 
     return interactionEvent;
   }
@@ -1706,26 +1857,36 @@ class InteractionLayer extends EventDispatcher {
       for (let i = 0, li = event.changedTouches.length; i < li; i++) {
         const touch = event.changedTouches[i];
 
-        if (typeof touch.button === 'undefined') touch.button = event.touches.length ? 1 : 0;
-        if (typeof touch.buttons === 'undefined') touch.buttons = event.touches.length ? 1 : 0;
+        if (typeof touch.button === 'undefined')
+          touch.button = event.touches.length ? 1 : 0;
+        if (typeof touch.buttons === 'undefined')
+          touch.buttons = event.touches.length ? 1 : 0;
         if (typeof touch.isPrimary === 'undefined') {
-          touch.isPrimary = event.touches.length === 1 && event.type === 'touchstart';
+          touch.isPrimary =
+            event.touches.length === 1 && event.type === 'touchstart';
         }
-        if (typeof touch.width === 'undefined') touch.width = touch.radiusX || 1;
-        if (typeof touch.height === 'undefined') touch.height = touch.radiusY || 1;
+        if (typeof touch.width === 'undefined')
+          touch.width = touch.radiusX || 1;
+        if (typeof touch.height === 'undefined')
+          touch.height = touch.radiusY || 1;
         if (typeof touch.tiltX === 'undefined') touch.tiltX = 0;
         if (typeof touch.tiltY === 'undefined') touch.tiltY = 0;
-        if (typeof touch.pointerType === 'undefined') touch.pointerType = 'touch';
-        if (typeof touch.pointerId === 'undefined') touch.pointerId = touch.identifier || 0;
-        if (typeof touch.pressure === 'undefined') touch.pressure = touch.force || 0.5;
+        if (typeof touch.pointerType === 'undefined')
+          touch.pointerType = 'touch';
+        if (typeof touch.pointerId === 'undefined')
+          touch.pointerId = touch.identifier || 0;
+        if (typeof touch.pressure === 'undefined')
+          touch.pressure = touch.force || 0.5;
         touch.twist = 0;
         touch.tangentialPressure = 0;
         // TODO: Remove these, as layerX/Y is not a standard, is deprecated, has uneven
         // support, and the fill ins are not quite the same
         // offsetX/Y might be okay, but is not the same as clientX/Y when the canvas's top
         // left is not 0,0 on the page
-        if (typeof touch.layerX === 'undefined') touch.layerX = touch.offsetX = touch.clientX;
-        if (typeof touch.layerY === 'undefined') touch.layerY = touch.offsetY = touch.clientY;
+        if (typeof touch.layerX === 'undefined')
+          touch.layerX = touch.offsetX = touch.clientX;
+        if (typeof touch.layerY === 'undefined')
+          touch.layerY = touch.offsetY = touch.clientY;
 
         // mark the touch as normalized, just so that we know we did it
         touch.isNormalized = true;
@@ -1742,7 +1903,8 @@ class InteractionLayer extends EventDispatcher {
       if (typeof event.tiltX === 'undefined') event.tiltX = 0;
       if (typeof event.tiltY === 'undefined') event.tiltY = 0;
       if (typeof event.pointerType === 'undefined') event.pointerType = 'mouse';
-      if (typeof event.pointerId === 'undefined') event.pointerId = MOUSE_POINTER_ID;
+      if (typeof event.pointerId === 'undefined')
+        event.pointerId = MOUSE_POINTER_ID;
       if (typeof event.pressure === 'undefined') event.pressure = 0.5;
       event.twist = 0;
       event.tangentialPressure = 0;

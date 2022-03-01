@@ -1,53 +1,51 @@
 import { BufferAttribute } from './BufferAttribute.js';
 
-function InstancedBufferAttribute( array, itemSize, normalized, meshPerAttribute ) {
+function InstancedBufferAttribute(
+  array,
+  itemSize,
+  normalized,
+  meshPerAttribute,
+) {
+  if (typeof normalized === 'number') {
+    meshPerAttribute = normalized;
 
-	if ( typeof ( normalized ) === 'number' ) {
+    normalized = false;
 
-		meshPerAttribute = normalized;
+    console.error(
+      'THREE.InstancedBufferAttribute: The constructor now expects normalized as the third argument.',
+    );
+  }
 
-		normalized = false;
+  BufferAttribute.call(this, array, itemSize, normalized);
 
-		console.error( 'THREE.InstancedBufferAttribute: The constructor now expects normalized as the third argument.' );
-
-	}
-
-	BufferAttribute.call( this, array, itemSize, normalized );
-
-	this.meshPerAttribute = meshPerAttribute || 1;
-
+  this.meshPerAttribute = meshPerAttribute || 1;
 }
 
-InstancedBufferAttribute.prototype = Object.assign( Object.create( BufferAttribute.prototype ), {
+InstancedBufferAttribute.prototype = Object.assign(
+  Object.create(BufferAttribute.prototype),
+  {
+    constructor: InstancedBufferAttribute,
 
-	constructor: InstancedBufferAttribute,
+    isInstancedBufferAttribute: true,
 
-	isInstancedBufferAttribute: true,
+    copy: function (source) {
+      BufferAttribute.prototype.copy.call(this, source);
 
-	copy: function ( source ) {
+      this.meshPerAttribute = source.meshPerAttribute;
 
-		BufferAttribute.prototype.copy.call( this, source );
+      return this;
+    },
 
-		this.meshPerAttribute = source.meshPerAttribute;
+    toJSON: function () {
+      const data = BufferAttribute.prototype.toJSON.call(this);
 
-		return this;
+      data.meshPerAttribute = this.meshPerAttribute;
 
-	},
+      data.isInstancedBufferAttribute = true;
 
-	toJSON: function ()	{
-
-		const data = BufferAttribute.prototype.toJSON.call( this );
-
-		data.meshPerAttribute = this.meshPerAttribute;
-
-		data.isInstancedBufferAttribute = true;
-
-		return data;
-
-	}
-
-} );
-
-
+      return data;
+    },
+  },
+);
 
 export { InstancedBufferAttribute };

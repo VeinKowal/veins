@@ -32,7 +32,8 @@ class MouseEvents {
 
   // pointerdown事件注册 记录down的位置点
   static pointerDownHandler = (e) => {
-    MouseEvents.mouseDownPosition = MouseEvents.getNormalizedCanvasRelativePosition(e);
+    MouseEvents.mouseDownPosition =
+      MouseEvents.getNormalizedCanvasRelativePosition(e);
   };
 
   // 取消事件
@@ -55,7 +56,8 @@ class MouseEvents {
         MouseEvents.target ?? [],
         MouseEvents.recursive,
       );
-      if (MouseEvents.intersectedObjects.length === 0) MouseEvents.reductCancelFn();
+      if (MouseEvents.intersectedObjects.length === 0)
+        MouseEvents.reductCancelFn();
     } else {
       MouseEvents.intersectedObjects = [];
     }
@@ -76,8 +78,14 @@ class MouseEvents {
 
   static removeAllEvents = () => {
     MouseEvents.cancelFnMap.clear();
-    MouseEvents.domElement.removeEventListener('pointerdown', MouseEvents.pointerDownHandler);
-    MouseEvents.domElement.removeEventListener('pointerup', MouseEvents.pointerUpHandler);
+    MouseEvents.domElement.removeEventListener(
+      'pointerdown',
+      MouseEvents.pointerDownHandler,
+    );
+    MouseEvents.domElement.removeEventListener(
+      'pointerup',
+      MouseEvents.pointerUpHandler,
+    );
   };
 }
 

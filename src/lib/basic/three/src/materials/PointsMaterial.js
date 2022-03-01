@@ -16,47 +16,41 @@ import { Color } from '../math/Color.js';
  */
 
 class PointsMaterial extends Material {
+  constructor(parameters) {
+    super();
 
-	constructor( parameters ) {
+    this.type = 'PointsMaterial';
 
-		super();
+    this.color = new Color(0xffffff);
 
-		this.type = 'PointsMaterial';
+    this.map = null;
 
-		this.color = new Color( 0xffffff );
+    this.alphaMap = null;
 
-		this.map = null;
+    this.size = 1;
+    this.sizeAttenuation = true;
 
-		this.alphaMap = null;
+    this.morphTargets = false;
 
-		this.size = 1;
-		this.sizeAttenuation = true;
+    this.setValues(parameters);
+  }
 
-		this.morphTargets = false;
+  copy(source) {
+    super.copy(source);
 
-		this.setValues( parameters );
+    this.color.copy(source.color);
 
-	}
+    this.map = source.map;
 
-	copy( source ) {
+    this.alphaMap = source.alphaMap;
 
-		super.copy( source );
+    this.size = source.size;
+    this.sizeAttenuation = source.sizeAttenuation;
 
-		this.color.copy( source.color );
+    this.morphTargets = source.morphTargets;
 
-		this.map = source.map;
-
-		this.alphaMap = source.alphaMap;
-
-		this.size = source.size;
-		this.sizeAttenuation = source.sizeAttenuation;
-
-		this.morphTargets = source.morphTargets;
-
-		return this;
-
-	}
-
+    return this;
+  }
 }
 
 PointsMaterial.prototype.isPointsMaterial = true;

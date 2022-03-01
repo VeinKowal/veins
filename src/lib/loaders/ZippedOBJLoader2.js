@@ -105,7 +105,9 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    */
   setBaseObject3d: function (baseObject3d) {
     this.baseObject3d =
-      baseObject3d === undefined || baseObject3d === null ? this.baseObject3d : baseObject3d;
+      baseObject3d === undefined || baseObject3d === null
+        ? this.baseObject3d
+        : baseObject3d;
     return this;
   },
 
@@ -164,7 +166,10 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
    * @return {OBJLoader2}
    */
   setCallbackOnMeshAlter: function (onMeshAlter) {
-    this.meshReceiver._setCallbacks(this.parser.callbacks.onProgress, onMeshAlter);
+    this.meshReceiver._setCallbacks(
+      this.parser.callbacks.onProgress,
+      onMeshAlter,
+    );
     return this;
   },
 
@@ -181,14 +186,22 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
 
   load: async function (zip, onLoad, onFileLoadProgress, onError, onMeshAlter) {
     let scope = this;
-    if (onLoad === null || onLoad === undefined || !(onLoad instanceof Function)) {
+    if (
+      onLoad === null ||
+      onLoad === undefined ||
+      !(onLoad instanceof Function)
+    ) {
       let errorMessage = 'onLoad is not a function! Aborting...';
       scope.parser.callbacks.onError(errorMessage);
       throw errorMessage;
     } else {
       this.parser.setCallbackOnLoad(onLoad);
     }
-    if (onError === null || onError === undefined || !(onError instanceof Function)) {
+    if (
+      onError === null ||
+      onError === undefined ||
+      !(onError instanceof Function)
+    ) {
       onError = function (event) {
         let errorMessage = event;
         if (event.currentTarget && event.currentTarget.statusText !== null) {
@@ -208,7 +221,10 @@ ZippedOBJLoader2.prototype = Object.assign(Object.create(Loader.prototype), {
     this.setCallbackOnMeshAlter(onMeshAlter);
 
     const content = await zip.file('model.obj').async('string');
-    scope.parser.callbacks.onLoad(scope.parse(content), 'OBJLoader2#load: Parsing completed');
+    scope.parser.callbacks.onLoad(
+      scope.parse(content),
+      'OBJLoader2#load: Parsing completed',
+    );
   },
 
   /**

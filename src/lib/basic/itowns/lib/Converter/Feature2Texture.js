@@ -1,37 +1,110 @@
-"use strict";
+'use strict';
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _Feature = require("../Core/Feature");
+var _Feature = require('../Core/Feature');
 
-var _Extent = _interopRequireDefault(require("../Core/Geographic/Extent"));
+var _Extent = _interopRequireDefault(require('../Core/Geographic/Extent'));
 
-var _Coordinates = _interopRequireDefault(require("../Core/Geographic/Coordinates"));
+var _Coordinates = _interopRequireDefault(
+  require('../Core/Geographic/Coordinates'),
+);
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it;
+  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
+    if (
+      Array.isArray(o) ||
+      (it = _unsupportedIterableToArray(o)) ||
+      (allowArrayLike && o && typeof o.length === 'number')
+    ) {
+      if (it) o = it;
+      var i = 0;
+      var F = function F() {};
+      return {
+        s: F,
+        n: function n() {
+          if (i >= o.length) return { done: true };
+          return { done: false, value: o[i++] };
+        },
+        e: function e(_e) {
+          throw _e;
+        },
+        f: F,
+      };
+    }
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
+    );
+  }
+  var normalCompletion = true,
+    didErr = false,
+    err;
+  return {
+    s: function s() {
+      it = o[Symbol.iterator]();
+    },
+    n: function n() {
+      var step = it.next();
+      normalCompletion = step.done;
+      return step;
+    },
+    e: function e(_e2) {
+      didErr = true;
+      err = _e2;
+    },
+    f: function f() {
+      try {
+        if (!normalCompletion && it['return'] != null) it['return']();
+      } finally {
+        if (didErr) throw err;
+      }
+    },
+  };
+}
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === 'Object' && o.constructor) n = o.constructor.name;
+  if (n === 'Map' || n === 'Set') return Array.from(o);
+  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray(o, minLen);
+}
 
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
 
 var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 var matrix = svg.createSVGMatrix();
 
 function drawPolygon(ctx, vertices) {
-  var indices = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [{
-    offset: 0,
-    count: 1
-  }];
-  var style = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var indices =
+    arguments.length > 2 && arguments[2] !== undefined
+      ? arguments[2]
+      : [
+          {
+            offset: 0,
+            count: 1,
+          },
+        ];
+  var style =
+    arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   var size = arguments.length > 4 ? arguments[4] : undefined;
   var extent = arguments.length > 5 ? arguments[5] : undefined;
   var invCtxScale = arguments.length > 6 ? arguments[6] : undefined;
@@ -43,13 +116,22 @@ function drawPolygon(ctx, vertices) {
 
   if (style.length) {
     var _iterator = _createForOfIteratorHelper(style),
-        _step;
+      _step;
 
     try {
-      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      for (_iterator.s(); !(_step = _iterator.n()).done; ) {
         var s = _step.value;
 
-        _drawPolygon(ctx, vertices, indices, s, size, extent, invCtxScale, canBeFilled);
+        _drawPolygon(
+          ctx,
+          vertices,
+          indices,
+          s,
+          size,
+          extent,
+          invCtxScale,
+          canBeFilled,
+        );
       }
     } catch (err) {
       _iterator.e(err);
@@ -57,19 +139,37 @@ function drawPolygon(ctx, vertices) {
       _iterator.f();
     }
   } else {
-    _drawPolygon(ctx, vertices, indices, style, size, extent, invCtxScale, canBeFilled);
+    _drawPolygon(
+      ctx,
+      vertices,
+      indices,
+      style,
+      size,
+      extent,
+      invCtxScale,
+      canBeFilled,
+    );
   }
 }
 
-function _drawPolygon(ctx, vertices, indices, style, size, extent, invCtxScale, canBeFilled) {
+function _drawPolygon(
+  ctx,
+  vertices,
+  indices,
+  style,
+  size,
+  extent,
+  invCtxScale,
+  canBeFilled,
+) {
   // build contour
   ctx.beginPath();
 
   var _iterator2 = _createForOfIteratorHelper(indices),
-      _step2;
+    _step2;
 
   try {
-    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
       var indice = _step2.value;
 
       if (indice.extent && indice.extent.intersectsExtent(extent)) {
@@ -82,7 +182,6 @@ function _drawPolygon(ctx, vertices, indices, style, size, extent, invCtxScale, 
         }
       }
     } // draw line or edge of polygon
-
   } catch (err) {
     _iterator2.e(err);
   } finally {
@@ -93,7 +192,6 @@ function _drawPolygon(ctx, vertices, indices, style, size, extent, invCtxScale, 
     strokeStyle(style, ctx, invCtxScale);
     ctx.stroke();
   } // fill polygon only
-
 
   if (canBeFilled && style.fill) {
     fillStyle(style, ctx, invCtxScale);
@@ -108,7 +206,7 @@ function fillStyle(style, ctx, invCtxScale) {
     if (ctx.fillStyle.setTransform) {
       ctx.fillStyle.setTransform(matrix.scale(invCtxScale));
     } else {
-      console.warn('Raster pattern isn\'t completely supported on Ie and edge');
+      console.warn("Raster pattern isn't completely supported on Ie and edge");
     }
   } else if (ctx.fillStyle !== style.fill.color) {
     ctx.fillStyle = style.fill.color;
@@ -140,13 +238,16 @@ function strokeStyle(style, ctx, invCtxScale) {
     ctx.lineCap = style.stroke.lineCap;
   }
 
-  ctx.setLineDash(style.stroke.dasharray.map(function (a) {
-    return a * invCtxScale * 2;
-  }));
+  ctx.setLineDash(
+    style.stroke.dasharray.map(function (a) {
+      return a * invCtxScale * 2;
+    }),
+  );
 }
 
 function drawPoint(ctx, x, y) {
-  var style = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var style =
+    arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   var invCtxScale = arguments.length > 4 ? arguments[4] : undefined;
   ctx.beginPath();
   var opacity = style.point.opacity == undefined ? 1.0 : style.point.opacity;
@@ -155,7 +256,14 @@ function drawPoint(ctx, x, y) {
     ctx.globalAlpha = opacity;
   }
 
-  ctx.arc(x, y, (style.point.radius || 3.0) * invCtxScale, 0, 2 * Math.PI, false);
+  ctx.arc(
+    x,
+    y,
+    (style.point.radius || 3.0) * invCtxScale,
+    0,
+    2 * Math.PI,
+    false,
+  );
 
   if (style.point.color) {
     ctx.fillStyle = style.point.color;
@@ -169,41 +277,45 @@ function drawPoint(ctx, x, y) {
   }
 }
 
-var coord = new _Coordinates["default"]('EPSG:4326', 0, 0, 0);
+var coord = new _Coordinates['default']('EPSG:4326', 0, 0, 0);
 
 function drawFeature(ctx, feature, extent, style, invCtxScale) {
   var extentDim = extent.dimensions();
   var scaleRadius = extentDim.x / ctx.canvas.width;
   var globals = {
-    zoom: extent.zoom
+    zoom: extent.zoom,
   };
 
   var _iterator3 = _createForOfIteratorHelper(feature.geometries),
-      _step3;
+    _step3;
 
   try {
     var _loop = function () {
       var geometry = _step3.value;
 
       if (geometry.extent.intersectsExtent(extent)) {
-        var contextStyle = (geometry.properties.style || style).drawingStylefromContext({
+        var contextStyle = (
+          geometry.properties.style || style
+        ).drawingStylefromContext({
           globals: globals,
           properties: function properties() {
             return geometry.properties;
-          }
+          },
         });
 
         if (contextStyle) {
           if (feature.type === _Feature.FEATURE_TYPES.POINT) {
             // cross multiplication to know in the extent system the real size of
             // the point
-            var px = (Math.round(contextStyle.point.radius * invCtxScale) || 3 * invCtxScale) * scaleRadius;
+            var px =
+              (Math.round(contextStyle.point.radius * invCtxScale) ||
+                3 * invCtxScale) * scaleRadius;
 
             var _iterator4 = _createForOfIteratorHelper(geometry.indices),
-                _step4;
+              _step4;
 
             try {
-              for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+              for (_iterator4.s(); !(_step4 = _iterator4.n()).done; ) {
                 var indice = _step4.value;
                 var offset = indice.offset * feature.size;
                 var count = offset + indice.count * feature.size;
@@ -212,7 +324,13 @@ function drawFeature(ctx, feature, extent, style, invCtxScale) {
                   coord.setFromArray(feature.vertices, j);
 
                   if (extent.isPointInside(coord, px)) {
-                    drawPoint(ctx, feature.vertices[j], feature.vertices[j + 1], contextStyle, invCtxScale);
+                    drawPoint(
+                      ctx,
+                      feature.vertices[j],
+                      feature.vertices[j + 1],
+                      contextStyle,
+                      invCtxScale,
+                    );
                   }
                 }
               }
@@ -222,13 +340,22 @@ function drawFeature(ctx, feature, extent, style, invCtxScale) {
               _iterator4.f();
             }
           } else {
-            drawPolygon(ctx, feature.vertices, geometry.indices, contextStyle, feature.size, extent, invCtxScale, feature.type == _Feature.FEATURE_TYPES.POLYGON);
+            drawPolygon(
+              ctx,
+              feature.vertices,
+              geometry.indices,
+              contextStyle,
+              feature.size,
+              extent,
+              invCtxScale,
+              feature.type == _Feature.FEATURE_TYPES.POLYGON,
+            );
           }
         }
       }
     };
 
-    for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+    for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
       _loop();
     }
   } catch (err) {
@@ -245,11 +372,17 @@ var quaternion = new THREE.Quaternion();
 var world2texture = new THREE.Matrix4();
 var feature2texture = new THREE.Matrix4();
 var worldTextureOrigin = new THREE.Vector3();
-var featureExtent = new _Extent["default"]('EPSG:4326', 0, 0, 0, 0);
+var featureExtent = new _Extent['default']('EPSG:4326', 0, 0, 0, 0);
 var _default = {
   // backgroundColor is a THREE.Color to specify a color to fill the texture
   // with, given there is no feature passed in parameter
-  createTextureFromFeature: function createTextureFromFeature(collection, extent, sizeTexture, style, backgroundColor) {
+  createTextureFromFeature: function createTextureFromFeature(
+    collection,
+    extent,
+    sizeTexture,
+    style,
+    backgroundColor,
+  ) {
     var texture;
 
     if (collection) {
@@ -267,7 +400,8 @@ var _default = {
         ctx.fillRect(0, 0, sizeTexture, sizeTexture);
       }
 
-      ctx.globalCompositeOperation = style.globalCompositeOperation || 'source-over';
+      ctx.globalCompositeOperation =
+        style.globalCompositeOperation || 'source-over';
       ctx.imageSmoothingEnabled = false;
       ctx.lineJoin = 'round'; // transform extent to feature projection
 
@@ -283,7 +417,11 @@ var _default = {
         scale.set(ctx.canvas.width, ctx.canvas.height, 1.0).divide(dimension);
       }
 
-      world2texture.compose(worldTextureOrigin.multiply(scale).negate(), quaternion, scale); // compute matrix transformation `feature2texture` to convert features coordinates to texture coordinates
+      world2texture.compose(
+        worldTextureOrigin.multiply(scale).negate(),
+        quaternion,
+        scale,
+      ); // compute matrix transformation `feature2texture` to convert features coordinates to texture coordinates
 
       feature2texture.multiplyMatrices(world2texture, collection.matrixWorld);
       feature2texture.decompose(origin, quaternion, scale);
@@ -292,12 +430,18 @@ var _default = {
       var invCtxScale = Math.abs(1 / scale.x); // Draw the canvas
 
       var _iterator5 = _createForOfIteratorHelper(collection.features),
-          _step5;
+        _step5;
 
       try {
-        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done; ) {
           var feature = _step5.value;
-          drawFeature(ctx, feature, featureExtent, feature.style || style, invCtxScale);
+          drawFeature(
+            ctx,
+            feature,
+            featureExtent,
+            feature.style || style,
+            invCtxScale,
+          );
         }
       } catch (err) {
         _iterator5.e(err);
@@ -318,6 +462,6 @@ var _default = {
     }
 
     return texture;
-  }
+  },
 };
-exports["default"] = _default;
+exports['default'] = _default;

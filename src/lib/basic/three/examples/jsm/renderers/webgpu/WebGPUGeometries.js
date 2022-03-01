@@ -1,76 +1,58 @@
 class WebGPUGeometries {
+  constructor(attributes, info) {
+    this.attributes = attributes;
+    this.info = info;
 
-	constructor( attributes, info ) {
+    this.geometries = new WeakMap();
+  }
 
-		this.attributes = attributes;
-		this.info = info;
+  update(geometry) {
+    if (this.geometries.has(geometry) === false) {
+      const disposeCallback = onGeometryDispose.bind(this);
 
-		this.geometries = new WeakMap();
+      this.geometries.set(geometry, disposeCallback);
 
-	}
+      this.info.memory.geometries++;
 
-	update( geometry ) {
+      geometry.addEventListener('dispose', disposeCallback);
+    }
 
-		if ( this.geometries.has( geometry ) === false ) {
+    const geometryAttributes = geometry.attributes;
 
-			const disposeCallback = onGeometryDispose.bind( this );
+    for (const name in geometryAttributes) {
+      this.attributes.update(geometryAttributes[name]);
+    }
 
-			this.geometries.set( geometry, disposeCallback );
+    const index = geometry.index;
 
-			this.info.memory.geometries ++;
-
-			geometry.addEventListener( 'dispose', disposeCallback );
-
-		}
-
-		const geometryAttributes = geometry.attributes;
-
-		for ( const name in geometryAttributes ) {
-
-			this.attributes.update( geometryAttributes[ name ] );
-
-		}
-
-		const index = geometry.index;
-
-		if ( index !== null ) {
-
-			this.attributes.update( index, true );
-
-		}
-
-	}
-
+    if (index !== null) {
+      this.attributes.update(index, true);
+    }
+  }
 }
 
-function onGeometryDispose( event ) {
+function onGeometryDispose(event) {
+  const geometry = event.target;
+  const disposeCallback = this.geometries.get(geometry);
 
-	const geometry = event.target;
-	const disposeCallback = this.geometries.get( geometry );
+  this.geometries.delete(geometry);
 
-	this.geometries.delete( geometry );
+  this.info.memory.geometries--;
 
-	this.info.memory.geometries --;
+  geometry.removeEventListener('dispose', disposeCallback);
 
-	geometry.removeEventListener( 'dispose', disposeCallback );
+  //
 
-	//
+  const index = geometry.index;
+  const geometryAttributes = geometry.attributes;
 
-	const index = geometry.index;
-	const geometryAttributes = geometry.attributes;
+  if (index !== null) {
+    this.attributes.remove(index);
+  }
 
-	if ( index !== null ) {
-
-		this.attributes.remove( index );
-
-	}
-
-	for ( const name in geometryAttributes ) {
-
-		this.attributes.remove( geometryAttributes[ name ] );
-
-	}
-
+  for (const name in geometryAttributes) {
+    this.attributes.remove(geometryAttributes[name]);
+  }
 }
 
 export default WebGPUGeometries;

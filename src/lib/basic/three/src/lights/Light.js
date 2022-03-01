@@ -2,49 +2,42 @@ import { Object3D } from '../core/Object3D.js';
 import { Color } from '../math/Color.js';
 
 class Light extends Object3D {
+  constructor(color, intensity = 1) {
+    super();
 
-	constructor( color, intensity = 1 ) {
+    this.type = 'Light';
 
-		super();
+    this.color = new Color(color);
+    this.intensity = intensity;
+  }
 
-		this.type = 'Light';
+  copy(source) {
+    super.copy(source);
 
-		this.color = new Color( color );
-		this.intensity = intensity;
+    this.color.copy(source.color);
+    this.intensity = source.intensity;
 
-	}
+    return this;
+  }
 
-	copy( source ) {
+  toJSON(meta) {
+    const data = super.toJSON(meta);
 
-		super.copy( source );
+    data.object.color = this.color.getHex();
+    data.object.intensity = this.intensity;
 
-		this.color.copy( source.color );
-		this.intensity = source.intensity;
+    if (this.groundColor !== undefined)
+      data.object.groundColor = this.groundColor.getHex();
 
-		return this;
+    if (this.distance !== undefined) data.object.distance = this.distance;
+    if (this.angle !== undefined) data.object.angle = this.angle;
+    if (this.decay !== undefined) data.object.decay = this.decay;
+    if (this.penumbra !== undefined) data.object.penumbra = this.penumbra;
 
-	}
+    if (this.shadow !== undefined) data.object.shadow = this.shadow.toJSON();
 
-	toJSON( meta ) {
-
-		const data = super.toJSON( meta );
-
-		data.object.color = this.color.getHex();
-		data.object.intensity = this.intensity;
-
-		if ( this.groundColor !== undefined ) data.object.groundColor = this.groundColor.getHex();
-
-		if ( this.distance !== undefined ) data.object.distance = this.distance;
-		if ( this.angle !== undefined ) data.object.angle = this.angle;
-		if ( this.decay !== undefined ) data.object.decay = this.decay;
-		if ( this.penumbra !== undefined ) data.object.penumbra = this.penumbra;
-
-		if ( this.shadow !== undefined ) data.object.shadow = this.shadow.toJSON();
-
-		return data;
-
-	}
-
+    return data;
+  }
 }
 
 Light.prototype.isLight = true;

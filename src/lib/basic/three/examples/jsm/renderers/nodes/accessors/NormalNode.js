@@ -7,78 +7,76 @@ import OperatorNode from '../math/OperatorNode.js';
 import MathNode from '../math/MathNode.js';
 
 class NormalNode extends Node {
+  static LOCAL = 'local';
+  static WORLD = 'world';
+  static VIEW = 'view';
 
-	static LOCAL = 'local';
-	static WORLD = 'world';
-	static VIEW = 'view';
+  constructor(scope = NormalNode.LOCAL) {
+    super('vec3');
 
-	constructor( scope = NormalNode.LOCAL ) {
+    this.scope = scope;
+  }
 
-		super( 'vec3' );
+  generate(builder, output) {
+    const type = this.getType(builder);
+    const nodeData = builder.getDataFromNode(this, builder.shaderStage);
+    const scope = this.scope;
 
-		this.scope = scope;
+    let localNormalNode = nodeData.localNormalNode;
 
-	}
+    if (localNormalNode === undefined) {
+      localNormalNode = new AttributeNode('normal', 'vec3');
 
-	generate( builder, output ) {
+      nodeData.localNormalNode = localNormalNode;
+    }
 
-		const type = this.getType( builder );
-		const nodeData = builder.getDataFromNode( this, builder.shaderStage );
-		const scope = this.scope;
+    let outputNode = localNormalNode;
 
-		let localNormalNode = nodeData.localNormalNode;
+    if (scope === NormalNode.VIEW) {
+      let viewNormalNode = nodeData.viewNormalNode;
 
-		if ( localNormalNode === undefined ) {
+      if (viewNormalNode === undefined) {
+        const unnormalizedWNNode = new OperatorNode(
+          '*',
+          new ModelNode(ModelNode.NORMAL),
+          localNormalNode,
+        );
+        const vertexNormalNode = new MathNode(
+          MathNode.NORMALIZE,
+          unnormalizedWNNode,
+        );
 
-			localNormalNode = new AttributeNode( 'normal', 'vec3' );
+        viewNormalNode = new MathNode(
+          MathNode.NORMALIZE,
+          new VaryNode(vertexNormalNode),
+        );
 
-			nodeData.localNormalNode = localNormalNode;
+        nodeData.viewNormalNode = viewNormalNode;
+      }
 
-		}
+      outputNode = viewNormalNode;
+    } else if (scope === NormalNode.WORLD) {
+      let worldNormalNode = nodeData.worldNormalNode;
 
-		let outputNode = localNormalNode;
+      if (worldNormalNode === undefined) {
+        const vertexNormalNode = new MathNode(
+          MathNode.INVERSE_TRANSFORM_DIRETION,
+          new NormalNode(NormalNode.VIEW),
+          new CameraNode(CameraNode.VIEW),
+        );
 
-		if ( scope === NormalNode.VIEW ) {
+        worldNormalNode = new VaryNode(vertexNormalNode);
 
-			let viewNormalNode = nodeData.viewNormalNode;
+        nodeData.worldNormalNode = worldNormalNode;
+      }
 
-			if ( viewNormalNode === undefined ) {
+      outputNode = worldNormalNode;
+    }
 
-				const unnormalizedWNNode = new OperatorNode( '*', new ModelNode( ModelNode.NORMAL ), localNormalNode );
-				const vertexNormalNode = new MathNode( MathNode.NORMALIZE, unnormalizedWNNode );
+    const normalSnipped = outputNode.build(builder, type);
 
-				viewNormalNode = new MathNode( MathNode.NORMALIZE, new VaryNode( vertexNormalNode ) );
-
-				nodeData.viewNormalNode = viewNormalNode;
-
-			}
-
-			outputNode = viewNormalNode;
-
-		} else if ( scope === NormalNode.WORLD ) {
-
-			let worldNormalNode = nodeData.worldNormalNode;
-
-			if ( worldNormalNode === undefined ) {
-
-				const vertexNormalNode = new MathNode( MathNode.INVERSE_TRANSFORM_DIRETION, new NormalNode( NormalNode.VIEW ), new CameraNode( CameraNode.VIEW ) );
-
-				worldNormalNode = new VaryNode( vertexNormalNode );
-
-				nodeData.worldNormalNode = worldNormalNode;
-
-			}
-
-			outputNode = worldNormalNode;
-
-		}
-
-		const normalSnipped = outputNode.build( builder, type );
-
-		return builder.format( normalSnipped, type, output );
-
-	}
-
+    return builder.format(normalSnipped, type, output);
+  }
 }
 
 export default NormalNode;

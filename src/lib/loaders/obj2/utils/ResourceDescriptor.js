@@ -44,10 +44,12 @@ ResourceDescriptor.prototype = {
     if (urlParts.length > 2) {
       this.filename = urlParts[urlParts.length - 1];
       let urlPartsPath = urlParts.slice(0, urlParts.length - 1).join('/') + '/';
-      if (urlPartsPath !== undefined && urlPartsPath !== null) this.path = urlPartsPath;
+      if (urlPartsPath !== undefined && urlPartsPath !== null)
+        this.path = urlPartsPath;
     }
     let filenameParts = this.filename.split('.');
-    if (filenameParts.length > 1) this.extension = filenameParts[filenameParts.length - 1];
+    if (filenameParts.length > 1)
+      this.extension = filenameParts[filenameParts.length - 1];
     return this;
   },
 

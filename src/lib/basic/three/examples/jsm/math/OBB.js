@@ -1,24 +1,24 @@
 import {
-	Box3,
-	MathUtils,
-	Matrix4,
-	Matrix3,
-	Ray,
-	Vector3
+  Box3,
+  MathUtils,
+  Matrix4,
+  Matrix3,
+  Ray,
+  Vector3,
 } from '../../../build/three.module.js';
 
 // module scope helper variables
 
 var a = {
-	c: null, // center
-	u: [ new Vector3(), new Vector3(), new Vector3() ], // basis vectors
-	e: [] // half width
+  c: null, // center
+  u: [new Vector3(), new Vector3(), new Vector3()], // basis vectors
+  e: [], // half width
 };
 
 var b = {
-	c: null, // center
-	u: [ new Vector3(), new Vector3(), new Vector3() ], // basis vectors
-	e: [] // half width
+  c: null, // center
+  u: [new Vector3(), new Vector3(), new Vector3()], // basis vectors
+  e: [], // half width
 };
 
 var R = [[], [], []];
@@ -39,410 +39,370 @@ var localRay = new Ray();
 
 // OBB
 
-function OBB( center = new Vector3(), halfSize = new Vector3(), rotation = new Matrix3() ) {
-
-	this.center = center;
-	this.halfSize = halfSize;
-	this.rotation = rotation;
-
+function OBB(
+  center = new Vector3(),
+  halfSize = new Vector3(),
+  rotation = new Matrix3(),
+) {
+  this.center = center;
+  this.halfSize = halfSize;
+  this.rotation = rotation;
 }
 
-Object.assign( OBB.prototype, {
+Object.assign(OBB.prototype, {
+  set: function (center, halfSize, rotation) {
+    this.center = center;
+    this.halfSize = halfSize;
+    this.rotation = rotation;
 
-	set: function ( center, halfSize, rotation ) {
+    return this;
+  },
 
-		this.center = center;
-		this.halfSize = halfSize;
-		this.rotation = rotation;
+  copy: function (obb) {
+    this.center.copy(obb.center);
+    this.halfSize.copy(obb.halfSize);
+    this.rotation.copy(obb.rotation);
 
-		return this;
+    return this;
+  },
 
-	},
+  clone: function () {
+    return new this.constructor().copy(this);
+  },
 
-	copy: function ( obb ) {
+  getSize: function (result) {
+    return result.copy(this.halfSize).multiplyScalar(2);
+  },
 
-		this.center.copy( obb.center );
-		this.halfSize.copy( obb.halfSize );
-		this.rotation.copy( obb.rotation );
+  /**
+   * Reference: Closest Point on OBB to Point in Real-Time Collision Detection
+   * by Christer Ericson (chapter 5.1.4)
+   */
+  clampPoint: function (point, result) {
+    var halfSize = this.halfSize;
 
-		return this;
+    v1.subVectors(point, this.center);
+    this.rotation.extractBasis(xAxis, yAxis, zAxis);
 
-	},
+    // start at the center position of the OBB
 
-	clone: function () {
+    result.copy(this.center);
 
-		return new this.constructor().copy( this );
+    // project the target onto the OBB axes and walk towards that point
 
-	},
+    var x = MathUtils.clamp(v1.dot(xAxis), -halfSize.x, halfSize.x);
+    result.add(xAxis.multiplyScalar(x));
 
-	getSize: function ( result ) {
+    var y = MathUtils.clamp(v1.dot(yAxis), -halfSize.y, halfSize.y);
+    result.add(yAxis.multiplyScalar(y));
 
-		return result.copy( this.halfSize ).multiplyScalar( 2 );
+    var z = MathUtils.clamp(v1.dot(zAxis), -halfSize.z, halfSize.z);
+    result.add(zAxis.multiplyScalar(z));
 
-	},
+    return result;
+  },
 
-	/**
-	* Reference: Closest Point on OBB to Point in Real-Time Collision Detection
-	* by Christer Ericson (chapter 5.1.4)
-	*/
-	clampPoint: function ( point, result ) {
+  containsPoint: function (point) {
+    v1.subVectors(point, this.center);
+    this.rotation.extractBasis(xAxis, yAxis, zAxis);
 
-		var halfSize = this.halfSize;
+    // project v1 onto each axis and check if these points lie inside the OBB
 
-		v1.subVectors( point, this.center );
-		this.rotation.extractBasis( xAxis, yAxis, zAxis );
+    return (
+      Math.abs(v1.dot(xAxis)) <= this.halfSize.x &&
+      Math.abs(v1.dot(yAxis)) <= this.halfSize.y &&
+      Math.abs(v1.dot(zAxis)) <= this.halfSize.z
+    );
+  },
 
-		// start at the center position of the OBB
+  intersectsBox3: function (box3) {
+    return this.intersectsOBB(obb.fromBox3(box3));
+  },
 
-		result.copy( this.center );
+  intersectsSphere: function (sphere) {
+    // find the point on the OBB closest to the sphere center
 
-		// project the target onto the OBB axes and walk towards that point
+    this.clampPoint(sphere.center, closestPoint);
 
-		var x = MathUtils.clamp( v1.dot( xAxis ), - halfSize.x, halfSize.x );
-		result.add( xAxis.multiplyScalar( x ) );
+    // if that point is inside the sphere, the OBB and sphere intersect
 
-		var y = MathUtils.clamp( v1.dot( yAxis ), - halfSize.y, halfSize.y );
-		result.add( yAxis.multiplyScalar( y ) );
+    return (
+      closestPoint.distanceToSquared(sphere.center) <=
+      sphere.radius * sphere.radius
+    );
+  },
 
-		var z = MathUtils.clamp( v1.dot( zAxis ), - halfSize.z, halfSize.z );
-		result.add( zAxis.multiplyScalar( z ) );
+  /**
+   * Reference: OBB-OBB Intersection in Real-Time Collision Detection
+   * by Christer Ericson (chapter 4.4.1)
+   *
+   */
+  intersectsOBB: function (obb, epsilon = Number.EPSILON) {
+    // prepare data structures (the code uses the same nomenclature like the reference)
 
-		return result;
+    a.c = this.center;
+    a.e[0] = this.halfSize.x;
+    a.e[1] = this.halfSize.y;
+    a.e[2] = this.halfSize.z;
+    this.rotation.extractBasis(a.u[0], a.u[1], a.u[2]);
 
-	},
+    b.c = obb.center;
+    b.e[0] = obb.halfSize.x;
+    b.e[1] = obb.halfSize.y;
+    b.e[2] = obb.halfSize.z;
+    obb.rotation.extractBasis(b.u[0], b.u[1], b.u[2]);
 
-	containsPoint: function ( point ) {
+    // compute rotation matrix expressing b in a's coordinate frame
 
-		v1.subVectors( point, this.center );
-		this.rotation.extractBasis( xAxis, yAxis, zAxis );
+    for (var i = 0; i < 3; i++) {
+      for (var j = 0; j < 3; j++) {
+        R[i][j] = a.u[i].dot(b.u[j]);
+      }
+    }
 
-		// project v1 onto each axis and check if these points lie inside the OBB
+    // compute translation vector
 
-		return Math.abs( v1.dot( xAxis ) ) <= this.halfSize.x &&
-				Math.abs( v1.dot( yAxis ) ) <= this.halfSize.y &&
-				Math.abs( v1.dot( zAxis ) ) <= this.halfSize.z;
+    v1.subVectors(b.c, a.c);
 
-	},
+    // bring translation into a's coordinate frame
 
-	intersectsBox3: function ( box3 ) {
+    t[0] = v1.dot(a.u[0]);
+    t[1] = v1.dot(a.u[1]);
+    t[2] = v1.dot(a.u[2]);
 
-		return this.intersectsOBB( obb.fromBox3( box3 ) );
+    // compute common subexpressions. Add in an epsilon term to
+    // counteract arithmetic errors when two edges are parallel and
+    // their cross product is (near) null
 
-	},
+    for (var i = 0; i < 3; i++) {
+      for (var j = 0; j < 3; j++) {
+        AbsR[i][j] = Math.abs(R[i][j]) + epsilon;
+      }
+    }
 
-	intersectsSphere: function ( sphere ) {
+    var ra, rb;
 
-		// find the point on the OBB closest to the sphere center
+    // test axes L = A0, L = A1, L = A2
 
-		this.clampPoint( sphere.center, closestPoint );
+    for (var i = 0; i < 3; i++) {
+      ra = a.e[i];
+      rb = b.e[0] * AbsR[i][0] + b.e[1] * AbsR[i][1] + b.e[2] * AbsR[i][2];
+      if (Math.abs(t[i]) > ra + rb) return false;
+    }
 
-		// if that point is inside the sphere, the OBB and sphere intersect
+    // test axes L = B0, L = B1, L = B2
 
-		return closestPoint.distanceToSquared( sphere.center ) <= ( sphere.radius * sphere.radius );
+    for (var i = 0; i < 3; i++) {
+      ra = a.e[0] * AbsR[0][i] + a.e[1] * AbsR[1][i] + a.e[2] * AbsR[2][i];
+      rb = b.e[i];
+      if (Math.abs(t[0] * R[0][i] + t[1] * R[1][i] + t[2] * R[2][i]) > ra + rb)
+        return false;
+    }
 
-	},
+    // test axis L = A0 x B0
 
-	/**
-	* Reference: OBB-OBB Intersection in Real-Time Collision Detection
-	* by Christer Ericson (chapter 4.4.1)
-	*
-	*/
-	intersectsOBB: function ( obb, epsilon = Number.EPSILON ) {
+    ra = a.e[1] * AbsR[2][0] + a.e[2] * AbsR[1][0];
+    rb = b.e[1] * AbsR[0][2] + b.e[2] * AbsR[0][1];
+    if (Math.abs(t[2] * R[1][0] - t[1] * R[2][0]) > ra + rb) return false;
 
-		// prepare data structures (the code uses the same nomenclature like the reference)
+    // test axis L = A0 x B1
 
-		a.c = this.center;
-		a.e[ 0 ] = this.halfSize.x;
-		a.e[ 1 ] = this.halfSize.y;
-		a.e[ 2 ] = this.halfSize.z;
-		this.rotation.extractBasis( a.u[ 0 ], a.u[ 1 ], a.u[ 2 ] );
+    ra = a.e[1] * AbsR[2][1] + a.e[2] * AbsR[1][1];
+    rb = b.e[0] * AbsR[0][2] + b.e[2] * AbsR[0][0];
+    if (Math.abs(t[2] * R[1][1] - t[1] * R[2][1]) > ra + rb) return false;
 
-		b.c = obb.center;
-		b.e[ 0 ] = obb.halfSize.x;
-		b.e[ 1 ] = obb.halfSize.y;
-		b.e[ 2 ] = obb.halfSize.z;
-		obb.rotation.extractBasis( b.u[ 0 ], b.u[ 1 ], b.u[ 2 ] );
+    // test axis L = A0 x B2
 
-		// compute rotation matrix expressing b in a's coordinate frame
+    ra = a.e[1] * AbsR[2][2] + a.e[2] * AbsR[1][2];
+    rb = b.e[0] * AbsR[0][1] + b.e[1] * AbsR[0][0];
+    if (Math.abs(t[2] * R[1][2] - t[1] * R[2][2]) > ra + rb) return false;
 
-		for ( var i = 0; i < 3; i ++ ) {
+    // test axis L = A1 x B0
 
-			for ( var j = 0; j < 3; j ++ ) {
+    ra = a.e[0] * AbsR[2][0] + a.e[2] * AbsR[0][0];
+    rb = b.e[1] * AbsR[1][2] + b.e[2] * AbsR[1][1];
+    if (Math.abs(t[0] * R[2][0] - t[2] * R[0][0]) > ra + rb) return false;
 
-				R[ i ][ j ] = a.u[ i ].dot( b.u[ j ] );
+    // test axis L = A1 x B1
 
-			}
+    ra = a.e[0] * AbsR[2][1] + a.e[2] * AbsR[0][1];
+    rb = b.e[0] * AbsR[1][2] + b.e[2] * AbsR[1][0];
+    if (Math.abs(t[0] * R[2][1] - t[2] * R[0][1]) > ra + rb) return false;
 
-		}
+    // test axis L = A1 x B2
 
-		// compute translation vector
+    ra = a.e[0] * AbsR[2][2] + a.e[2] * AbsR[0][2];
+    rb = b.e[0] * AbsR[1][1] + b.e[1] * AbsR[1][0];
+    if (Math.abs(t[0] * R[2][2] - t[2] * R[0][2]) > ra + rb) return false;
 
-		v1.subVectors( b.c, a.c );
+    // test axis L = A2 x B0
 
-		// bring translation into a's coordinate frame
+    ra = a.e[0] * AbsR[1][0] + a.e[1] * AbsR[0][0];
+    rb = b.e[1] * AbsR[2][2] + b.e[2] * AbsR[2][1];
+    if (Math.abs(t[1] * R[0][0] - t[0] * R[1][0]) > ra + rb) return false;
 
-		t[ 0 ] = v1.dot( a.u[ 0 ] );
-		t[ 1 ] = v1.dot( a.u[ 1 ] );
-		t[ 2 ] = v1.dot( a.u[ 2 ] );
+    // test axis L = A2 x B1
 
-		// compute common subexpressions. Add in an epsilon term to
-		// counteract arithmetic errors when two edges are parallel and
-		// their cross product is (near) null
+    ra = a.e[0] * AbsR[1][1] + a.e[1] * AbsR[0][1];
+    rb = b.e[0] * AbsR[2][2] + b.e[2] * AbsR[2][0];
+    if (Math.abs(t[1] * R[0][1] - t[0] * R[1][1]) > ra + rb) return false;
 
-		for ( var i = 0; i < 3; i ++ ) {
+    // test axis L = A2 x B2
 
-			for ( var j = 0; j < 3; j ++ ) {
+    ra = a.e[0] * AbsR[1][2] + a.e[1] * AbsR[0][2];
+    rb = b.e[0] * AbsR[2][1] + b.e[1] * AbsR[2][0];
+    if (Math.abs(t[1] * R[0][2] - t[0] * R[1][2]) > ra + rb) return false;
 
-				AbsR[ i ][ j ] = Math.abs( R[ i ][ j ] ) + epsilon;
+    // since no separating axis is found, the OBBs must be intersecting
 
-			}
+    return true;
+  },
 
-		}
+  /**
+   * Reference: Testing Box Against Plane in Real-Time Collision Detection
+   * by Christer Ericson (chapter 5.2.3)
+   */
+  intersectsPlane: function (plane) {
+    this.rotation.extractBasis(xAxis, yAxis, zAxis);
 
-		var ra, rb;
+    // compute the projection interval radius of this OBB onto L(t) = this->center + t * p.normal;
 
-		// test axes L = A0, L = A1, L = A2
+    const r =
+      this.halfSize.x * Math.abs(plane.normal.dot(xAxis)) +
+      this.halfSize.y * Math.abs(plane.normal.dot(yAxis)) +
+      this.halfSize.z * Math.abs(plane.normal.dot(zAxis));
 
-		for ( var i = 0; i < 3; i ++ ) {
+    // compute distance of the OBB's center from the plane
 
-			ra = a.e[ i ];
-			rb = b.e[ 0 ] * AbsR[ i ][ 0 ] + b.e[ 1 ] * AbsR[ i ][ 1 ] + b.e[ 2 ] * AbsR[ i ][ 2 ];
-			if ( Math.abs( t[ i ] ) > ra + rb ) return false;
+    const d = plane.normal.dot(this.center) - plane.constant;
 
+    // Intersection occurs when distance d falls within [-r,+r] interval
 
-		}
+    return Math.abs(d) <= r;
+  },
 
-		// test axes L = B0, L = B1, L = B2
+  /**
+   * Performs a ray/OBB intersection test and stores the intersection point
+   * to the given 3D vector. If no intersection is detected, *null* is returned.
+   */
+  intersectRay: function (ray, result) {
+    // the idea is to perform the intersection test in the local space
+    // of the OBB.
 
-		for ( var i = 0; i < 3; i ++ ) {
+    this.getSize(size);
+    aabb.setFromCenterAndSize(v1.set(0, 0, 0), size);
 
-			ra = a.e[ 0 ] * AbsR[ 0 ][ i ] + a.e[ 1 ] * AbsR[ 1 ][ i ] + a.e[ 2 ] * AbsR[ 2 ][ i ];
-			rb = b.e[ i ];
-			if ( Math.abs( t[ 0 ] * R[ 0 ][ i ] + t[ 1 ] * R[ 1 ][ i ] + t[ 2 ] * R[ 2 ][ i ] ) > ra + rb ) return false;
+    // create a 4x4 transformation matrix
 
-		}
+    matrix4FromRotationMatrix(matrix, this.rotation);
+    matrix.setPosition(this.center);
 
-		// test axis L = A0 x B0
+    // transform ray to the local space of the OBB
 
-		ra = a.e[ 1 ] * AbsR[ 2 ][ 0 ] + a.e[ 2 ] * AbsR[ 1 ][ 0 ];
-		rb = b.e[ 1 ] * AbsR[ 0 ][ 2 ] + b.e[ 2 ] * AbsR[ 0 ][ 1 ];
-		if ( Math.abs( t[ 2 ] * R[ 1 ][ 0 ] - t[ 1 ] * R[ 2 ][ 0 ] ) > ra + rb ) return false;
+    inverse.copy(matrix).invert();
+    localRay.copy(ray).applyMatrix4(inverse);
 
-		// test axis L = A0 x B1
+    // perform ray <-> AABB intersection test
 
-		ra = a.e[ 1 ] * AbsR[ 2 ][ 1 ] + a.e[ 2 ] * AbsR[ 1 ][ 1 ];
-		rb = b.e[ 0 ] * AbsR[ 0 ][ 2 ] + b.e[ 2 ] * AbsR[ 0 ][ 0 ];
-		if ( Math.abs( t[ 2 ] * R[ 1 ][ 1 ] - t[ 1 ] * R[ 2 ][ 1 ] ) > ra + rb ) return false;
+    if (localRay.intersectBox(aabb, result)) {
+      // transform the intersection point back to world space
 
-		// test axis L = A0 x B2
+      return result.applyMatrix4(matrix);
+    } else {
+      return null;
+    }
+  },
 
-		ra = a.e[ 1 ] * AbsR[ 2 ][ 2 ] + a.e[ 2 ] * AbsR[ 1 ][ 2 ];
-		rb = b.e[ 0 ] * AbsR[ 0 ][ 1 ] + b.e[ 1 ] * AbsR[ 0 ][ 0 ];
-		if ( Math.abs( t[ 2 ] * R[ 1 ][ 2 ] - t[ 1 ] * R[ 2 ][ 2 ] ) > ra + rb ) return false;
+  /**
+   * Performs a ray/OBB intersection test. Returns either true or false if
+   * there is a intersection or not.
+   */
+  intersectsRay: function (ray) {
+    return this.intersectRay(ray, v1) !== null;
+  },
 
-		// test axis L = A1 x B0
+  fromBox3: function (box3) {
+    box3.getCenter(this.center);
 
-		ra = a.e[ 0 ] * AbsR[ 2 ][ 0 ] + a.e[ 2 ] * AbsR[ 0 ][ 0 ];
-		rb = b.e[ 1 ] * AbsR[ 1 ][ 2 ] + b.e[ 2 ] * AbsR[ 1 ][ 1 ];
-		if ( Math.abs( t[ 0 ] * R[ 2 ][ 0 ] - t[ 2 ] * R[ 0 ][ 0 ] ) > ra + rb ) return false;
+    box3.getSize(this.halfSize).multiplyScalar(0.5);
 
-		// test axis L = A1 x B1
+    this.rotation.identity();
 
-		ra = a.e[ 0 ] * AbsR[ 2 ][ 1 ] + a.e[ 2 ] * AbsR[ 0 ][ 1 ];
-		rb = b.e[ 0 ] * AbsR[ 1 ][ 2 ] + b.e[ 2 ] * AbsR[ 1 ][ 0 ];
-		if ( Math.abs( t[ 0 ] * R[ 2 ][ 1 ] - t[ 2 ] * R[ 0 ][ 1 ] ) > ra + rb ) return false;
+    return this;
+  },
 
-		// test axis L = A1 x B2
+  equals: function (obb) {
+    return (
+      obb.center.equals(this.center) &&
+      obb.halfSize.equals(this.halfSize) &&
+      obb.rotation.equals(this.rotation)
+    );
+  },
 
-		ra = a.e[ 0 ] * AbsR[ 2 ][ 2 ] + a.e[ 2 ] * AbsR[ 0 ][ 2 ];
-		rb = b.e[ 0 ] * AbsR[ 1 ][ 1 ] + b.e[ 1 ] * AbsR[ 1 ][ 0 ];
-		if ( Math.abs( t[ 0 ] * R[ 2 ][ 2 ] - t[ 2 ] * R[ 0 ][ 2 ] ) > ra + rb ) return false;
+  applyMatrix4: function (matrix) {
+    var e = matrix.elements;
 
-		// test axis L = A2 x B0
+    var sx = v1.set(e[0], e[1], e[2]).length();
+    var sy = v1.set(e[4], e[5], e[6]).length();
+    var sz = v1.set(e[8], e[9], e[10]).length();
 
-		ra = a.e[ 0 ] * AbsR[ 1 ][ 0 ] + a.e[ 1 ] * AbsR[ 0 ][ 0 ];
-		rb = b.e[ 1 ] * AbsR[ 2 ][ 2 ] + b.e[ 2 ] * AbsR[ 2 ][ 1 ];
-		if ( Math.abs( t[ 1 ] * R[ 0 ][ 0 ] - t[ 0 ] * R[ 1 ][ 0 ] ) > ra + rb ) return false;
+    var det = matrix.determinant();
+    if (det < 0) sx = -sx;
 
-		// test axis L = A2 x B1
+    rotationMatrix.setFromMatrix4(matrix);
 
-		ra = a.e[ 0 ] * AbsR[ 1 ][ 1 ] + a.e[ 1 ] * AbsR[ 0 ][ 1 ];
-		rb = b.e[ 0 ] * AbsR[ 2 ][ 2 ] + b.e[ 2 ] * AbsR[ 2 ][ 0 ];
-		if ( Math.abs( t[ 1 ] * R[ 0 ][ 1 ] - t[ 0 ] * R[ 1 ][ 1 ] ) > ra + rb ) return false;
+    var invSX = 1 / sx;
+    var invSY = 1 / sy;
+    var invSZ = 1 / sz;
 
-		// test axis L = A2 x B2
+    rotationMatrix.elements[0] *= invSX;
+    rotationMatrix.elements[1] *= invSX;
+    rotationMatrix.elements[2] *= invSX;
 
-		ra = a.e[ 0 ] * AbsR[ 1 ][ 2 ] + a.e[ 1 ] * AbsR[ 0 ][ 2 ];
-		rb = b.e[ 0 ] * AbsR[ 2 ][ 1 ] + b.e[ 1 ] * AbsR[ 2 ][ 0 ];
-		if ( Math.abs( t[ 1 ] * R[ 0 ][ 2 ] - t[ 0 ] * R[ 1 ][ 2 ] ) > ra + rb ) return false;
+    rotationMatrix.elements[3] *= invSY;
+    rotationMatrix.elements[4] *= invSY;
+    rotationMatrix.elements[5] *= invSY;
 
-		// since no separating axis is found, the OBBs must be intersecting
+    rotationMatrix.elements[6] *= invSZ;
+    rotationMatrix.elements[7] *= invSZ;
+    rotationMatrix.elements[8] *= invSZ;
 
-		return true;
+    this.rotation.multiply(rotationMatrix);
 
-	},
+    this.halfSize.x *= sx;
+    this.halfSize.y *= sy;
+    this.halfSize.z *= sz;
 
-	/**
-	* Reference: Testing Box Against Plane in Real-Time Collision Detection
-	* by Christer Ericson (chapter 5.2.3)
-	*/
-	intersectsPlane: function ( plane ) {
+    v1.setFromMatrixPosition(matrix);
+    this.center.add(v1);
 
-		this.rotation.extractBasis( xAxis, yAxis, zAxis );
+    return this;
+  },
+});
 
-		// compute the projection interval radius of this OBB onto L(t) = this->center + t * p.normal;
+function matrix4FromRotationMatrix(matrix4, matrix3) {
+  var e = matrix4.elements;
+  var me = matrix3.elements;
 
-		const r = this.halfSize.x * Math.abs( plane.normal.dot( xAxis ) ) +
-				this.halfSize.y * Math.abs( plane.normal.dot( yAxis ) ) +
-				this.halfSize.z * Math.abs( plane.normal.dot( zAxis ) );
+  e[0] = me[0];
+  e[1] = me[1];
+  e[2] = me[2];
+  e[3] = 0;
 
-		// compute distance of the OBB's center from the plane
+  e[4] = me[3];
+  e[5] = me[4];
+  e[6] = me[5];
+  e[7] = 0;
 
-		const d = plane.normal.dot( this.center ) - plane.constant;
+  e[8] = me[6];
+  e[9] = me[7];
+  e[10] = me[8];
+  e[11] = 0;
 
-		// Intersection occurs when distance d falls within [-r,+r] interval
-
-		return Math.abs( d ) <= r;
-
-	},
-
-	/**
-	* Performs a ray/OBB intersection test and stores the intersection point
-	* to the given 3D vector. If no intersection is detected, *null* is returned.
-	*/
-	intersectRay: function ( ray, result ) {
-
-		// the idea is to perform the intersection test in the local space
-		// of the OBB.
-
-		this.getSize( size );
-		aabb.setFromCenterAndSize( v1.set( 0, 0, 0 ), size );
-
-		// create a 4x4 transformation matrix
-
-		matrix4FromRotationMatrix( matrix, this.rotation );
-		matrix.setPosition( this.center );
-
-		// transform ray to the local space of the OBB
-
-		inverse.copy( matrix ).invert();
-		localRay.copy( ray ).applyMatrix4( inverse );
-
-		// perform ray <-> AABB intersection test
-
-		if ( localRay.intersectBox( aabb, result ) ) {
-
-			// transform the intersection point back to world space
-
-			return result.applyMatrix4( matrix );
-
-		} else {
-
-			return null;
-
-		}
-
-	},
-
-	/**
-	* Performs a ray/OBB intersection test. Returns either true or false if
-	* there is a intersection or not.
-	*/
-	intersectsRay: function ( ray ) {
-
-		return this.intersectRay( ray, v1 ) !== null;
-
-	},
-
-	fromBox3: function ( box3 ) {
-
-		box3.getCenter( this.center );
-
-		box3.getSize( this.halfSize ).multiplyScalar( 0.5 );
-
-		this.rotation.identity();
-
-		return this;
-
-	},
-
-	equals: function ( obb ) {
-
-		return obb.center.equals( this.center ) &&
-			obb.halfSize.equals( this.halfSize ) &&
-			obb.rotation.equals( this.rotation );
-
-	},
-
-	applyMatrix4: function ( matrix ) {
-
-		var e = matrix.elements;
-
-		var sx = v1.set( e[ 0 ], e[ 1 ], e[ 2 ] ).length();
-		var sy = v1.set( e[ 4 ], e[ 5 ], e[ 6 ] ).length();
-		var sz = v1.set( e[ 8 ], e[ 9 ], e[ 10 ] ).length();
-
-		var det = matrix.determinant();
-		if ( det < 0 ) sx = - sx;
-
-		rotationMatrix.setFromMatrix4( matrix );
-
-		var invSX = 1 / sx;
-		var invSY = 1 / sy;
-		var invSZ = 1 / sz;
-
-		rotationMatrix.elements[ 0 ] *= invSX;
-		rotationMatrix.elements[ 1 ] *= invSX;
-		rotationMatrix.elements[ 2 ] *= invSX;
-
-		rotationMatrix.elements[ 3 ] *= invSY;
-		rotationMatrix.elements[ 4 ] *= invSY;
-		rotationMatrix.elements[ 5 ] *= invSY;
-
-		rotationMatrix.elements[ 6 ] *= invSZ;
-		rotationMatrix.elements[ 7 ] *= invSZ;
-		rotationMatrix.elements[ 8 ] *= invSZ;
-
-		this.rotation.multiply( rotationMatrix );
-
-		this.halfSize.x *= sx;
-		this.halfSize.y *= sy;
-		this.halfSize.z *= sz;
-
-		v1.setFromMatrixPosition( matrix );
-		this.center.add( v1 );
-
-		return this;
-
-	}
-
-} );
-
-function matrix4FromRotationMatrix( matrix4, matrix3 ) {
-
-	var e = matrix4.elements;
-	var me = matrix3.elements;
-
-	e[ 0 ] = me[ 0 ];
-	e[ 1 ] = me[ 1 ];
-	e[ 2 ] = me[ 2 ];
-	e[ 3 ] = 0;
-
-	e[ 4 ] = me[ 3 ];
-	e[ 5 ] = me[ 4 ];
-	e[ 6 ] = me[ 5 ];
-	e[ 7 ] = 0;
-
-	e[ 8 ] = me[ 6 ];
-	e[ 9 ] = me[ 7 ];
-	e[ 10 ] = me[ 8 ];
-	e[ 11 ] = 0;
-
-	e[ 12 ] = 0;
-	e[ 13 ] = 0;
-	e[ 14 ] = 0;
-	e[ 15 ] = 1;
-
+  e[12] = 0;
+  e[13] = 0;
+  e[14] = 0;
+  e[15] = 1;
 }
 
 var obb = new OBB();

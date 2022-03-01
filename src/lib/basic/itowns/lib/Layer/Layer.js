@@ -1,45 +1,147 @@
-"use strict";
+'use strict';
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports.ImageryLayers = exports["default"] = void 0;
+exports.ImageryLayers = exports['default'] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/classCallCheck'),
+);
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/createClass'),
+);
 
-var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
+var _assertThisInitialized2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/assertThisInitialized'),
+);
 
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+var _inherits2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/inherits'),
+);
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+var _possibleConstructorReturn2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/possibleConstructorReturn'),
+);
 
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+var _getPrototypeOf2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/getPrototypeOf'),
+);
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _LayerUpdateStrategy = require("./LayerUpdateStrategy");
+var _LayerUpdateStrategy = require('./LayerUpdateStrategy');
 
-var _InfoLayer = _interopRequireDefault(require("./InfoLayer"));
+var _InfoLayer = _interopRequireDefault(require('./InfoLayer'));
 
-var _Source = _interopRequireDefault(require("../Source/Source"));
+var _Source = _interopRequireDefault(require('../Source/Source'));
 
-var _Cache = _interopRequireDefault(require("../Core/Scheduler/Cache"));
+var _Cache = _interopRequireDefault(require('../Core/Scheduler/Cache'));
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it;
+  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
+    if (
+      Array.isArray(o) ||
+      (it = _unsupportedIterableToArray(o)) ||
+      (allowArrayLike && o && typeof o.length === 'number')
+    ) {
+      if (it) o = it;
+      var i = 0;
+      var F = function F() {};
+      return {
+        s: F,
+        n: function n() {
+          if (i >= o.length) return { done: true };
+          return { done: false, value: o[i++] };
+        },
+        e: function e(_e) {
+          throw _e;
+        },
+        f: F,
+      };
+    }
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
+    );
+  }
+  var normalCompletion = true,
+    didErr = false,
+    err;
+  return {
+    s: function s() {
+      it = o[Symbol.iterator]();
+    },
+    n: function n() {
+      var step = it.next();
+      normalCompletion = step.done;
+      return step;
+    },
+    e: function e(_e2) {
+      didErr = true;
+      err = _e2;
+    },
+    f: function f() {
+      try {
+        if (!normalCompletion && it['return'] != null) it['return']();
+      } finally {
+        if (didErr) throw err;
+      }
+    },
+  };
+}
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === 'Object' && o.constructor) n = o.constructor.name;
+  if (n === 'Map' || n === 'Set') return Array.from(o);
+  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray(o, minLen);
+}
 
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+  return function () {
+    var Super = (0, _getPrototypeOf2['default'])(Derived),
+      result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return (0, _possibleConstructorReturn2['default'])(this, result);
+  };
+}
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === 'function') return true;
+  try {
+    Boolean.prototype.valueOf.call(
+      Reflect.construct(Boolean, [], function () {}),
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
 /**
  * @property {boolean} isLayer - Used to checkout whether this layer is a Layer.
@@ -71,8 +173,8 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
  * @property {number} [zoom.min=0] - this is the minimum zoom from which it'll be visible.
  *
  */
-var Layer = /*#__PURE__*/function (_THREE$EventDispatche) {
-  (0, _inherits2["default"])(Layer, _THREE$EventDispatche);
+var Layer = /*#__PURE__*/ (function (_THREE$EventDispatche) {
+  (0, _inherits2['default'])(Layer, _THREE$EventDispatche);
 
   var _super = _createSuper(Layer);
 
@@ -121,33 +223,40 @@ var Layer = /*#__PURE__*/function (_THREE$EventDispatche) {
   function Layer(id) {
     var _this;
 
-    var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    (0, _classCallCheck2["default"])(this, Layer);
+    var config =
+      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    (0, _classCallCheck2['default'])(this, Layer);
 
     /* istanbul ignore next */
     if (config.projection) {
-      console.warn('Layer projection parameter is deprecated, use crs instead.');
+      console.warn(
+        'Layer projection parameter is deprecated, use crs instead.',
+      );
       config.crs = config.crs || config.projection;
     }
 
     if (config.source === undefined || config.source === true) {
-      throw new Error("Layer ".concat(id, " needs Source"));
+      throw new Error('Layer '.concat(id, ' needs Source'));
     }
 
     _this = _super.call(this);
     _this.isLayer = true;
-    Object.assign((0, _assertThisInitialized2["default"])(_this), config);
-    Object.defineProperty((0, _assertThisInitialized2["default"])(_this), 'id', {
-      value: id,
-      writable: false
-    }); // Default properties
+    Object.assign((0, _assertThisInitialized2['default'])(_this), config);
+    Object.defineProperty(
+      (0, _assertThisInitialized2['default'])(_this),
+      'id',
+      {
+        value: id,
+        writable: false,
+      },
+    ); // Default properties
 
     _this.options = config.options || {};
 
     if (!_this.updateStrategy) {
       _this.updateStrategy = {
         type: _LayerUpdateStrategy.STRATEGY_MIN_NETWORK_TRAFFIC,
-        options: {}
+        options: {},
       };
     }
 
@@ -156,7 +265,7 @@ var Layer = /*#__PURE__*/function (_THREE$EventDispatche) {
     if (config.zoom) {
       _this.zoom = {
         max: config.zoom.max,
-        min: config.zoom.min || 0
+        min: config.zoom.min || 0,
       };
 
       if (_this.zoom.max == undefined) {
@@ -165,14 +274,18 @@ var Layer = /*#__PURE__*/function (_THREE$EventDispatche) {
     } else {
       _this.zoom = {
         max: Infinity,
-        min: 0
+        min: 0,
       };
     }
 
-    _this.info = new _InfoLayer["default"]((0, _assertThisInitialized2["default"])(_this));
-    _this.source = _this.source || new _Source["default"]({
-      url: 'none'
-    });
+    _this.info = new _InfoLayer['default'](
+      (0, _assertThisInitialized2['default'])(_this),
+    );
+    _this.source =
+      _this.source ||
+      new _Source['default']({
+        url: 'none',
+      });
     _this.ready = false;
     _this._promises = [];
     _this.whenReady = new Promise(function (re, rj) {
@@ -182,149 +295,165 @@ var Layer = /*#__PURE__*/function (_THREE$EventDispatche) {
       _this.ready = true;
 
       _this.source.onLayerAdded({
-        out: (0, _assertThisInitialized2["default"])(_this)
+        out: (0, _assertThisInitialized2['default'])(_this),
       });
 
-      return (0, _assertThisInitialized2["default"])(_this);
+      return (0, _assertThisInitialized2['default'])(_this);
     });
 
     _this._promises.push(_this.source.whenReady);
 
-    _this.cache = new _Cache["default"](config.cacheLifeTime);
-    _this.mergeFeatures = _this.mergeFeatures === undefined ? true : config.mergeFeatures; // TODO: verify but this.source.filter seems be always undefined.
+    _this.cache = new _Cache['default'](config.cacheLifeTime);
+    _this.mergeFeatures =
+      _this.mergeFeatures === undefined ? true : config.mergeFeatures; // TODO: verify but this.source.filter seems be always undefined.
 
     _this.filter = _this.filter || _this.source.filter;
     return _this;
   }
 
-  (0, _createClass2["default"])(Layer, [{
-    key: "addInitializationStep",
-    value: function addInitializationStep() {
-      // Possibility to add rejection handler, if it's necessary.
-      var resolve;
+  (0, _createClass2['default'])(Layer, [
+    {
+      key: 'addInitializationStep',
+      value: function addInitializationStep() {
+        // Possibility to add rejection handler, if it's necessary.
+        var resolve;
 
-      this._promises.push(new Promise(function (re) {
-        resolve = re;
-      }));
+        this._promises.push(
+          new Promise(function (re) {
+            resolve = re;
+          }),
+        );
 
-      return resolve;
-    }
-    /**
-     * Defines a property for this layer, with a default value and a callback
-     * executed when the property changes.
-     * <br><br>
-     * When changing the property, it also emits an event, named following this
-     * convention: `${propertyName}-property-changed`, with `${propertyName}`
-     * being replaced by the name of the property.  For example, if the added
-     * property name is `frozen`, it will emit a `frozen-property-changed`.
-     * <br><br>
-     * @example <caption>The emitted event has some properties assigned to it</caption>
-     * event = {
-     *     new: {
-     *         ${propertyName}: * // the new value of the property
-     *     },
-     *     previous: {
-     *         ${propertyName}: * // the previous value of the property
-     *     },
-     *     target: Layer // the layer it has been dispatched from
-     *     type: string // the name of the emitted event
-     * }
-     *
-     * @param {string} propertyName - The name of the property, also used in
-     * the emitted event name.
-     * @param {*} defaultValue - The default set value.
-     * @param {function} [onChange] - The function executed when the property is
-     * changed. Parameters are the layer the property is defined on, and the
-     * name of the property.
-     */
+        return resolve;
+      },
+      /**
+       * Defines a property for this layer, with a default value and a callback
+       * executed when the property changes.
+       * <br><br>
+       * When changing the property, it also emits an event, named following this
+       * convention: `${propertyName}-property-changed`, with `${propertyName}`
+       * being replaced by the name of the property.  For example, if the added
+       * property name is `frozen`, it will emit a `frozen-property-changed`.
+       * <br><br>
+       * @example <caption>The emitted event has some properties assigned to it</caption>
+       * event = {
+       *     new: {
+       *         ${propertyName}: * // the new value of the property
+       *     },
+       *     previous: {
+       *         ${propertyName}: * // the previous value of the property
+       *     },
+       *     target: Layer // the layer it has been dispatched from
+       *     type: string // the name of the emitted event
+       * }
+       *
+       * @param {string} propertyName - The name of the property, also used in
+       * the emitted event name.
+       * @param {*} defaultValue - The default set value.
+       * @param {function} [onChange] - The function executed when the property is
+       * changed. Parameters are the layer the property is defined on, and the
+       * name of the property.
+       */
+    },
+    {
+      key: 'defineLayerProperty',
+      value: function defineLayerProperty(
+        propertyName,
+        defaultValue,
+        onChange,
+      ) {
+        var _this2 = this;
 
-  }, {
-    key: "defineLayerProperty",
-    value: function defineLayerProperty(propertyName, defaultValue, onChange) {
-      var _this2 = this;
+        var existing = Object.getOwnPropertyDescriptor(this, propertyName);
 
-      var existing = Object.getOwnPropertyDescriptor(this, propertyName);
+        if (!existing || !existing.set) {
+          var property =
+            this[propertyName] == undefined ? defaultValue : this[propertyName];
+          Object.defineProperty(this, propertyName, {
+            get: function get() {
+              return property;
+            },
+            set: function set(newValue) {
+              if (property !== newValue) {
+                var event = {
+                  type: ''.concat(propertyName, '-property-changed'),
+                  previous: {},
+                  new: {},
+                };
+                event.previous[propertyName] = property;
+                event['new'][propertyName] = newValue;
+                property = newValue;
 
-      if (!existing || !existing.set) {
-        var property = this[propertyName] == undefined ? defaultValue : this[propertyName];
-        Object.defineProperty(this, propertyName, {
-          get: function get() {
-            return property;
-          },
-          set: function set(newValue) {
-            if (property !== newValue) {
-              var event = {
-                type: "".concat(propertyName, "-property-changed"),
-                previous: {},
-                "new": {}
-              };
-              event.previous[propertyName] = property;
-              event["new"][propertyName] = newValue;
-              property = newValue;
+                if (onChange) {
+                  onChange(_this2, propertyName);
+                }
 
-              if (onChange) {
-                onChange(_this2, propertyName);
+                _this2.dispatchEvent(event);
               }
+            },
+          });
+        }
+      }, // Placeholder
+      // eslint-disable-next-line
+    },
+    {
+      key: 'convert',
+      value: function convert(data) {
+        return data;
+      },
+    },
+    {
+      key: 'getData',
+      value: function getData(from, to) {
+        var _this3 = this;
 
-              _this2.dispatchEvent(event);
-            }
-          }
-        });
-      }
-    } // Placeholder
-    // eslint-disable-next-line
+        var key = this.source.requestToKey(
+          this.source.isVectorSource ? to : from,
+        );
+        var data = this.cache.getByArray(key);
 
-  }, {
-    key: "convert",
-    value: function convert(data) {
-      return data;
-    }
-  }, {
-    key: "getData",
-    value: function getData(from, to) {
-      var _this3 = this;
+        if (!data) {
+          data = this.source.loadData(from, this).then(
+            function (feat) {
+              return _this3.convert(feat, to);
+            },
+            function (err) {
+              throw err;
+            },
+          );
+          this.cache.setByArray(data, key);
+        }
 
-      var key = this.source.requestToKey(this.source.isVectorSource ? to : from);
-      var data = this.cache.getByArray(key);
-
-      if (!data) {
-        data = this.source.loadData(from, this).then(function (feat) {
-          return _this3.convert(feat, to);
-        }, function (err) {
-          throw err;
-        });
-        this.cache.setByArray(data, key);
-      }
-
-      return data;
-    }
-    /**
-     * Determines whether the specified feature is valid data.
-     *
-     * @param      {Feature}  feature  The feature
-     * @returns {Feature} the feature is returned if it's valided
-     */
-    // eslint-disable-next-line
-
-  }, {
-    key: "isValidData",
-    value: function isValidData() {}
-    /**
-     * Remove and dispose all objects from layer.
-     */
-    // eslint-disable-next-line
-
-  }, {
-    key: "delete",
-    value: function _delete() {
-      console.warn('Function delete doesn\'t exist for this layer');
-    }
-  }]);
+        return data;
+      },
+      /**
+       * Determines whether the specified feature is valid data.
+       *
+       * @param      {Feature}  feature  The feature
+       * @returns {Feature} the feature is returned if it's valided
+       */
+      // eslint-disable-next-line
+    },
+    {
+      key: 'isValidData',
+      value: function isValidData() {},
+      /**
+       * Remove and dispose all objects from layer.
+       */
+      // eslint-disable-next-line
+    },
+    {
+      key: 'delete',
+      value: function _delete() {
+        console.warn("Function delete doesn't exist for this layer");
+      },
+    },
+  ]);
   return Layer;
-}(THREE.EventDispatcher);
+})(THREE.EventDispatcher);
 
 var _default = Layer;
-exports["default"] = _default;
+exports['default'] = _default;
 var ImageryLayers = {
   // move this to new index
   // After the modification :
@@ -337,19 +466,25 @@ var ImageryLayers = {
     var oldIndex = layer.sequence;
 
     var _iterator = _createForOfIteratorHelper(imageryLayers),
-        _step;
+      _step;
 
     try {
-      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      for (_iterator.s(); !(_step = _iterator.n()).done; ) {
         var imagery = _step.value;
 
         if (imagery.id === layer.id) {
           // change index of specified layer
           imagery.sequence = newIndex;
-        } else if (imagery.sequence > oldIndex && imagery.sequence <= newIndex) {
+        } else if (
+          imagery.sequence > oldIndex &&
+          imagery.sequence <= newIndex
+        ) {
           // down all layers between the old index and new index (to compensate the deletion of the old index)
           imagery.sequence--;
-        } else if (imagery.sequence >= newIndex && imagery.sequence < oldIndex) {
+        } else if (
+          imagery.sequence >= newIndex &&
+          imagery.sequence < oldIndex
+        ) {
           // up all layers between the new index and old index (to compensate the insertion of the new index)
           imagery.sequence++;
         }
@@ -380,6 +515,6 @@ var ImageryLayers = {
     return copy.map(function (l) {
       return l.id;
     });
-  }
+  },
 };
 exports.ImageryLayers = ImageryLayers;

@@ -9,7 +9,14 @@ import ModelLoader from './ModelLoader';
 
 class OBJModelLoader extends ModelLoader {
   load(config: OBJModelLoaderType) {
-    const { url, complete, isOutline = true, process } = config;
+    const {
+      url,
+      complete,
+      isOutline = true,
+      process,
+      position,
+      angles,
+    } = config;
     if (!url) return;
     const loader = new OBJLoader2();
     loader.load(
@@ -18,6 +25,8 @@ class OBJModelLoader extends ModelLoader {
         this.moveToCenter(obj);
         isOutline && this.addEdgeOutline(obj);
         this.add(obj);
+        position && this.position.set(...position);
+        angles && this.rotation.set(...angles);
         complete && complete(this);
       },
       (info) => {

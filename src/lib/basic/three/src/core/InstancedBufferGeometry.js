@@ -1,48 +1,41 @@
 import { BufferGeometry } from './BufferGeometry.js';
 
 function InstancedBufferGeometry() {
+  BufferGeometry.call(this);
 
-	BufferGeometry.call( this );
-
-	this.type = 'InstancedBufferGeometry';
-	this.instanceCount = Infinity;
-
+  this.type = 'InstancedBufferGeometry';
+  this.instanceCount = Infinity;
 }
 
-InstancedBufferGeometry.prototype = Object.assign( Object.create( BufferGeometry.prototype ), {
+InstancedBufferGeometry.prototype = Object.assign(
+  Object.create(BufferGeometry.prototype),
+  {
+    constructor: InstancedBufferGeometry,
 
-	constructor: InstancedBufferGeometry,
+    isInstancedBufferGeometry: true,
 
-	isInstancedBufferGeometry: true,
+    copy: function (source) {
+      BufferGeometry.prototype.copy.call(this, source);
 
-	copy: function ( source ) {
+      this.instanceCount = source.instanceCount;
 
-		BufferGeometry.prototype.copy.call( this, source );
+      return this;
+    },
 
-		this.instanceCount = source.instanceCount;
+    clone: function () {
+      return new this.constructor().copy(this);
+    },
 
-		return this;
+    toJSON: function () {
+      const data = BufferGeometry.prototype.toJSON.call(this);
 
-	},
+      data.instanceCount = this.instanceCount;
 
-	clone: function () {
+      data.isInstancedBufferGeometry = true;
 
-		return new this.constructor().copy( this );
-
-	},
-
-	toJSON: function () {
-
-		const data = BufferGeometry.prototype.toJSON.call( this );
-
-		data.instanceCount = this.instanceCount;
-
-		data.isInstancedBufferGeometry = true;
-
-		return data;
-
-	}
-
-} );
+      return data;
+    },
+  },
+);
 
 export { InstancedBufferGeometry };

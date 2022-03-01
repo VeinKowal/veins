@@ -1,38 +1,26 @@
 class WebGPUProperties {
+  constructor() {
+    this.properties = new WeakMap();
+  }
 
-	constructor() {
+  get(object) {
+    let map = this.properties.get(object);
 
-		this.properties = new WeakMap();
+    if (map === undefined) {
+      map = {};
+      this.properties.set(object, map);
+    }
 
-	}
+    return map;
+  }
 
-	get( object ) {
+  remove(object) {
+    this.properties.delete(object);
+  }
 
-		let map = this.properties.get( object );
-
-		if ( map === undefined ) {
-
-			map = {};
-			this.properties.set( object, map );
-
-		}
-
-		return map;
-
-	}
-
-	remove( object ) {
-
-		this.properties.delete( object );
-
-	}
-
-	dispose() {
-
-		this.properties = new WeakMap();
-
-	}
-
+  dispose() {
+    this.properties = new WeakMap();
+  }
 }
 
 export default WebGPUProperties;

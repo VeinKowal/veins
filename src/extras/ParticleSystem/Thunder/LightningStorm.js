@@ -57,23 +57,35 @@ class LightningStorm extends Object3D {
     stormParams = stormParams || {};
     this.stormParams = stormParams;
 
-    stormParams.size = stormParams.size !== undefined ? stormParams.size : 1000.0;
-    stormParams.minHeight = stormParams.minHeight !== undefined ? stormParams.minHeight : 80.0;
-    stormParams.maxHeight = stormParams.maxHeight !== undefined ? stormParams.maxHeight : 100.0;
-    stormParams.maxSlope = stormParams.maxSlope !== undefined ? stormParams.maxSlope : 1.1;
+    stormParams.size =
+      stormParams.size !== undefined ? stormParams.size : 1000.0;
+    stormParams.minHeight =
+      stormParams.minHeight !== undefined ? stormParams.minHeight : 80.0;
+    stormParams.maxHeight =
+      stormParams.maxHeight !== undefined ? stormParams.maxHeight : 100.0;
+    stormParams.maxSlope =
+      stormParams.maxSlope !== undefined ? stormParams.maxSlope : 1.1;
 
     stormParams.maxLightnings =
       stormParams.maxLightnings !== undefined ? stormParams.maxLightnings : 3;
 
     stormParams.lightningMinPeriod =
-      stormParams.lightningMinPeriod !== undefined ? stormParams.lightningMinPeriod : 3.0;
+      stormParams.lightningMinPeriod !== undefined
+        ? stormParams.lightningMinPeriod
+        : 3.0;
     stormParams.lightningMaxPeriod =
-      stormParams.lightningMaxPeriod !== undefined ? stormParams.lightningMaxPeriod : 7.0;
+      stormParams.lightningMaxPeriod !== undefined
+        ? stormParams.lightningMaxPeriod
+        : 7.0;
 
     stormParams.lightningMinDuration =
-      stormParams.lightningMinDuration !== undefined ? stormParams.lightningMinDuration : 1.0;
+      stormParams.lightningMinDuration !== undefined
+        ? stormParams.lightningMinDuration
+        : 1.0;
     stormParams.lightningMaxDuration =
-      stormParams.lightningMaxDuration !== undefined ? stormParams.lightningMaxDuration : 2.5;
+      stormParams.lightningMaxDuration !== undefined
+        ? stormParams.lightningMaxDuration
+        : 2.5;
 
     this.lightningParameters = LightningStrike.copyParameters(
       stormParams.lightningParameters,
@@ -97,7 +109,11 @@ class LightningStorm extends Object3D {
           (Math.random() - 0.5) * stormParams.size,
         );
 
-        var height = MathUtils.lerp(stormParams.minHeight, stormParams.maxHeight, Math.random());
+        var height = MathUtils.lerp(
+          stormParams.minHeight,
+          stormParams.maxHeight,
+          Math.random(),
+        );
 
         source
           .set(
@@ -151,7 +167,10 @@ class LightningStorm extends Object3D {
             Math.random(),
           );
 
-        this.onRayPosition(lightningParams1.sourceOffset, lightningParams1.destOffset);
+        this.onRayPosition(
+          lightningParams1.sourceOffset,
+          lightningParams1.destOffset,
+        );
 
         lightningParams1.noiseSeed = Math.random();
 
@@ -176,7 +195,10 @@ class LightningStorm extends Object3D {
 
       lightning.update(time);
 
-      if (prevState === LightningStrike.RAY_PROPAGATING && lightning.state > prevState) {
+      if (
+        prevState === LightningStrike.RAY_PROPAGATING &&
+        lightning.state > prevState
+      ) {
         if (this.onLightningDown) {
           this.onLightningDown(lightning);
         }
@@ -220,10 +242,15 @@ class LightningStorm extends Object3D {
     this.stormParams.lightningMinPeriod = source.stormParams.lightningMinPeriod;
     this.stormParams.lightningMaxPeriod = source.stormParams.lightningMaxPeriod;
 
-    this.stormParams.lightningMinDuration = source.stormParams.lightningMinDuration;
-    this.stormParams.lightningMaxDuration = source.stormParams.lightningMaxDuration;
+    this.stormParams.lightningMinDuration =
+      source.stormParams.lightningMinDuration;
+    this.stormParams.lightningMaxDuration =
+      source.stormParams.lightningMaxDuration;
 
-    this.lightningParameters = LightningStrike.copyParameters({}, source.lightningParameters);
+    this.lightningParameters = LightningStrike.copyParameters(
+      {},
+      source.lightningParameters,
+    );
 
     this.lightningMaterial = source.stormParams.lightningMaterial;
 

@@ -1,16 +1,15 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 var MODES = {
   FINAL: 0,
   // final color
   DEPTH: 1,
   // depth buffer
-  ID: 2 // id object
-
+  ID: 2, // id object
 };
 
 function push(object3d, mode) {
@@ -38,9 +37,8 @@ function push(object3d, mode) {
 // According to the rendering mode, the material's object switches
 // the mode property of the materials
 
-
 var _default = {
   MODES: MODES,
-  push: push
+  push: push,
 };
-exports["default"] = _default;
+exports['default'] = _default;

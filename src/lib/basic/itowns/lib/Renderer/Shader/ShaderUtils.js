@@ -1,34 +1,55 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 var rePosition = new RegExp('gl_Position.*(?![^]*gl_Position)');
 var reMain = new RegExp('[^\\w]*main[^\\w]*(void)?[^\\w]*{');
 var _default = {
-  patchMaterialForLogDepthSupport: function patchMaterialForLogDepthSupport(material) {
+  patchMaterialForLogDepthSupport: function patchMaterialForLogDepthSupport(
+    material,
+  ) {
     // Check if the shader does not already use the log depth buffer
-    if (material.vertexShader.includes('USE_LOGDEPTHBUF') || material.vertexShader.includes('logdepthbuf_pars_vertex')) {
+    if (
+      material.vertexShader.includes('USE_LOGDEPTHBUF') ||
+      material.vertexShader.includes('logdepthbuf_pars_vertex')
+    ) {
       return;
     } // Add vertex shader log depth buffer header
 
-
-    material.vertexShader = "#include <logdepthbuf_pars_vertex>\n#define EPSILON 1e-6\n".concat(material.vertexShader); // Add log depth buffer code snippet after last gl_Position modification
+    material.vertexShader =
+      '#include <logdepthbuf_pars_vertex>\n#define EPSILON 1e-6\n'.concat(
+        material.vertexShader,
+      ); // Add log depth buffer code snippet after last gl_Position modification
 
     var re = rePosition.exec(material.vertexShader);
     var idx = re[0].length + re.index;
-    material.vertexShader = "".concat(material.vertexShader.slice(0, idx), "\n#include <logdepthbuf_vertex>\n").concat(material.vertexShader.slice(idx)); // Add fragment shader log depth buffer header
+    material.vertexShader = ''
+      .concat(
+        material.vertexShader.slice(0, idx),
+        '\n#include <logdepthbuf_vertex>\n',
+      )
+      .concat(material.vertexShader.slice(idx)); // Add fragment shader log depth buffer header
 
-    material.fragmentShader = "#include <itowns/precision_qualifier\n".concat(material.fragmentShader);
-    material.fragmentShader = "#include <logdepthbuf_pars_fragment>\n".concat(material.fragmentShader); // Add log depth buffer code snippet at the first line of the main function
+    material.fragmentShader = '#include <itowns/precision_qualifier\n'.concat(
+      material.fragmentShader,
+    );
+    material.fragmentShader = '#include <logdepthbuf_pars_fragment>\n'.concat(
+      material.fragmentShader,
+    ); // Add log depth buffer code snippet at the first line of the main function
 
     re = reMain.exec(material.fragmentShader);
     idx = re[0].length + re.index;
-    material.fragmentShader = "".concat(material.fragmentShader.slice(0, idx), "\n#include <logdepthbuf_fragment>\n").concat(material.fragmentShader.slice(idx));
+    material.fragmentShader = ''
+      .concat(
+        material.fragmentShader.slice(0, idx),
+        '\n#include <logdepthbuf_fragment>\n',
+      )
+      .concat(material.fragmentShader.slice(idx));
     material.defines = {
       USE_LOGDEPTHBUF: 1,
-      USE_LOGDEPTHBUF_EXT: 1
+      USE_LOGDEPTHBUF_EXT: 1,
     };
   },
   // adapted from unrollLoops in WebGLProgram
@@ -41,13 +62,16 @@ var _default = {
       end = end in defines ? defines[end] : parseInt(end, 10);
 
       for (var i = start; i < end; i++) {
-        unroll += snippet.replace(/\bi\b/g, " ".concat(i, " "));
+        unroll += snippet.replace(/\bi\b/g, ' '.concat(i, ' '));
       }
 
       return unroll;
     }
 
-    return string.replace(/#pragma unroll_loop\s+for\s*\(\s*int\s+i\s*=\s*([\w\d]+);\s*i\s+<\s+([\w\d]+);\s*i\s*\+\+\s*\)\s*\{\n([^}]*)\}/g, replace);
-  }
+    return string.replace(
+      /#pragma unroll_loop\s+for\s*\(\s*int\s+i\s*=\s*([\w\d]+);\s*i\s+<\s+([\w\d]+);\s*i\s*\+\+\s*\)\s*\{\n([^}]*)\}/g,
+      replace,
+    );
+  },
 };
-exports["default"] = _default;
+exports['default'] = _default;

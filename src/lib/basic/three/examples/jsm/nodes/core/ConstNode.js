@@ -2,12 +2,10 @@ import { TempNode } from './TempNode.js';
 
 var declarationRegexp = /^([a-z_0-9]+)\s([a-z_0-9]+)\s?\=?\s?(.*?)(\;|$)/i;
 
-function ConstNode( src, useDefine ) {
+function ConstNode(src, useDefine) {
+  TempNode.call(this);
 
-	TempNode.call( this );
-
-	this.parse( src || ConstNode.PI, useDefine );
-
+  this.parse(src || ConstNode.PI, useDefine);
 }
 
 ConstNode.PI = 'PI';
@@ -17,107 +15,81 @@ ConstNode.RECIPROCAL_PI2 = 'RECIPROCAL_PI2';
 ConstNode.LOG2 = 'LOG2';
 ConstNode.EPSILON = 'EPSILON';
 
-ConstNode.prototype = Object.create( TempNode.prototype );
+ConstNode.prototype = Object.create(TempNode.prototype);
 ConstNode.prototype.constructor = ConstNode;
 ConstNode.prototype.nodeType = 'Const';
 
-ConstNode.prototype.getType = function ( builder ) {
-
-	return builder.getTypeByFormat( this.type );
-
+ConstNode.prototype.getType = function (builder) {
+  return builder.getTypeByFormat(this.type);
 };
 
-ConstNode.prototype.parse = function ( src, useDefine ) {
+ConstNode.prototype.parse = function (src, useDefine) {
+  this.src = src || '';
 
-	this.src = src || '';
+  var name,
+    type,
+    value = '';
 
-	var name, type, value = '';
+  var match = this.src.match(declarationRegexp);
 
-	var match = this.src.match( declarationRegexp );
+  this.useDefine = useDefine || this.src.charAt(0) === '#';
 
-	this.useDefine = useDefine || this.src.charAt( 0 ) === '#';
+  if (match && match.length > 1) {
+    type = match[1];
+    name = match[2];
+    value = match[3];
+  } else {
+    name = this.src;
+    type = 'f';
+  }
 
-	if ( match && match.length > 1 ) {
-
-		type = match[ 1 ];
-		name = match[ 2 ];
-		value = match[ 3 ];
-
-	} else {
-
-		name = this.src;
-		type = 'f';
-
-	}
-
-	this.name = name;
-	this.type = type;
-	this.value = value;
-
+  this.name = name;
+  this.type = type;
+  this.value = value;
 };
 
-ConstNode.prototype.build = function ( builder, output ) {
+ConstNode.prototype.build = function (builder, output) {
+  if (output === 'source') {
+    if (this.value) {
+      if (this.useDefine) {
+        return '#define ' + this.name + ' ' + this.value;
+      }
 
-	if ( output === 'source' ) {
+      return 'const ' + this.type + ' ' + this.name + ' = ' + this.value + ';';
+    } else if (this.useDefine) {
+      return this.src;
+    }
+  } else {
+    builder.include(this);
 
-		if ( this.value ) {
-
-			if ( this.useDefine ) {
-
-				return '#define ' + this.name + ' ' + this.value;
-
-			}
-
-			return 'const ' + this.type + ' ' + this.name + ' = ' + this.value + ';';
-
-		} else if ( this.useDefine ) {
-
-			return this.src;
-
-		}
-
-	} else {
-
-		builder.include( this );
-
-		return builder.format( this.name, this.getType( builder ), output );
-
-	}
-
+    return builder.format(this.name, this.getType(builder), output);
+  }
 };
 
-ConstNode.prototype.generate = function ( builder, output ) {
-
-	return builder.format( this.name, this.getType( builder ), output );
-
+ConstNode.prototype.generate = function (builder, output) {
+  return builder.format(this.name, this.getType(builder), output);
 };
 
-ConstNode.prototype.copy = function ( source ) {
+ConstNode.prototype.copy = function (source) {
+  TempNode.prototype.copy.call(this, source);
 
-	TempNode.prototype.copy.call( this, source );
+  this.parse(source.src, source.useDefine);
 
-	this.parse( source.src, source.useDefine );
-
-	return this;
-
+  return this;
 };
 
-ConstNode.prototype.toJSON = function ( meta ) {
+ConstNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = this.createJSONNode(meta);
 
-	if ( ! data ) {
+    data.src = this.src;
 
-		data = this.createJSONNode( meta );
+    if (data.useDefine === true) data.useDefine = true;
+  }
 
-		data.src = this.src;
-
-		if ( data.useDefine === true ) data.useDefine = true;
-
-	}
-
-	return data;
-
+  return data;
 };
 
 export { ConstNode };

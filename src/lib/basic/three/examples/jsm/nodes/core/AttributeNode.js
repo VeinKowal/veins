@@ -1,66 +1,54 @@
 import { Node } from './Node.js';
 
-function AttributeNode( name, type ) {
+function AttributeNode(name, type) {
+  Node.call(this, type);
 
-	Node.call( this, type );
-
-	this.name = name;
-
+  this.name = name;
 }
 
-AttributeNode.prototype = Object.create( Node.prototype );
+AttributeNode.prototype = Object.create(Node.prototype);
 AttributeNode.prototype.constructor = AttributeNode;
 AttributeNode.prototype.nodeType = 'Attribute';
 
-AttributeNode.prototype.getAttributeType = function ( builder ) {
-
-	return typeof this.type === 'number' ? builder.getConstructorFromLength( this.type ) : this.type;
-
+AttributeNode.prototype.getAttributeType = function (builder) {
+  return typeof this.type === 'number'
+    ? builder.getConstructorFromLength(this.type)
+    : this.type;
 };
 
-AttributeNode.prototype.getType = function ( builder ) {
+AttributeNode.prototype.getType = function (builder) {
+  var type = this.getAttributeType(builder);
 
-	var type = this.getAttributeType( builder );
-
-	return builder.getTypeByFormat( type );
-
+  return builder.getTypeByFormat(type);
 };
 
-AttributeNode.prototype.generate = function ( builder, output ) {
+AttributeNode.prototype.generate = function (builder, output) {
+  var type = this.getAttributeType(builder);
 
-	var type = this.getAttributeType( builder );
+  var attribute = builder.getAttribute(this.name, type),
+    name = builder.isShader('vertex') ? this.name : attribute.varying.name;
 
-	var attribute = builder.getAttribute( this.name, type ),
-		name = builder.isShader( 'vertex' ) ? this.name : attribute.varying.name;
-
-	return builder.format( name, this.getType( builder ), output );
-
+  return builder.format(name, this.getType(builder), output);
 };
 
-AttributeNode.prototype.copy = function ( source ) {
+AttributeNode.prototype.copy = function (source) {
+  Node.prototype.copy.call(this, source);
 
-	Node.prototype.copy.call( this, source );
+  this.type = source.type;
 
-	this.type = source.type;
-
-	return this;
-
+  return this;
 };
 
-AttributeNode.prototype.toJSON = function ( meta ) {
+AttributeNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = this.createJSONNode(meta);
 
-	if ( ! data ) {
+    data.type = this.type;
+  }
 
-		data = this.createJSONNode( meta );
-
-		data.type = this.type;
-
-	}
-
-	return data;
-
+  return data;
 };
 
 export { AttributeNode };

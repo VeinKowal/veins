@@ -2,70 +2,55 @@ import WebGPUNodeBuilder from './WebGPUNodeBuilder.js';
 import NodeFrame from '../../nodes/core/NodeFrame.js';
 
 class WebGPUNodes {
+  constructor(renderer) {
+    this.renderer = renderer;
 
-	constructor( renderer ) {
+    this.nodeFrame = new NodeFrame();
 
-		this.renderer = renderer;
+    this.builders = new WeakMap();
+  }
 
-		this.nodeFrame = new NodeFrame();
+  get(object) {
+    let nodeBuilder = this.builders.get(object);
 
-		this.builders = new WeakMap();
+    if (nodeBuilder === undefined) {
+      nodeBuilder = new WebGPUNodeBuilder(
+        object.material,
+        this.renderer,
+      ).build();
 
-	}
+      this.builders.set(object, nodeBuilder);
+    }
 
-	get( object ) {
+    return nodeBuilder;
+  }
 
-		let nodeBuilder = this.builders.get( object );
+  remove(object) {
+    this.builders.delete(object);
+  }
 
-		if ( nodeBuilder === undefined ) {
+  updateFrame() {
+    this.nodeFrame.update();
+  }
 
-			nodeBuilder = new WebGPUNodeBuilder( object.material, this.renderer ).build();
+  update(object, camera) {
+    const material = object.material;
 
-			this.builders.set( object, nodeBuilder );
+    const nodeBuilder = this.get(object);
+    const nodeFrame = this.nodeFrame;
 
-		}
+    nodeFrame.material = material;
+    nodeFrame.camera = camera;
+    nodeFrame.object = object;
 
-		return nodeBuilder;
+    for (const node of nodeBuilder.updateNodes) {
+      nodeFrame.updateNode(node);
+    }
+  }
 
-	}
-
-	remove( object ) {
-
-		this.builders.delete( object );
-
-	}
-
-	updateFrame() {
-
-		this.nodeFrame.update();
-
-	}
-
-	update( object, camera ) {
-
-		const material = object.material;
-
-		const nodeBuilder = this.get( object );
-		const nodeFrame = this.nodeFrame;
-
-		nodeFrame.material = material;
-		nodeFrame.camera = camera;
-		nodeFrame.object = object;
-
-		for ( const node of nodeBuilder.updateNodes ) {
-
-			nodeFrame.updateNode( node );
-
-		}
-
-	}
-
-	dispose() {
-
-		this.builders = new WeakMap();
-
-	}
-
+  dispose() {
+    this.builders = new WeakMap();
+  }
 }
 
 export default WebGPUNodes;

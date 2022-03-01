@@ -1,315 +1,314 @@
-THREE.Refractor = function ( geometry, options ) {
+THREE.Refractor = function (geometry, options) {
+  THREE.Mesh.call(this, geometry);
 
-	THREE.Mesh.call( this, geometry );
+  this.type = 'Refractor';
 
-	this.type = 'Refractor';
+  var scope = this;
 
-	var scope = this;
+  options = options || {};
 
-	options = options || {};
+  var color =
+    options.color !== undefined
+      ? new THREE.Color(options.color)
+      : new THREE.Color(0x7f7f7f);
+  var textureWidth = options.textureWidth || 512;
+  var textureHeight = options.textureHeight || 512;
+  var clipBias = options.clipBias || 0;
+  var shader = options.shader || THREE.Refractor.RefractorShader;
 
-	var color = ( options.color !== undefined ) ? new THREE.Color( options.color ) : new THREE.Color( 0x7F7F7F );
-	var textureWidth = options.textureWidth || 512;
-	var textureHeight = options.textureHeight || 512;
-	var clipBias = options.clipBias || 0;
-	var shader = options.shader || THREE.Refractor.RefractorShader;
+  //
 
-	//
+  var virtualCamera = new THREE.PerspectiveCamera();
+  virtualCamera.matrixAutoUpdate = false;
+  virtualCamera.userData.refractor = true;
 
-	var virtualCamera = new THREE.PerspectiveCamera();
-	virtualCamera.matrixAutoUpdate = false;
-	virtualCamera.userData.refractor = true;
+  //
 
-	//
+  var refractorPlane = new THREE.Plane();
+  var textureMatrix = new THREE.Matrix4();
 
-	var refractorPlane = new THREE.Plane();
-	var textureMatrix = new THREE.Matrix4();
+  // render target
 
-	// render target
+  var parameters = {
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
+    format: THREE.RGBFormat,
+  };
 
-	var parameters = {
-		minFilter: THREE.LinearFilter,
-		magFilter: THREE.LinearFilter,
-		format: THREE.RGBFormat
-	};
+  var renderTarget = new THREE.WebGLRenderTarget(
+    textureWidth,
+    textureHeight,
+    parameters,
+  );
 
-	var renderTarget = new THREE.WebGLRenderTarget( textureWidth, textureHeight, parameters );
+  if (
+    !THREE.MathUtils.isPowerOfTwo(textureWidth) ||
+    !THREE.MathUtils.isPowerOfTwo(textureHeight)
+  ) {
+    renderTarget.texture.generateMipmaps = false;
+  }
 
-	if ( ! THREE.MathUtils.isPowerOfTwo( textureWidth ) || ! THREE.MathUtils.isPowerOfTwo( textureHeight ) ) {
+  // material
 
-		renderTarget.texture.generateMipmaps = false;
+  this.material = new THREE.ShaderMaterial({
+    uniforms: THREE.UniformsUtils.clone(shader.uniforms),
+    vertexShader: shader.vertexShader,
+    fragmentShader: shader.fragmentShader,
+    transparent: true, // ensures, refractors are drawn from farthest to closest
+  });
 
-	}
+  this.material.uniforms['color'].value = color;
+  this.material.uniforms['tDiffuse'].value = renderTarget.texture;
+  this.material.uniforms['textureMatrix'].value = textureMatrix;
 
-	// material
+  // functions
 
-	this.material = new THREE.ShaderMaterial( {
-		uniforms: THREE.UniformsUtils.clone( shader.uniforms ),
-		vertexShader: shader.vertexShader,
-		fragmentShader: shader.fragmentShader,
-		transparent: true // ensures, refractors are drawn from farthest to closest
-	} );
+  var visible = (function () {
+    var refractorWorldPosition = new THREE.Vector3();
+    var cameraWorldPosition = new THREE.Vector3();
+    var rotationMatrix = new THREE.Matrix4();
 
-	this.material.uniforms[ 'color' ].value = color;
-	this.material.uniforms[ 'tDiffuse' ].value = renderTarget.texture;
-	this.material.uniforms[ 'textureMatrix' ].value = textureMatrix;
+    var view = new THREE.Vector3();
+    var normal = new THREE.Vector3();
 
-	// functions
+    return function visible(camera) {
+      refractorWorldPosition.setFromMatrixPosition(scope.matrixWorld);
+      cameraWorldPosition.setFromMatrixPosition(camera.matrixWorld);
+
+      view.subVectors(refractorWorldPosition, cameraWorldPosition);
+
+      rotationMatrix.extractRotation(scope.matrixWorld);
+
+      normal.set(0, 0, 1);
+      normal.applyMatrix4(rotationMatrix);
+
+      return view.dot(normal) < 0;
+    };
+  })();
+
+  var updateRefractorPlane = (function () {
+    var normal = new THREE.Vector3();
+    var position = new THREE.Vector3();
+    var quaternion = new THREE.Quaternion();
+    var scale = new THREE.Vector3();
+
+    return function updateRefractorPlane() {
+      scope.matrixWorld.decompose(position, quaternion, scale);
+      normal.set(0, 0, 1).applyQuaternion(quaternion).normalize();
+
+      // flip the normal because we want to cull everything above the plane
+
+      normal.negate();
+
+      refractorPlane.setFromNormalAndCoplanarPoint(normal, position);
+    };
+  })();
+
+  var updateVirtualCamera = (function () {
+    var clipPlane = new THREE.Plane();
+    var clipVector = new THREE.Vector4();
+    var q = new THREE.Vector4();
+
+    return function updateVirtualCamera(camera) {
+      virtualCamera.matrixWorld.copy(camera.matrixWorld);
+      virtualCamera.matrixWorldInverse.copy(virtualCamera.matrixWorld).invert();
+      virtualCamera.projectionMatrix.copy(camera.projectionMatrix);
+      virtualCamera.far = camera.far; // used in WebGLBackground
+
+      // The following code creates an oblique view frustum for clipping.
+      // see: Lengyel, Eric. “Oblique View Frustum Depth Projection and Clipping”.
+      // Journal of Game Development, Vol. 1, No. 2 (2005), Charles River Media, pp. 5–16
+
+      clipPlane.copy(refractorPlane);
+      clipPlane.applyMatrix4(virtualCamera.matrixWorldInverse);
+
+      clipVector.set(
+        clipPlane.normal.x,
+        clipPlane.normal.y,
+        clipPlane.normal.z,
+        clipPlane.constant,
+      );
+
+      // calculate the clip-space corner point opposite the clipping plane and
+      // transform it into camera space by multiplying it by the inverse of the projection matrix
+
+      var projectionMatrix = virtualCamera.projectionMatrix;
 
-	var visible = ( function () {
+      q.x =
+        (Math.sign(clipVector.x) + projectionMatrix.elements[8]) /
+        projectionMatrix.elements[0];
+      q.y =
+        (Math.sign(clipVector.y) + projectionMatrix.elements[9]) /
+        projectionMatrix.elements[5];
+      q.z = -1.0;
+      q.w =
+        (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
 
-		var refractorWorldPosition = new THREE.Vector3();
-		var cameraWorldPosition = new THREE.Vector3();
-		var rotationMatrix = new THREE.Matrix4();
+      // calculate the scaled plane vector
 
-		var view = new THREE.Vector3();
-		var normal = new THREE.Vector3();
+      clipVector.multiplyScalar(2.0 / clipVector.dot(q));
 
-		return function visible( camera ) {
+      // replacing the third row of the projection matrix
 
-			refractorWorldPosition.setFromMatrixPosition( scope.matrixWorld );
-			cameraWorldPosition.setFromMatrixPosition( camera.matrixWorld );
+      projectionMatrix.elements[2] = clipVector.x;
+      projectionMatrix.elements[6] = clipVector.y;
+      projectionMatrix.elements[10] = clipVector.z + 1.0 - clipBias;
+      projectionMatrix.elements[14] = clipVector.w;
+    };
+  })();
 
-			view.subVectors( refractorWorldPosition, cameraWorldPosition );
+  // This will update the texture matrix that is used for projective texture mapping in the shader.
+  // see: http://developer.download.nvidia.com/assets/gamedev/docs/projective_texture_mapping.pdf
 
-			rotationMatrix.extractRotation( scope.matrixWorld );
+  function updateTextureMatrix(camera) {
+    // this matrix does range mapping to [ 0, 1 ]
 
-			normal.set( 0, 0, 1 );
-			normal.applyMatrix4( rotationMatrix );
+    textureMatrix.set(
+      0.5,
+      0.0,
+      0.0,
+      0.5,
+      0.0,
+      0.5,
+      0.0,
+      0.5,
+      0.0,
+      0.0,
+      0.5,
+      0.5,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+    );
 
-			return view.dot( normal ) < 0;
+    // we use "Object Linear Texgen", so we need to multiply the texture matrix T
+    // (matrix above) with the projection and view matrix of the virtual camera
+    // and the model matrix of the refractor
 
-		};
+    textureMatrix.multiply(camera.projectionMatrix);
+    textureMatrix.multiply(camera.matrixWorldInverse);
+    textureMatrix.multiply(scope.matrixWorld);
+  }
 
-	} )();
+  //
 
-	var updateRefractorPlane = ( function () {
+  function render(renderer, scene, camera) {
+    scope.visible = false;
 
-		var normal = new THREE.Vector3();
-		var position = new THREE.Vector3();
-		var quaternion = new THREE.Quaternion();
-		var scale = new THREE.Vector3();
+    var currentRenderTarget = renderer.getRenderTarget();
+    var currentXrEnabled = renderer.xr.enabled;
+    var currentShadowAutoUpdate = renderer.shadowMap.autoUpdate;
 
-		return function updateRefractorPlane() {
+    renderer.xr.enabled = false; // avoid camera modification
+    renderer.shadowMap.autoUpdate = false; // avoid re-computing shadows
 
-			scope.matrixWorld.decompose( position, quaternion, scale );
-			normal.set( 0, 0, 1 ).applyQuaternion( quaternion ).normalize();
+    renderer.setRenderTarget(renderTarget);
+    if (renderer.autoClear === false) renderer.clear();
+    renderer.render(scene, virtualCamera);
 
-			// flip the normal because we want to cull everything above the plane
+    renderer.xr.enabled = currentXrEnabled;
+    renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
+    renderer.setRenderTarget(currentRenderTarget);
 
-			normal.negate();
+    // restore viewport
 
-			refractorPlane.setFromNormalAndCoplanarPoint( normal, position );
+    var viewport = camera.viewport;
 
-		};
+    if (viewport !== undefined) {
+      renderer.state.viewport(viewport);
+    }
 
-	} )();
+    scope.visible = true;
+  }
 
-	var updateVirtualCamera = ( function () {
+  //
 
-		var clipPlane = new THREE.Plane();
-		var clipVector = new THREE.Vector4();
-		var q = new THREE.Vector4();
+  this.onBeforeRender = function (renderer, scene, camera) {
+    // Render
 
-		return function updateVirtualCamera( camera ) {
+    renderTarget.texture.encoding = renderer.outputEncoding;
 
-			virtualCamera.matrixWorld.copy( camera.matrixWorld );
-			virtualCamera.matrixWorldInverse.copy( virtualCamera.matrixWorld ).invert();
-			virtualCamera.projectionMatrix.copy( camera.projectionMatrix );
-			virtualCamera.far = camera.far; // used in WebGLBackground
+    // ensure refractors are rendered only once per frame
 
-			// The following code creates an oblique view frustum for clipping.
-			// see: Lengyel, Eric. “Oblique View Frustum Depth Projection and Clipping”.
-			// Journal of Game Development, Vol. 1, No. 2 (2005), Charles River Media, pp. 5–16
+    if (camera.userData.refractor === true) return;
 
-			clipPlane.copy( refractorPlane );
-			clipPlane.applyMatrix4( virtualCamera.matrixWorldInverse );
+    // avoid rendering when the refractor is viewed from behind
 
-			clipVector.set( clipPlane.normal.x, clipPlane.normal.y, clipPlane.normal.z, clipPlane.constant );
+    if (!visible(camera) === true) return;
 
-			// calculate the clip-space corner point opposite the clipping plane and
-			// transform it into camera space by multiplying it by the inverse of the projection matrix
+    // update
 
-			var projectionMatrix = virtualCamera.projectionMatrix;
+    updateRefractorPlane();
 
-			q.x = ( Math.sign( clipVector.x ) + projectionMatrix.elements[ 8 ] ) / projectionMatrix.elements[ 0 ];
-			q.y = ( Math.sign( clipVector.y ) + projectionMatrix.elements[ 9 ] ) / projectionMatrix.elements[ 5 ];
-			q.z = - 1.0;
-			q.w = ( 1.0 + projectionMatrix.elements[ 10 ] ) / projectionMatrix.elements[ 14 ];
+    updateTextureMatrix(camera);
 
-			// calculate the scaled plane vector
+    updateVirtualCamera(camera);
 
-			clipVector.multiplyScalar( 2.0 / clipVector.dot( q ) );
+    render(renderer, scene, camera);
+  };
 
-			// replacing the third row of the projection matrix
-
-			projectionMatrix.elements[ 2 ] = clipVector.x;
-			projectionMatrix.elements[ 6 ] = clipVector.y;
-			projectionMatrix.elements[ 10 ] = clipVector.z + 1.0 - clipBias;
-			projectionMatrix.elements[ 14 ] = clipVector.w;
-
-		};
-
-	} )();
-
-	// This will update the texture matrix that is used for projective texture mapping in the shader.
-	// see: http://developer.download.nvidia.com/assets/gamedev/docs/projective_texture_mapping.pdf
-
-	function updateTextureMatrix( camera ) {
-
-		// this matrix does range mapping to [ 0, 1 ]
-
-		textureMatrix.set(
-			0.5, 0.0, 0.0, 0.5,
-			0.0, 0.5, 0.0, 0.5,
-			0.0, 0.0, 0.5, 0.5,
-			0.0, 0.0, 0.0, 1.0
-		);
-
-		// we use "Object Linear Texgen", so we need to multiply the texture matrix T
-		// (matrix above) with the projection and view matrix of the virtual camera
-		// and the model matrix of the refractor
-
-		textureMatrix.multiply( camera.projectionMatrix );
-		textureMatrix.multiply( camera.matrixWorldInverse );
-		textureMatrix.multiply( scope.matrixWorld );
-
-	}
-
-	//
-
-	function render( renderer, scene, camera ) {
-
-		scope.visible = false;
-
-		var currentRenderTarget = renderer.getRenderTarget();
-		var currentXrEnabled = renderer.xr.enabled;
-		var currentShadowAutoUpdate = renderer.shadowMap.autoUpdate;
-
-		renderer.xr.enabled = false; // avoid camera modification
-		renderer.shadowMap.autoUpdate = false; // avoid re-computing shadows
-
-		renderer.setRenderTarget( renderTarget );
-		if ( renderer.autoClear === false ) renderer.clear();
-		renderer.render( scene, virtualCamera );
-
-		renderer.xr.enabled = currentXrEnabled;
-		renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
-		renderer.setRenderTarget( currentRenderTarget );
-
-		// restore viewport
-
-		var viewport = camera.viewport;
-
-		if ( viewport !== undefined ) {
-
-			renderer.state.viewport( viewport );
-
-		}
-
-		scope.visible = true;
-
-	}
-
-	//
-
-	this.onBeforeRender = function ( renderer, scene, camera ) {
-
-		// Render
-
-		renderTarget.texture.encoding = renderer.outputEncoding;
-
-		// ensure refractors are rendered only once per frame
-
-		if ( camera.userData.refractor === true ) return;
-
-		// avoid rendering when the refractor is viewed from behind
-
-		if ( ! visible( camera ) === true ) return;
-
-		// update
-
-		updateRefractorPlane();
-
-		updateTextureMatrix( camera );
-
-		updateVirtualCamera( camera );
-
-		render( renderer, scene, camera );
-
-	};
-
-	this.getRenderTarget = function () {
-
-		return renderTarget;
-
-	};
-
+  this.getRenderTarget = function () {
+    return renderTarget;
+  };
 };
 
-THREE.Refractor.prototype = Object.create( THREE.Mesh.prototype );
+THREE.Refractor.prototype = Object.create(THREE.Mesh.prototype);
 THREE.Refractor.prototype.constructor = THREE.Refractor;
 
 THREE.Refractor.RefractorShader = {
+  uniforms: {
+    color: {
+      value: null,
+    },
 
-	uniforms: {
+    tDiffuse: {
+      value: null,
+    },
 
-		'color': {
-			value: null
-		},
+    textureMatrix: {
+      value: null,
+    },
+  },
 
-		'tDiffuse': {
-			value: null
-		},
+  vertexShader: [
+    'uniform mat4 textureMatrix;',
 
-		'textureMatrix': {
-			value: null
-		}
+    'varying vec4 vUv;',
 
-	},
+    'void main() {',
 
-	vertexShader: [
+    '	vUv = textureMatrix * vec4( position, 1.0 );',
 
-		'uniform mat4 textureMatrix;',
+    '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
 
-		'varying vec4 vUv;',
+    '}',
+  ].join('\n'),
 
-		'void main() {',
+  fragmentShader: [
+    'uniform vec3 color;',
+    'uniform sampler2D tDiffuse;',
 
-		'	vUv = textureMatrix * vec4( position, 1.0 );',
+    'varying vec4 vUv;',
 
-		'	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+    'float blendOverlay( float base, float blend ) {',
 
-		'}'
+    '	return( base < 0.5 ? ( 2.0 * base * blend ) : ( 1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );',
 
-	].join( '\n' ),
+    '}',
 
-	fragmentShader: [
+    'vec3 blendOverlay( vec3 base, vec3 blend ) {',
 
-		'uniform vec3 color;',
-		'uniform sampler2D tDiffuse;',
+    '	return vec3( blendOverlay( base.r, blend.r ), blendOverlay( base.g, blend.g ), blendOverlay( base.b, blend.b ) );',
 
-		'varying vec4 vUv;',
+    '}',
 
-		'float blendOverlay( float base, float blend ) {',
+    'void main() {',
 
-		'	return( base < 0.5 ? ( 2.0 * base * blend ) : ( 1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );',
+    '	vec4 base = texture2DProj( tDiffuse, vUv );',
 
-		'}',
+    '	gl_FragColor = vec4( blendOverlay( base.rgb, color ), 1.0 );',
 
-		'vec3 blendOverlay( vec3 base, vec3 blend ) {',
-
-		'	return vec3( blendOverlay( base.r, blend.r ), blendOverlay( base.g, blend.g ), blendOverlay( base.b, blend.b ) );',
-
-		'}',
-
-		'void main() {',
-
-		'	vec4 base = texture2DProj( tDiffuse, vUv );',
-
-		'	gl_FragColor = vec4( blendOverlay( base.rgb, color ), 1.0 );',
-
-		'}'
-
-	].join( '\n' )
+    '}',
+  ].join('\n'),
 };

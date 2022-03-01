@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.$3dTilesCulling = $3dTilesCulling;
 exports.pre3dTilesUpdate = pre3dTilesUpdate;
@@ -14,21 +14,95 @@ exports.init3dTilesLayer = init3dTilesLayer;
 exports.process3dTilesNode = process3dTilesNode;
 exports.$3dTilesSubdivisionControl = $3dTilesSubdivisionControl;
 
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+var _toConsumableArray2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/toConsumableArray'),
+);
 
-var _typeof2 = _interopRequireDefault(require("@babel/runtime/helpers/typeof"));
+var _typeof2 = _interopRequireDefault(require('@babel/runtime/helpers/typeof'));
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _Extent = _interopRequireDefault(require("../Core/Geographic/Extent"));
+var _Extent = _interopRequireDefault(require('../Core/Geographic/Extent'));
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it;
+  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
+    if (
+      Array.isArray(o) ||
+      (it = _unsupportedIterableToArray(o)) ||
+      (allowArrayLike && o && typeof o.length === 'number')
+    ) {
+      if (it) o = it;
+      var i = 0;
+      var F = function F() {};
+      return {
+        s: F,
+        n: function n() {
+          if (i >= o.length) return { done: true };
+          return { done: false, value: o[i++] };
+        },
+        e: function e(_e) {
+          throw _e;
+        },
+        f: F,
+      };
+    }
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
+    );
+  }
+  var normalCompletion = true,
+    didErr = false,
+    err;
+  return {
+    s: function s() {
+      it = o[Symbol.iterator]();
+    },
+    n: function n() {
+      var step = it.next();
+      normalCompletion = step.done;
+      return step;
+    },
+    e: function e(_e2) {
+      didErr = true;
+      err = _e2;
+    },
+    f: function f() {
+      try {
+        if (!normalCompletion && it['return'] != null) it['return']();
+      } finally {
+        if (didErr) throw err;
+      }
+    },
+  };
+}
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === 'Object' && o.constructor) n = o.constructor.name;
+  if (n === 'Map' || n === 'Set') return Array.from(o);
+  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray(o, minLen);
+}
 
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
 
-function requestNewTile(view, scheduler, geometryLayer, metadata, parent, redraw) {
+function requestNewTile(
+  view,
+  scheduler,
+  geometryLayer,
+  metadata,
+  parent,
+  redraw,
+) {
   var command = {
     /* mandatory */
     view: view,
@@ -38,7 +112,7 @@ function requestNewTile(view, scheduler, geometryLayer, metadata, parent, redraw
 
     /* specific params */
     metadata: metadata,
-    redraw: redraw
+    redraw: redraw,
   };
   return scheduler.execute(command);
 }
@@ -66,19 +140,21 @@ var tmpSphere = new THREE.Sphere();
 
 function boundingVolumeToExtent(crs, volume, transform) {
   if (volume.region) {
-    var box = tmpBox3.copy(volume.region.box3D).applyMatrix4(volume.region.matrixWorld);
-    return _Extent["default"].fromBox3(crs, box);
+    var box = tmpBox3
+      .copy(volume.region.box3D)
+      .applyMatrix4(volume.region.matrixWorld);
+    return _Extent['default'].fromBox3(crs, box);
   } else if (volume.box) {
     var _box = tmpBox3.copy(volume.box).applyMatrix4(transform);
 
-    return _Extent["default"].fromBox3(crs, _box);
+    return _Extent['default'].fromBox3(crs, _box);
   } else {
     var sphere = tmpSphere.copy(volume.sphere).applyMatrix4(transform);
-    return new _Extent["default"](crs, {
+    return new _Extent['default'](crs, {
       west: sphere.center.x - sphere.radius,
       east: sphere.center.x + sphere.radius,
       south: sphere.center.y - sphere.radius,
-      north: sphere.center.y + sphere.radius
+      north: sphere.center.y + sphere.radius,
     });
   }
 }
@@ -86,8 +162,10 @@ function boundingVolumeToExtent(crs, volume, transform) {
 var tmpMatrix = new THREE.Matrix4();
 
 function _subdivideNodeAdditive(context, layer, node, cullingTest) {
-  var _iterator = _createForOfIteratorHelper(layer.tileset.tiles[node.tileId].children),
-      _step;
+  var _iterator = _createForOfIteratorHelper(
+      layer.tileset.tiles[node.tileId].children,
+    ),
+    _step;
 
   try {
     var _loop = function () {
@@ -95,27 +173,42 @@ function _subdivideNodeAdditive(context, layer, node, cullingTest) {
 
       // child being downloaded => skip
       if (child.promise || child.loaded) {
-        return "continue";
+        return 'continue';
       } // 'child' is only metadata (it's *not* a THREE.Object3D). 'cullingTest' needs
       // a matrixWorld, so we compute it: it's node's matrixWorld x child's transform
-
 
       var overrideMatrixWorld = node.matrixWorld;
 
       if (child.transform) {
-        overrideMatrixWorld = tmpMatrix.multiplyMatrices(node.matrixWorld, child.transform);
+        overrideMatrixWorld = tmpMatrix.multiplyMatrices(
+          node.matrixWorld,
+          child.transform,
+        );
       }
 
-      var isVisible = cullingTest ? !cullingTest(layer, context.camera, child, overrideMatrixWorld) : true; // child is not visible => skip
+      var isVisible = cullingTest
+        ? !cullingTest(layer, context.camera, child, overrideMatrixWorld)
+        : true; // child is not visible => skip
 
       if (!isVisible) {
-        return "continue";
+        return 'continue';
       }
 
-      child.promise = requestNewTile(context.view, context.scheduler, layer, child, node, true).then(function (tile) {
+      child.promise = requestNewTile(
+        context.view,
+        context.scheduler,
+        layer,
+        child,
+        node,
+        true,
+      ).then(function (tile) {
         node.add(tile);
         tile.updateMatrixWorld();
-        var extent = boundingVolumeToExtent(layer.extent.crs, tile.boundingVolume, tile.matrixWorld);
+        var extent = boundingVolumeToExtent(
+          layer.extent.crs,
+          tile.boundingVolume,
+          tile.matrixWorld,
+        );
         tile.traverse(function (obj) {
           obj.extent = extent;
         });
@@ -126,10 +219,10 @@ function _subdivideNodeAdditive(context, layer, node, cullingTest) {
       });
     };
 
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+    for (_iterator.s(); !(_step = _iterator.n()).done; ) {
       var _ret = _loop();
 
-      if (_ret === "continue") continue;
+      if (_ret === 'continue') continue;
     }
   } catch (err) {
     _iterator.e(err);
@@ -140,12 +233,12 @@ function _subdivideNodeAdditive(context, layer, node, cullingTest) {
 
 function _subdivideNodeSubstractive(context, layer, node) {
   if (!node.pendingSubdivision && getChildTiles(node).length == 0) {
-    var _ret2 = function () {
+    var _ret2 = (function () {
       var childrenTiles = layer.tileset.tiles[node.tileId].children;
 
       if (childrenTiles === undefined || childrenTiles.length === 0) {
         return {
-          v: void 0
+          v: void 0,
         };
       }
 
@@ -153,18 +246,27 @@ function _subdivideNodeSubstractive(context, layer, node) {
       var promises = [];
 
       var _loop2 = function (i) {
-        promises.push(requestNewTile(context.view, context.scheduler, layer, childrenTiles[i], node, false).then(function (tile) {
-          childrenTiles[i].loaded = true;
-          node.add(tile);
-          tile.updateMatrixWorld();
+        promises.push(
+          requestNewTile(
+            context.view,
+            context.scheduler,
+            layer,
+            childrenTiles[i],
+            node,
+            false,
+          ).then(function (tile) {
+            childrenTiles[i].loaded = true;
+            node.add(tile);
+            tile.updateMatrixWorld();
 
-          if (node.additiveRefinement) {
-            context.view.notifyChange(node);
-          }
+            if (node.additiveRefinement) {
+              context.view.notifyChange(node);
+            }
 
-          layer.tileset.tiles[tile.tileId].loaded = true;
-          layer.onTileContentLoaded(tile);
-        }));
+            layer.tileset.tiles[tile.tileId].loaded = true;
+            layer.onTileContentLoaded(tile);
+          }),
+        );
       };
 
       for (var i = 0; i < childrenTiles.length; i++) {
@@ -175,21 +277,26 @@ function _subdivideNodeSubstractive(context, layer, node) {
         node.pendingSubdivision = false;
         context.view.notifyChange(node);
       });
-    }();
+    })();
 
-    if ((0, _typeof2["default"])(_ret2) === "object") return _ret2.v;
+    if ((0, _typeof2['default'])(_ret2) === 'object') return _ret2.v;
   }
 }
 
 function $3dTilesCulling(layer, camera, node, tileMatrixWorld) {
   // For viewer Request Volume
   // https://github.com/AnalyticalGraphicsInc/3d-tiles-samples/tree/master/tilesets/TilesetWithRequestVolume
-  if (node.viewerRequestVolume && node.viewerRequestVolume.viewerRequestVolumeCulling(camera, tileMatrixWorld)) {
+  if (
+    node.viewerRequestVolume &&
+    node.viewerRequestVolume.viewerRequestVolumeCulling(camera, tileMatrixWorld)
+  ) {
     return true;
   } // For bounding volume
 
-
-  if (node.boundingVolume && node.boundingVolume.boundingVolumeCulling(camera, tileMatrixWorld)) {
+  if (
+    node.boundingVolume &&
+    node.boundingVolume.boundingVolumeCulling(camera, tileMatrixWorld)
+  ) {
     return true;
   }
 
@@ -201,9 +308,9 @@ function $3dTilesCulling(layer, camera, node, tileMatrixWorld) {
 //   - doesn't have 'content' -> it's a raw Object3D object,
 //     and must be cleaned with _cleanupObject3D()
 
-
 function cleanup3dTileset(layer, n) {
-  var depth = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var depth =
+    arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
   // If this layer is not using additive refinement, we can only
   // clean a tile if all its neighbours are cleaned as well because
   // a tile can only be in 2 states:
@@ -231,31 +338,29 @@ function cleanup3dTileset(layer, n) {
 
     delete n.content;
     layer.tileset.tiles[n.tileId].loaded = false;
-    n.remove.apply(n, (0, _toConsumableArray2["default"])(n.children)); // and finally remove from parent
+    n.remove.apply(n, (0, _toConsumableArray2['default'])(n.children)); // and finally remove from parent
 
     if (depth == 0 && n.parent) {
       n.parent.remove(n);
     }
   } else {
     var tiles = getChildTiles(n);
-    n.remove.apply(n, (0, _toConsumableArray2["default"])(tiles));
+    n.remove.apply(n, (0, _toConsumableArray2['default'])(tiles));
   }
 } // This function is used to cleanup a Object3D hierarchy.
 // (no 3dtiles spectific code here because this is managed by cleanup3dTileset)
 
-
 function _cleanupObject3D(n) {
   // all children of 'n' are raw Object3D
   var _iterator2 = _createForOfIteratorHelper(n.children),
-      _step2;
+    _step2;
 
   try {
-    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
       var child = _step2.value;
 
       _cleanupObject3D(child);
     } // free resources
-
   } catch (err) {
     _iterator2.e(err);
   } finally {
@@ -267,10 +372,10 @@ function _cleanupObject3D(n) {
     // THREE.Material objects
     if (Array.isArray(n.material)) {
       var _iterator3 = _createForOfIteratorHelper(n.material),
-          _step3;
+        _step3;
 
       try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
           var material = _step3.value;
           material.dispose();
         }
@@ -288,9 +393,8 @@ function _cleanupObject3D(n) {
     n.geometry.dispose();
   }
 
-  n.remove.apply(n, (0, _toConsumableArray2["default"])(n.children));
+  n.remove.apply(n, (0, _toConsumableArray2['default'])(n.children));
 } // this is a layer
-
 
 function pre3dTilesUpdate() {
   if (!this.visible) {
@@ -299,10 +403,12 @@ function pre3dTilesUpdate() {
   // Since we simply push in this array, the first item is always
   // the oldest one.
 
-
   var now = Date.now();
 
-  if (this._cleanableTiles.length && now - this._cleanableTiles[0].cleanableSince > this.cleanupDelay) {
+  if (
+    this._cleanableTiles.length &&
+    now - this._cleanableTiles[0].cleanableSince > this.cleanupDelay
+  ) {
     // Make sure we don't clean root tile
     this.root.cleanableSince = undefined;
     var i = 0;
@@ -317,7 +423,6 @@ function pre3dTilesUpdate() {
         break;
       }
     } // remove deleted elements from _cleanableTiles
-
 
     this._cleanableTiles.splice(0, i);
   }
@@ -345,7 +450,10 @@ function computeNodeSSE(camera, node) {
     boundingVolumeSphere.copy(node.boundingVolume.sphere);
     boundingVolumeSphere.applyMatrix4(node.matrixWorld); // TODO: see https://github.com/iTowns/itowns/issues/800
 
-    node.distance = Math.max(0.0, boundingVolumeSphere.distanceToPoint(camera.camera3D.position));
+    node.distance = Math.max(
+      0.0,
+      boundingVolumeSphere.distanceToPoint(camera.camera3D.position),
+    );
   } else {
     return Infinity;
   }
@@ -359,14 +467,20 @@ function computeNodeSSE(camera, node) {
 }
 
 function init3dTilesLayer(view, scheduler, layer, rootTile) {
-  return requestNewTile(view, scheduler, layer, rootTile, undefined, true).then(function (tile) {
-    layer.object3d.add(tile);
-    tile.updateMatrixWorld();
-    layer.tileset.tiles[tile.tileId].loaded = true;
-    layer.root = tile;
-    layer.extent = boundingVolumeToExtent(layer.crs || view.referenceCrs, tile.boundingVolume, tile.matrixWorld);
-    layer.onTileContentLoaded(tile);
-  });
+  return requestNewTile(view, scheduler, layer, rootTile, undefined, true).then(
+    function (tile) {
+      layer.object3d.add(tile);
+      tile.updateMatrixWorld();
+      layer.tileset.tiles[tile.tileId].loaded = true;
+      layer.root = tile;
+      layer.extent = boundingVolumeToExtent(
+        layer.crs || view.referenceCrs,
+        tile.boundingVolume,
+        tile.matrixWorld,
+      );
+      layer.onTileContentLoaded(tile);
+    },
+  );
 }
 
 function setDisplayed(node, display) {
@@ -387,8 +501,14 @@ function markForDeletion(layer, elt) {
 }
 
 function process3dTilesNode() {
-  var cullingTest = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : $3dTilesCulling;
-  var subdivisionTest = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : $3dTilesSubdivisionControl;
+  var cullingTest =
+    arguments.length > 0 && arguments[0] !== undefined
+      ? arguments[0]
+      : $3dTilesCulling;
+  var subdivisionTest =
+    arguments.length > 1 && arguments[1] !== undefined
+      ? arguments[1]
+      : $3dTilesSubdivisionControl;
   return function (context, layer, node) {
     // early exit if parent's subdivision is in progress
     if (node.parent.pendingSubdivision && !node.parent.additiveRefinement) {
@@ -396,8 +516,9 @@ function process3dTilesNode() {
       return undefined;
     } // do proper culling
 
-
-    var isVisible = cullingTest ? !cullingTest(layer, context.camera, node, node.matrixWorld) : true;
+    var isVisible = cullingTest
+      ? !cullingTest(layer, context.camera, node, node.matrixWorld)
+      : true;
     node.visible = isVisible;
 
     if (isVisible) {
@@ -418,10 +539,10 @@ function process3dTilesNode() {
         setDisplayed(node, true);
 
         var _iterator4 = _createForOfIteratorHelper(getChildTiles(node)),
-            _step4;
+          _step4;
 
         try {
-          for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          for (_iterator4.s(); !(_step4 = _iterator4.n()).done; ) {
             var n = _step4.value;
             n.visible = false;
             markForDeletion(layer, n);

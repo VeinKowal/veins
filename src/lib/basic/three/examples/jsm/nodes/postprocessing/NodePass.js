@@ -5,88 +5,74 @@ import { NodeMaterial } from '../materials/NodeMaterial.js';
 import { ScreenNode } from '../inputs/ScreenNode.js';
 
 function NodePass() {
+  ShaderPass.call(this);
 
-	ShaderPass.call( this );
+  this.name = '';
+  this.uuid = MathUtils.generateUUID();
 
-	this.name = '';
-	this.uuid = MathUtils.generateUUID();
+  this.userData = {};
 
-	this.userData = {};
+  this.textureID = 'renderTexture';
 
-	this.textureID = 'renderTexture';
+  this.input = new ScreenNode();
 
-	this.input = new ScreenNode();
+  this.material = new NodeMaterial();
 
-	this.material = new NodeMaterial();
-
-	this.needsUpdate = true;
-
+  this.needsUpdate = true;
 }
 
-NodePass.prototype = Object.create( ShaderPass.prototype );
+NodePass.prototype = Object.create(ShaderPass.prototype);
 NodePass.prototype.constructor = NodePass;
 
 NodePass.prototype.render = function () {
+  if (this.needsUpdate) {
+    this.material.dispose();
 
-	if ( this.needsUpdate ) {
+    this.material.fragment.value = this.input;
 
-		this.material.dispose();
+    this.needsUpdate = false;
+  }
 
-		this.material.fragment.value = this.input;
+  this.uniforms = this.material.uniforms;
 
-		this.needsUpdate = false;
-
-	}
-
-	this.uniforms = this.material.uniforms;
-
-	ShaderPass.prototype.render.apply( this, arguments );
-
+  ShaderPass.prototype.render.apply(this, arguments);
 };
 
-NodePass.prototype.copy = function ( source ) {
+NodePass.prototype.copy = function (source) {
+  this.input = source.input;
 
-	this.input = source.input;
-
-	return this;
-
+  return this;
 };
 
-NodePass.prototype.toJSON = function ( meta ) {
+NodePass.prototype.toJSON = function (meta) {
+  var isRootObject = meta === undefined || typeof meta === 'string';
 
-	var isRootObject = ( meta === undefined || typeof meta === 'string' );
+  if (isRootObject) {
+    meta = {
+      nodes: {},
+    };
+  }
 
-	if ( isRootObject ) {
+  if (meta && !meta.passes) meta.passes = {};
 
-		meta = {
-			nodes: {}
-		};
+  if (!meta.passes[this.uuid]) {
+    var data = {};
 
-	}
+    data.uuid = this.uuid;
+    data.type = 'NodePass';
 
-	if ( meta && ! meta.passes ) meta.passes = {};
+    meta.passes[this.uuid] = data;
 
-	if ( ! meta.passes[ this.uuid ] ) {
+    if (this.name !== '') data.name = this.name;
 
-		var data = {};
+    if (JSON.stringify(this.userData) !== '{}') data.userData = this.userData;
 
-		data.uuid = this.uuid;
-		data.type = 'NodePass';
+    data.input = this.input.toJSON(meta).uuid;
+  }
 
-		meta.passes[ this.uuid ] = data;
+  meta.pass = this.uuid;
 
-		if ( this.name !== '' ) data.name = this.name;
-
-		if ( JSON.stringify( this.userData ) !== '{}' ) data.userData = this.userData;
-
-		data.input = this.input.toJSON( meta ).uuid;
-
-	}
-
-	meta.pass = this.uuid;
-
-	return meta;
-
+  return meta;
 };
 
 export { NodePass };

@@ -1,4 +1,10 @@
-import { ShaderLib, ShaderMaterial, UniformsLib, UniformsUtils, Vector2 } from 'three';
+import {
+  ShaderLib,
+  ShaderMaterial,
+  UniformsLib,
+  UniformsUtils,
+  Vector2,
+} from 'three';
 
 /**
  * parameters = {
@@ -24,7 +30,11 @@ UniformsLib.line = {
 };
 
 ShaderLib['line'] = {
-  uniforms: UniformsUtils.merge([UniformsLib.common, UniformsLib.fog, UniformsLib.line]),
+  uniforms: UniformsUtils.merge([
+    UniformsLib.common,
+    UniformsLib.fog,
+    UniformsLib.line,
+  ]),
 
   vertexShader: `
 		#include <common>

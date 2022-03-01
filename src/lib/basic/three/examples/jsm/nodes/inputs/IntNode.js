@@ -1,49 +1,44 @@
 import { InputNode } from '../core/InputNode.js';
 
-function IntNode( value ) {
+function IntNode(value) {
+  InputNode.call(this, 'i');
 
-	InputNode.call( this, 'i' );
-
-	this.value = Math.floor( value || 0 );
-
+  this.value = Math.floor(value || 0);
 }
 
-IntNode.prototype = Object.create( InputNode.prototype );
+IntNode.prototype = Object.create(InputNode.prototype);
 IntNode.prototype.constructor = IntNode;
 IntNode.prototype.nodeType = 'Int';
 
-IntNode.prototype.generateReadonly = function ( builder, output, uuid, type/*, ns, needsUpdate */ ) {
-
-	return builder.format( this.value, type, output );
-
+IntNode.prototype.generateReadonly = function (
+  builder,
+  output,
+  uuid,
+  type /*, ns, needsUpdate */,
+) {
+  return builder.format(this.value, type, output);
 };
 
-IntNode.prototype.copy = function ( source ) {
+IntNode.prototype.copy = function (source) {
+  InputNode.prototype.copy.call(this, source);
 
-	InputNode.prototype.copy.call( this, source );
+  this.value = source.value;
 
-	this.value = source.value;
-
-	return this;
-
+  return this;
 };
 
-IntNode.prototype.toJSON = function ( meta ) {
+IntNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = this.createJSONNode(meta);
 
-	if ( ! data ) {
+    data.value = this.value;
 
-		data = this.createJSONNode( meta );
+    if (this.readonly === true) data.readonly = true;
+  }
 
-		data.value = this.value;
-
-		if ( this.readonly === true ) data.readonly = true;
-
-	}
-
-	return data;
-
+  return data;
 };
 
 export { IntNode };

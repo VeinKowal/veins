@@ -1,39 +1,141 @@
-"use strict";
+'use strict';
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/classCallCheck'),
+);
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/createClass'),
+);
 
-var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
+var _assertThisInitialized2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/assertThisInitialized'),
+);
 
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+var _inherits2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/inherits'),
+);
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+var _possibleConstructorReturn2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/possibleConstructorReturn'),
+);
 
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+var _getPrototypeOf2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/getPrototypeOf'),
+);
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _MainLoop = require("../Core/MainLoop");
+var _MainLoop = require('../Core/MainLoop');
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it;
+  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
+    if (
+      Array.isArray(o) ||
+      (it = _unsupportedIterableToArray(o)) ||
+      (allowArrayLike && o && typeof o.length === 'number')
+    ) {
+      if (it) o = it;
+      var i = 0;
+      var F = function F() {};
+      return {
+        s: F,
+        n: function n() {
+          if (i >= o.length) return { done: true };
+          return { done: false, value: o[i++] };
+        },
+        e: function e(_e) {
+          throw _e;
+        },
+        f: F,
+      };
+    }
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
+    );
+  }
+  var normalCompletion = true,
+    didErr = false,
+    err;
+  return {
+    s: function s() {
+      it = o[Symbol.iterator]();
+    },
+    n: function n() {
+      var step = it.next();
+      normalCompletion = step.done;
+      return step;
+    },
+    e: function e(_e2) {
+      didErr = true;
+      err = _e2;
+    },
+    f: function f() {
+      try {
+        if (!normalCompletion && it['return'] != null) it['return']();
+      } finally {
+        if (didErr) throw err;
+      }
+    },
+  };
+}
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === 'Object' && o.constructor) n = o.constructor.name;
+  if (n === 'Map' || n === 'Set') return Array.from(o);
+  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray(o, minLen);
+}
 
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+  return function () {
+    var Super = (0, _getPrototypeOf2['default'])(Derived),
+      result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return (0, _possibleConstructorReturn2['default'])(this, result);
+  };
+}
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === 'function') return true;
+  try {
+    Boolean.prototype.valueOf.call(
+      Reflect.construct(Boolean, [], function () {}),
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
 // Note: we could use existing three.js controls (like https://github.com/mrdoob/three.js/blob/dev/examples/js/controls/FirstPersonControls.js)
 // but including these controls in itowns allows use to integrate them tightly with itowns.
@@ -57,34 +159,33 @@ function applyRotation(view, camera3D, state) {
 var MOVEMENTS = {
   38: {
     method: 'translateZ',
-    sign: -1
+    sign: -1,
   },
   // FORWARD: up key
   40: {
     method: 'translateZ',
-    sign: 1
+    sign: 1,
   },
   // BACKWARD: down key
   37: {
     method: 'translateX',
-    sign: -1
+    sign: -1,
   },
   // STRAFE_LEFT: left key
   39: {
     method: 'translateX',
-    sign: 1
+    sign: 1,
   },
   // STRAFE_RIGHT: right key
   33: {
     method: 'translateY',
-    sign: 1
+    sign: 1,
   },
   // UP: PageUp key
   34: {
     method: 'translateY',
-    sign: -1
-  } // DOWN: PageDown key
-
+    sign: -1,
+  }, // DOWN: PageDown key
 };
 
 function moveCameraVerticalPlanar(value) {
@@ -102,8 +203,8 @@ function moveCameraVerticalGlobe(value) {
   this.camera.position.add(normal.multiplyScalar(value));
 }
 
-var FirstPersonControls = /*#__PURE__*/function (_THREE$EventDispatche) {
-  (0, _inherits2["default"])(FirstPersonControls, _THREE$EventDispatche);
+var FirstPersonControls = /*#__PURE__*/ (function (_THREE$EventDispatche) {
+  (0, _inherits2['default'])(FirstPersonControls, _THREE$EventDispatche);
 
   var _super = _createSuper(FirstPersonControls);
 
@@ -124,8 +225,9 @@ var FirstPersonControls = /*#__PURE__*/function (_THREE$EventDispatche) {
   function FirstPersonControls(view) {
     var _this;
 
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    (0, _classCallCheck2["default"])(this, FirstPersonControls);
+    var options =
+      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    (0, _classCallCheck2['default'])(this, FirstPersonControls);
     _this = _super.call(this);
     _this.isFirstPersonControls = true;
     _this.camera = view.camera.camera3D;
@@ -133,12 +235,16 @@ var FirstPersonControls = /*#__PURE__*/function (_THREE$EventDispatche) {
     _this.moves = new Set();
 
     if (options.panoramaRatio) {
-      var radius = options.panoramaRatio * 200 / (2 * Math.PI);
-      options.verticalFOV = options.panoramaRatio == 2 ? 180 : THREE.MathUtils.radToDeg(2 * Math.atan(200 / (2 * radius)));
+      var radius = (options.panoramaRatio * 200) / (2 * Math.PI);
+      options.verticalFOV =
+        options.panoramaRatio == 2
+          ? 180
+          : THREE.MathUtils.radToDeg(2 * Math.atan(200 / (2 * radius)));
     }
 
     options.verticalFOV = options.verticalFOV || 180;
-    options.moveSpeed = options.moveSpeed === undefined ? 10 : options.moveSpeed; // backward or forward move speed in m/s
+    options.moveSpeed =
+      options.moveSpeed === undefined ? 10 : options.moveSpeed; // backward or forward move speed in m/s
 
     _this.options = options;
     _this._isMouseDown = false;
@@ -150,9 +256,9 @@ var FirstPersonControls = /*#__PURE__*/function (_THREE$EventDispatche) {
       snapshot: function snapshot() {
         return {
           rotateX: this.rotateX,
-          rotateY: this.rotateY
+          rotateY: this.rotateY,
         };
-      }
+      },
     };
 
     _this.reset();
@@ -160,28 +266,50 @@ var FirstPersonControls = /*#__PURE__*/function (_THREE$EventDispatche) {
     _this.eventListeners = options.disableEventListeners;
 
     if (!options.disableEventListeners) {
-      _this._onMouseDown = _this.onMouseDown.bind((0, _assertThisInitialized2["default"])(_this));
-      _this._onMouseMove = _this.onMouseMove.bind((0, _assertThisInitialized2["default"])(_this));
-      _this._onMouseUp = _this.onMouseUp.bind((0, _assertThisInitialized2["default"])(_this));
-      _this._onMouseWheel = _this.onMouseWheel.bind((0, _assertThisInitialized2["default"])(_this));
-      _this._onKeyUp = _this.onKeyUp.bind((0, _assertThisInitialized2["default"])(_this));
-      _this._onKeyDown = _this.onKeyDown.bind((0, _assertThisInitialized2["default"])(_this));
+      _this._onMouseDown = _this.onMouseDown.bind(
+        (0, _assertThisInitialized2['default'])(_this),
+      );
+      _this._onMouseMove = _this.onMouseMove.bind(
+        (0, _assertThisInitialized2['default'])(_this),
+      );
+      _this._onMouseUp = _this.onMouseUp.bind(
+        (0, _assertThisInitialized2['default'])(_this),
+      );
+      _this._onMouseWheel = _this.onMouseWheel.bind(
+        (0, _assertThisInitialized2['default'])(_this),
+      );
+      _this._onKeyUp = _this.onKeyUp.bind(
+        (0, _assertThisInitialized2['default'])(_this),
+      );
+      _this._onKeyDown = _this.onKeyDown.bind(
+        (0, _assertThisInitialized2['default'])(_this),
+      );
       view.domElement.addEventListener('mousedown', _this._onMouseDown, false);
       view.domElement.addEventListener('touchstart', _this._onMouseDown, false);
       view.domElement.addEventListener('mousemove', _this._onMouseMove, false);
       view.domElement.addEventListener('touchmove', _this._onMouseMove, false);
       view.domElement.addEventListener('mouseup', _this._onMouseUp, false);
       view.domElement.addEventListener('touchend', _this._onMouseUp, false);
-      view.domElement.addEventListener('mousewheel', _this._onMouseWheel, false);
-      view.domElement.addEventListener('DOMMouseScroll', _this._onMouseWheel, false); // firefox
+      view.domElement.addEventListener(
+        'mousewheel',
+        _this._onMouseWheel,
+        false,
+      );
+      view.domElement.addEventListener(
+        'DOMMouseScroll',
+        _this._onMouseWheel,
+        false,
+      ); // firefox
       // TODO: Why windows
 
       document.addEventListener('keydown', _this._onKeyDown, false);
       document.addEventListener('keyup', _this._onKeyUp, false);
     }
 
-    _this.view.addFrameRequester(_MainLoop.MAIN_LOOP_EVENTS.AFTER_CAMERA_UPDATE, _this.update.bind((0, _assertThisInitialized2["default"])(_this))); // focus policy
-
+    _this.view.addFrameRequester(
+      _MainLoop.MAIN_LOOP_EVENTS.AFTER_CAMERA_UPDATE,
+      _this.update.bind((0, _assertThisInitialized2['default'])(_this)),
+    ); // focus policy
 
     _this._onFocus = function () {
       return view.domElement.focus();
@@ -208,215 +336,275 @@ var FirstPersonControls = /*#__PURE__*/function (_THREE$EventDispatche) {
     return _this;
   }
 
-  (0, _createClass2["default"])(FirstPersonControls, [{
-    key: "isUserInteracting",
-    value: function isUserInteracting() {
-      return this.moves.size !== 0 && !this._isMouseDown;
-    }
-    /**
-     * Resets the controls internal state to match the camera' state.
-     * This must be called when manually modifying the camera's position or rotation.
-     * @param {boolean} preserveRotationOnX - if true, the look up/down rotation will
-     * not be copied from the camera
-     */
+  (0, _createClass2['default'])(FirstPersonControls, [
+    {
+      key: 'isUserInteracting',
+      value: function isUserInteracting() {
+        return this.moves.size !== 0 && !this._isMouseDown;
+      },
+      /**
+       * Resets the controls internal state to match the camera' state.
+       * This must be called when manually modifying the camera's position or rotation.
+       * @param {boolean} preserveRotationOnX - if true, the look up/down rotation will
+       * not be copied from the camera
+       */
+    },
+    {
+      key: 'reset',
+      value: function reset() {
+        var preserveRotationOnX =
+          arguments.length > 0 && arguments[0] !== undefined
+            ? arguments[0]
+            : false;
+        // Compute the correct init state, given the calculus in applyRotation:
+        // cam.quaternion = q * r
+        // => r = invert(q) * cam.quaterion
+        // q is the quaternion derived from the up vector
+        q.setFromUnitVectors(axisY, this.camera.up);
+        q.invert();
+        q.multiply(this.camera.quaternion); // tranform it to euler
 
-  }, {
-    key: "reset",
-    value: function reset() {
-      var preserveRotationOnX = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      // Compute the correct init state, given the calculus in applyRotation:
-      // cam.quaternion = q * r
-      // => r = invert(q) * cam.quaterion
-      // q is the quaternion derived from the up vector
-      q.setFromUnitVectors(axisY, this.camera.up);
-      q.invert();
-      q.multiply(this.camera.quaternion); // tranform it to euler
+        e.setFromQuaternion(q);
 
-      e.setFromQuaternion(q);
+        if (!preserveRotationOnX) {
+          this._state.rotateX = e.x;
+        }
 
-      if (!preserveRotationOnX) {
-        this._state.rotateX = e.x;
-      }
+        this._state.rotateY = e.y;
+      },
+      /**
+       * Updates the camera position / rotation based on occured input events.
+       * This is done automatically when needed but can also be done if needed.
+       * @param {number} dt - ellpased time since last update in seconds
+       * @param {boolean} updateLoopRestarted - true if itowns' update loop just restarted
+       * @param {boolean} force - set to true if you want to force the update, even if it
+       * appears unneeded.
+       */
+    },
+    {
+      key: 'update',
+      value: function update(dt, updateLoopRestarted, force) {
+        if (this.enabled == false) {
+          return;
+        } // dt will not be relevant when we just started rendering, we consider a 1-frame move in this case
 
-      this._state.rotateY = e.y;
-    }
-    /**
-     * Updates the camera position / rotation based on occured input events.
-     * This is done automatically when needed but can also be done if needed.
-     * @param {number} dt - ellpased time since last update in seconds
-     * @param {boolean} updateLoopRestarted - true if itowns' update loop just restarted
-     * @param {boolean} force - set to true if you want to force the update, even if it
-     * appears unneeded.
-     */
+        if (updateLoopRestarted) {
+          dt = 16;
+        }
 
-  }, {
-    key: "update",
-    value: function update(dt, updateLoopRestarted, force) {
-      if (this.enabled == false) {
-        return;
-      } // dt will not be relevant when we just started rendering, we consider a 1-frame move in this case
-
-
-      if (updateLoopRestarted) {
-        dt = 16;
-      }
-
-      var _iterator = _createForOfIteratorHelper(this.moves),
+        var _iterator = _createForOfIteratorHelper(this.moves),
           _step;
 
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var move = _step.value;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+            var move = _step.value;
 
-          if (move.method === 'translateY') {
-            this.moveCameraVertical(move.sign * this.options.moveSpeed * dt / 1000);
-          } else {
-            this.camera[move.method](move.sign * this.options.moveSpeed * dt / 1000);
+            if (move.method === 'translateY') {
+              this.moveCameraVertical(
+                (move.sign * this.options.moveSpeed * dt) / 1000,
+              );
+            } else {
+              this.camera[move.method](
+                (move.sign * this.options.moveSpeed * dt) / 1000,
+              );
+            }
           }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
         }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
-      }
 
-      if (this._isMouseDown === true || force === true) {
+        if (this._isMouseDown === true || force === true) {
+          applyRotation(this.view, this.camera, this._state);
+        }
+
+        if (this.moves.size) {
+          this.view.notifyChange(this.view.camera.camera3D);
+        }
+      }, // Event callback functions
+      // Mouse movement handling
+    },
+    {
+      key: 'onMouseDown',
+      value: function onMouseDown(event) {
+        if (this.enabled == false) {
+          return;
+        } // next line is commented because, when I uncomment it, key binding doesn't work any more.
+        // event.preventDefault();
+
+        this._isMouseDown = true;
+        var coords = this.view.eventToViewCoords(event);
+        this._onMouseDownMouseX = coords.x;
+        this._onMouseDownMouseY = coords.y;
+        this._stateOnMouseDown = this._state.snapshot();
+      },
+    },
+    {
+      key: 'onMouseUp',
+      value: function onMouseUp() {
+        if (this.enabled == false) {
+          return;
+        }
+
+        this._isMouseDown = false;
+      },
+    },
+    {
+      key: 'onMouseMove',
+      value: function onMouseMove(event) {
+        if (this.enabled == false) {
+          return;
+        }
+
+        if (this._isMouseDown === true) {
+          // in rigor we have tan(theta) = tan(cameraFOV) * deltaH / H
+          // (where deltaH is the vertical amount we moved, and H the renderer height)
+          // we loosely approximate tan(x) by x
+          var pxToAngleRatio =
+            THREE.MathUtils.degToRad(this.camera.fov) /
+            this.view.mainLoop.gfxEngine.height;
+          var coords = this.view.eventToViewCoords(event); // update state based on pointer movement
+
+          this._state.rotateY =
+            (coords.x - this._onMouseDownMouseX) * pxToAngleRatio +
+            this._stateOnMouseDown.rotateY;
+          this._state.rotateX = limitRotation(
+            this.camera,
+            (coords.y - this._onMouseDownMouseY) * pxToAngleRatio +
+              this._stateOnMouseDown.rotateX,
+            this.options.verticalFOV,
+          );
+          applyRotation(this.view, this.camera, this._state);
+        }
+      }, // Mouse wheel
+    },
+    {
+      key: 'onMouseWheel',
+      value: function onMouseWheel(event) {
+        if (this.enabled == false) {
+          return;
+        }
+
+        var delta = 0;
+
+        if (event.wheelDelta !== undefined) {
+          delta = -event.wheelDelta; // Firefox
+        } else if (event.detail !== undefined) {
+          delta = event.detail;
+        }
+
+        this.camera.fov = THREE.MathUtils.clamp(
+          this.camera.fov + Math.sign(delta),
+          10,
+          Math.min(100, this.options.verticalFOV),
+        );
+        this.camera.updateProjectionMatrix();
+        this._state.rotateX = limitRotation(
+          this.camera,
+          this._state.rotateX,
+          this.options.verticalFOV,
+        );
         applyRotation(this.view, this.camera, this._state);
-      }
+      }, // Keyboard handling
+    },
+    {
+      key: 'onKeyUp',
+      value: function onKeyUp(e) {
+        if (this.enabled == false) {
+          return;
+        }
 
-      if (this.moves.size) {
-        this.view.notifyChange(this.view.camera.camera3D);
-      }
-    } // Event callback functions
-    // Mouse movement handling
+        var move = MOVEMENTS[e.keyCode];
 
-  }, {
-    key: "onMouseDown",
-    value: function onMouseDown(event) {
-      if (this.enabled == false) {
-        return;
-      } // next line is commented because, when I uncomment it, key binding doesn't work any more.
-      // event.preventDefault();
+        if (move) {
+          this.moves['delete'](move);
+          this.view.notifyChange(undefined, false);
+          e.preventDefault();
+        }
+      },
+    },
+    {
+      key: 'onKeyDown',
+      value: function onKeyDown(e) {
+        if (this.enabled == false) {
+          return;
+        }
 
+        var move = MOVEMENTS[e.keyCode];
 
-      this._isMouseDown = true;
-      var coords = this.view.eventToViewCoords(event);
-      this._onMouseDownMouseX = coords.x;
-      this._onMouseDownMouseY = coords.y;
-      this._stateOnMouseDown = this._state.snapshot();
-    }
-  }, {
-    key: "onMouseUp",
-    value: function onMouseUp() {
-      if (this.enabled == false) {
-        return;
-      }
+        if (move) {
+          this.moves.add(move);
+          this.view.notifyChange(undefined, false);
+          e.preventDefault();
+        }
+      },
+    },
+    {
+      key: 'dispose',
+      value: function dispose() {
+        if (!this.eventListeners) {
+          this.view.domElement.removeEventListener(
+            'mousedown',
+            this._onMouseDown,
+            false,
+          );
+          this.view.domElement.removeEventListener(
+            'touchstart',
+            this._onMouseDown,
+            false,
+          );
+          this.view.domElement.removeEventListener(
+            'mousemove',
+            this._onMouseMove,
+            false,
+          );
+          this.view.domElement.removeEventListener(
+            'touchmove',
+            this._onMouseMove,
+            false,
+          );
+          this.view.domElement.removeEventListener(
+            'mouseup',
+            this._onMouseUp,
+            false,
+          );
+          this.view.domElement.removeEventListener(
+            'touchend',
+            this._onMouseUp,
+            false,
+          );
+          this.view.domElement.removeEventListener(
+            'mousewheel',
+            this._onMouseWheel,
+            false,
+          );
+          this.view.domElement.removeEventListener(
+            'DOMMouseScroll',
+            this._onMouseWheel,
+            false,
+          ); // firefox
 
-      this._isMouseDown = false;
-    }
-  }, {
-    key: "onMouseMove",
-    value: function onMouseMove(event) {
-      if (this.enabled == false) {
-        return;
-      }
+          document.removeEventListener('keydown', this._onKeyDown, false);
+          document.removeEventListener('keyup', this._onKeyUp, false);
+        }
 
-      if (this._isMouseDown === true) {
-        // in rigor we have tan(theta) = tan(cameraFOV) * deltaH / H
-        // (where deltaH is the vertical amount we moved, and H the renderer height)
-        // we loosely approximate tan(x) by x
-        var pxToAngleRatio = THREE.MathUtils.degToRad(this.camera.fov) / this.view.mainLoop.gfxEngine.height;
-        var coords = this.view.eventToViewCoords(event); // update state based on pointer movement
+        if (this.focusOnMouseOver) {
+          this.view.domElement.removeEventListener('mouseover', this._onFocus);
+        }
 
-        this._state.rotateY = (coords.x - this._onMouseDownMouseX) * pxToAngleRatio + this._stateOnMouseDown.rotateY;
-        this._state.rotateX = limitRotation(this.camera, (coords.y - this._onMouseDownMouseY) * pxToAngleRatio + this._stateOnMouseDown.rotateX, this.options.verticalFOV);
-        applyRotation(this.view, this.camera, this._state);
-      }
-    } // Mouse wheel
+        if (this.focusOnClick) {
+          this.view.domElement.removeEventListener('click', this._onFocus);
+        }
 
-  }, {
-    key: "onMouseWheel",
-    value: function onMouseWheel(event) {
-      if (this.enabled == false) {
-        return;
-      }
-
-      var delta = 0;
-
-      if (event.wheelDelta !== undefined) {
-        delta = -event.wheelDelta; // Firefox
-      } else if (event.detail !== undefined) {
-        delta = event.detail;
-      }
-
-      this.camera.fov = THREE.MathUtils.clamp(this.camera.fov + Math.sign(delta), 10, Math.min(100, this.options.verticalFOV));
-      this.camera.updateProjectionMatrix();
-      this._state.rotateX = limitRotation(this.camera, this._state.rotateX, this.options.verticalFOV);
-      applyRotation(this.view, this.camera, this._state);
-    } // Keyboard handling
-
-  }, {
-    key: "onKeyUp",
-    value: function onKeyUp(e) {
-      if (this.enabled == false) {
-        return;
-      }
-
-      var move = MOVEMENTS[e.keyCode];
-
-      if (move) {
-        this.moves["delete"](move);
-        this.view.notifyChange(undefined, false);
-        e.preventDefault();
-      }
-    }
-  }, {
-    key: "onKeyDown",
-    value: function onKeyDown(e) {
-      if (this.enabled == false) {
-        return;
-      }
-
-      var move = MOVEMENTS[e.keyCode];
-
-      if (move) {
-        this.moves.add(move);
-        this.view.notifyChange(undefined, false);
-        e.preventDefault();
-      }
-    }
-  }, {
-    key: "dispose",
-    value: function dispose() {
-      if (!this.eventListeners) {
-        this.view.domElement.removeEventListener('mousedown', this._onMouseDown, false);
-        this.view.domElement.removeEventListener('touchstart', this._onMouseDown, false);
-        this.view.domElement.removeEventListener('mousemove', this._onMouseMove, false);
-        this.view.domElement.removeEventListener('touchmove', this._onMouseMove, false);
-        this.view.domElement.removeEventListener('mouseup', this._onMouseUp, false);
-        this.view.domElement.removeEventListener('touchend', this._onMouseUp, false);
-        this.view.domElement.removeEventListener('mousewheel', this._onMouseWheel, false);
-        this.view.domElement.removeEventListener('DOMMouseScroll', this._onMouseWheel, false); // firefox
-
-        document.removeEventListener('keydown', this._onKeyDown, false);
-        document.removeEventListener('keyup', this._onKeyUp, false);
-      }
-
-      if (this.focusOnMouseOver) {
-        this.view.domElement.removeEventListener('mouseover', this._onFocus);
-      }
-
-      if (this.focusOnClick) {
-        this.view.domElement.removeEventListener('click', this._onFocus);
-      }
-
-      this.dispatchEvent({
-        type: 'dispose'
-      });
-    }
-  }]);
+        this.dispatchEvent({
+          type: 'dispose',
+        });
+      },
+    },
+  ]);
   return FirstPersonControls;
-}(THREE.EventDispatcher);
+})(THREE.EventDispatcher);
 
 var _default = FirstPersonControls;
-exports["default"] = _default;
+exports['default'] = _default;

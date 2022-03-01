@@ -1,50 +1,87 @@
-"use strict";
+'use strict';
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.getLookAtFromMath = getLookAtFromMath;
 exports.getRig = getRig;
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/classCallCheck'),
+);
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/createClass'),
+);
 
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+var _inherits2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/inherits'),
+);
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+var _possibleConstructorReturn2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/possibleConstructorReturn'),
+);
 
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+var _getPrototypeOf2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/getPrototypeOf'),
+);
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _tween = _interopRequireDefault(require("@tweenjs/tween.js"));
+var _tween = _interopRequireDefault(require('@tweenjs/tween.js'));
 
-var _DEMUtils = _interopRequireDefault(require("./DEMUtils"));
+var _DEMUtils = _interopRequireDefault(require('./DEMUtils'));
 
-var _MainLoop = require("../Core/MainLoop");
+var _MainLoop = require('../Core/MainLoop');
 
-var _Coordinates = _interopRequireDefault(require("../Core/Geographic/Coordinates"));
+var _Coordinates = _interopRequireDefault(
+  require('../Core/Geographic/Coordinates'),
+);
 
-var _Ellipsoid = _interopRequireDefault(require("../Core/Math/Ellipsoid"));
+var _Ellipsoid = _interopRequireDefault(require('../Core/Math/Ellipsoid'));
 
-var _OBB = _interopRequireDefault(require("../Renderer/OBB"));
+var _OBB = _interopRequireDefault(require('../Renderer/OBB'));
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+  return function () {
+    var Super = (0, _getPrototypeOf2['default'])(Derived),
+      result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return (0, _possibleConstructorReturn2['default'])(this, result);
+  };
+}
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === 'function') return true;
+  try {
+    Boolean.prototype.valueOf.call(
+      Reflect.construct(Boolean, [], function () {}),
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
 THREE.Object3D.DefaultUp.set(0, 0, 1);
 var targetPosition = new THREE.Vector3();
-var targetCoord = new _Coordinates["default"]('EPSG:4326', 0, 0, 0);
-var ellipsoid = new _Ellipsoid["default"]();
+var targetCoord = new _Coordinates['default']('EPSG:4326', 0, 0, 0);
+var ellipsoid = new _Ellipsoid['default']();
 var rigs = [];
-var obb = new _OBB["default"]();
+var obb = new _OBB['default']();
 var size = new THREE.Vector3();
 
 var deferred = function () {
@@ -56,10 +93,9 @@ var deferred = function () {
       reject = rej;
     }),
     resolve: resolve,
-    reject: reject
+    reject: reject,
   };
 }; // Wrap angle in degrees to [-180 180]
-
 
 function wrapTo180(angle) {
   return angle - Math.floor((angle + 180.0) / 360) * 360;
@@ -80,7 +116,7 @@ function getLookAtFromMath(view, camera) {
     // Intersect Ellispoid
     return ellipsoid.intersection({
       direction: direction,
-      origin: camera.position
+      origin: camera.position,
     });
   } else {
     // Intersect plane
@@ -98,7 +134,7 @@ function proxyProperty(view, camera, rig, key) {
     set: function set(newValue) {
       rig.removeProxy(view, camera);
       camera.position[key] = newValue;
-    }
+    },
   });
 } // the rig is used to manipulate the camera
 // It consists of a tree of 3D objects, each element is assigned a task
@@ -116,16 +152,15 @@ function proxyProperty(view, camera, rig, key) {
 // When all transformations are calculated,
 // this.camera's transformation is applied to view.camera.camera
 
-
-var CameraRig = /*#__PURE__*/function (_THREE$Object3D) {
-  (0, _inherits2["default"])(CameraRig, _THREE$Object3D);
+var CameraRig = /*#__PURE__*/ (function (_THREE$Object3D) {
+  (0, _inherits2['default'])(CameraRig, _THREE$Object3D);
 
   var _super = _createSuper(CameraRig);
 
   function CameraRig() {
     var _this;
 
-    (0, _classCallCheck2["default"])(this, CameraRig);
+    (0, _classCallCheck2['default'])(this, CameraRig);
     _this = _super.call(this); // seaLevel is on rig's z axis, it's at altitude zero
 
     _this.seaLevel = new THREE.Object3D(); // target is on seaLevel's z axis and target.position.z is the DEM altitude
@@ -141,8 +176,7 @@ var CameraRig = /*#__PURE__*/function (_THREE$Object3D) {
 
     _this.target.add(_this.camera); // sea level's geograohic coordinate
 
-
-    _this.coord = new _Coordinates["default"]('EPSG:4978', 0, 0); // sea level's worldPoistion
+    _this.coord = new _Coordinates['default']('EPSG:4978', 0, 0); // sea level's worldPoistion
 
     _this.targetWorldPosition = new THREE.Vector3();
 
@@ -152,311 +186,417 @@ var CameraRig = /*#__PURE__*/function (_THREE$Object3D) {
     return _this;
   } // apply rig.camera's transformation to camera
 
+  (0, _createClass2['default'])(CameraRig, [
+    {
+      key: 'applyTransformToCamera',
+      value: function applyTransformToCamera(view, camera) {
+        var _this2 = this;
 
-  (0, _createClass2["default"])(CameraRig, [{
-    key: "applyTransformToCamera",
-    value: function applyTransformToCamera(view, camera) {
-      var _this2 = this;
+        if (this.proxy) {
+          camera.quaternion._onChange(this._onChangeCallback);
 
-      if (this.proxy) {
-        camera.quaternion._onChange(this._onChangeCallback);
+          this.camera.matrixWorld.decompose(
+            this.proxy.position,
+            camera.quaternion,
+            camera.scale,
+          );
 
-        this.camera.matrixWorld.decompose(this.proxy.position, camera.quaternion, camera.scale);
-
-        camera.quaternion._onChange(function () {
-          return _this2.removeProxy(view, camera);
-        });
-      } else {
-        this.camera.matrixWorld.decompose(camera.position, camera.quaternion, camera.scale);
-      }
-    }
-  }, {
-    key: "setProxy",
-    value: function setProxy(view, camera) {
-      var _this3 = this;
-
-      if (!this.proxy && view && camera) {
-        this.proxy = {
-          position: new THREE.Vector3()
-        };
-        Object.keys(camera.position).forEach(function (key) {
-          return proxyProperty(view, camera, _this3, key);
-        });
-        this._onChangeCallback = camera.quaternion._onChangeCallback;
-
-        camera.quaternion._onChange(function () {
-          return _this3.removeProxy(view, camera);
-        });
-      }
-    }
-  }, {
-    key: "removeProxy",
-    value: function removeProxy(view, camera) {
-      var _this4 = this;
-
-      this.stop(view);
-
-      if (this.proxy && view && camera) {
-        Object.keys(camera.position).forEach(function (key) {
-          return Object.defineProperty(camera.position, key, {
-            value: _this4.proxy.position[key],
-            writable: true
+          camera.quaternion._onChange(function () {
+            return _this2.removeProxy(view, camera);
           });
-        });
+        } else {
+          this.camera.matrixWorld.decompose(
+            camera.position,
+            camera.quaternion,
+            camera.scale,
+          );
+        }
+      },
+    },
+    {
+      key: 'setProxy',
+      value: function setProxy(view, camera) {
+        var _this3 = this;
 
-        camera.quaternion._onChange(this._onChangeCallback);
+        if (!this.proxy && view && camera) {
+          this.proxy = {
+            position: new THREE.Vector3(),
+          };
+          Object.keys(camera.position).forEach(function (key) {
+            return proxyProperty(view, camera, _this3, key);
+          });
+          this._onChangeCallback = camera.quaternion._onChangeCallback;
 
-        this.proxy = null;
-      }
-    }
-  }, {
-    key: "setTargetFromCoordinate",
-    value: function setTargetFromCoordinate(view, coord) {
-      // clamp altitude to seaLevel
-      coord.as(tileLayer(view).extent.crs, this.coord);
-      var altitude = Math.max(0, this.coord.z);
-      this.coord.z = altitude; // adjust target's position with clamped altitude
+          camera.quaternion._onChange(function () {
+            return _this3.removeProxy(view, camera);
+          });
+        }
+      },
+    },
+    {
+      key: 'removeProxy',
+      value: function removeProxy(view, camera) {
+        var _this4 = this;
 
-      this.coord.as(view.referenceCrs).toVector3(targetPosition);
+        this.stop(view);
 
-      if (view.referenceCrs == 'EPSG:4978') {
-        // ellipsoid geocentric projection
-        this.lookAt(targetPosition);
-        this.seaLevel.position.set(0, 0, targetPosition.length() - altitude);
-      } else {
-        // planar projection
-        this.position.set(targetPosition.x, targetPosition.y, 0);
-        this.seaLevel.position.set(0, 0, 0);
-      } // place camera's target
+        if (this.proxy && view && camera) {
+          Object.keys(camera.position).forEach(function (key) {
+            return Object.defineProperty(camera.position, key, {
+              value: _this4.proxy.position[key],
+              writable: true,
+            });
+          });
 
+          camera.quaternion._onChange(this._onChangeCallback);
 
-      this.target.position.set(0, 0, altitude);
-    } // set rig's objects transformation from camera's position and target's position
+          this.proxy = null;
+        }
+      },
+    },
+    {
+      key: 'setTargetFromCoordinate',
+      value: function setTargetFromCoordinate(view, coord) {
+        // clamp altitude to seaLevel
+        coord.as(tileLayer(view).extent.crs, this.coord);
+        var altitude = Math.max(0, this.coord.z);
+        this.coord.z = altitude; // adjust target's position with clamped altitude
 
-  }, {
-    key: "setFromPositions",
-    value: function setFromPositions(view, cameraPosition) {
-      this.setTargetFromCoordinate(view, new _Coordinates["default"](view.referenceCrs, targetPosition));
-      this.target.rotation.set(0, 0, 0);
-      this.updateMatrixWorld(true);
-      this.camera.position.copy(cameraPosition);
-      this.target.worldToLocal(this.camera.position);
-      var range = this.camera.position.length();
-      this.target.rotation.x = Math.asin(this.camera.position.z / range);
-      var cosPlanXY = THREE.MathUtils.clamp(this.camera.position.y / (Math.cos(this.target.rotation.x) * range), -1, 1);
-      this.target.rotation.z = Math.sign(-this.camera.position.x || 1) * Math.acos(cosPlanXY);
-      this.camera.position.set(0, range, 0);
-    } // set from target's coordinate, rotation and range between target and camera
+        this.coord.as(view.referenceCrs).toVector3(targetPosition);
 
-  }, {
-    key: "applyParams",
-    value: function applyParams(view, params) {
-      if (params.coord) {
-        this.setTargetFromCoordinate(view, params.coord);
-      }
-
-      if (params.tilt != undefined) {
-        this.target.rotation.x = THREE.MathUtils.degToRad(params.tilt);
-      }
-
-      if (params.heading != undefined) {
-        this.target.rotation.z = THREE.MathUtils.degToRad(-wrapTo180(params.heading + 180));
-      }
-
-      if (params.range) {
-        this.camera.position.set(0, params.range, 0);
-      }
-
-      this.camera.rotation.set(-Math.PI * 0.5, 0, Math.PI);
-      this.updateMatrixWorld(true);
-      this.targetWorldPosition.setFromMatrixPosition(this.seaLevel.matrixWorld);
-    }
-  }, {
-    key: "getParams",
-    value: function getParams() {
-      return {
-        coord: this.coord.clone(),
-        tilt: this.tilt,
-        heading: this.heading,
-        range: this.range,
-        targetWorldPosition: this.targetWorldPosition
-      };
-    }
-  }, {
-    key: "setfromCamera",
-    value: function setfromCamera(view, camera, pickedPosition) {
-      camera.updateMatrixWorld(true);
-
-      if (pickedPosition == undefined) {
-        pickedPosition = view.getPickingPositionFromDepth() || getLookAtFromMath(view, camera);
-      }
-
-      var range = pickedPosition && !isNaN(pickedPosition.x) ? camera.position.distanceTo(pickedPosition) : 100;
-      camera.localToWorld(targetPosition.set(0, 0, -range));
-      this.setFromPositions(view, camera.position);
-    }
-  }, {
-    key: "copyObject3D",
-    value: function copyObject3D(rig) {
-      this.copy(rig, false);
-      this.seaLevel.copy(rig.seaLevel, false);
-      this.target.copy(rig.target, false);
-      this.camera.copy(rig.camera);
-      return this;
-    }
-  }, {
-    key: "animateCameraToLookAtTarget",
-    value: function animateCameraToLookAtTarget(view, camera, params) {
-      var _this5 = this;
-
-      params.easing = params.easing || _tween["default"].Easing.Quartic.InOut;
-      this.setfromCamera(view, camera);
-      var tweenGroup = new _tween["default"].Group();
-      this.start = (this.start || new CameraRig()).copyObject3D(this);
-      this.end = (this.end || new CameraRig()).copyObject3D(this);
-      var time = params.time || 2500;
-      var factor = {
-        t: 0
-      };
-      var animations = [];
-      var def = deferred();
-      this.addPlaceTargetOnGround(view, camera, params.coord, factor);
-      this.end.applyParams(view, params); // compute the angle along z-axis between the starting position and the end position
-
-      var difference = this.end.target.rotation.z - this.start.target.rotation.z; // if that angle is superior to 180°, recompute the rotation as the complementary angle.
-
-      if (Math.abs(difference) > Math.PI) {
-        this.end.target.rotation.z = this.start.target.rotation.z + difference - Math.sign(difference) * 2 * Math.PI;
-      }
-
-      animations.push(new _tween["default"].Tween(factor, tweenGroup).to({
-        t: 1
-      }, time).easing(params.easing).onUpdate(function (d) {
-        // rotate to coord destination in geocentric projection
         if (view.referenceCrs == 'EPSG:4978') {
-          _this5.quaternion.slerpQuaternions(_this5.start.quaternion, _this5.end.quaternion, d.t);
-        } // camera rotation
+          // ellipsoid geocentric projection
+          this.lookAt(targetPosition);
+          this.seaLevel.position.set(0, 0, targetPosition.length() - altitude);
+        } else {
+          // planar projection
+          this.position.set(targetPosition.x, targetPosition.y, 0);
+          this.seaLevel.position.set(0, 0, 0);
+        } // place camera's target
 
-
-        _this5.camera.quaternion.slerpQuaternions(_this5.start.camera.quaternion, _this5.end.camera.quaternion, d.t); // camera's target rotation
-
-
-        _this5.target.rotation.set(0, 0, 0);
-
-        _this5.target.rotateZ(THREE.MathUtils.lerp(_this5.start.target.rotation.z, _this5.end.target.rotation.z, d.t));
-
-        _this5.target.rotateX(THREE.MathUtils.lerp(_this5.start.target.rotation.x, _this5.end.target.rotation.x, d.t));
-      })); // translate to coordinate destination in planar projection
-
-      if (view.referenceCrs != 'EPSG:4978') {
-        animations.push(new _tween["default"].Tween(this.position, tweenGroup).to(this.end.position, time).easing(params.easing));
-      } // translate to altitude zero
-
-
-      animations.push(new _tween["default"].Tween(this.seaLevel.position, tweenGroup).to(this.end.seaLevel.position, time).easing(params.easing)); // translate camera position
-
-      animations.push(new _tween["default"].Tween(this.camera.position, tweenGroup).to(this.end.camera.position, time).easing(params.easing)); // update animations, transformation and view
-
-      this.animationFrameRequester = function () {
-        tweenGroup.update();
-
-        _this5.updateMatrixWorld(true);
-
-        _this5.applyTransformToCamera(view, camera);
-
-        _this5.targetWorldPosition.setFromMatrixPosition(_this5.seaLevel.matrixWorld);
-
-        if (params.callback) {
-          params.callback(_this5);
+        this.target.position.set(0, 0, altitude);
+      }, // set rig's objects transformation from camera's position and target's position
+    },
+    {
+      key: 'setFromPositions',
+      value: function setFromPositions(view, cameraPosition) {
+        this.setTargetFromCoordinate(
+          view,
+          new _Coordinates['default'](view.referenceCrs, targetPosition),
+        );
+        this.target.rotation.set(0, 0, 0);
+        this.updateMatrixWorld(true);
+        this.camera.position.copy(cameraPosition);
+        this.target.worldToLocal(this.camera.position);
+        var range = this.camera.position.length();
+        this.target.rotation.x = Math.asin(this.camera.position.z / range);
+        var cosPlanXY = THREE.MathUtils.clamp(
+          this.camera.position.y / (Math.cos(this.target.rotation.x) * range),
+          -1,
+          1,
+        );
+        this.target.rotation.z =
+          Math.sign(-this.camera.position.x || 1) * Math.acos(cosPlanXY);
+        this.camera.position.set(0, range, 0);
+      }, // set from target's coordinate, rotation and range between target and camera
+    },
+    {
+      key: 'applyParams',
+      value: function applyParams(view, params) {
+        if (params.coord) {
+          this.setTargetFromCoordinate(view, params.coord);
         }
 
-        targetCoord.crs = view.referenceCrs;
-        targetCoord.setFromVector3(_this5.targetWorldPosition).as(tileLayer(view).extent.crs, _this5.coord);
-        view.notifyChange(camera);
-      };
-
-      this.removeAll = function (o) {
-        this.removeAll = function () {};
-
-        tweenGroup.removeAll();
-
-        if (this.animationFrameRequester) {
-          view.removeFrameRequester(_MainLoop.MAIN_LOOP_EVENTS.BEFORE_RENDER, this.animationFrameRequester);
+        if (params.tilt != undefined) {
+          this.target.rotation.x = THREE.MathUtils.degToRad(params.tilt);
         }
 
-        def.resolve(o !== undefined);
-        this.animationFrameRequester = null;
-      }; // Waiting last animation complete,
-      // we assume that the animation that completes last is the one that was started last
+        if (params.heading != undefined) {
+          this.target.rotation.z = THREE.MathUtils.degToRad(
+            -wrapTo180(params.heading + 180),
+          );
+        }
 
+        if (params.range) {
+          this.camera.position.set(0, params.range, 0);
+        }
 
-      animations[animations.length - 1].onComplete(this.removeAll);
-      animations.forEach(function (anim) {
-        return anim.start();
-      });
-      view.addFrameRequester(_MainLoop.MAIN_LOOP_EVENTS.BEFORE_RENDER, this.animationFrameRequester);
-      view.notifyChange(camera);
-      return def;
-    }
-  }, {
-    key: "stop",
-    value: function stop(view) {
-      this.removePlaceTargetOnGround(view);
-      this.removeAll();
-    } // update target position to coordinate's altitude
+        this.camera.rotation.set(-Math.PI * 0.5, 0, Math.PI);
+        this.updateMatrixWorld(true);
+        this.targetWorldPosition.setFromMatrixPosition(
+          this.seaLevel.matrixWorld,
+        );
+      },
+    },
+    {
+      key: 'getParams',
+      value: function getParams() {
+        return {
+          coord: this.coord.clone(),
+          tilt: this.tilt,
+          heading: this.heading,
+          range: this.range,
+          targetWorldPosition: this.targetWorldPosition,
+        };
+      },
+    },
+    {
+      key: 'setfromCamera',
+      value: function setfromCamera(view, camera, pickedPosition) {
+        camera.updateMatrixWorld(true);
 
-  }, {
-    key: "addPlaceTargetOnGround",
-    value: function addPlaceTargetOnGround(view, camera, coord) {
-      var _this6 = this;
+        if (pickedPosition == undefined) {
+          pickedPosition =
+            view.getPickingPositionFromDepth() ||
+            getLookAtFromMath(view, camera);
+        }
 
-      var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {
-        t: 1.0
-      };
-      this.removePlaceTargetOnGround(view);
+        var range =
+          pickedPosition && !isNaN(pickedPosition.x)
+            ? camera.position.distanceTo(pickedPosition)
+            : 100;
+        camera.localToWorld(targetPosition.set(0, 0, -range));
+        this.setFromPositions(view, camera.position);
+      },
+    },
+    {
+      key: 'copyObject3D',
+      value: function copyObject3D(rig) {
+        this.copy(rig, false);
+        this.seaLevel.copy(rig.seaLevel, false);
+        this.target.copy(rig.target, false);
+        this.camera.copy(rig.camera);
+        return this;
+      },
+    },
+    {
+      key: 'animateCameraToLookAtTarget',
+      value: function animateCameraToLookAtTarget(view, camera, params) {
+        var _this5 = this;
 
-      if (view && camera) {
-        var startAltitude = this.target.position.z;
+        params.easing = params.easing || _tween['default'].Easing.Quartic.InOut;
+        this.setfromCamera(view, camera);
+        var tweenGroup = new _tween['default'].Group();
+        this.start = (this.start || new CameraRig()).copyObject3D(this);
+        this.end = (this.end || new CameraRig()).copyObject3D(this);
+        var time = params.time || 2500;
+        var factor = {
+          t: 0,
+        };
+        var animations = [];
+        var def = deferred();
+        this.addPlaceTargetOnGround(view, camera, params.coord, factor);
+        this.end.applyParams(view, params); // compute the angle along z-axis between the starting position and the end position
 
-        this.placeTargetOnGround = function () {
-          var altitude = Math.max(0, _DEMUtils["default"].getElevationValueAt(tileLayer(view), coord || _this6.coord, _DEMUtils["default"].PRECISE_READ_Z) || 0);
-          _this6.target.position.z = startAltitude * (1.0 - options.t) + altitude * options.t;
+        var difference =
+          this.end.target.rotation.z - this.start.target.rotation.z; // if that angle is superior to 180°, recompute the rotation as the complementary angle.
 
-          _this6.target.updateMatrixWorld(true);
+        if (Math.abs(difference) > Math.PI) {
+          this.end.target.rotation.z =
+            this.start.target.rotation.z +
+            difference -
+            Math.sign(difference) * 2 * Math.PI;
+        }
 
-          _this6.applyTransformToCamera(view, camera);
+        animations.push(
+          new _tween['default'].Tween(factor, tweenGroup)
+            .to(
+              {
+                t: 1,
+              },
+              time,
+            )
+            .easing(params.easing)
+            .onUpdate(function (d) {
+              // rotate to coord destination in geocentric projection
+              if (view.referenceCrs == 'EPSG:4978') {
+                _this5.quaternion.slerpQuaternions(
+                  _this5.start.quaternion,
+                  _this5.end.quaternion,
+                  d.t,
+                );
+              } // camera rotation
+
+              _this5.camera.quaternion.slerpQuaternions(
+                _this5.start.camera.quaternion,
+                _this5.end.camera.quaternion,
+                d.t,
+              ); // camera's target rotation
+
+              _this5.target.rotation.set(0, 0, 0);
+
+              _this5.target.rotateZ(
+                THREE.MathUtils.lerp(
+                  _this5.start.target.rotation.z,
+                  _this5.end.target.rotation.z,
+                  d.t,
+                ),
+              );
+
+              _this5.target.rotateX(
+                THREE.MathUtils.lerp(
+                  _this5.start.target.rotation.x,
+                  _this5.end.target.rotation.x,
+                  d.t,
+                ),
+              );
+            }),
+        ); // translate to coordinate destination in planar projection
+
+        if (view.referenceCrs != 'EPSG:4978') {
+          animations.push(
+            new _tween['default'].Tween(this.position, tweenGroup)
+              .to(this.end.position, time)
+              .easing(params.easing),
+          );
+        } // translate to altitude zero
+
+        animations.push(
+          new _tween['default'].Tween(this.seaLevel.position, tweenGroup)
+            .to(this.end.seaLevel.position, time)
+            .easing(params.easing),
+        ); // translate camera position
+
+        animations.push(
+          new _tween['default'].Tween(this.camera.position, tweenGroup)
+            .to(this.end.camera.position, time)
+            .easing(params.easing),
+        ); // update animations, transformation and view
+
+        this.animationFrameRequester = function () {
+          tweenGroup.update();
+
+          _this5.updateMatrixWorld(true);
+
+          _this5.applyTransformToCamera(view, camera);
+
+          _this5.targetWorldPosition.setFromMatrixPosition(
+            _this5.seaLevel.matrixWorld,
+          );
+
+          if (params.callback) {
+            params.callback(_this5);
+          }
+
+          targetCoord.crs = view.referenceCrs;
+          targetCoord
+            .setFromVector3(_this5.targetWorldPosition)
+            .as(tileLayer(view).extent.crs, _this5.coord);
+          view.notifyChange(camera);
         };
 
-        this.placeTargetOnGround();
-        view.addFrameRequester(_MainLoop.MAIN_LOOP_EVENTS.BEFORE_RENDER, this.placeTargetOnGround);
-      }
-    }
-  }, {
-    key: "removePlaceTargetOnGround",
-    value: function removePlaceTargetOnGround(view) {
-      if (view && this.placeTargetOnGround) {
-        view.removeFrameRequester(_MainLoop.MAIN_LOOP_EVENTS.BEFORE_RENDER, this.placeTargetOnGround);
-        this.placeTargetOnGround = null;
-      }
-    }
-  }, {
-    key: "tilt",
-    get: function get() {
-      return THREE.MathUtils.radToDeg(this.target.rotation.x);
-    }
-  }, {
-    key: "heading",
-    get: function get() {
-      return -wrapTo180(THREE.MathUtils.radToDeg(this.target.rotation.z) + 180);
-    }
-  }, {
-    key: "range",
-    get: function get() {
-      return this.camera.position.y;
-    }
-  }]);
+        this.removeAll = function (o) {
+          this.removeAll = function () {};
+
+          tweenGroup.removeAll();
+
+          if (this.animationFrameRequester) {
+            view.removeFrameRequester(
+              _MainLoop.MAIN_LOOP_EVENTS.BEFORE_RENDER,
+              this.animationFrameRequester,
+            );
+          }
+
+          def.resolve(o !== undefined);
+          this.animationFrameRequester = null;
+        }; // Waiting last animation complete,
+        // we assume that the animation that completes last is the one that was started last
+
+        animations[animations.length - 1].onComplete(this.removeAll);
+        animations.forEach(function (anim) {
+          return anim.start();
+        });
+        view.addFrameRequester(
+          _MainLoop.MAIN_LOOP_EVENTS.BEFORE_RENDER,
+          this.animationFrameRequester,
+        );
+        view.notifyChange(camera);
+        return def;
+      },
+    },
+    {
+      key: 'stop',
+      value: function stop(view) {
+        this.removePlaceTargetOnGround(view);
+        this.removeAll();
+      }, // update target position to coordinate's altitude
+    },
+    {
+      key: 'addPlaceTargetOnGround',
+      value: function addPlaceTargetOnGround(view, camera, coord) {
+        var _this6 = this;
+
+        var options =
+          arguments.length > 3 && arguments[3] !== undefined
+            ? arguments[3]
+            : {
+                t: 1.0,
+              };
+        this.removePlaceTargetOnGround(view);
+
+        if (view && camera) {
+          var startAltitude = this.target.position.z;
+
+          this.placeTargetOnGround = function () {
+            var altitude = Math.max(
+              0,
+              _DEMUtils['default'].getElevationValueAt(
+                tileLayer(view),
+                coord || _this6.coord,
+                _DEMUtils['default'].PRECISE_READ_Z,
+              ) || 0,
+            );
+            _this6.target.position.z =
+              startAltitude * (1.0 - options.t) + altitude * options.t;
+
+            _this6.target.updateMatrixWorld(true);
+
+            _this6.applyTransformToCamera(view, camera);
+          };
+
+          this.placeTargetOnGround();
+          view.addFrameRequester(
+            _MainLoop.MAIN_LOOP_EVENTS.BEFORE_RENDER,
+            this.placeTargetOnGround,
+          );
+        }
+      },
+    },
+    {
+      key: 'removePlaceTargetOnGround',
+      value: function removePlaceTargetOnGround(view) {
+        if (view && this.placeTargetOnGround) {
+          view.removeFrameRequester(
+            _MainLoop.MAIN_LOOP_EVENTS.BEFORE_RENDER,
+            this.placeTargetOnGround,
+          );
+          this.placeTargetOnGround = null;
+        }
+      },
+    },
+    {
+      key: 'tilt',
+      get: function get() {
+        return THREE.MathUtils.radToDeg(this.target.rotation.x);
+      },
+    },
+    {
+      key: 'heading',
+      get: function get() {
+        return -wrapTo180(
+          THREE.MathUtils.radToDeg(this.target.rotation.z) + 180,
+        );
+      },
+    },
+    {
+      key: 'range',
+      get: function get() {
+        return this.camera.position.y;
+      },
+    },
+  ]);
   return CameraRig;
-}(THREE.Object3D);
+})(THREE.Object3D);
 
 function getRig(camera) {
   rigs[camera.uuid] = rigs[camera.uuid] || new CameraRig(camera);
@@ -465,7 +605,6 @@ function getRig(camera) {
 /**
  * @module CameraUtils
  */
-
 
 var _default = {
   /**
@@ -487,7 +626,7 @@ var _default = {
    * Default value is false.
    */
   defaultStopPlaceOnGroundAtEnd: false,
-  Easing: _tween["default"].Easing,
+  Easing: _tween['default'].Easing,
 
   /**
    * Stop camera's animation
@@ -507,7 +646,11 @@ var _default = {
    * @param      {THREE.Vector3} [target] - The optional target
    * @return     {CameraUtils~CameraTransformOptions}  The transform camera looking at target
    */
-  getTransformCameraLookingAtTarget: function getTransformCameraLookingAtTarget(view, camera, target) {
+  getTransformCameraLookingAtTarget: function getTransformCameraLookingAtTarget(
+    view,
+    camera,
+    target,
+  ) {
     var rig = getRig(camera);
     rig.setfromCamera(view, camera, target);
     return rig.getParams();
@@ -521,8 +664,12 @@ var _default = {
    * @param      {CameraUtils~CameraTransformOptions|Extent}  params  The parameters
    * @return     {Promise} promise with resolve final CameraUtils~CameraTransformOptions
    */
-  transformCameraToLookAtTarget: function transformCameraToLookAtTarget(view, camera) {
-    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  transformCameraToLookAtTarget: function transformCameraToLookAtTarget(
+    view,
+    camera,
+  ) {
+    var params =
+      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     if (params.isExtent) {
       params = this.getCameraTransformOptionsFromExtent(view, camera, params);
@@ -553,57 +700,62 @@ var _default = {
    *
    * @return  {CameraUtils~CameraTransformOptions}   The CameraTransformOptions allowing camera to display the extent.
    */
-  getCameraTransformOptionsFromExtent: function getCameraTransformOptionsFromExtent(view, camera, extent) {
-    var cameraTransformOptions = {
-      coord: new _Coordinates["default"](extent.crs, 0, 0, 0),
-      heading: 0,
-      tilt: view.isPlanarView ? 90 : 89.9
-    };
-    var dimensions;
-
-    if (view.isGlobeView) {
-      extent = extent.as('EPSG:4326'); // compute extent's bounding box dimensions
-
-      obb.setFromExtent(extent); // /!\ WARNING x and y are inverted, see issue #XXXX
-
-      obb.box3D.getSize(size);
-      dimensions = {
-        x: size.y,
-        y: size.x
+  getCameraTransformOptionsFromExtent:
+    function getCameraTransformOptionsFromExtent(view, camera, extent) {
+      var cameraTransformOptions = {
+        coord: new _Coordinates['default'](extent.crs, 0, 0, 0),
+        heading: 0,
+        tilt: view.isPlanarView ? 90 : 89.9,
       };
-    } else {
-      extent = extent.as(view.referenceCrs);
-      dimensions = extent.dimensions();
-    }
+      var dimensions;
 
-    extent.center(cameraTransformOptions.coord);
+      if (view.isGlobeView) {
+        extent = extent.as('EPSG:4326'); // compute extent's bounding box dimensions
 
-    if (camera.isOrthographicCamera) {
-      // setup camera zoom
-      if (dimensions.x / dimensions.y > camera.aspect) {
-        camera.zoom = (camera.right - camera.left) / dimensions.x;
+        obb.setFromExtent(extent); // /!\ WARNING x and y are inverted, see issue #XXXX
+
+        obb.box3D.getSize(size);
+        dimensions = {
+          x: size.y,
+          y: size.x,
+        };
       } else {
-        camera.zoom = (camera.top - camera.bottom) / dimensions.y;
+        extent = extent.as(view.referenceCrs);
+        dimensions = extent.dimensions();
       }
 
-      camera.updateProjectionMatrix(); // setup camera placement
+      extent.center(cameraTransformOptions.coord);
 
-      cameraTransformOptions.range = 1000;
-    } else if (camera.isPerspectiveCamera) {
-      // setup range for camera placement
-      var verticalFOV = THREE.Math.degToRad(camera.fov);
+      if (camera.isOrthographicCamera) {
+        // setup camera zoom
+        if (dimensions.x / dimensions.y > camera.aspect) {
+          camera.zoom = (camera.right - camera.left) / dimensions.x;
+        } else {
+          camera.zoom = (camera.top - camera.bottom) / dimensions.y;
+        }
 
-      if (dimensions.x / dimensions.y > camera.aspect) {
-        var focal = view.domElement.clientHeight * 0.5 / Math.tan(verticalFOV * 0.5);
-        var horizontalFOV = 2 * Math.atan(view.domElement.clientWidth * 0.5 / focal);
-        cameraTransformOptions.range = dimensions.x / (2 * Math.tan(horizontalFOV * 0.5));
-      } else {
-        cameraTransformOptions.range = dimensions.y / (2 * Math.tan(verticalFOV * 0.5));
+        camera.updateProjectionMatrix(); // setup camera placement
+
+        cameraTransformOptions.range = 1000;
+      } else if (camera.isPerspectiveCamera) {
+        // setup range for camera placement
+        var verticalFOV = THREE.Math.degToRad(camera.fov);
+
+        if (dimensions.x / dimensions.y > camera.aspect) {
+          var focal =
+            (view.domElement.clientHeight * 0.5) / Math.tan(verticalFOV * 0.5);
+          var horizontalFOV =
+            2 * Math.atan((view.domElement.clientWidth * 0.5) / focal);
+          cameraTransformOptions.range =
+            dimensions.x / (2 * Math.tan(horizontalFOV * 0.5));
+        } else {
+          cameraTransformOptions.range =
+            dimensions.y / (2 * Math.tan(verticalFOV * 0.5));
+        }
       }
-    }
 
-    return cameraTransformOptions;
-  },
+      return cameraTransformOptions;
+    },
 
   /**
    * Apply transform to camera with animation
@@ -613,10 +765,14 @@ var _default = {
    * @param      {CameraUtils~CameraTransformOptions}  params  The parameters
    * @return     {Promise} promise with resolve final CameraUtils~CameraTransformOptions
    */
-  animateCameraToLookAtTarget: function animateCameraToLookAtTarget(view, camera) {
+  animateCameraToLookAtTarget: function animateCameraToLookAtTarget(
+    view,
+    camera,
+  ) {
     var _this7 = this;
 
-    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var params =
+      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     params.proxy = params.proxy === undefined || params.proxy;
     var rig = getRig(camera);
     rig.stop(view);
@@ -625,17 +781,22 @@ var _default = {
       rig.setProxy(view, camera);
     }
 
-    return rig.animateCameraToLookAtTarget(view, camera, params).promise.then(function (finished) {
-      var params = rig.getParams();
-      var stopPlaceOnGround = params.stopPlaceOnGroundAtEnd === undefined ? _this7.defaultStopPlaceOnGroundAtEnd : params.stopPlaceOnGroundAtEnd;
+    return rig
+      .animateCameraToLookAtTarget(view, camera, params)
+      .promise.then(function (finished) {
+        var params = rig.getParams();
+        var stopPlaceOnGround =
+          params.stopPlaceOnGroundAtEnd === undefined
+            ? _this7.defaultStopPlaceOnGroundAtEnd
+            : params.stopPlaceOnGroundAtEnd;
 
-      if (stopPlaceOnGround) {
-        rig.stop(view);
-      }
+        if (stopPlaceOnGround) {
+          rig.stop(view);
+        }
 
-      params.finished = finished;
-      return params;
-    });
+        params.finished = finished;
+        return params;
+      });
   },
 
   /**
@@ -646,10 +807,14 @@ var _default = {
    * @param      {CameraUtils~CameraTransformOptions[]}  params  array parameters, each parameters transforms are apply to camera, in serial
    * @return     {Promise} promise with resolve final CameraUtils~CameraTransformOptions
    */
-  sequenceAnimationsToLookAtTarget: function sequenceAnimationsToLookAtTarget(view, camera) {
+  sequenceAnimationsToLookAtTarget: function sequenceAnimationsToLookAtTarget(
+    view,
+    camera,
+  ) {
     var _this8 = this;
 
-    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [{}];
+    var params =
+      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [{}];
     // convert each param to a function
     var funcs = params.map(function (param) {
       return function () {
@@ -657,21 +822,25 @@ var _default = {
       };
     }); // execute Promises in serial
 
-    return function promiseSerial(funcs) {
+    return (function promiseSerial(funcs) {
       return funcs.reduce(function (promise, func) {
         return promise.then(function (result) {
-          var finished = result.length ? result[result.length - 1].finished : true;
+          var finished = result.length
+            ? result[result.length - 1].finished
+            : true;
 
           if (finished) {
             return func().then(Array.prototype.concat.bind(result));
           } else {
-            return Promise.resolve([{
-              finished: false
-            }]);
+            return Promise.resolve([
+              {
+                finished: false,
+              },
+            ]);
           }
         });
       }, Promise.resolve([]));
-    }(funcs);
+    })(funcs);
   },
 
   /**
@@ -692,7 +861,7 @@ var _default = {
       diff = diff || {};
       diff.range = {
         previous: first.range,
-        "new": second.range
+        new: second.range,
       };
     }
 
@@ -700,7 +869,7 @@ var _default = {
       diff = diff || {};
       diff.tilt = {
         previous: first.tilt,
-        "new": second.tilt
+        new: second.tilt,
       };
     }
 
@@ -708,19 +877,22 @@ var _default = {
       diff = diff || {};
       diff.heading = {
         previous: first.heading,
-        "new": second.heading
+        new: second.heading,
       };
     }
 
-    if (Math.abs(first.coord.x - second.coord.x) > 0.000001 || Math.abs(first.coord.y - second.coord.y) > 0.000001) {
+    if (
+      Math.abs(first.coord.x - second.coord.x) > 0.000001 ||
+      Math.abs(first.coord.y - second.coord.y) > 0.000001
+    ) {
       diff = diff || {};
       diff.coord = {
         previous: first.coord,
-        "new": second.coord
+        new: second.coord,
       };
     }
 
     return diff;
-  }
+  },
 };
-exports["default"] = _default;
+exports['default'] = _default;

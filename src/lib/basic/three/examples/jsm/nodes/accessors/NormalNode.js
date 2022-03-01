@@ -1,137 +1,103 @@
 import { TempNode } from '../core/TempNode.js';
 import { NodeLib } from '../core/NodeLib.js';
 
-function NormalNode( scope ) {
+function NormalNode(scope) {
+  TempNode.call(this, 'v3');
 
-	TempNode.call( this, 'v3' );
-
-	this.scope = scope || NormalNode.VIEW;
-
+  this.scope = scope || NormalNode.VIEW;
 }
 
 NormalNode.LOCAL = 'local';
 NormalNode.WORLD = 'world';
 NormalNode.VIEW = 'view';
 
-NormalNode.prototype = Object.create( TempNode.prototype );
+NormalNode.prototype = Object.create(TempNode.prototype);
 NormalNode.prototype.constructor = NormalNode;
 NormalNode.prototype.nodeType = 'Normal';
 
 NormalNode.prototype.getShared = function () {
+  // if shared is false, TempNode will not create temp variable (for optimization)
 
-	// if shared is false, TempNode will not create temp variable (for optimization)
-
-	return this.scope === NormalNode.WORLD;
-
+  return this.scope === NormalNode.WORLD;
 };
 
-NormalNode.prototype.build = function ( builder, output, uuid, ns ) {
+NormalNode.prototype.build = function (builder, output, uuid, ns) {
+  var contextNormal = builder.context[this.scope + 'Normal'];
 
-	var contextNormal = builder.context[ this.scope + 'Normal' ];
+  if (contextNormal) {
+    return contextNormal.build(builder, output, uuid, ns);
+  }
 
-	if ( contextNormal ) {
-
-		return contextNormal.build( builder, output, uuid, ns );
-
-	}
-
-	return TempNode.prototype.build.call( this, builder, output, uuid );
-
+  return TempNode.prototype.build.call(this, builder, output, uuid);
 };
 
-NormalNode.prototype.generate = function ( builder, output ) {
+NormalNode.prototype.generate = function (builder, output) {
+  var result;
 
-	var result;
+  switch (this.scope) {
+    case NormalNode.VIEW:
+      if (builder.isShader('vertex')) result = 'transformedNormal';
+      else result = 'geometryNormal';
 
-	switch ( this.scope ) {
+      break;
 
-		case NormalNode.VIEW:
+    case NormalNode.LOCAL:
+      if (builder.isShader('vertex')) {
+        result = 'objectNormal';
+      } else {
+        builder.requires.normal = true;
 
-			if ( builder.isShader( 'vertex' ) ) result = 'transformedNormal';
-			else result = 'geometryNormal';
+        result = 'vObjectNormal';
+      }
 
-			break;
+      break;
 
-		case NormalNode.LOCAL:
+    case NormalNode.WORLD:
+      if (builder.isShader('vertex')) {
+        result =
+          'inverseTransformDirection( transformedNormal, viewMatrix ).xyz';
+      } else {
+        builder.requires.worldNormal = true;
 
-			if ( builder.isShader( 'vertex' ) ) {
+        result = 'vWNormal';
+      }
 
-				result = 'objectNormal';
+      break;
+  }
 
-			} else {
-
-				builder.requires.normal = true;
-
-				result = 'vObjectNormal';
-
-			}
-
-			break;
-
-		case NormalNode.WORLD:
-
-			if ( builder.isShader( 'vertex' ) ) {
-
-				result = 'inverseTransformDirection( transformedNormal, viewMatrix ).xyz';
-
-			} else {
-
-				builder.requires.worldNormal = true;
-
-				result = 'vWNormal';
-
-			}
-
-			break;
-
-	}
-
-	return builder.format( result, this.getType( builder ), output );
-
+  return builder.format(result, this.getType(builder), output);
 };
 
-NormalNode.prototype.copy = function ( source ) {
+NormalNode.prototype.copy = function (source) {
+  TempNode.prototype.copy.call(this, source);
 
-	TempNode.prototype.copy.call( this, source );
+  this.scope = source.scope;
 
-	this.scope = source.scope;
-
-	return this;
-
+  return this;
 };
 
-NormalNode.prototype.toJSON = function ( meta ) {
+NormalNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = this.createJSONNode(meta);
 
-	if ( ! data ) {
+    data.scope = this.scope;
+  }
 
-		data = this.createJSONNode( meta );
-
-		data.scope = this.scope;
-
-	}
-
-	return data;
-
+  return data;
 };
 
-NodeLib.addKeyword( 'viewNormal', function () {
+NodeLib.addKeyword('viewNormal', function () {
+  return new NormalNode(NormalNode.VIEW);
+});
 
-	return new NormalNode( NormalNode.VIEW );
+NodeLib.addKeyword('localNormal', function () {
+  return new NormalNode(NormalNode.NORMAL);
+});
 
-} );
-
-NodeLib.addKeyword( 'localNormal', function () {
-
-	return new NormalNode( NormalNode.NORMAL );
-
-} );
-
-NodeLib.addKeyword( 'worldNormal', function () {
-
-	return new NormalNode( NormalNode.WORLD );
-
-} );
+NodeLib.addKeyword('worldNormal', function () {
+  return new NormalNode(NormalNode.WORLD);
+});
 
 export { NormalNode };

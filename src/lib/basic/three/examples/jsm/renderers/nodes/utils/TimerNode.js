@@ -2,21 +2,15 @@ import FloatNode from '../inputs/FloatNode.js';
 import { NodeUpdateType } from '../core/constants.js';
 
 class TimerNode extends FloatNode {
+  constructor() {
+    super();
 
-	constructor() {
+    this.updateType = NodeUpdateType.Frame;
+  }
 
-		super();
-
-		this.updateType = NodeUpdateType.Frame;
-
-	}
-
-	update( frame ) {
-
-		this.value = frame.time;
-
-	}
-
+  update(frame) {
+    this.value = frame.time;
+  }
 }
 
 export default TimerNode;

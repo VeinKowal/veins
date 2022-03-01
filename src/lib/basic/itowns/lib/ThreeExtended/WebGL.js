@@ -1,14 +1,17 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.WEBGL = void 0;
 var WEBGL = {
   isWebGLAvailable: function isWebGLAvailable() {
     try {
       var canvas = document.createElement('canvas');
-      return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+      return !!(
+        window.WebGLRenderingContext &&
+        (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+      );
     } catch (e) {
       return false;
     }
@@ -30,9 +33,10 @@ var WEBGL = {
   getErrorMessage: function getErrorMessage(version) {
     var contexts = {
       1: window.WebGLRenderingContext,
-      2: window.WebGL2RenderingContext
+      2: window.WebGL2RenderingContext,
     };
-    var message = 'Your $0 does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation" style="color:#000">$1</a>';
+    var message =
+      'Your $0 does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation" style="color:#000">$1</a>';
     var element = document.createElement('div');
     element.id = 'webglmessage';
     element.style.fontFamily = 'monospace';
@@ -51,12 +55,15 @@ var WEBGL = {
       message = message.replace('$0', 'browser');
     }
 
-    message = message.replace('$1', {
-      1: 'WebGL',
-      2: 'WebGL 2'
-    }[version]);
+    message = message.replace(
+      '$1',
+      {
+        1: 'WebGL',
+        2: 'WebGL 2',
+      }[version],
+    );
     element.innerHTML = message;
     return element;
-  }
+  },
 };
 exports.WEBGL = WEBGL;

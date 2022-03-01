@@ -1,58 +1,54 @@
 import { Object3D } from '../core/Object3D.js';
 
 class Scene extends Object3D {
+  constructor() {
+    super();
 
-	constructor() {
+    this.type = 'Scene';
 
-		super();
+    this.background = null;
+    this.environment = null;
+    this.fog = null;
 
-		this.type = 'Scene';
+    this.overrideMaterial = null;
 
-		this.background = null;
-		this.environment = null;
-		this.fog = null;
+    this.autoUpdate = true; // checked by the renderer
 
-		this.overrideMaterial = null;
+    if (typeof __THREE_DEVTOOLS__ !== 'undefined') {
+      __THREE_DEVTOOLS__.dispatchEvent(
+        new CustomEvent('observe', { detail: this }),
+      ); // eslint-disable-line no-undef
+    }
+  }
 
-		this.autoUpdate = true; // checked by the renderer
+  copy(source, recursive) {
+    super.copy(source, recursive);
 
-		if ( typeof __THREE_DEVTOOLS__ !== 'undefined' ) {
+    if (source.background !== null) this.background = source.background.clone();
+    if (source.environment !== null)
+      this.environment = source.environment.clone();
+    if (source.fog !== null) this.fog = source.fog.clone();
 
-			__THREE_DEVTOOLS__.dispatchEvent( new CustomEvent( 'observe', { detail: this } ) ); // eslint-disable-line no-undef
+    if (source.overrideMaterial !== null)
+      this.overrideMaterial = source.overrideMaterial.clone();
 
-		}
+    this.autoUpdate = source.autoUpdate;
+    this.matrixAutoUpdate = source.matrixAutoUpdate;
 
-	}
+    return this;
+  }
 
-	copy( source, recursive ) {
+  toJSON(meta) {
+    const data = super.toJSON(meta);
 
-		super.copy( source, recursive );
+    if (this.background !== null)
+      data.object.background = this.background.toJSON(meta);
+    if (this.environment !== null)
+      data.object.environment = this.environment.toJSON(meta);
+    if (this.fog !== null) data.object.fog = this.fog.toJSON();
 
-		if ( source.background !== null ) this.background = source.background.clone();
-		if ( source.environment !== null ) this.environment = source.environment.clone();
-		if ( source.fog !== null ) this.fog = source.fog.clone();
-
-		if ( source.overrideMaterial !== null ) this.overrideMaterial = source.overrideMaterial.clone();
-
-		this.autoUpdate = source.autoUpdate;
-		this.matrixAutoUpdate = source.matrixAutoUpdate;
-
-		return this;
-
-	}
-
-	toJSON( meta ) {
-
-		const data = super.toJSON( meta );
-
-		if ( this.background !== null ) data.object.background = this.background.toJSON( meta );
-		if ( this.environment !== null ) data.object.environment = this.environment.toJSON( meta );
-		if ( this.fog !== null ) data.object.fog = this.fog.toJSON();
-
-		return data;
-
-	}
-
+    return data;
+  }
 }
 
 Scene.prototype.isScene = true;

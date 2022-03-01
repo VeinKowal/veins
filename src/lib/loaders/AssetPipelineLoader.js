@@ -20,7 +20,8 @@ const AssetPipelineLoader = function (name, assetPipeline) {
 };
 AssetPipelineLoader.ASSET_PIPELINE_LOADER_VERSION = '1.0.0-alpha';
 console.info(
-  'Using AssetPipelineLoader version: ' + AssetPipelineLoader.ASSET_PIPELINE_LOADER_VERSION,
+  'Using AssetPipelineLoader version: ' +
+    AssetPipelineLoader.ASSET_PIPELINE_LOADER_VERSION,
 );
 
 AssetPipelineLoader.prototype = {
@@ -130,7 +131,9 @@ AssetPipeline.prototype = {
       let index = 0;
       for (let assetTask of assetTasks.values()) {
         if (assetTask.getResourceDescriptor()) {
-          loadPromises[index] = await assetTask.loadResource(assetTask.getName());
+          loadPromises[index] = await assetTask.loadResource(
+            assetTask.getName(),
+          );
           index++;
         }
       }
@@ -278,11 +281,13 @@ AssetTask.prototype = {
    */
   process: function () {
     if (!this.isLinker()) {
-      this.processResult = this.assetLoader.instance[this.assetLoader.processFunctionName](
-        this.resourceDescriptor.content.data,
-      );
+      this.processResult = this.assetLoader.instance[
+        this.assetLoader.processFunctionName
+      ](this.resourceDescriptor.content.data);
     } else {
-      this.processResult = this.assetLoader.instance[this.assetLoader.processFunctionName](
+      this.processResult = this.assetLoader.instance[
+        this.assetLoader.processFunctionName
+      ](
         this.relations.before.processResult,
         this.relations.after.assetLoader.instance,
       );

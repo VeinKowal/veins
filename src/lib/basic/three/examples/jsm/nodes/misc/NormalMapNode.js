@@ -1,6 +1,4 @@
-import {
-	BackSide
-} from '../../../../build/three.module.js';
+import { BackSide } from '../../../../build/three.module.js';
 
 import { TempNode } from '../core/TempNode.js';
 import { Vector2Node } from '../inputs/Vector2Node.js';
@@ -9,23 +7,19 @@ import { UVNode } from '../accessors/UVNode.js';
 import { NormalNode } from '../accessors/NormalNode.js';
 import { PositionNode } from '../accessors/PositionNode.js';
 
-function NormalMapNode( value, scale ) {
+function NormalMapNode(value, scale) {
+  TempNode.call(this, 'v3');
 
-	TempNode.call( this, 'v3' );
-
-	this.value = value;
-	this.scale = scale || new Vector2Node( 1, 1 );
-
+  this.value = value;
+  this.scale = scale || new Vector2Node(1, 1);
 }
 
-NormalMapNode.Nodes = ( function () {
+NormalMapNode.Nodes = (function () {
+  var perturbNormal2Arb = new FunctionNode(
+    // Per-Pixel Tangent Space Normal Mapping
+    // http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html
 
-	var perturbNormal2Arb = new FunctionNode(
-
-		// Per-Pixel Tangent Space Normal Mapping
-		// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html
-
-		`vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm, vec3 map, vec2 vUv, vec2 normalScale ) {
+    `vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm, vec3 map, vec2 vUv, vec2 normalScale ) {
 
 		// Workaround for Adreno 3XX dFd*( vec3 ) bug. See #9988
 
@@ -59,78 +53,83 @@ NormalMapNode.Nodes = ( function () {
 		mat3 tsn = mat3( S, T, N );
 		return normalize( tsn * mapN );
 
-	}`, null, { derivatives: true } );
+	}`,
+    null,
+    { derivatives: true },
+  );
 
-	return {
-		perturbNormal2Arb: perturbNormal2Arb
-	};
+  return {
+    perturbNormal2Arb: perturbNormal2Arb,
+  };
+})();
 
-} )();
-
-NormalMapNode.prototype = Object.create( TempNode.prototype );
+NormalMapNode.prototype = Object.create(TempNode.prototype);
 NormalMapNode.prototype.constructor = NormalMapNode;
 NormalMapNode.prototype.nodeType = 'NormalMap';
 
-NormalMapNode.prototype.generate = function ( builder, output ) {
+NormalMapNode.prototype.generate = function (builder, output) {
+  if (builder.isShader('fragment')) {
+    var perturbNormal2Arb = builder.include(
+      NormalMapNode.Nodes.perturbNormal2Arb,
+    );
 
-	if ( builder.isShader( 'fragment' ) ) {
+    this.normal = this.normal || new NormalNode();
+    this.position = this.position || new PositionNode(PositionNode.VIEW);
+    this.uv = this.uv || new UVNode();
 
-		var perturbNormal2Arb = builder.include( NormalMapNode.Nodes.perturbNormal2Arb );
+    var scale = this.scale.build(builder, 'v2');
 
-		this.normal = this.normal || new NormalNode();
-		this.position = this.position || new PositionNode( PositionNode.VIEW );
-		this.uv = this.uv || new UVNode();
+    if (builder.material.side === BackSide) {
+      scale = '-' + scale;
+    }
 
-		var scale = this.scale.build( builder, 'v2' );
+    return builder.format(
+      perturbNormal2Arb +
+        '( -' +
+        this.position.build(builder, 'v3') +
+        ', ' +
+        this.normal.build(builder, 'v3') +
+        ', ' +
+        this.value.build(builder, 'v3') +
+        ', ' +
+        this.uv.build(builder, 'v2') +
+        ', ' +
+        scale +
+        ' )',
+      this.getType(builder),
+      output,
+    );
+  } else {
+    console.warn(
+      'THREE.NormalMapNode is not compatible with ' +
+        builder.shader +
+        ' shader.',
+    );
 
-		if ( builder.material.side === BackSide ) {
-
-			scale = '-' + scale;
-
-		}
-
-		return builder.format( perturbNormal2Arb + '( -' + this.position.build( builder, 'v3' ) + ', ' +
-			this.normal.build( builder, 'v3' ) + ', ' +
-			this.value.build( builder, 'v3' ) + ', ' +
-			this.uv.build( builder, 'v2' ) + ', ' +
-			scale + ' )', this.getType( builder ), output );
-
-	} else {
-
-		console.warn( 'THREE.NormalMapNode is not compatible with ' + builder.shader + ' shader.' );
-
-		return builder.format( 'vec3( 0.0 )', this.getType( builder ), output );
-
-	}
-
+    return builder.format('vec3( 0.0 )', this.getType(builder), output);
+  }
 };
 
-NormalMapNode.prototype.copy = function ( source ) {
+NormalMapNode.prototype.copy = function (source) {
+  TempNode.prototype.copy.call(this, source);
 
-	TempNode.prototype.copy.call( this, source );
+  this.value = source.value;
+  this.scale = source.scale;
 
-	this.value = source.value;
-	this.scale = source.scale;
-
-	return this;
-
+  return this;
 };
 
-NormalMapNode.prototype.toJSON = function ( meta ) {
+NormalMapNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = this.createJSONNode(meta);
 
-	if ( ! data ) {
+    data.value = this.value.toJSON(meta).uuid;
+    data.scale = this.scale.toJSON(meta).uuid;
+  }
 
-		data = this.createJSONNode( meta );
-
-		data.value = this.value.toJSON( meta ).uuid;
-		data.scale = this.scale.toJSON( meta ).uuid;
-
-	}
-
-	return data;
-
+  return data;
 };
 
 export { NormalMapNode };

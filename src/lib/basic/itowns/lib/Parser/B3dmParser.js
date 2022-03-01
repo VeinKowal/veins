@@ -1,50 +1,128 @@
-"use strict";
+'use strict';
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.enableDracoLoader = enableDracoLoader;
-exports["default"] = exports.legacyGLTFLoader = exports.glTFLoader = void 0;
+exports['default'] = exports.legacyGLTFLoader = exports.glTFLoader = void 0;
 
-var _typeof2 = _interopRequireDefault(require("@babel/runtime/helpers/typeof"));
+var _typeof2 = _interopRequireDefault(require('@babel/runtime/helpers/typeof'));
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _Capabilities = _interopRequireDefault(require("../Core/System/Capabilities"));
+var _Capabilities = _interopRequireDefault(
+  require('../Core/System/Capabilities'),
+);
 
-var _GLTFLoader = require("../ThreeExtended/loaders/GLTFLoader");
+var _GLTFLoader = require('../ThreeExtended/loaders/GLTFLoader');
 
-var _DRACOLoader = require("../ThreeExtended/loaders/DRACOLoader");
+var _DRACOLoader = require('../ThreeExtended/loaders/DRACOLoader');
 
-var _LegacyGLTFLoader = _interopRequireDefault(require("./deprecated/LegacyGLTFLoader"));
+var _LegacyGLTFLoader = _interopRequireDefault(
+  require('./deprecated/LegacyGLTFLoader'),
+);
 
-var _ShaderUtils = _interopRequireDefault(require("../Renderer/Shader/ShaderUtils"));
+var _ShaderUtils = _interopRequireDefault(
+  require('../Renderer/Shader/ShaderUtils'),
+);
 
-var _Utf8Decoder = _interopRequireDefault(require("../Utils/Utf8Decoder"));
+var _Utf8Decoder = _interopRequireDefault(require('../Utils/Utf8Decoder'));
 
-var _C3DTBatchTable = _interopRequireDefault(require("../Core/3DTiles/C3DTBatchTable"));
+var _C3DTBatchTable = _interopRequireDefault(
+  require('../Core/3DTiles/C3DTBatchTable'),
+);
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it;
+  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
+    if (
+      Array.isArray(o) ||
+      (it = _unsupportedIterableToArray(o)) ||
+      (allowArrayLike && o && typeof o.length === 'number')
+    ) {
+      if (it) o = it;
+      var i = 0;
+      var F = function F() {};
+      return {
+        s: F,
+        n: function n() {
+          if (i >= o.length) return { done: true };
+          return { done: false, value: o[i++] };
+        },
+        e: function e(_e) {
+          throw _e;
+        },
+        f: F,
+      };
+    }
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
+    );
+  }
+  var normalCompletion = true,
+    didErr = false,
+    err;
+  return {
+    s: function s() {
+      it = o[Symbol.iterator]();
+    },
+    n: function n() {
+      var step = it.next();
+      normalCompletion = step.done;
+      return step;
+    },
+    e: function e(_e2) {
+      didErr = true;
+      err = _e2;
+    },
+    f: function f() {
+      try {
+        if (!normalCompletion && it['return'] != null) it['return']();
+      } finally {
+        if (didErr) throw err;
+      }
+    },
+  };
+}
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === 'Object' && o.constructor) n = o.constructor.name;
+  if (n === 'Map' || n === 'Set') return Array.from(o);
+  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray(o, minLen);
+}
 
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
 
 var matrixChangeUpVectorZtoY = new THREE.Matrix4().makeRotationX(Math.PI / 2); // For gltf rotation
 
 var matrixChangeUpVectorZtoX = new THREE.Matrix4().makeRotationZ(-Math.PI / 2);
 var glTFLoader = new _GLTFLoader.GLTFLoader();
 exports.glTFLoader = glTFLoader;
-var legacyGLTFLoader = new _LegacyGLTFLoader["default"]();
+var legacyGLTFLoader = new _LegacyGLTFLoader['default']();
 exports.legacyGLTFLoader = legacyGLTFLoader;
 
 function filterUnsupportedSemantics(obj) {
   // see GLTFLoader GLTFShader.prototype.update function
-  var supported = ['MODELVIEW', 'MODELVIEWINVERSETRANSPOSE', 'PROJECTION', 'JOINTMATRIX'];
+  var supported = [
+    'MODELVIEW',
+    'MODELVIEWINVERSETRANSPOSE',
+    'PROJECTION',
+    'JOINTMATRIX',
+  ];
 
   if (obj.gltfShader) {
     var names = []; // eslint-disable-next-line guard-for-in
@@ -83,7 +161,6 @@ function filterUnsupportedSemantics(obj) {
  * // You could set path with './'.
  * itowns.enableDracoLoader('./');
  */
-
 
 function enableDracoLoader(path, config) {
   if (!path) {
@@ -126,7 +203,9 @@ var _default = {
     var b3dmHeader = {}; // Magic type is unsigned char [4]
 
     var magicNumberByteLength = 4;
-    b3dmHeader.magic = _Utf8Decoder["default"].decode(new Uint8Array(buffer, 0, magicNumberByteLength));
+    b3dmHeader.magic = _Utf8Decoder['default'].decode(
+      new Uint8Array(buffer, 0, magicNumberByteLength),
+    );
 
     if (b3dmHeader.magic) {
       // Version, byteLength, batchTableJSONByteLength, batchTableBinaryByteLength and batchTable types are uint32
@@ -149,9 +228,14 @@ var _default = {
 
       if (b3dmHeader.FTJSONLength > 0) {
         var sizeBegin = headerByteLength;
-        var jsonBuffer = buffer.slice(sizeBegin, b3dmHeader.FTJSONLength + sizeBegin);
+        var jsonBuffer = buffer.slice(
+          sizeBegin,
+          b3dmHeader.FTJSONLength + sizeBegin,
+        );
 
-        var content = _Utf8Decoder["default"].decode(new Uint8Array(jsonBuffer));
+        var content = _Utf8Decoder['default'].decode(
+          new Uint8Array(jsonBuffer),
+        );
 
         FTJSON = JSON.parse(content);
 
@@ -166,117 +250,153 @@ var _default = {
         console.warn('3D Tiles feature table binary not supported yet.');
       } // Parse batch table
 
-
       if (b3dmHeader.BTJSONLength > 0) {
         // sizeBegin is an index to the beginning of the batch table
-        var _sizeBegin = headerByteLength + b3dmHeader.FTJSONLength + b3dmHeader.FTBinaryLength;
+        var _sizeBegin =
+          headerByteLength +
+          b3dmHeader.FTJSONLength +
+          b3dmHeader.FTBinaryLength;
 
-        var BTBuffer = buffer.slice(_sizeBegin, b3dmHeader.BTJSONLength + _sizeBegin);
-        promises.push(new _C3DTBatchTable["default"](BTBuffer, b3dmHeader.BTBinaryLength, FTJSON.BATCH_LENGTH, options.registeredExtensions));
+        var BTBuffer = buffer.slice(
+          _sizeBegin,
+          b3dmHeader.BTJSONLength + _sizeBegin,
+        );
+        promises.push(
+          new _C3DTBatchTable['default'](
+            BTBuffer,
+            b3dmHeader.BTBinaryLength,
+            FTJSON.BATCH_LENGTH,
+            options.registeredExtensions,
+          ),
+        );
       } else {
         promises.push(Promise.resolve({}));
       }
 
-      var posGltf = headerByteLength + b3dmHeader.FTJSONLength + b3dmHeader.FTBinaryLength + b3dmHeader.BTJSONLength + b3dmHeader.BTBinaryLength;
+      var posGltf =
+        headerByteLength +
+        b3dmHeader.FTJSONLength +
+        b3dmHeader.FTBinaryLength +
+        b3dmHeader.BTJSONLength +
+        b3dmHeader.BTBinaryLength;
       var gltfBuffer = buffer.slice(posGltf);
       var headerView = new DataView(gltfBuffer, 0, 20);
-      promises.push(new Promise(function (resolve
-      /* , reject */
-      ) {
-        var onload = function (gltf) {
-          var _iterator = _createForOfIteratorHelper(gltf.scenes),
+      promises.push(
+        new Promise(function (
+          resolve,
+          /* , reject */
+        ) {
+          var onload = function (gltf) {
+            var _iterator = _createForOfIteratorHelper(gltf.scenes),
               _step;
 
-          try {
-            for (_iterator.s(); !(_step = _iterator.n()).done;) {
-              var scene = _step.value;
-              scene.traverse(filterUnsupportedSemantics);
-            } // Rotation managed
+            try {
+              for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+                var scene = _step.value;
+                scene.traverse(filterUnsupportedSemantics);
+              } // Rotation managed
+            } catch (err) {
+              _iterator.e(err);
+            } finally {
+              _iterator.f();
+            }
 
-          } catch (err) {
-            _iterator.e(err);
-          } finally {
-            _iterator.f();
-          }
+            if (gltfUpAxis === undefined || gltfUpAxis === 'Y') {
+              gltf.scene.applyMatrix4(matrixChangeUpVectorZtoY);
+            } else if (gltfUpAxis === 'X') {
+              gltf.scene.applyMatrix4(matrixChangeUpVectorZtoX);
+            } // Apply relative center from Feature table.
 
-          if (gltfUpAxis === undefined || gltfUpAxis === 'Y') {
-            gltf.scene.applyMatrix4(matrixChangeUpVectorZtoY);
-          } else if (gltfUpAxis === 'X') {
-            gltf.scene.applyMatrix4(matrixChangeUpVectorZtoX);
-          } // Apply relative center from Feature table.
+            gltf.scene.position.copy(FT_RTC); // Apply relative center from gltf json.
 
+            var contentArray = new Uint8Array(
+              gltfBuffer,
+              20,
+              headerView.getUint32(12, true),
+            );
 
-          gltf.scene.position.copy(FT_RTC); // Apply relative center from gltf json.
+            var content = _Utf8Decoder['default'].decode(
+              new Uint8Array(contentArray),
+            );
 
-          var contentArray = new Uint8Array(gltfBuffer, 20, headerView.getUint32(12, true));
+            var json = JSON.parse(content);
 
-          var content = _Utf8Decoder["default"].decode(new Uint8Array(contentArray));
+            if (json.extensions && json.extensions.CESIUM_RTC) {
+              gltf.scene.position.fromArray(json.extensions.CESIUM_RTC.center);
+              gltf.scene.updateMatrixWorld(true);
+            }
 
-          var json = JSON.parse(content);
+            gltf.scene.traverse(function (mesh) {
+              mesh.frustumCulled = false;
 
-          if (json.extensions && json.extensions.CESIUM_RTC) {
-            gltf.scene.position.fromArray(json.extensions.CESIUM_RTC.center);
-            gltf.scene.updateMatrixWorld(true);
-          }
-
-          gltf.scene.traverse(function (mesh) {
-            mesh.frustumCulled = false;
-
-            if (mesh.material) {
-              if (options.overrideMaterials) {
-                if (Array.isArray(mesh.material)) {
-                  var _iterator2 = _createForOfIteratorHelper(mesh.material),
+              if (mesh.material) {
+                if (options.overrideMaterials) {
+                  if (Array.isArray(mesh.material)) {
+                    var _iterator2 = _createForOfIteratorHelper(mesh.material),
                       _step2;
 
-                  try {
-                    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-                      var material = _step2.value;
-                      material.dispose();
+                    try {
+                      for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+                        var material = _step2.value;
+                        material.dispose();
+                      }
+                    } catch (err) {
+                      _iterator2.e(err);
+                    } finally {
+                      _iterator2.f();
                     }
-                  } catch (err) {
-                    _iterator2.e(err);
-                  } finally {
-                    _iterator2.f();
+                  } else {
+                    mesh.material.dispose();
                   }
-                } else {
-                  mesh.material.dispose();
+
+                  if (
+                    (0, _typeof2['default'])(options.overrideMaterials) ===
+                      'object' &&
+                    options.overrideMaterials.isMaterial
+                  ) {
+                    mesh.material = options.overrideMaterials;
+                  } else {
+                    mesh.material.depthWrite = true;
+                  }
+                } else if (
+                  _Capabilities['default'].isLogDepthBufferSupported() &&
+                  mesh.material.isRawShaderMaterial &&
+                  !options.doNotPatchMaterial
+                ) {
+                  _ShaderUtils['default'].patchMaterialForLogDepthSupport(
+                    mesh.material,
+                  );
+
+                  console.warn(
+                    'b3dm shader has been patched to add log depth buffer support',
+                  );
                 }
 
-                if ((0, _typeof2["default"])(options.overrideMaterials) === 'object' && options.overrideMaterials.isMaterial) {
-                  mesh.material = options.overrideMaterials;
-                } else {
-                  mesh.material.depthWrite = true;
-                }
-              } else if (_Capabilities["default"].isLogDepthBufferSupported() && mesh.material.isRawShaderMaterial && !options.doNotPatchMaterial) {
-                _ShaderUtils["default"].patchMaterialForLogDepthSupport(mesh.material);
-
-                console.warn('b3dm shader has been patched to add log depth buffer support');
+                mesh.material.transparent = options.opacity < 1.0;
+                mesh.material.opacity = options.opacity;
               }
+            });
+            resolve(gltf);
+          };
 
-              mesh.material.transparent = options.opacity < 1.0;
-              mesh.material.opacity = options.opacity;
-            }
-          });
-          resolve(gltf);
-        };
+          var version = headerView.getUint32(4, true);
 
-        var version = headerView.getUint32(4, true);
-
-        if (version === 1) {
-          legacyGLTFLoader.parse(gltfBuffer, urlBase, onload);
-        } else {
-          glTFLoader.parse(gltfBuffer, urlBase, onload);
-        }
-      }));
+          if (version === 1) {
+            legacyGLTFLoader.parse(gltfBuffer, urlBase, onload);
+          } else {
+            glTFLoader.parse(gltfBuffer, urlBase, onload);
+          }
+        }),
+      );
       return Promise.all(promises).then(function (values) {
         return {
           gltf: values[1],
-          batchTable: values[0]
+          batchTable: values[0],
         };
       });
     } else {
       throw new Error('Invalid b3dm file.');
     }
-  }
+  },
 };
-exports["default"] = _default;
+exports['default'] = _default;

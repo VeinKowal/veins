@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var _Coordinates = _interopRequireDefault(require("./Coordinates"));
+var _Coordinates = _interopRequireDefault(require('./Coordinates'));
 
 /**
  * Generated On: 2016-02-25
@@ -59,7 +59,7 @@ var CoordStars = {
     }
 
     function getEquationOfCenter(M) {
-      return rad * (1.9148 * sin(M) + 0.0200 * sin(2 * M) + 0.0003 * sin(3 * M));
+      return rad * (1.9148 * sin(M) + 0.02 * sin(2 * M) + 0.0003 * sin(3 * M));
     }
 
     function getEclipticLongitude(M, C) {
@@ -84,8 +84,7 @@ var CoordStars = {
         H: H,
         SiderealTime: t,
         altitude: getAltitude(H, phi, D),
-        azimuth: getAzimuth(H, phi, D) + PI / 2 // + PI// - PI/2 // origin: north !!! not like original Mourner code but more classical ref
-
+        azimuth: getAzimuth(H, phi, D) + PI / 2, // + PI// - PI/2 // origin: north !!! not like original Mourner code but more classical ref
       };
     };
   },
@@ -93,11 +92,19 @@ var CoordStars = {
   getSunPositionInScene: function getSunPositionInScene(date, lat, lon) {
     var sun = CoordStars.getSunPosition()(date, lat, lon);
     var dayMilliSec = 24 * 3600000;
-    var longitude = sun.ascension + date % dayMilliSec / dayMilliSec * -360 + 180; // cause midday
+    var longitude =
+      sun.ascension + ((date % dayMilliSec) / dayMilliSec) * -360 + 180; // cause midday
 
-    var coSunCarto = new _Coordinates["default"]('EPSG:4326', longitude, lat, 50000000).as('EPSG:4978').toVector3();
+    var coSunCarto = new _Coordinates['default'](
+      'EPSG:4326',
+      longitude,
+      lat,
+      50000000,
+    )
+      .as('EPSG:4978')
+      .toVector3();
     return coSunCarto;
-  }
+  },
 };
 var _default = CoordStars;
-exports["default"] = _default;
+exports['default'] = _default;

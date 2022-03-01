@@ -11,147 +11,122 @@ const _skinWeight = new Vector4();
 const _vector = new Vector3();
 const _matrix = new Matrix4();
 
-function SkinnedMesh( geometry, material ) {
+function SkinnedMesh(geometry, material) {
+  Mesh.call(this, geometry, material);
 
-	Mesh.call( this, geometry, material );
+  this.type = 'SkinnedMesh';
 
-	this.type = 'SkinnedMesh';
-
-	this.bindMode = 'attached';
-	this.bindMatrix = new Matrix4();
-	this.bindMatrixInverse = new Matrix4();
-
+  this.bindMode = 'attached';
+  this.bindMatrix = new Matrix4();
+  this.bindMatrixInverse = new Matrix4();
 }
 
-SkinnedMesh.prototype = Object.assign( Object.create( Mesh.prototype ), {
+SkinnedMesh.prototype = Object.assign(Object.create(Mesh.prototype), {
+  constructor: SkinnedMesh,
 
-	constructor: SkinnedMesh,
+  isSkinnedMesh: true,
 
-	isSkinnedMesh: true,
+  copy: function (source) {
+    Mesh.prototype.copy.call(this, source);
 
-	copy: function ( source ) {
+    this.bindMode = source.bindMode;
+    this.bindMatrix.copy(source.bindMatrix);
+    this.bindMatrixInverse.copy(source.bindMatrixInverse);
 
-		Mesh.prototype.copy.call( this, source );
+    this.skeleton = source.skeleton;
 
-		this.bindMode = source.bindMode;
-		this.bindMatrix.copy( source.bindMatrix );
-		this.bindMatrixInverse.copy( source.bindMatrixInverse );
+    return this;
+  },
 
-		this.skeleton = source.skeleton;
+  bind: function (skeleton, bindMatrix) {
+    this.skeleton = skeleton;
 
-		return this;
+    if (bindMatrix === undefined) {
+      this.updateMatrixWorld(true);
 
-	},
+      this.skeleton.calculateInverses();
 
-	bind: function ( skeleton, bindMatrix ) {
+      bindMatrix = this.matrixWorld;
+    }
 
-		this.skeleton = skeleton;
+    this.bindMatrix.copy(bindMatrix);
+    this.bindMatrixInverse.copy(bindMatrix).invert();
+  },
 
-		if ( bindMatrix === undefined ) {
+  pose: function () {
+    this.skeleton.pose();
+  },
 
-			this.updateMatrixWorld( true );
+  normalizeSkinWeights: function () {
+    const vector = new Vector4();
 
-			this.skeleton.calculateInverses();
+    const skinWeight = this.geometry.attributes.skinWeight;
 
-			bindMatrix = this.matrixWorld;
+    for (let i = 0, l = skinWeight.count; i < l; i++) {
+      vector.x = skinWeight.getX(i);
+      vector.y = skinWeight.getY(i);
+      vector.z = skinWeight.getZ(i);
+      vector.w = skinWeight.getW(i);
 
-		}
+      const scale = 1.0 / vector.manhattanLength();
 
-		this.bindMatrix.copy( bindMatrix );
-		this.bindMatrixInverse.copy( bindMatrix ).invert();
+      if (scale !== Infinity) {
+        vector.multiplyScalar(scale);
+      } else {
+        vector.set(1, 0, 0, 0); // do something reasonable
+      }
 
-	},
+      skinWeight.setXYZW(i, vector.x, vector.y, vector.z, vector.w);
+    }
+  },
 
-	pose: function () {
+  updateMatrixWorld: function (force) {
+    Mesh.prototype.updateMatrixWorld.call(this, force);
 
-		this.skeleton.pose();
+    if (this.bindMode === 'attached') {
+      this.bindMatrixInverse.copy(this.matrixWorld).invert();
+    } else if (this.bindMode === 'detached') {
+      this.bindMatrixInverse.copy(this.bindMatrix).invert();
+    } else {
+      console.warn(
+        'THREE.SkinnedMesh: Unrecognized bindMode: ' + this.bindMode,
+      );
+    }
+  },
 
-	},
+  boneTransform: function (index, target) {
+    const skeleton = this.skeleton;
+    const geometry = this.geometry;
 
-	normalizeSkinWeights: function () {
+    _skinIndex.fromBufferAttribute(geometry.attributes.skinIndex, index);
+    _skinWeight.fromBufferAttribute(geometry.attributes.skinWeight, index);
 
-		const vector = new Vector4();
+    _basePosition
+      .fromBufferAttribute(geometry.attributes.position, index)
+      .applyMatrix4(this.bindMatrix);
 
-		const skinWeight = this.geometry.attributes.skinWeight;
+    target.set(0, 0, 0);
 
-		for ( let i = 0, l = skinWeight.count; i < l; i ++ ) {
+    for (let i = 0; i < 4; i++) {
+      const weight = _skinWeight.getComponent(i);
 
-			vector.x = skinWeight.getX( i );
-			vector.y = skinWeight.getY( i );
-			vector.z = skinWeight.getZ( i );
-			vector.w = skinWeight.getW( i );
+      if (weight !== 0) {
+        const boneIndex = _skinIndex.getComponent(i);
 
-			const scale = 1.0 / vector.manhattanLength();
+        _matrix.multiplyMatrices(
+          skeleton.bones[boneIndex].matrixWorld,
+          skeleton.boneInverses[boneIndex],
+        );
 
-			if ( scale !== Infinity ) {
+        target.addScaledVector(
+          _vector.copy(_basePosition).applyMatrix4(_matrix),
+          weight,
+        );
+      }
+    }
 
-				vector.multiplyScalar( scale );
-
-			} else {
-
-				vector.set( 1, 0, 0, 0 ); // do something reasonable
-
-			}
-
-			skinWeight.setXYZW( i, vector.x, vector.y, vector.z, vector.w );
-
-		}
-
-	},
-
-	updateMatrixWorld: function ( force ) {
-
-		Mesh.prototype.updateMatrixWorld.call( this, force );
-
-		if ( this.bindMode === 'attached' ) {
-
-			this.bindMatrixInverse.copy( this.matrixWorld ).invert();
-
-		} else if ( this.bindMode === 'detached' ) {
-
-			this.bindMatrixInverse.copy( this.bindMatrix ).invert();
-
-		} else {
-
-			console.warn( 'THREE.SkinnedMesh: Unrecognized bindMode: ' + this.bindMode );
-
-		}
-
-	},
-
-	boneTransform: function ( index, target ) {
-
-		const skeleton = this.skeleton;
-		const geometry = this.geometry;
-
-		_skinIndex.fromBufferAttribute( geometry.attributes.skinIndex, index );
-		_skinWeight.fromBufferAttribute( geometry.attributes.skinWeight, index );
-
-		_basePosition.fromBufferAttribute( geometry.attributes.position, index ).applyMatrix4( this.bindMatrix );
-
-		target.set( 0, 0, 0 );
-
-		for ( let i = 0; i < 4; i ++ ) {
-
-			const weight = _skinWeight.getComponent( i );
-
-			if ( weight !== 0 ) {
-
-				const boneIndex = _skinIndex.getComponent( i );
-
-				_matrix.multiplyMatrices( skeleton.bones[ boneIndex ].matrixWorld, skeleton.boneInverses[ boneIndex ] );
-
-				target.addScaledVector( _vector.copy( _basePosition ).applyMatrix4( _matrix ), weight );
-
-			}
-
-		}
-
-		return target.applyMatrix4( this.bindMatrixInverse );
-
-	}
-
-} );
-
+    return target.applyMatrix4(this.bindMatrixInverse);
+  },
+});
 
 export { SkinnedMesh };

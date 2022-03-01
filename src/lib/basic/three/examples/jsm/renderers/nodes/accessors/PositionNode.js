@@ -2,38 +2,30 @@ import Node from '../core/Node.js';
 import AttributeNode from '../core/AttributeNode.js';
 
 class PositionNode extends Node {
+  static LOCAL = 'local';
 
-	static LOCAL = 'local';
+  constructor(scope = PositionNode.POSITION) {
+    super('vec3');
 
-	constructor( scope = PositionNode.POSITION ) {
+    this.scope = scope;
+  }
 
-		super( 'vec3' );
+  generate(builder, output) {
+    const type = this.getType(builder);
+    const nodeData = builder.getDataFromNode(this, builder.shaderStage);
 
-		this.scope = scope;
+    let positionNode = nodeData.positionNode;
 
-	}
+    if (positionNode === undefined) {
+      positionNode = new AttributeNode('position', 'vec3');
 
-	generate( builder, output ) {
+      nodeData.positionNode = positionNode;
+    }
 
-		const type = this.getType( builder );
-		const nodeData = builder.getDataFromNode( this, builder.shaderStage );
+    const positionSnipped = positionNode.build(builder, type);
 
-		let positionNode = nodeData.positionNode;
-
-		if ( positionNode === undefined ) {
-
-			positionNode = new AttributeNode( 'position', 'vec3' );
-
-			nodeData.positionNode = positionNode;
-
-		}
-
-		const positionSnipped = positionNode.build( builder, type );
-
-		return builder.format( positionSnipped, type, output );
-
-	}
-
+    return builder.format(positionSnipped, type, output);
+  }
 }
 
 export default PositionNode;

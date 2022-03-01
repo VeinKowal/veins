@@ -1,4 +1,10 @@
-import { BackSide, LinearFilter, LinearMipmapLinearFilter, NoBlending, RGBAFormat } from '../constants.js';
+import {
+  BackSide,
+  LinearFilter,
+  LinearMipmapLinearFilter,
+  NoBlending,
+  RGBAFormat,
+} from '../constants.js';
 import { Mesh } from '../objects/Mesh.js';
 import { BoxGeometry } from '../geometries/BoxGeometry.js';
 import { ShaderMaterial } from '../materials/ShaderMaterial.js';
@@ -8,47 +14,55 @@ import { CubeCamera } from '../cameras/CubeCamera.js';
 import { CubeTexture } from '../textures/CubeTexture.js';
 
 class WebGLCubeRenderTarget extends WebGLRenderTarget {
+  constructor(size, options, dummy) {
+    if (Number.isInteger(options)) {
+      console.warn(
+        'THREE.WebGLCubeRenderTarget: constructor signature is now WebGLCubeRenderTarget( size, options )',
+      );
 
-	constructor( size, options, dummy ) {
+      options = dummy;
+    }
 
-		if ( Number.isInteger( options ) ) {
+    super(size, size, options);
 
-			console.warn( 'THREE.WebGLCubeRenderTarget: constructor signature is now WebGLCubeRenderTarget( size, options )' );
+    options = options || {};
 
-			options = dummy;
+    this.texture = new CubeTexture(
+      undefined,
+      options.mapping,
+      options.wrapS,
+      options.wrapT,
+      options.magFilter,
+      options.minFilter,
+      options.format,
+      options.type,
+      options.anisotropy,
+      options.encoding,
+    );
 
-		}
+    this.texture.generateMipmaps =
+      options.generateMipmaps !== undefined ? options.generateMipmaps : false;
+    this.texture.minFilter =
+      options.minFilter !== undefined ? options.minFilter : LinearFilter;
 
-		super( size, size, options );
+    this.texture._needsFlipEnvMap = false;
+  }
 
-		options = options || {};
+  fromEquirectangularTexture(renderer, texture) {
+    this.texture.type = texture.type;
+    this.texture.format = RGBAFormat; // see #18859
+    this.texture.encoding = texture.encoding;
 
-		this.texture = new CubeTexture( undefined, options.mapping, options.wrapS, options.wrapT, options.magFilter, options.minFilter, options.format, options.type, options.anisotropy, options.encoding );
+    this.texture.generateMipmaps = texture.generateMipmaps;
+    this.texture.minFilter = texture.minFilter;
+    this.texture.magFilter = texture.magFilter;
 
-		this.texture.generateMipmaps = options.generateMipmaps !== undefined ? options.generateMipmaps : false;
-		this.texture.minFilter = options.minFilter !== undefined ? options.minFilter : LinearFilter;
+    const shader = {
+      uniforms: {
+        tEquirect: { value: null },
+      },
 
-		this.texture._needsFlipEnvMap = false;
-
-	}
-
-	fromEquirectangularTexture( renderer, texture ) {
-
-		this.texture.type = texture.type;
-		this.texture.format = RGBAFormat; // see #18859
-		this.texture.encoding = texture.encoding;
-
-		this.texture.generateMipmaps = texture.generateMipmaps;
-		this.texture.minFilter = texture.minFilter;
-		this.texture.magFilter = texture.magFilter;
-
-		const shader = {
-
-			uniforms: {
-				tEquirect: { value: null },
-			},
-
-			vertexShader: /* glsl */`
+      vertexShader: /* glsl */ `
 
 				varying vec3 vWorldDirection;
 
@@ -68,7 +82,7 @@ class WebGLCubeRenderTarget extends WebGLRenderTarget {
 				}
 			`,
 
-			fragmentShader: /* glsl */`
+      fragmentShader: /* glsl */ `
 
 				uniform sampler2D tEquirect;
 
@@ -85,60 +99,53 @@ class WebGLCubeRenderTarget extends WebGLRenderTarget {
 					gl_FragColor = texture2D( tEquirect, sampleUV );
 
 				}
-			`
-		};
+			`,
+    };
 
-		const geometry = new BoxGeometry( 5, 5, 5 );
+    const geometry = new BoxGeometry(5, 5, 5);
 
-		const material = new ShaderMaterial( {
+    const material = new ShaderMaterial({
+      name: 'CubemapFromEquirect',
 
-			name: 'CubemapFromEquirect',
+      uniforms: cloneUniforms(shader.uniforms),
+      vertexShader: shader.vertexShader,
+      fragmentShader: shader.fragmentShader,
+      side: BackSide,
+      blending: NoBlending,
+    });
 
-			uniforms: cloneUniforms( shader.uniforms ),
-			vertexShader: shader.vertexShader,
-			fragmentShader: shader.fragmentShader,
-			side: BackSide,
-			blending: NoBlending
+    material.uniforms.tEquirect.value = texture;
 
-		} );
+    const mesh = new Mesh(geometry, material);
 
-		material.uniforms.tEquirect.value = texture;
+    const currentMinFilter = texture.minFilter;
 
-		const mesh = new Mesh( geometry, material );
+    // Avoid blurred poles
+    if (texture.minFilter === LinearMipmapLinearFilter)
+      texture.minFilter = LinearFilter;
 
-		const currentMinFilter = texture.minFilter;
+    const camera = new CubeCamera(1, 10, this);
+    camera.update(renderer, mesh);
 
-		// Avoid blurred poles
-		if ( texture.minFilter === LinearMipmapLinearFilter ) texture.minFilter = LinearFilter;
+    texture.minFilter = currentMinFilter;
 
-		const camera = new CubeCamera( 1, 10, this );
-		camera.update( renderer, mesh );
+    mesh.geometry.dispose();
+    mesh.material.dispose();
 
-		texture.minFilter = currentMinFilter;
+    return this;
+  }
 
-		mesh.geometry.dispose();
-		mesh.material.dispose();
+  clear(renderer, color, depth, stencil) {
+    const currentRenderTarget = renderer.getRenderTarget();
 
-		return this;
+    for (let i = 0; i < 6; i++) {
+      renderer.setRenderTarget(this, i);
 
-	}
+      renderer.clear(color, depth, stencil);
+    }
 
-	clear( renderer, color, depth, stencil ) {
-
-		const currentRenderTarget = renderer.getRenderTarget();
-
-		for ( let i = 0; i < 6; i ++ ) {
-
-			renderer.setRenderTarget( this, i );
-
-			renderer.clear( color, depth, stencil );
-
-		}
-
-		renderer.setRenderTarget( currentRenderTarget );
-
-	}
-
+    renderer.setRenderTarget(currentRenderTarget);
+  }
 }
 
 WebGLCubeRenderTarget.prototype.isWebGLCubeRenderTarget = true;

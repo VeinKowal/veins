@@ -70,7 +70,8 @@ MaterialHandler.prototype = {
 
     let runtimeMaterials = {};
     runtimeMaterials[defaultMaterial.name] = defaultMaterial;
-    runtimeMaterials[defaultVertexColorMaterial.name] = defaultVertexColorMaterial;
+    runtimeMaterials[defaultVertexColorMaterial.name] =
+      defaultVertexColorMaterial;
     runtimeMaterials[defaultLineMaterial.name] = defaultLineMaterial;
     runtimeMaterials[defaultPointMaterial.name] = defaultPointMaterial;
 
@@ -85,13 +86,19 @@ MaterialHandler.prototype = {
    */
   addPayloadMaterials: function (materialPayload) {
     let material, materialName;
-    let materialCloneInstructions = materialPayload.materials.materialCloneInstructions;
+    let materialCloneInstructions =
+      materialPayload.materials.materialCloneInstructions;
     let newMaterials = {};
 
-    if (materialCloneInstructions !== undefined && materialCloneInstructions !== null) {
+    if (
+      materialCloneInstructions !== undefined &&
+      materialCloneInstructions !== null
+    ) {
       let materialNameOrg = materialCloneInstructions.materialNameOrg;
       materialNameOrg =
-        materialNameOrg !== undefined && materialNameOrg !== null ? materialNameOrg : '';
+        materialNameOrg !== undefined && materialNameOrg !== null
+          ? materialNameOrg
+          : '';
       let materialOrg = this.materials[materialNameOrg];
       if (materialOrg) {
         material = materialOrg.clone();
@@ -105,13 +112,19 @@ MaterialHandler.prototype = {
         newMaterials[materialName] = material;
       } else {
         if (this.logging.enabled) {
-          console.info('Requested material "' + materialNameOrg + '" is not available!');
+          console.info(
+            'Requested material "' + materialNameOrg + '" is not available!',
+          );
         }
       }
     }
 
     let materials = materialPayload.materials.serializedMaterials;
-    if (materials !== undefined && materials !== null && Object.keys(materials).length > 0) {
+    if (
+      materials !== undefined &&
+      materials !== null &&
+      Object.keys(materials).length > 0
+    ) {
       let loader = new MaterialLoader();
       let materialJson;
       for (materialName in materials) {
@@ -119,7 +132,11 @@ MaterialHandler.prototype = {
         if (materialJson !== undefined && materialJson !== null) {
           material = loader.parse(materialJson);
           if (this.logging.enabled) {
-            console.info('De-serialized material with name "' + materialName + '" will be added.');
+            console.info(
+              'De-serialized material with name "' +
+                materialName +
+                '" will be added.',
+            );
           }
           this.materials[materialName] = material;
           newMaterials[materialName] = material;
@@ -143,7 +160,11 @@ MaterialHandler.prototype = {
     if (newMaterials === undefined || newMaterials === null) {
       newMaterials = {};
     }
-    if (materials !== undefined && materials !== null && Object.keys(materials).length > 0) {
+    if (
+      materials !== undefined &&
+      materials !== null &&
+      Object.keys(materials).length > 0
+    ) {
       let material;
       let existingMaterial;
       let add;

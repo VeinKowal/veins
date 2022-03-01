@@ -60,7 +60,8 @@ class ParticleSystem {
   // 定义注册方法
   private static loginUpdateFunction = (f: updateFunction, name: string) => {
     // 注册
-    ParticleSystem.updateFunctions && ParticleSystem.updateFunctions.set(name, f);
+    ParticleSystem.updateFunctions &&
+      ParticleSystem.updateFunctions.set(name, f);
   };
 
   // 创建粒子效果
@@ -79,9 +80,12 @@ class ParticleSystem {
       // 保存
       particles.push(particle);
 
-      ParticleSystem.loginUpdateFunction((sce: Scene, cam: PerspectiveCamera) => {
-        !(particle instanceof FogExp2) && particle.update(cam.position);
-      }, particle.constructor.name);
+      ParticleSystem.loginUpdateFunction(
+        (sce: Scene, cam: PerspectiveCamera) => {
+          !(particle instanceof FogExp2) && particle.update(cam.position);
+        },
+        particle.constructor.name,
+      );
     });
 
     ParticleSystem.setparticleEffect(particles, scene);

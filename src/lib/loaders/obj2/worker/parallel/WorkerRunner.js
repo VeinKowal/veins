@@ -17,12 +17,20 @@ ObjectManipulator.prototype = {
    */
   applyProperties: function (objToAlter, params, forceCreation) {
     // fast-fail
-    if (objToAlter === undefined || objToAlter === null || params === undefined || params === null)
+    if (
+      objToAlter === undefined ||
+      objToAlter === null ||
+      params === undefined ||
+      params === null
+    )
       return;
 
     let property, funcName, values;
     for (property in params) {
-      funcName = 'set' + property.substring(0, 1).toLocaleUpperCase() + property.substring(1);
+      funcName =
+        'set' +
+        property.substring(0, 1).toLocaleUpperCase() +
+        property.substring(1);
       values = params[property];
 
       if (typeof objToAlter[funcName] === 'function') {
@@ -114,7 +122,8 @@ WorkerRunner.prototype = {
    * @param {Object} payload Raw mesh description (buffers, params, materials) used to build one to many meshes.
    */
   processMessage: function (payload) {
-    this.payloadHandler.handlePayload && this.payloadHandler.handlePayload(payload);
+    this.payloadHandler.handlePayload &&
+      this.payloadHandler.handlePayload(payload);
   },
 };
 

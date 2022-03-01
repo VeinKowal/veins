@@ -1,39 +1,141 @@
-"use strict";
+'use strict';
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+var _classCallCheck2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/classCallCheck'),
+);
 
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+var _createClass2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/createClass'),
+);
 
-var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
+var _assertThisInitialized2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/assertThisInitialized'),
+);
 
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+var _inherits2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/inherits'),
+);
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+var _possibleConstructorReturn2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/possibleConstructorReturn'),
+);
 
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+var _getPrototypeOf2 = _interopRequireDefault(
+  require('@babel/runtime/helpers/getPrototypeOf'),
+);
 
-var _Layer2 = _interopRequireDefault(require("./Layer"));
+var _Layer2 = _interopRequireDefault(require('./Layer'));
 
-var _Picking = _interopRequireDefault(require("../Core/Picking"));
+var _Picking = _interopRequireDefault(require('../Core/Picking'));
 
-var _Cache = require("../Core/Scheduler/Cache");
+var _Cache = require('../Core/Scheduler/Cache');
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+  return function () {
+    var Super = (0, _getPrototypeOf2['default'])(Derived),
+      result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return (0, _possibleConstructorReturn2['default'])(this, result);
+  };
+}
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === 'function') return true;
+  try {
+    Boolean.prototype.valueOf.call(
+      Reflect.construct(Boolean, [], function () {}),
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it;
+  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
+    if (
+      Array.isArray(o) ||
+      (it = _unsupportedIterableToArray(o)) ||
+      (allowArrayLike && o && typeof o.length === 'number')
+    ) {
+      if (it) o = it;
+      var i = 0;
+      var F = function F() {};
+      return {
+        s: F,
+        n: function n() {
+          if (i >= o.length) return { done: true };
+          return { done: false, value: o[i++] };
+        },
+        e: function e(_e) {
+          throw _e;
+        },
+        f: F,
+      };
+    }
+    throw new TypeError(
+      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
+    );
+  }
+  var normalCompletion = true,
+    didErr = false,
+    err;
+  return {
+    s: function s() {
+      it = o[Symbol.iterator]();
+    },
+    n: function n() {
+      var step = it.next();
+      normalCompletion = step.done;
+      return step;
+    },
+    e: function e(_e2) {
+      didErr = true;
+      err = _e2;
+    },
+    f: function f() {
+      try {
+        if (!normalCompletion && it['return'] != null) it['return']();
+      } finally {
+        if (didErr) throw err;
+      }
+    },
+  };
+}
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === 'Object' && o.constructor) n = o.constructor.name;
+  if (n === 'Map' || n === 'Set') return Array.from(o);
+  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray(o, minLen);
+}
 
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
 
 function disposeMesh(obj) {
   if (obj.dispose) {
@@ -46,10 +148,10 @@ function disposeMesh(obj) {
     if (obj.material) {
       if (Array.isArray(obj.material)) {
         var _iterator = _createForOfIteratorHelper(obj.material),
-            _step;
+          _step;
 
         try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          for (_iterator.s(); !(_step = _iterator.n()).done; ) {
             var material = _step.value;
             material.dispose();
           }
@@ -67,10 +169,10 @@ function disposeMesh(obj) {
 
 function traverse(obj, callback) {
   var _iterator2 = _createForOfIteratorHelper(obj.children),
-      _step2;
+    _step2;
 
   try {
-    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
       var child = _step2.value;
       traverse(child, callback);
     }
@@ -98,9 +200,8 @@ function traverse(obj, callback) {
  * This property is used only if the layer is attached to [TiledGeometryLayer]{@link TiledGeometryLayer}.
  */
 
-
-var GeometryLayer = /*#__PURE__*/function (_Layer) {
-  (0, _inherits2["default"])(GeometryLayer, _Layer);
+var GeometryLayer = /*#__PURE__*/ (function (_Layer) {
+  (0, _inherits2['default'])(GeometryLayer, _Layer);
 
   var _super = _createSuper(GeometryLayer);
 
@@ -142,32 +243,45 @@ var GeometryLayer = /*#__PURE__*/function (_Layer) {
   function GeometryLayer(id, object3d) {
     var _this;
 
-    var config = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    (0, _classCallCheck2["default"])(this, GeometryLayer);
-    config.cacheLifeTime = config.cacheLifeTime == undefined ? _Cache.CACHE_POLICIES.GEOMETRY : config.cacheLifeTime;
+    var config =
+      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    (0, _classCallCheck2['default'])(this, GeometryLayer);
+    config.cacheLifeTime =
+      config.cacheLifeTime == undefined
+        ? _Cache.CACHE_POLICIES.GEOMETRY
+        : config.cacheLifeTime;
     _this = _super.call(this, id, config);
     _this.isGeometryLayer = true;
 
     if (!object3d || !object3d.isObject3D) {
-      throw new Error("Missing/Invalid object3d parameter (must be a\n                three.js Object3D instance)");
+      throw new Error(
+        'Missing/Invalid object3d parameter (must be a\n                three.js Object3D instance)',
+      );
     }
 
     if (object3d.type === 'Group' && object3d.name === '') {
       object3d.name = id;
     }
 
-    Object.defineProperty((0, _assertThisInitialized2["default"])(_this), 'object3d', {
-      value: object3d,
-      writable: false,
-      configurable: true
-    });
+    Object.defineProperty(
+      (0, _assertThisInitialized2['default'])(_this),
+      'object3d',
+      {
+        value: object3d,
+        writable: false,
+        configurable: true,
+      },
+    );
 
     _this.defineLayerProperty('opacity', 1.0, function () {
       var root = _this.parent ? _this.parent.object3d : _this.object3d;
       root.traverse(function (object) {
-        if (object.layer == (0, _assertThisInitialized2["default"])(_this)) {
+        if (object.layer == (0, _assertThisInitialized2['default'])(_this)) {
           _this.changeOpacity(object);
-        } else if (object.content && object.content.layer == (0, _assertThisInitialized2["default"])(_this)) {
+        } else if (
+          object.content &&
+          object.content.layer == (0, _assertThisInitialized2['default'])(_this)
+        ) {
           object.content.traverse(_this.changeOpacity);
         }
       });
@@ -176,11 +290,20 @@ var GeometryLayer = /*#__PURE__*/function (_Layer) {
     _this.defineLayerProperty('wireframe', false, function () {
       var root = _this.parent ? _this.parent.object3d : _this.object3d;
       root.traverse(function (object) {
-        if (object.layer == (0, _assertThisInitialized2["default"])(_this) && object.material) {
+        if (
+          object.layer == (0, _assertThisInitialized2['default'])(_this) &&
+          object.material
+        ) {
           object.material.wireframe = _this.wireframe;
-        } else if (object.content && object.content.layer == (0, _assertThisInitialized2["default"])(_this)) {
+        } else if (
+          object.content &&
+          object.content.layer == (0, _assertThisInitialized2['default'])(_this)
+        ) {
           object.content.traverse(function (o) {
-            if (o.material && o.layer == (0, _assertThisInitialized2["default"])(_this)) {
+            if (
+              o.material &&
+              o.layer == (0, _assertThisInitialized2['default'])(_this)
+            ) {
               o.material.wireframe = _this.wireframe;
             }
           });
@@ -192,7 +315,7 @@ var GeometryLayer = /*#__PURE__*/function (_Layer) {
     _this.visible = config.visible == undefined ? true : config.visible;
     Object.defineProperty(_this.zoom, 'max', {
       value: Infinity,
-      writable: false
+      writable: false,
     }); // Feature options
 
     _this.filteringExtent = !_this.source.isFileSource;
@@ -206,141 +329,162 @@ var GeometryLayer = /*#__PURE__*/function (_Layer) {
   // See 3dtilesLayer or PotreeLayer for examples.
   // eslint-disable-next-line arrow-body-style
 
+  (0, _createClass2['default'])(GeometryLayer, [
+    {
+      key: 'getObjectToUpdateForAttachedLayers',
+      value: function getObjectToUpdateForAttachedLayers(obj) {
+        if (obj.parent && obj.material) {
+          return {
+            element: obj,
+            parent: obj.parent,
+          };
+        }
+      }, // Placeholder
+      // eslint-disable-next-line
+    },
+    {
+      key: 'postUpdate',
+      value: function postUpdate() {}, // Placeholder
+      // eslint-disable-next-line
+    },
+    {
+      key: 'culling',
+      value: function culling() {
+        return true;
+      },
+      /**
+       * Attach another layer to this one. Layers attached to a GeometryLayer will
+       * be available in `geometryLayer.attachedLayers`.
+       *
+       * @param {Layer} layer - The layer to attach, that must have an `update`
+       * method.
+       */
+    },
+    {
+      key: 'attach',
+      value: function attach(layer) {
+        if (!layer.update) {
+          throw new Error(
+            "Missing 'update' function -> can't attach layer\n                ".concat(
+              layer.id,
+            ),
+          );
+        }
 
-  (0, _createClass2["default"])(GeometryLayer, [{
-    key: "getObjectToUpdateForAttachedLayers",
-    value: function getObjectToUpdateForAttachedLayers(obj) {
-      if (obj.parent && obj.material) {
-        return {
-          element: obj,
-          parent: obj.parent
-        };
-      }
-    } // Placeholder
-    // eslint-disable-next-line
+        this.attachedLayers.push(layer); // To traverse GeometryLayer object3d attached
 
-  }, {
-    key: "postUpdate",
-    value: function postUpdate() {} // Placeholder
-    // eslint-disable-next-line
-
-  }, {
-    key: "culling",
-    value: function culling() {
-      return true;
-    }
-    /**
-     * Attach another layer to this one. Layers attached to a GeometryLayer will
-     * be available in `geometryLayer.attachedLayers`.
-     *
-     * @param {Layer} layer - The layer to attach, that must have an `update`
-     * method.
-     */
-
-  }, {
-    key: "attach",
-    value: function attach(layer) {
-      if (!layer.update) {
-        throw new Error("Missing 'update' function -> can't attach layer\n                ".concat(layer.id));
-      }
-
-      this.attachedLayers.push(layer); // To traverse GeometryLayer object3d attached
-
-      layer.parent = this;
-    }
-    /**
-     * Detach a layer attached to this one. See {@link attach} to learn how to
-     * attach a layer.
-     *
-     * @param {Layer} layer - The layer to detach.
-     *
-     * @return {boolean} Confirmation of the detachment of the layer.
-     */
-
-  }, {
-    key: "detach",
-    value: function detach(layer) {
-      var count = this.attachedLayers.length;
-      this.attachedLayers = this.attachedLayers.filter(function (attached) {
-        return attached.id != layer.id;
-      });
-      layer.parent = undefined;
-      return this.attachedLayers.length < count;
-    }
-    /**
-     * All layer's meshs are removed from scene and disposed from video device.
-     */
-
-  }, {
-    key: "delete",
-    value: function _delete() {
-      var _this2 = this;
-
-      // if Layer is attached
-      if (this.parent) {
-        traverse(this.parent.object3d, function (obj) {
-          if (obj.layer && obj.layer.id == _this2.id) {
-            obj.parent.remove(obj);
-            disposeMesh(obj);
-          }
+        layer.parent = this;
+      },
+      /**
+       * Detach a layer attached to this one. See {@link attach} to learn how to
+       * attach a layer.
+       *
+       * @param {Layer} layer - The layer to detach.
+       *
+       * @return {boolean} Confirmation of the detachment of the layer.
+       */
+    },
+    {
+      key: 'detach',
+      value: function detach(layer) {
+        var count = this.attachedLayers.length;
+        this.attachedLayers = this.attachedLayers.filter(function (attached) {
+          return attached.id != layer.id;
         });
-      }
+        layer.parent = undefined;
+        return this.attachedLayers.length < count;
+      },
+      /**
+       * All layer's meshs are removed from scene and disposed from video device.
+       */
+    },
+    {
+      key: 'delete',
+      value: function _delete() {
+        var _this2 = this;
 
-      if (this.object3d.parent) {
-        this.object3d.parent.remove(this.object3d);
-      }
-
-      this.object3d.traverse(disposeMesh);
-    }
-    /**
-     * Picking method for this layer. It uses the {@link Picking#pickObjectsAt}
-     * method.
-     *
-     * @param {View} view - The view instance.
-     * @param {Object} coordinates - The coordinates to pick in the view. It
-     * should have at least `x` and `y` properties.
-     * @param {number} radius - Radius of the picking circle.
-     * @param {Array} target - target to push result.
-     *
-     * @return {Array} An array containing all targets picked under the
-     * specified coordinates.
-     */
-
-  }, {
-    key: "pickObjectsAt",
-    value: function pickObjectsAt(view, coordinates) {
-      var radius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.options.defaultPickingRadius;
-      var target = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-      var object3d = this.parent ? this.parent.object3d : this.object3d;
-      return _Picking["default"].pickObjectsAt(view, coordinates, radius, object3d, target, this.threejsLayer);
-    }
-    /**
-     * Change the opacity of an object, according to the value of the `opacity`
-     * property of this layer.
-     *
-     * @param {Object} object - The object to change the opacity from. It is
-     * usually a `THREE.Object3d` or an implementation of it.
-     */
-
-  }, {
-    key: "changeOpacity",
-    value: function changeOpacity(object) {
-      if (object.material) {
-        // != undefined: we want the test to pass if opacity is 0
-        if (object.material.opacity != undefined) {
-          object.material.transparent = this.opacity < 1.0;
-          object.material.opacity = this.opacity;
+        // if Layer is attached
+        if (this.parent) {
+          traverse(this.parent.object3d, function (obj) {
+            if (obj.layer && obj.layer.id == _this2.id) {
+              obj.parent.remove(obj);
+              disposeMesh(obj);
+            }
+          });
         }
 
-        if (object.material.uniforms && object.material.uniforms.opacity != undefined) {
-          object.material.transparent = this.opacity < 1.0;
-          object.material.uniforms.opacity.value = this.opacity;
+        if (this.object3d.parent) {
+          this.object3d.parent.remove(this.object3d);
         }
-      }
-    }
-  }]);
+
+        this.object3d.traverse(disposeMesh);
+      },
+      /**
+       * Picking method for this layer. It uses the {@link Picking#pickObjectsAt}
+       * method.
+       *
+       * @param {View} view - The view instance.
+       * @param {Object} coordinates - The coordinates to pick in the view. It
+       * should have at least `x` and `y` properties.
+       * @param {number} radius - Radius of the picking circle.
+       * @param {Array} target - target to push result.
+       *
+       * @return {Array} An array containing all targets picked under the
+       * specified coordinates.
+       */
+    },
+    {
+      key: 'pickObjectsAt',
+      value: function pickObjectsAt(view, coordinates) {
+        var radius =
+          arguments.length > 2 && arguments[2] !== undefined
+            ? arguments[2]
+            : this.options.defaultPickingRadius;
+        var target =
+          arguments.length > 3 && arguments[3] !== undefined
+            ? arguments[3]
+            : [];
+        var object3d = this.parent ? this.parent.object3d : this.object3d;
+        return _Picking['default'].pickObjectsAt(
+          view,
+          coordinates,
+          radius,
+          object3d,
+          target,
+          this.threejsLayer,
+        );
+      },
+      /**
+       * Change the opacity of an object, according to the value of the `opacity`
+       * property of this layer.
+       *
+       * @param {Object} object - The object to change the opacity from. It is
+       * usually a `THREE.Object3d` or an implementation of it.
+       */
+    },
+    {
+      key: 'changeOpacity',
+      value: function changeOpacity(object) {
+        if (object.material) {
+          // != undefined: we want the test to pass if opacity is 0
+          if (object.material.opacity != undefined) {
+            object.material.transparent = this.opacity < 1.0;
+            object.material.opacity = this.opacity;
+          }
+
+          if (
+            object.material.uniforms &&
+            object.material.uniforms.opacity != undefined
+          ) {
+            object.material.transparent = this.opacity < 1.0;
+            object.material.uniforms.opacity.value = this.opacity;
+          }
+        }
+      },
+    },
+  ]);
   return GeometryLayer;
-}(_Layer2["default"]);
+})(_Layer2['default']);
 
 var _default = GeometryLayer;
-exports["default"] = _default;
+exports['default'] = _default;

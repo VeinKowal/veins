@@ -3,30 +3,24 @@ import { Color } from '../math/Color.js';
 import { Object3D } from '../core/Object3D.js';
 
 class HemisphereLight extends Light {
+  constructor(skyColor, groundColor, intensity) {
+    super(skyColor, intensity);
 
-	constructor( skyColor, groundColor, intensity ) {
+    this.type = 'HemisphereLight';
 
-		super( skyColor, intensity );
+    this.position.copy(Object3D.DefaultUp);
+    this.updateMatrix();
 
-		this.type = 'HemisphereLight';
+    this.groundColor = new Color(groundColor);
+  }
 
-		this.position.copy( Object3D.DefaultUp );
-		this.updateMatrix();
+  copy(source) {
+    Light.prototype.copy.call(this, source);
 
-		this.groundColor = new Color( groundColor );
+    this.groundColor.copy(source.groundColor);
 
-	}
-
-	copy( source ) {
-
-		Light.prototype.copy.call( this, source );
-
-		this.groundColor.copy( source.groundColor );
-
-		return this;
-
-	}
-
+    return this;
+  }
 }
 
 HemisphereLight.prototype.isHemisphereLight = true;

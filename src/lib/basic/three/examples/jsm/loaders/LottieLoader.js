@@ -1,74 +1,67 @@
 import {
-	FileLoader,
-	Loader,
-	CanvasTexture,
-	NearestFilter
+  FileLoader,
+  Loader,
+  CanvasTexture,
+  NearestFilter,
 } from '../../../build/three.module.js';
 
 class LottieLoader extends Loader {
+  setQuality(value) {
+    this._quality = value;
+  }
 
-	setQuality( value ) {
+  load(url, onLoad, onProgress, onError) {
+    const quality = this._quality || 1;
 
-		this._quality = value;
+    const texture = new CanvasTexture();
+    texture.minFilter = NearestFilter;
 
-	}
+    const loader = new FileLoader(this.manager);
+    loader.setPath(this.path);
+    loader.setWithCredentials(this.withCredentials);
 
-	load( url, onLoad, onProgress, onError ) {
+    loader.load(
+      url,
+      function (text) {
+        const data = JSON.parse(text);
 
-		const quality = this._quality || 1;
+        // bodymoving uses container.offetWidth and offsetHeight
+        // to define width/height
 
-		const texture = new CanvasTexture();
-		texture.minFilter = NearestFilter;
+        const container = document.createElement('div');
+        container.style.width = data.w + 'px';
+        container.style.height = data.h + 'px';
+        document.body.appendChild(container);
 
-		const loader = new FileLoader( this.manager );
-		loader.setPath( this.path );
-		loader.setWithCredentials( this.withCredentials );
+        // eslint-disable-next-line no-undef
+        const animation = bodymovin.loadAnimation({
+          container: container,
+          animType: 'canvas',
+          loop: true,
+          autoplay: true,
+          animationData: data,
+          rendererSettings: { dpr: quality },
+        });
 
-		loader.load( url, function ( text ) {
+        texture.animation = animation;
+        texture.image = animation.container;
 
-			const data = JSON.parse( text );
+        animation.addEventListener('enterFrame', function () {
+          texture.needsUpdate = true;
+        });
 
-			// bodymoving uses container.offetWidth and offsetHeight
-			// to define width/height
+        container.style.display = 'none';
 
-			const container = document.createElement( 'div' );
-			container.style.width = data.w + 'px';
-			container.style.height = data.h + 'px';
-			document.body.appendChild( container );
+        if (onLoad !== undefined) {
+          onLoad(texture);
+        }
+      },
+      onProgress,
+      onError,
+    );
 
-			// eslint-disable-next-line no-undef
-			const animation = bodymovin.loadAnimation( {
-				container: container,
-				animType: 'canvas',
-				loop: true,
-				autoplay: true,
-				animationData: data,
-				rendererSettings: { dpr: quality }
-			} );
-
-			texture.animation = animation;
-			texture.image = animation.container;
-
-			animation.addEventListener( 'enterFrame', function () {
-
-				texture.needsUpdate = true;
-
-			} );
-
-			container.style.display = 'none';
-
-			if ( onLoad !== undefined ) {
-
-				onLoad( texture );
-
-			}
-
-		}, onProgress, onError );
-
-		return texture;
-
-	}
-
+    return texture;
+  }
 }
 
 export { LottieLoader };

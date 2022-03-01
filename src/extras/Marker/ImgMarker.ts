@@ -19,7 +19,16 @@ class ImgMarker extends Group {
     let marker: CSS3DObject;
     const image = document.createElement('img');
 
-    const { id, url, parent, localPosition, size, keepSize, isSprite, complete } = config;
+    const {
+      id,
+      url,
+      parent,
+      localPosition,
+      size,
+      keepSize,
+      isSprite,
+      complete,
+    } = config;
 
     if (!url) return false;
 

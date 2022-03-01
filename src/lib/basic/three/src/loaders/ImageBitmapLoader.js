@@ -1,101 +1,85 @@
 import { Cache } from './Cache.js';
 import { Loader } from './Loader.js';
 
-function ImageBitmapLoader( manager ) {
+function ImageBitmapLoader(manager) {
+  if (typeof createImageBitmap === 'undefined') {
+    console.warn('THREE.ImageBitmapLoader: createImageBitmap() not supported.');
+  }
 
-	if ( typeof createImageBitmap === 'undefined' ) {
+  if (typeof fetch === 'undefined') {
+    console.warn('THREE.ImageBitmapLoader: fetch() not supported.');
+  }
 
-		console.warn( 'THREE.ImageBitmapLoader: createImageBitmap() not supported.' );
+  Loader.call(this, manager);
 
-	}
-
-	if ( typeof fetch === 'undefined' ) {
-
-		console.warn( 'THREE.ImageBitmapLoader: fetch() not supported.' );
-
-	}
-
-	Loader.call( this, manager );
-
-	this.options = { premultiplyAlpha: 'none' };
-
+  this.options = { premultiplyAlpha: 'none' };
 }
 
-ImageBitmapLoader.prototype = Object.assign( Object.create( Loader.prototype ), {
+ImageBitmapLoader.prototype = Object.assign(Object.create(Loader.prototype), {
+  constructor: ImageBitmapLoader,
 
-	constructor: ImageBitmapLoader,
+  isImageBitmapLoader: true,
 
-	isImageBitmapLoader: true,
+  setOptions: function setOptions(options) {
+    this.options = options;
 
-	setOptions: function setOptions( options ) {
+    return this;
+  },
 
-		this.options = options;
+  load: function (url, onLoad, onProgress, onError) {
+    if (url === undefined) url = '';
 
-		return this;
+    if (this.path !== undefined) url = this.path + url;
 
-	},
+    url = this.manager.resolveURL(url);
 
-	load: function ( url, onLoad, onProgress, onError ) {
+    const scope = this;
 
-		if ( url === undefined ) url = '';
+    const cached = Cache.get(url);
 
-		if ( this.path !== undefined ) url = this.path + url;
+    if (cached !== undefined) {
+      scope.manager.itemStart(url);
 
-		url = this.manager.resolveURL( url );
+      setTimeout(function () {
+        if (onLoad) onLoad(cached);
 
-		const scope = this;
+        scope.manager.itemEnd(url);
+      }, 0);
 
-		const cached = Cache.get( url );
+      return cached;
+    }
 
-		if ( cached !== undefined ) {
+    const fetchOptions = {};
+    fetchOptions.credentials =
+      this.crossOrigin === 'anonymous' ? 'same-origin' : 'include';
+    fetchOptions.headers = this.requestHeader;
 
-			scope.manager.itemStart( url );
+    fetch(url, fetchOptions)
+      .then(function (res) {
+        return res.blob();
+      })
+      .then(function (blob) {
+        return createImageBitmap(
+          blob,
+          Object.assign(scope.options, { colorSpaceConversion: 'none' }),
+        );
+      })
+      .then(function (imageBitmap) {
+        Cache.add(url, imageBitmap);
 
-			setTimeout( function () {
+        if (onLoad) onLoad(imageBitmap);
 
-				if ( onLoad ) onLoad( cached );
+        scope.manager.itemEnd(url);
+      })
+      .catch(function (e) {
+        if (onError) onError(e);
 
-				scope.manager.itemEnd( url );
+        scope.manager.itemError(url);
+        scope.manager.itemEnd(url);
+      });
 
-			}, 0 );
-
-			return cached;
-
-		}
-
-		const fetchOptions = {};
-		fetchOptions.credentials = ( this.crossOrigin === 'anonymous' ) ? 'same-origin' : 'include';
-		fetchOptions.headers = this.requestHeader;
-
-		fetch( url, fetchOptions ).then( function ( res ) {
-
-			return res.blob();
-
-		} ).then( function ( blob ) {
-
-			return createImageBitmap( blob, Object.assign( scope.options, { colorSpaceConversion: 'none' } ) );
-
-		} ).then( function ( imageBitmap ) {
-
-			Cache.add( url, imageBitmap );
-
-			if ( onLoad ) onLoad( imageBitmap );
-
-			scope.manager.itemEnd( url );
-
-		} ).catch( function ( e ) {
-
-			if ( onError ) onError( e );
-
-			scope.manager.itemError( url );
-			scope.manager.itemEnd( url );
-
-		} );
-
-		scope.manager.itemStart( url );
-
-	}
-
-} );
+    scope.manager.itemStart(url);
+  },
+});
 
 export { ImageBitmapLoader };

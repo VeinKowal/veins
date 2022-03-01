@@ -1,22 +1,16 @@
 class WebGPUBinding {
+  constructor(name = '') {
+    this.name = name;
+    this.visibility = null;
 
-	constructor( name = '' ) {
+    this.type = null; // read-only
 
-		this.name = name;
-		this.visibility = null;
+    this.isShared = false;
+  }
 
-		this.type = null; // read-only
-
-		this.isShared = false;
-
-	}
-
-	setVisibility( visibility ) {
-
-		this.visibility = visibility;
-
-	}
-
+  setVisibility(visibility) {
+    this.visibility = visibility;
+  }
 }
 
 export default WebGPUBinding;

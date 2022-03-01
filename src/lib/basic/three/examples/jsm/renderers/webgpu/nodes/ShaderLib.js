@@ -1,6 +1,6 @@
 const ShaderLib = {
-	common: {
-		vertexShader: `#version 450
+  common: {
+    vertexShader: `#version 450
 
 NODE_HEADER_ATTRIBUTES
 NODE_HEADER_UNIFORMS
@@ -10,7 +10,7 @@ void main(){
 	NODE_BODY_VARYS
 	gl_Position = NODE_MVP;
 }`,
-		fragmentShader: `#version 450
+    fragmentShader: `#version 450
 
 NODE_HEADER_ATTRIBUTES
 NODE_HEADER_UNIFORMS
@@ -34,8 +34,8 @@ void main() {
 
 	#endif
 
-}`
-	}
+}`,
+  },
 };
 
 export default ShaderLib;

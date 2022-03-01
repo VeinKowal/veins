@@ -25,17 +25,23 @@ EventDispatcher.prototype.on = function (type, fn) {
 
     // 再判断路线上是否有Marker 存在就只执行Marker方法
     const marker = intersectedObjects.find(
-      (obj) => obj.userData && obj.userData.type && obj.userData.type === 'Marker',
+      (obj) =>
+        obj.userData && obj.userData.type && obj.userData.type === 'Marker',
     );
-    marker && 'isActive' in marker ? interaction.triggerEvent(marker, 'click', e) : fn(e);
+    marker && 'isActive' in marker
+      ? interaction.triggerEvent(marker, 'click', e)
+      : fn(e);
   };
   if (type === 'click') {
     const event = (e) => {
       const { isClickEvent, getNormalizedCanvasRelativePosition } = MouseEvents;
       // 先判断距离再决定是否执行
-      if (!isClickEvent(getNormalizedCanvasRelativePosition(e.data.originalEvent))) return;
+      if (
+        !isClickEvent(getNormalizedCanvasRelativePosition(e.data.originalEvent))
+      )
+        return;
       basicFn(e);
-    }
+    };
     this.events.set(fn, event);
     this.addEventListener('pointerup', event);
   } else if (type === 'dblclick') {
@@ -73,7 +79,9 @@ EventDispatcher.prototype.off = function (type, fn) {
     this.events.delete(fn);
   }
   if (type === 'click') type = 'pointerup';
-  event ? this.removeEventListener(type, event) : this.removeEventListener(type, fn);
+  event
+    ? this.removeEventListener(type, event)
+    : this.removeEventListener(type, fn);
   return this;
 };
 
@@ -101,7 +109,8 @@ EventDispatcher.prototype.once = function (type, fn) {
  * @return {this} this
  */
 EventDispatcher.prototype.emit = function (type, ...argument) {
-  if (this._listeners === undefined || Utils.isUndefined(this._listeners[type])) return;
+  if (this._listeners === undefined || Utils.isUndefined(this._listeners[type]))
+    return;
   const cbs = this._listeners[type] || [];
   const cache = cbs.slice(0);
 

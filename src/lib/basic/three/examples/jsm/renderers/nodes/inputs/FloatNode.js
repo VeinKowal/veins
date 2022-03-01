@@ -1,15 +1,11 @@
 import InputNode from '../core/InputNode.js';
 
 class FloatNode extends InputNode {
+  constructor(value = 0) {
+    super('float');
 
-	constructor( value = 0 ) {
-
-		super( 'float' );
-
-		this.value = value;
-
-	}
-
+    this.value = value;
+  }
 }
 
 FloatNode.prototype.isFloatNode = true;

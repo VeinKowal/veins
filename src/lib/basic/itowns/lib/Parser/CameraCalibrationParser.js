@@ -1,17 +1,19 @@
-"use strict";
+'use strict';
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
 
-var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports["default"] = void 0;
+exports['default'] = void 0;
 
-var THREE = _interopRequireWildcard(require("three"));
+var THREE = _interopRequireWildcard(require('three'));
 
-var _OrientedImageCamera = _interopRequireDefault(require("../Renderer/OrientedImageCamera"));
+var _OrientedImageCamera = _interopRequireDefault(
+  require('../Renderer/OrientedImageCamera'),
+);
 
 /**
  * The CameraCalibrationParser module provide a [parse]{@link module:CameraCalibrationParser.parse}
@@ -26,7 +28,8 @@ var matrix3 = new THREE.Matrix3(); // the json format encodes the following tran
 // distortion: p_raw = distortion(p_pixel)
 
 function parseCalibration(calibration) {
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var options =
+    arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var useMask = options.useMask == undefined ? true : options.useMask;
   var imageYDown = options.imageYDown == undefined ? true : options.imageYDown; // parse intrinsics
 
@@ -35,9 +38,19 @@ function parseCalibration(calibration) {
   var focal = new THREE.Vector2(proj[0], proj[4]); // Center of image,  convention in digital image is Y dow
   // To transform image space to webGl texture. It could inverse Y axis.
 
-  var center = new THREE.Vector2(proj[2], imageYDown ? size.y - proj[5] : proj[5]);
+  var center = new THREE.Vector2(
+    proj[2],
+    imageYDown ? size.y - proj[5] : proj[5],
+  );
   var skew = proj[1];
-  var camera = new _OrientedImageCamera["default"](size, focal, center, options.near, options.far, skew); // parse extrinsics: Object3d.matrix is from local to world
+  var camera = new _OrientedImageCamera['default'](
+    size,
+    focal,
+    center,
+    options.near,
+    options.far,
+    skew,
+  ); // parse extrinsics: Object3d.matrix is from local to world
   // p_world = position + transpose(rotation) * p_local
 
   camera.position.fromArray(calibration.position); // calibration.rotation is row-major but fromArray expects a column-major array, yielding the transposed matrix
@@ -49,7 +62,10 @@ function parseCalibration(calibration) {
   camera.rotateX(Math.PI);
 
   if (calibration.distortion) {
-    camera.distortion.setFromMicmacCalibration(calibration.distortion, imageYDown);
+    camera.distortion.setFromMicmacCalibration(
+      calibration.distortion,
+      imageYDown,
+    );
   }
 
   camera.maskPath = calibration.mask;
@@ -99,15 +115,18 @@ var _default = {
    * @return {Promise} - A promise resolving with an array of {@link OrientedImageCamera}.
    */
   parse: function parse(json) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var options =
+      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     if (typeof json === 'string') {
       json = JSON.parse(json);
     }
 
-    return Promise.all(json.map(function (calibration) {
-      return parseCalibration(calibration, options);
-    }));
-  }
+    return Promise.all(
+      json.map(function (calibration) {
+        return parseCalibration(calibration, options);
+      }),
+    );
+  },
 };
-exports["default"] = _default;
+exports['default'] = _default;

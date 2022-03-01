@@ -1,20 +1,17 @@
 import WebGPUUniformsGroup from '../WebGPUUniformsGroup.js';
 
 class WebGPUNodeUniformsGroup extends WebGPUUniformsGroup {
+  constructor(shaderStage) {
+    super('nodeUniforms');
 
-	constructor( shaderStage ) {
+    let shaderStageVisibility;
 
-		super( 'nodeUniforms' );
+    if (shaderStage === 'vertex') shaderStageVisibility = GPUShaderStage.VERTEX;
+    else if (shaderStage === 'fragment')
+      shaderStageVisibility = GPUShaderStage.FRAGMENT;
 
-		let shaderStageVisibility;
-
-		if ( shaderStage === 'vertex' ) shaderStageVisibility = GPUShaderStage.VERTEX;
-		else if ( shaderStage === 'fragment' ) shaderStageVisibility = GPUShaderStage.FRAGMENT;
-
-		this.setVisibility( shaderStageVisibility );
-
-	}
-
+    this.setVisibility(shaderStageVisibility);
+  }
 }
 
 export default WebGPUNodeUniformsGroup;

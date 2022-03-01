@@ -31,8 +31,15 @@ class App {
   view?: itowns.GlobeView;
 
   constructor(config: AppConfig) {
-    const { camera, scene, renderer, cssRenderer, orbitControl, cssOrbitControl, interaction } =
-      ThreeInitializer.init(config);
+    const {
+      camera,
+      scene,
+      renderer,
+      cssRenderer,
+      orbitControl,
+      cssOrbitControl,
+      interaction,
+    } = ThreeInitializer.init(config);
     this.camera = camera;
     this.scene = scene;
     this.renderer = renderer;
@@ -91,7 +98,10 @@ class App {
     });
     if (this.renderer && this.renderer.domElement) {
       const { domElement } = this.renderer;
-      domElement.getContext('webgl')?.getExtension('WEBGL_lose_context')?.loseContext();
+      domElement
+        .getContext('webgl')
+        ?.getExtension('WEBGL_lose_context')
+        ?.loseContext();
       this.renderer.dispose();
     }
   }
@@ -127,12 +137,14 @@ class App {
     if (type === 'MAP') {
       if (!this.view) {
         const { renderDom, camera, scene, renderer } = this;
-        this.controls.length && ThreeInitializer.removeOribitControl(this.controls);
+        this.controls.length &&
+          ThreeInitializer.removeOribitControl(this.controls);
         this.view = ITownsInitializer.init({
           renderDom,
           camera,
           scene,
           renderer,
+          ...config,
         });
       }
       return this.view;
@@ -146,7 +158,15 @@ class App {
   };
 
   flyToTarget(config: FlyToTargetConfig) {
-    const { target, isEarth, up, angle = [0, 0, 0], radius = 0, time = 2000, complete } = config;
+    const {
+      target,
+      isEarth,
+      up,
+      angle = [0, 0, 0],
+      radius = 20,
+      time = 2000,
+      complete,
+    } = config;
     const { camera, controls } = this;
     let direction = new THREE.Vector3(1, 0, 0);
     let boxCenter = new THREE.Vector3();
@@ -165,7 +185,8 @@ class App {
         const sizeToFitOnScreen = boxSize;
         const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
         const halfFovY = THREE.MathUtils.degToRad(camera.fov * 0.5);
-        distance = distance || (halfSizeToFitOnScreen * 0.6) / Math.tan(halfFovY);
+        distance =
+          distance || (halfSizeToFitOnScreen * 0.6) / Math.tan(halfFovY);
       } else {
         return false;
       }
@@ -215,6 +236,52 @@ class App {
       tween.start();
     } else {
       // TODO: iTowns相机飞行方法
+      if (Array.isArray(target)) {
+        boxCenter.fromArray(target);
+        // direction.add(boxCenter).normalize();
+      } else if (target instanceof THREE.Object3D) {
+        const box = new THREE.Box3().setFromObject(target);
+        const boxSize = box.getSize(new THREE.Vector3()).length();
+        boxCenter = box.getCenter(new THREE.Vector3());
+
+        // set the camera to frame the box
+        const sizeToFitOnScreen = boxSize;
+        const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
+        const halfFovY = THREE.MathUtils.degToRad(camera.fov * 0.5);
+        distance =
+          distance || (halfSizeToFitOnScreen * 0.6) / Math.tan(halfFovY);
+      } else {
+        return false;
+      }
+
+      // compute a unit vector that points in the direction the camera is now
+      // from the center of the box
+      const radians = angle.map((value) => (value * Math.PI) / 180);
+      direction = direction.applyEuler(new THREE.Euler().fromArray(radians));
+
+      // move the camera to a position distance units way from the center
+      // in whatever direction the camera was from the center already
+      let targetPos = new THREE.Vector3().copy(boxCenter);
+      targetPos = targetPos.add(direction.multiplyScalar(0.000000001));
+      const { view } = this.view;
+      itowns.CameraUtils.animateCameraToLookAtTarget(
+        view,
+        view.camera.camera3D,
+        {
+          coord: new itowns.Coordinates(
+            'EPSG:4978',
+            targetPos.x,
+            targetPos.y,
+            targetPos.z,
+          ),
+          range: radius,
+          time,
+          tilt: angle[0],
+          heading: angle[2],
+        },
+      ).then(() => {
+        complete && complete();
+      });
     }
 
     return true;

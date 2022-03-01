@@ -1,60 +1,46 @@
 import { Node } from '../../core/Node.js';
 
-function RawNode( value ) {
+function RawNode(value) {
+  Node.call(this, 'v4');
 
-	Node.call( this, 'v4' );
-
-	this.value = value;
-
+  this.value = value;
 }
 
-RawNode.prototype = Object.create( Node.prototype );
+RawNode.prototype = Object.create(Node.prototype);
 RawNode.prototype.constructor = RawNode;
 RawNode.prototype.nodeType = 'Raw';
 
-RawNode.prototype.generate = function ( builder ) {
+RawNode.prototype.generate = function (builder) {
+  var data = this.value.analyzeAndFlow(builder, this.type),
+    code = data.code + '\n';
 
-	var data = this.value.analyzeAndFlow( builder, this.type ),
-		code = data.code + '\n';
+  if (builder.isShader('vertex')) {
+    code += 'gl_Position = ' + data.result + ';';
+  } else {
+    code += 'gl_FragColor = ' + data.result + ';';
+  }
 
-	if ( builder.isShader( 'vertex' ) ) {
-
-		code += 'gl_Position = ' + data.result + ';';
-
-	} else {
-
-		code += 'gl_FragColor = ' + data.result + ';';
-
-	}
-
-	return code;
-
+  return code;
 };
 
-RawNode.prototype.copy = function ( source ) {
+RawNode.prototype.copy = function (source) {
+  Node.prototype.copy.call(this, source);
 
-	Node.prototype.copy.call( this, source );
+  this.value = source.value;
 
-	this.value = source.value;
-
-	return this;
-
+  return this;
 };
 
-RawNode.prototype.toJSON = function ( meta ) {
+RawNode.prototype.toJSON = function (meta) {
+  var data = this.getJSONNode(meta);
 
-	var data = this.getJSONNode( meta );
+  if (!data) {
+    data = this.createJSONNode(meta);
 
-	if ( ! data ) {
+    data.value = this.value.toJSON(meta).uuid;
+  }
 
-		data = this.createJSONNode( meta );
-
-		data.value = this.value.toJSON( meta ).uuid;
-
-	}
-
-	return data;
-
+  return data;
 };
 
 export { RawNode };
