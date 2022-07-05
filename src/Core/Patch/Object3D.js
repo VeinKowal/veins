@@ -20,11 +20,11 @@ Object3D.prototype.query = function (param, recursive = true) {
 
   // 判断是否用正则表达式匹配name
   let isReg = typeof param === 'object';
-  // 判断是否用type匹配Object3D
+  // 判断是否用type匹配Object3D，(.xxx)
   let isType = /^\./.test(param);
-  // 判断是否用id匹配Object3D
+  // 判断是否用id匹配Object3D，(#xxx)
   let isID = /^#/.test(param);
-  // 判断是否用自定义属性值匹配Object3D
+  // 判断是否用自定义属性值匹配Object3D，([xxx=yyy])
   let isUD = /(^\[)[\s\S]*?(\]$)/.test(param);
 
   if (!isReg && typeof param === 'string') {
@@ -51,9 +51,9 @@ Object3D.prototype.query = function (param, recursive = true) {
     ) {
       result.push(child);
     } else if (isUD) {
-      let isMatch = true;
+      let isMatch = false;
       matchMap.forEach((v, k) => {
-        userData[k] && userData[k] !== v && (isMatch = false);
+        userData[k] && userData[k] == v && (isMatch = true);
       });
       isMatch && result.push(child);
     }

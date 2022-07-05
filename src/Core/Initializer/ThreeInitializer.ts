@@ -3,7 +3,7 @@
  *@author guoweiyu.
  *@date 2021-08-23 19:23:13.
  */
-import { ThreeInitializerType, ThreeInitializerReturn } from './type';
+import type { ThreeInitializerType, ThreeInitializerReturn } from './type';
 import BaseInitializer from './BaseInitializer';
 import * as THREE from 'three';
 import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
@@ -11,7 +11,8 @@ import { OrbitControls } from '../../lib/controls/OrbitControls';
 // import { OrbitControls } from '../../lib/controls/OrbitControl';
 import skyBoxConfig from '../../lib/skyBox/config';
 import { Interaction, MouseEvents } from '../../extras/Interaction';
-import { PerspectiveCamera, Scene, WebGLRenderer, Raycaster } from 'three';
+import type { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { Raycaster } from 'three';
 
 class ThreeInitializer extends BaseInitializer {
   static init(config: ThreeInitializerType): ThreeInitializerReturn {
@@ -111,7 +112,7 @@ class ThreeInitializer extends BaseInitializer {
     orbitControl.enablePan = true;
     orbitControl.rotateSpeed = 0.5;
     orbitControl.dampingFactor = 0.1;
-    orbitControl.maxDistance = 8000;
+    orbitControl.maxDistance = Infinity;
     orbitControl.minDistance = 10;
     return orbitControl;
   }
