@@ -9,6 +9,8 @@ import * as itowns from '../../lib/basic/itowns';
 import * as TWEEN from '@tweenjs/tween.js';
 // import 'default-passive-events';
 import { OrbitControls } from '../../lib/controls/OrbitControls';
+import { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
+import { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
 import ThreeInitializer from '../Initializer/ThreeInitializer';
 import ITownsInitializer from '../Initializer/ITownsInitializer';
 import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
@@ -25,6 +27,8 @@ class App {
   scene: THREE.Scene;
   renderer: THREE.WebGLRenderer;
   cssRenderer: CSS3DRenderer;
+  composer: EffectComposer;
+  outlinePass: OutlinePass;
   interaction: Interaction;
   controls: OrbitControls[] = [];
   animate?: number;
@@ -36,6 +40,8 @@ class App {
       scene,
       renderer,
       cssRenderer,
+      composer,
+      outlinePass,
       orbitControl,
       cssOrbitControl,
       interaction,
@@ -44,6 +50,8 @@ class App {
     this.scene = scene;
     this.renderer = renderer;
     this.cssRenderer = cssRenderer;
+    this.composer = composer;
+    this.outlinePass = outlinePass;
     this.controls = [orbitControl, cssOrbitControl];
     this.interaction = interaction;
     this.renderDom = config.renderDom;
@@ -74,6 +82,7 @@ class App {
       this.renderer.render(this.scene, this.camera);
     }
     this.cssRenderer.render(this.scene, this.camera);
+    this.composer.render();
 
     // 运行已注册的更新方法
     ParticleSystem.updateFunctions.forEach((e) => {
@@ -111,10 +120,12 @@ class App {
     ThreeInitializer.updateRender({
       renderDom: this.renderDom,
       renderer: this.renderer,
+      composer: this.composer,
     });
     ThreeInitializer.updateRender({
       renderDom: this.renderDom,
       renderer: this.cssRenderer,
+      composer: this.composer,
     });
     ThreeInitializer.updateCamera({
       renderDom: this.renderDom,
@@ -125,12 +136,12 @@ class App {
   create = (config: CreateConfig) => {
     const { type } = config;
     if (type === 'OBJ') {
-      const obj = new OBJModelLoader();
+      const obj = new OBJModelLoader(this.outlinePass);
       obj.load(config);
       return obj;
     }
     if (type === 'GLTF') {
-      const gltf = new GLTFModelLoader();
+      const gltf = new GLTFModelLoader(this.outlinePass);
       gltf.load(config);
       return gltf;
     }

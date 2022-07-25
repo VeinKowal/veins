@@ -10,6 +10,8 @@ import { GlobalView, Extent } from 'itowns';
 import { Interaction } from 'three.interaction';
 import { OrbitControls } from '../../lib/controls/OrbitControls';
 import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
+import { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
+import { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
 
 export type ThreeInitializerType = {
   renderDom: HTMLDivElement;
@@ -25,6 +27,8 @@ export type ThreeInitializerReturn = {
   camera: PerspectiveCamera;
   renderer: WebGLRenderer;
   cssRenderer: CSS3DRenderer;
+  composer: EffectComposer;
+  outlinePass: OutlinePass;
   orbitControl: OrbitControls;
   cssOrbitControl: OrbitControls;
   interaction: Interaction;

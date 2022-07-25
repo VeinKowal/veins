@@ -7,9 +7,19 @@ import { ModelLoaderType } from './type';
 import { LineMaterial } from '../../lib/lines/LineMaterial';
 import { LineSegments2 } from '../../lib/lines/LineSegments2';
 import { LineSegmentsGeometry } from '../../lib/lines/LineSegmentsGeometry';
+import { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
 import { Group, Object3D, BoxHelper, Mesh, EdgesGeometry } from 'three';
 
 export default abstract class ModelLoader extends Group {
+  outlinePass: OutlinePass;
+
+  constructor(outlinePass?: OutlinePass) {
+    super();
+    this.outlinePass = outlinePass;
+    outlinePass.visibleEdgeColor.set('#f56d00');
+    outlinePass.hiddenEdgeColor.set('#190a05');
+  }
+
   // 将模型放在【0，0，0】点
   moveToCenter = (model: Object3D) => {
     const box = new BoxHelper(model);
@@ -25,24 +35,26 @@ export default abstract class ModelLoader extends Group {
   addEdgeOutline = (model: Object3D) => {
     model.traverse((child: any) => {
       if (!(child instanceof Mesh)) return;
-      const edges = new EdgesGeometry(child.geometry);
-      const lintMat = new LineMaterial({
-        color: '#f56d00',
-        linewidth: 0.003,
-      });
-      const lineGeo = new LineSegmentsGeometry().fromEdgesGeometry(edges);
-      const line = new LineSegments2(lineGeo, lintMat);
-      model.add(line);
-      line.visible = false;
-      child.line = line;
+      // const edges = new EdgesGeometry(child.geometry);
+      // const lintMat = new LineMaterial({
+      //   color: '#f56d00',
+      //   linewidth: 0.003,
+      // });
+      // const lineGeo = new LineSegmentsGeometry().fromEdgesGeometry(edges);
+      // const line = new LineSegments2(lineGeo, lintMat);
+      // model.add(line);
+      // line.visible = false;
+      // child.line = line;
       child.cursor = 'pointer';
-      child.on('pointerover', () => {
+      child.on('pointermove', () => {
+        this.outlinePass.selectedObjects = [child];
         // child.add(line);
-        line.visible = true;
+        // line.visible = true;
       });
       child.on('pointerout', () => {
+        this.outlinePass.selectedObjects = [];
         // child.remove(line);
-        line.visible = false;
+        // line.visible = false;
       });
     });
   };

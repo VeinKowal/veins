@@ -7,6 +7,10 @@ import type { ThreeInitializerType, ThreeInitializerReturn } from './type';
 import BaseInitializer from './BaseInitializer';
 import * as THREE from 'three';
 import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
+import { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
+import { RenderPass } from '../../lib/postprocessing/RenderPass.js';
+import { ShaderPass } from '../../lib/postprocessing/ShaderPass.js';
+import { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
 import { OrbitControls } from '../../lib/controls/OrbitControls';
 // import { OrbitControls } from '../../lib/controls/OrbitControl';
 import skyBoxConfig from '../../lib/skyBox/config';
@@ -20,6 +24,11 @@ class ThreeInitializer extends BaseInitializer {
     const scene = ThreeInitializer.initScene(config);
     const cssRenderer = ThreeInitializer.initCSSRender(config);
     const renderer = ThreeInitializer.initRenderer(config);
+    const composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+    const outlinePass = new OutlinePass(new THREE.Vector2(), scene, camera);
+    composer.addPass(outlinePass);
     ThreeInitializer.initSkyBox(config.skyBox, scene);
     const cssOrbitControl = ThreeInitializer.initOrbitControl(
       camera,
@@ -39,6 +48,8 @@ class ThreeInitializer extends BaseInitializer {
       camera,
       scene,
       renderer,
+      composer,
+      outlinePass,
       orbitControl,
       interaction,
       cssRenderer,
@@ -130,10 +141,12 @@ class ThreeInitializer extends BaseInitializer {
   static updateRender(config: {
     renderDom: HTMLElement;
     renderer: WebGLRenderer;
+    composer: EffectComposer;
   }) {
-    const { renderDom, renderer } = config;
+    const { renderDom, renderer, composer } = config;
     const { clientWidth: width, clientHeight: height } = renderDom;
     renderer.setSize(width, height);
+    composer.setSize(width, height);
   }
 
   static updateCamera(config: {

@@ -18,7 +18,7 @@ Object3D.prototype.query = function (param, recursive = true) {
   let matchStr = param;
   let matchMap = new Map();
 
-  // 判断是否用正则表达式匹配name
+  // 判断是否用正则表达式匹配name，param是正则(new RegExp())
   let isReg = typeof param === 'object';
   // 判断是否用type匹配Object3D，(.xxx)
   let isType = /^\./.test(param);
