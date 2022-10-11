@@ -3,22 +3,26 @@
  *@author guoweiyu.
  *@date 2021-08-23 18:57:10.
  */
-import { ITownsInitializerType, ITownsInitializerReturn } from './type';
+import type { ITownsInitializerType, ITownsInitializerReturn } from './type';
+import type App from '../App';
 import BaseInitializer from './BaseInitializer';
+import ThreeInitializer from './ThreeInitializer';
 import * as itowns from '../../lib/basic/itowns';
-import * as THREE from '../../lib/basic/three';
+import * as THREE from 'three';
 
 class ITownsInitializer extends BaseInitializer {
-  static view: itowns.GlobeView;
+  view: itowns.GlobeView;
+  app: App;
 
-  static init(config: ITownsInitializerType): ITownsInitializerReturn {
-    const view = ITownsInitializer.initView(config);
+  constructor(config: ITownsInitializerType) {
+    super();
+    const { app, ...initConfig } = config;
+    const view = this.initView(initConfig);
     this.view = view;
-
-    return this;
+    this.app = app;
   }
 
-  private static initView(config: ITownsInitializerType): itowns.GlobeView {
+  private initView(config: ITownsInitializerType): itowns.GlobeView {
     const { placement, renderer, scene, camera, url, zoom = [0, 17] } = config;
     camera.position.set(0, 0, 0);
     const initPlacement = {
@@ -26,15 +30,11 @@ class ITownsInitializer extends BaseInitializer {
       range: 250000,
     };
 
-    const view = new itowns.GlobeView(
-      config.renderDom,
-      placement || initPlacement,
-      {
-        renderer: renderer,
-        scene3D: scene,
-        camera: camera,
-      },
-    );
+    const view = new itowns.GlobeView(config.renderDom, placement || initPlacement, {
+      renderer: renderer,
+      scene3D: scene,
+      camera: camera,
+    });
 
     if (url) {
       const tmsSource = new itowns.TMSSource({
@@ -60,31 +60,15 @@ class ITownsInitializer extends BaseInitializer {
     return view;
   }
 
-  public static convertLonlatToWorld(
-    lonlat: [number, number],
-    altitude: number,
-  ) {
-    const coord = new itowns.Coordinates(
-      'EPSG:4326',
-      lonlat[0],
-      lonlat[1],
-      altitude,
-    );
+  public convertLonlatToWorld(lonlat: [number, number], altitude: number) {
+    const coord = new itowns.Coordinates('EPSG:4326', lonlat[0], lonlat[1], altitude);
     const pos = coord.as(this.view.referenceCrs);
     const { x, y, z } = pos;
     return [x, y, z];
   }
 
-  public static getAnglesFromLonlat(
-    lonlat: [number, number],
-    altitude: number,
-  ) {
-    const coord = new itowns.Coordinates(
-      'EPSG:4326',
-      lonlat[0],
-      lonlat[1],
-      altitude,
-    );
+  public getAnglesFromLonlat(lonlat: [number, number], altitude: number) {
+    const coord = new itowns.Coordinates('EPSG:4326', lonlat[0], lonlat[1], altitude);
     const pos = coord.as(this.view.referenceCrs);
     const position = new THREE.Vector3().copy(pos);
     const target = position.clone().add(coord.geodesicNormal);
@@ -103,6 +87,26 @@ class ITownsInitializer extends BaseInitializer {
     const { x, y, z } = o.rotation;
 
     return [x, y, z];
+  }
+
+  public dispose() {
+    try {
+      this.view.controls.dispose();
+      this.view.dispose();
+      const app = this.app;
+      app.view = undefined;
+      app.camera.up = new THREE.Vector3(0, 1, 0);
+      app.controls.length &&
+        ThreeInitializer.removeOribitControl(app.controls);
+      const cssOrbitControl = ThreeInitializer.initOrbitControl(
+        app.camera,
+        app.cssRenderer,
+      );
+      const orbitControl = ThreeInitializer.initOrbitControl(app.camera, app.renderer);
+      app.controls = [orbitControl, cssOrbitControl];
+    } catch (e) {
+      console.error('earth fail dispose');
+    }
   }
 }
 

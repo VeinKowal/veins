@@ -3,18 +3,19 @@
  *@author guoweiyu.
  *@date 2021-08-18 09:28:42.
  */
-import { AppConfig, CreateConfig, FlyToTargetConfig } from './type';
+import type { AppConfig, CreateConfig, FlyToTargetConfig } from './type';
 import * as THREE from 'three';
 import * as itowns from '../../lib/basic/itowns';
 import * as TWEEN from '@tweenjs/tween.js';
 // import 'default-passive-events';
-import { OrbitControls } from '../../lib/controls/OrbitControls';
-import { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
-import { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
+import type { OrbitControls } from '../../lib/controls/OrbitControls';
+import type { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
+import type { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
 import ThreeInitializer from '../Initializer/ThreeInitializer';
 import ITownsInitializer from '../Initializer/ITownsInitializer';
-import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
-import { Interaction, MouseEvents } from '../../extras/Interaction';
+import type { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
+import type { Interaction } from '../../extras/Interaction';
+import { MouseEvents } from '../../extras/Interaction';
 import OBJModelLoader from '../Loader/OBJModelLoader';
 import GLTFModelLoader from '../Loader/GLTFModelLoader';
 import Marker from '../../extras/Marker';
@@ -150,7 +151,8 @@ class App {
         const { renderDom, camera, scene, renderer } = this;
         this.controls.length &&
           ThreeInitializer.removeOribitControl(this.controls);
-        this.view = ITownsInitializer.init({
+        this.view = new ITownsInitializer({
+          app: this,
           renderDom,
           camera,
           scene,
@@ -252,28 +254,23 @@ class App {
         // direction.add(boxCenter).normalize();
       } else if (target instanceof THREE.Object3D) {
         const box = new THREE.Box3().setFromObject(target);
-        const boxSize = box.getSize(new THREE.Vector3()).length();
         boxCenter = box.getCenter(new THREE.Vector3());
-
-        // set the camera to frame the box
-        const sizeToFitOnScreen = boxSize;
-        const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
-        const halfFovY = THREE.MathUtils.degToRad(camera.fov * 0.5);
-        distance =
-          distance || (halfSizeToFitOnScreen * 0.6) / Math.tan(halfFovY);
       } else {
         return false;
       }
+      const wrapTo180 = (a: number) => {
+        return a - Math.floor((a + 180.0) / 360) * 360;
+      }
+      direction = new THREE.Vector3(0, 1, 0)
+        .applyEuler(
+          new THREE.Euler()
+            .fromArray([THREE.MathUtils.degToRad(angle[0]), 0, THREE.MathUtils.degToRad(-wrapTo180(angle[2] + 180))])
+        );
+      const targetPos = new THREE.Vector3().copy(boxCenter);
+      // const cameraPos = new THREE.Vector3().copy(targetPos).add(new THREE.Vector3().subVectors(this.camera.position, targetPos).setLength(20));
+      // const directPos = new THREE.Vector3().copy(targetPos).add(direction.setLength(0.001));
 
-      // compute a unit vector that points in the direction the camera is now
-      // from the center of the box
-      const radians = angle.map((value) => (value * Math.PI) / 180);
-      direction = direction.applyEuler(new THREE.Euler().fromArray(radians));
-
-      // move the camera to a position distance units way from the center
-      // in whatever direction the camera was from the center already
-      let targetPos = new THREE.Vector3().copy(boxCenter);
-      targetPos = targetPos.add(direction.multiplyScalar(0.000000001));
+      if (!this.view) return;
       const { view } = this.view;
       itowns.CameraUtils.animateCameraToLookAtTarget(
         view,
@@ -285,10 +282,13 @@ class App {
             targetPos.y,
             targetPos.z,
           ),
-          range: radius,
           time,
+          range: radius,
           tilt: angle[0],
           heading: angle[2],
+          callback: (e) => {
+            // e.camera.lookAt(targetPos.x, targetPos.y, targetPos.z);
+          }
         },
       ).then(() => {
         complete && complete();

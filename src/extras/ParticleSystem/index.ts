@@ -3,8 +3,9 @@
  *@author guoweiyu.
  *@date 2021-08-24 18:47:02.
  */
-import { updateFunction, ParticleSystemConfigType } from './type';
-import { Scene, Color, FogExp2, PerspectiveCamera } from 'three';
+import type { updateFunction, ParticleSystemConfigType } from './type';
+import type { Scene, PerspectiveCamera } from 'three';
+import { Color, FogExp2 } from 'three';
 import { particleConfig } from './config';
 
 class ParticleSystem {
@@ -65,7 +66,7 @@ class ParticleSystem {
   };
 
   // 创建粒子效果
-  static create(config: ParticleSystemConfigType, scene: Scene): any[] {
+  static create(config: ParticleSystemConfigType, scene: Scene): any {
     const { name } = config;
 
     // 获取所要展示的粒子特效
@@ -90,7 +91,7 @@ class ParticleSystem {
 
     ParticleSystem.setparticleEffect(particles, scene);
 
-    return particles;
+    return ParticleSystem;
   }
 }
 

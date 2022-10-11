@@ -3,12 +3,13 @@
  *@author guoweiyu.
  *@date 2021-09-13 13:42:23.
  */
-import { ModelLoaderType } from './type';
+import type { ModelLoaderType } from './type';
 import { LineMaterial } from '../../lib/lines/LineMaterial';
 import { LineSegments2 } from '../../lib/lines/LineSegments2';
 import { LineSegmentsGeometry } from '../../lib/lines/LineSegmentsGeometry';
-import { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
-import { Group, Object3D, BoxHelper, Mesh, EdgesGeometry } from 'three';
+import type { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
+import type { Object3D } from 'three';
+import { Group, BoxHelper, Mesh, EdgesGeometry } from 'three';
 
 export default abstract class ModelLoader extends Group {
   outlinePass: OutlinePass;
@@ -16,8 +17,8 @@ export default abstract class ModelLoader extends Group {
   constructor(outlinePass?: OutlinePass) {
     super();
     this.outlinePass = outlinePass;
-    outlinePass.visibleEdgeColor.set('#f56d00');
-    outlinePass.hiddenEdgeColor.set('#190a05');
+    outlinePass.visibleEdgeColor.set('#ff5e00');
+    outlinePass.hiddenEdgeColor.set('#ff5e00');
   }
 
   // 将模型放在【0，0，0】点

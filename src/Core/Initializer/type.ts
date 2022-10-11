@@ -1,4 +1,4 @@
-import {
+import type {
   Color,
   Texture,
   Scene,
@@ -6,12 +6,13 @@ import {
   WebGLRenderer,
   Raycaster,
 } from 'three';
-import { GlobalView, Extent } from 'itowns';
-import { Interaction } from 'three.interaction';
-import { OrbitControls } from '../../lib/controls/OrbitControls';
-import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
-import { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
-import { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
+import type App from '../App';
+import type { GlobalView, Extent } from 'itowns';
+import type { Interaction } from 'three.interaction';
+import type { OrbitControls } from '../../lib/controls/OrbitControls';
+import type { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
+import type { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
+import type { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
 
 export type ThreeInitializerType = {
   renderDom: HTMLDivElement;
@@ -36,6 +37,7 @@ export type ThreeInitializerReturn = {
 };
 
 export type ITownsInitializerType = {
+  app,
   renderDom: HTMLDivElement;
   scene: Scene;
   camera: PerspectiveCamera;
