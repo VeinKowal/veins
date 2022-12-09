@@ -155,7 +155,7 @@ class ThreeInitializer extends BaseInitializer {
     const { clientWidth: width, clientHeight: height } = renderDom;
     renderer.setSize(width, height);
     composer.setSize(width, height);
-    effectFXAA.uniforms.resolution.value.set(width, height);
+    effectFXAA.uniforms.resolution.value.set(1 / width, 1 / height);
   }
 
   static updateCamera(config: {
