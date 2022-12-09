@@ -10,6 +10,7 @@ import { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
 import { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
 import { RenderPass } from '../../lib/postprocessing/RenderPass.js';
 import { ShaderPass } from '../../lib/postprocessing/ShaderPass.js';
+import { FXAAShader } from '../../lib/shaders/FXAAShader.js';
 import { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
 import { OrbitControls } from '../../lib/controls/OrbitControls';
 // import { OrbitControls } from '../../lib/controls/OrbitControl';
@@ -20,6 +21,8 @@ import { Raycaster } from 'three';
 
 class ThreeInitializer extends BaseInitializer {
   static init(config: ThreeInitializerType): ThreeInitializerReturn {
+    const { renderDom } = config;
+    const { clientWidth: width, clientHeight: height } = renderDom;
     const camera = ThreeInitializer.initCamera(config);
     const scene = ThreeInitializer.initScene(config);
     const cssRenderer = ThreeInitializer.initCSSRender(config);
@@ -27,8 +30,11 @@ class ThreeInitializer extends BaseInitializer {
     const composer = new EffectComposer(renderer);
     const renderPass = new RenderPass(scene, camera);
     composer.addPass(renderPass);
-    const outlinePass = new OutlinePass(new THREE.Vector2(), scene, camera);
+    const outlinePass = new OutlinePass(new THREE.Vector2(width, height), scene, camera);
     composer.addPass(outlinePass);
+    const effectFXAA = new ShaderPass(FXAAShader);
+    effectFXAA.uniforms.resolution.value.set(1 / width, 1 / height);
+    composer.addPass(effectFXAA);
     ThreeInitializer.initSkyBox(config.skyBox, scene);
     const cssOrbitControl = ThreeInitializer.initOrbitControl(
       camera,
@@ -55,6 +61,7 @@ class ThreeInitializer extends BaseInitializer {
       cssRenderer,
       cssOrbitControl,
       raycaster,
+      effectFXAA,
     };
 
     ThreeInitializer.initLights(scene);
@@ -142,11 +149,13 @@ class ThreeInitializer extends BaseInitializer {
     renderDom: HTMLElement;
     renderer: WebGLRenderer;
     composer: EffectComposer;
+    effectFXAA: ShaderPass;
   }) {
-    const { renderDom, renderer, composer } = config;
+    const { renderDom, renderer, composer, effectFXAA } = config;
     const { clientWidth: width, clientHeight: height } = renderDom;
     renderer.setSize(width, height);
     composer.setSize(width, height);
+    effectFXAA.uniforms.resolution.value.set(width, height);
   }
 
   static updateCamera(config: {

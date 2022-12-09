@@ -13,6 +13,7 @@ import type { OrbitControls } from '../../lib/controls/OrbitControls';
 import type { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
 import type { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
 import type { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
+import type { ShaderPass } from '../../lib/postprocessing/ShaderPass.js';
 
 export type ThreeInitializerType = {
   renderDom: HTMLDivElement;
@@ -34,6 +35,7 @@ export type ThreeInitializerReturn = {
   cssOrbitControl: OrbitControls;
   interaction: Interaction;
   raycaster: Raycaster;
+  effectFXAA: ShaderPass;
 };
 
 export type ITownsInitializerType = {

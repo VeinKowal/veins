@@ -11,6 +11,7 @@ import * as TWEEN from '@tweenjs/tween.js';
 import type { OrbitControls } from '../../lib/controls/OrbitControls';
 import type { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
 import type { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
+import type { ShaderPass } from '../../lib/postprocessing/ShaderPass.js';
 import ThreeInitializer from '../Initializer/ThreeInitializer';
 import ITownsInitializer from '../Initializer/ITownsInitializer';
 import type { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
@@ -34,6 +35,7 @@ class App {
   controls: OrbitControls[] = [];
   animate?: number;
   view?: itowns.GlobeView;
+  effectFXAA?: ShaderPass;
 
   constructor(config: AppConfig) {
     const {
@@ -46,6 +48,7 @@ class App {
       orbitControl,
       cssOrbitControl,
       interaction,
+      effectFXAA,
     } = ThreeInitializer.init(config);
     this.camera = camera;
     this.scene = scene;
@@ -56,6 +59,7 @@ class App {
     this.controls = [orbitControl, cssOrbitControl];
     this.interaction = interaction;
     this.renderDom = config.renderDom;
+    this.effectFXAA = effectFXAA;
     this.init(config);
   }
 
@@ -78,17 +82,19 @@ class App {
   run = () => {
     TWEEN.update();
     this.animate = requestAnimationFrame(this.run);
-    if (!this.view) {
-      this.controls.forEach((control) => control.update());
-      this.renderer.render(this.scene, this.camera);
-    }
-    this.cssRenderer.render(this.scene, this.camera);
-    this.composer.render();
 
     // 运行已注册的更新方法
     ParticleSystem.updateFunctions.forEach((e) => {
       e(this.scene, this.camera);
     });
+
+    this.cssRenderer.render(this.scene, this.camera);
+    if (!this.view) {
+      this.renderer.render(this.scene, this.camera);
+      this.controls.forEach((control) => control.update());
+    }
+
+    this.composer.render();
   };
 
   /**
@@ -122,11 +128,13 @@ class App {
       renderDom: this.renderDom,
       renderer: this.renderer,
       composer: this.composer,
+      effectFXAA: this.effectFXAA,
     });
     ThreeInitializer.updateRender({
       renderDom: this.renderDom,
       renderer: this.cssRenderer,
       composer: this.composer,
+      effectFXAA: this.effectFXAA,
     });
     ThreeInitializer.updateCamera({
       renderDom: this.renderDom,
