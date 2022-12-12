@@ -280,25 +280,20 @@ class App {
 
       if (!this.view) return;
       const { view } = this.view;
-      itowns.CameraUtils.animateCameraToLookAtTarget(
-        view,
-        view.camera.camera3D,
-        {
-          coord: new itowns.Coordinates(
-            'EPSG:4978',
-            targetPos.x,
-            targetPos.y,
-            targetPos.z,
-          ),
-          time,
-          range: radius,
-          tilt: angle[0],
-          heading: angle[2],
-          callback: (e) => {
-            // e.camera.lookAt(targetPos.x, targetPos.y, targetPos.z);
-          }
-        },
-      ).then(() => {
+      view.controls.lookAtCoordinate({
+        coord: new itowns.Coordinates(
+          'EPSG:4978',
+          targetPos.x,
+          targetPos.y,
+          targetPos.z,
+        ),
+        time,
+        range: radius,
+        tilt: angle[0],
+        heading: angle[2],
+      }).then(() => {
+        view.controls.updateTarget();
+        view.controls.update();
         complete && complete();
       });
     }
