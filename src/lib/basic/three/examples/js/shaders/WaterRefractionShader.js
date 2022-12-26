@@ -1,84 +1,88 @@
-THREE.WaterRefractionShader = {
-  uniforms: {
-    color: {
-      value: null,
-    },
+( function () {
 
-    time: {
-      value: 0,
-    },
+	const WaterRefractionShader = {
+		uniforms: {
+			'color': {
+				value: null
+			},
+			'time': {
+				value: 0
+			},
+			'tDiffuse': {
+				value: null
+			},
+			'tDudv': {
+				value: null
+			},
+			'textureMatrix': {
+				value: null
+			}
+		},
+		vertexShader:
+  /* glsl */
+  `
 
-    tDiffuse: {
-      value: null,
-    },
+		uniform mat4 textureMatrix;
 
-    tDudv: {
-      value: null,
-    },
+		varying vec2 vUv;
+		varying vec4 vUvRefraction;
 
-    textureMatrix: {
-      value: null,
-    },
-  },
+		void main() {
 
-  vertexShader: [
-    'uniform mat4 textureMatrix;',
+			vUv = uv;
 
-    'varying vec2 vUv;',
-    'varying vec4 vUvRefraction;',
+			vUvRefraction = textureMatrix * vec4( position, 1.0 );
 
-    'void main() {',
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    '	vUv = uv;',
+		}`,
+		fragmentShader:
+  /* glsl */
+  `
 
-    '	vUvRefraction = textureMatrix * vec4( position, 1.0 );',
+		uniform vec3 color;
+		uniform float time;
+		uniform sampler2D tDiffuse;
+		uniform sampler2D tDudv;
 
-    '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+		varying vec2 vUv;
+		varying vec4 vUvRefraction;
 
-    '}',
-  ].join('\n'),
+		float blendOverlay( float base, float blend ) {
 
-  fragmentShader: [
-    'uniform vec3 color;',
-    'uniform float time;',
-    'uniform sampler2D tDiffuse;',
-    'uniform sampler2D tDudv;',
+			return( base < 0.5 ? ( 2.0 * base * blend ) : ( 1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );
 
-    'varying vec2 vUv;',
-    'varying vec4 vUvRefraction;',
+		}
 
-    'float blendOverlay( float base, float blend ) {',
+		vec3 blendOverlay( vec3 base, vec3 blend ) {
 
-    '	return( base < 0.5 ? ( 2.0 * base * blend ) : ( 1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );',
+			return vec3( blendOverlay( base.r, blend.r ), blendOverlay( base.g, blend.g ),blendOverlay( base.b, blend.b ) );
 
-    '}',
+		}
 
-    'vec3 blendOverlay( vec3 base, vec3 blend ) {',
+		void main() {
 
-    '	return vec3( blendOverlay( base.r, blend.r ), blendOverlay( base.g, blend.g ),blendOverlay( base.b, blend.b ) );',
+		 float waveStrength = 0.1;
+		 float waveSpeed = 0.03;
 
-    '}',
+			// simple distortion (ripple) via dudv map (see https://www.youtube.com/watch?v=6B7IF6GOu7s)
 
-    'void main() {',
+			vec2 distortedUv = texture2D( tDudv, vec2( vUv.x + time * waveSpeed, vUv.y ) ).rg * waveStrength;
+			distortedUv = vUv.xy + vec2( distortedUv.x, distortedUv.y + time * waveSpeed );
+			vec2 distortion = ( texture2D( tDudv, distortedUv ).rg * 2.0 - 1.0 ) * waveStrength;
 
-    ' float waveStrength = 0.1;',
-    ' float waveSpeed = 0.03;',
+			// new uv coords
 
-    // simple distortion (ripple) via dudv map (see https://www.youtube.com/watch?v=6B7IF6GOu7s)
+		 vec4 uv = vec4( vUvRefraction );
+		 uv.xy += distortion;
 
-    '	vec2 distortedUv = texture2D( tDudv, vec2( vUv.x + time * waveSpeed, vUv.y ) ).rg * waveStrength;',
-    '	distortedUv = vUv.xy + vec2( distortedUv.x, distortedUv.y + time * waveSpeed );',
-    '	vec2 distortion = ( texture2D( tDudv, distortedUv ).rg * 2.0 - 1.0 ) * waveStrength;',
+			vec4 base = texture2DProj( tDiffuse, uv );
 
-    // new uv coords
+			gl_FragColor = vec4( blendOverlay( base.rgb, color ), 1.0 );
 
-    ' vec4 uv = vec4( vUvRefraction );',
-    ' uv.xy += distortion;',
+		}`
+	};
 
-    '	vec4 base = texture2DProj( tDiffuse, uv );',
+	THREE.WaterRefractionShader = WaterRefractionShader;
 
-    '	gl_FragColor = vec4( blendOverlay( base.rgb, color ), 1.0 );',
-
-    '}',
-  ].join('\n'),
-};
+} )();

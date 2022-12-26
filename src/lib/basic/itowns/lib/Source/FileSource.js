@@ -1,68 +1,33 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _get2 = _interopRequireDefault(require('@babel/runtime/helpers/get'));
+var _get2 = _interopRequireDefault(require("@babel/runtime/helpers/get"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _Source2 = _interopRequireDefault(require('./Source'));
+var _Source2 = _interopRequireDefault(require("./Source"));
 
-var _Cache = _interopRequireDefault(require('../Core/Scheduler/Cache'));
+var _Cache = _interopRequireDefault(require("../Core/Scheduler/Cache"));
 
-var _Crs = _interopRequireDefault(require('../Core/Geographic/Crs'));
+var _Crs = _interopRequireDefault(require("../Core/Geographic/Crs"));
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 /**
  * @classdesc
@@ -143,10 +108,10 @@ function _isNativeReflectConstruct() {
  *         return itowns.GeoJsonParser.parse(geojson, {
  *             in: { in: 'EPSG:4326' },
  *             out: {
- *             crs: view.tileLayer.extent.crs,
- *             buildExtent: true,
- *             mergeFeatures: true,
- *             structure: '2d',
+     *             crs: view.tileLayer.extent.crs,
+     *             buildExtent: true,
+     *             mergeFeatures: true,
+     *             structure: '2d',
  *             },
  *         });
  *     }).then(function _(features) {
@@ -158,8 +123,8 @@ function _isNativeReflectConstruct() {
  *         return view.addLayer(ariegeLayer);
  *     });
  */
-var FileSource = /*#__PURE__*/ (function (_Source) {
-  (0, _inherits2['default'])(FileSource, _Source);
+var FileSource = /*#__PURE__*/function (_Source) {
+  (0, _inherits2["default"])(FileSource, _Source);
 
   var _super = _createSuper(FileSource);
 
@@ -173,21 +138,18 @@ var FileSource = /*#__PURE__*/ (function (_Source) {
   function FileSource(source) {
     var _this;
 
-    (0, _classCallCheck2['default'])(this, FileSource);
+    (0, _classCallCheck2["default"])(this, FileSource);
 
     /* istanbul ignore next */
     if (source.parsedData) {
-      console.warn(
-        'FileSource parsedData parameter is deprecated, use features instead of.',
-      );
+      console.warn('FileSource parsedData parameter is deprecated, use features instead of.');
       source.features = source.features || source.parsedData;
     }
     /* istanbul ignore next */
 
+
     if (source.projection) {
-      console.warn(
-        'FileSource projection parameter is deprecated, use crs instead.',
-      );
+      console.warn('FileSource projection parameter is deprecated, use crs instead.');
       source.crs = source.crs || source.projection;
     }
 
@@ -200,10 +162,9 @@ var FileSource = /*#__PURE__*/ (function (_Source) {
     }
 
     if (!source.url && !source.fetchedData && !source.features) {
-      throw new Error(
-        'url, fetchedData and features are not set in\n                FileSource; at least one needs to be present',
-      );
+      throw new Error("url, fetchedData and features are not set in\n                FileSource; at least one needs to be present");
     } // the fake url is for when we use the fetchedData or features mode
+
 
     source.url = source.url || 'fake-file-url';
     _this = _super.call(this, source);
@@ -211,18 +172,13 @@ var FileSource = /*#__PURE__*/ (function (_Source) {
     _this.fetchedData = source.fetchedData;
 
     if (!_this.fetchedData && !source.features) {
-      _this.whenReady = _this
-        .fetcher(_this.urlFromExtent(), _this.networkOptions)
-        .then(function (f) {
-          _this.fetchedData = f;
-        });
+      _this.whenReady = _this.fetcher(_this.urlFromExtent(), _this.networkOptions).then(function (f) {
+        _this.fetchedData = f;
+      });
     } else if (source.features) {
-      _this._featuresCaches[source.features.crs] = new _Cache['default']();
+      _this._featuresCaches[source.features.crs] = new _Cache["default"]();
 
-      _this._featuresCaches[source.features.crs].setByArray(
-        Promise.resolve(source.features),
-        [0],
-      );
+      _this._featuresCaches[source.features.crs].setByArray(Promise.resolve(source.features), [0]);
     }
 
     _this.whenReady.then(function () {
@@ -231,85 +187,74 @@ var FileSource = /*#__PURE__*/ (function (_Source) {
 
     _this.zoom = {
       min: 0,
-      max: Infinity,
+      max: Infinity
     };
     return _this;
   }
 
-  (0, _createClass2['default'])(FileSource, [
-    {
-      key: 'urlFromExtent',
-      value: function urlFromExtent() {
-        return this.url;
-      },
-    },
-    {
-      key: 'onLayerAdded',
-      value: function onLayerAdded(options) {
-        var _this2 = this;
+  (0, _createClass2["default"])(FileSource, [{
+    key: "urlFromExtent",
+    value: function urlFromExtent() {
+      return this.url;
+    }
+  }, {
+    key: "onLayerAdded",
+    value: function onLayerAdded(options) {
+      var _this2 = this;
 
-        options['in'] = this;
-        (0, _get2['default'])(
-          (0, _getPrototypeOf2['default'])(FileSource.prototype),
-          'onLayerAdded',
-          this,
-        ).call(this, options);
+      options["in"] = this;
+      (0, _get2["default"])((0, _getPrototypeOf2["default"])(FileSource.prototype), "onLayerAdded", this).call(this, options);
 
-        var features = this._featuresCaches[options.out.crs].getByArray([0]);
+      var features = this._featuresCaches[options.out.crs].getByArray([0]);
 
-        if (!features) {
-          options.out.buildExtent = this.crs != 'EPSG:4978';
+      if (!features) {
+        options.out.buildExtent = this.crs != 'EPSG:4978';
 
-          if (options.out.buildExtent) {
-            options.out.forcedExtentCrs =
-              options.out.crs != 'EPSG:4978'
-                ? options.out.crs
-                : _Crs['default'].formatToEPSG(this.crs);
-          }
-
-          features = this.parser(this.fetchedData, options);
-
-          this._featuresCaches[options.out.crs].setByArray(features, [0]);
+        if (options.out.buildExtent) {
+          options.out.forcedExtentCrs = options.out.crs != 'EPSG:4978' ? options.out.crs : _Crs["default"].formatToEPSG(this.crs);
         }
 
-        features.then(function (data) {
-          if (data.extent) {
-            _this2.extent = data.extent.clone(); // Transform local extent to data.crs projection.
+        features = this.parser(this.fetchedData, options);
 
-            if (_this2.extent.crs == data.crs) {
-              _this2.extent.applyMatrix4(data.matrixWorld);
-            }
-          }
+        this._featuresCaches[options.out.crs].setByArray(features, [0]);
+      }
 
-          if (data.isFeatureCollection) {
-            data.setParentStyle(options.out.style);
+      features.then(function (data) {
+        if (data.extent) {
+          _this2.extent = data.extent.clone(); // Transform local extent to data.crs projection.
+
+          if (_this2.extent.crs == data.crs) {
+            _this2.extent.applyMatrix4(data.matrixWorld);
           }
-        });
-      },
-      /**
-       * load  data from cache or Fetch/Parse data.
-       * The loaded data is a Feature or Texture.
-       *
-       * @param      {Extent}  extent   extent requested parsed data.
-       * @param      {FeatureBuildingOptions|Layer}  out  The feature returned options
-       * @return     {FeatureCollection|Texture}  The parsed data.
-       */
-    },
-    {
-      key: 'loadData',
-      value: function loadData(extent, out) {
-        return this._featuresCaches[out.crs].getByArray([0]);
-      },
-    },
-    {
-      key: 'extentInsideLimit',
-      value: function extentInsideLimit(extent) {
-        return this.extent.intersectsExtent(extent);
-      },
-    },
-  ]);
+        }
+
+        if (data.isFeatureCollection) {
+          data.setParentStyle(options.out.style);
+        }
+      });
+    }
+    /**
+     * load  data from cache or Fetch/Parse data.
+     * The loaded data is a Feature or Texture.
+     *
+     * @param      {Extent}  extent   extent requested parsed data.
+     * @param      {FeatureBuildingOptions|Layer}  out  The feature returned options
+     * @return     {FeatureCollection|Texture}  The parsed data.
+     */
+
+  }, {
+    key: "loadData",
+    value: function loadData(extent, out) {
+      return this._featuresCaches[out.crs].getByArray([0]);
+    }
+  }, {
+    key: "extentInsideLimit",
+    value: function extentInsideLimit(extent) {
+      return this.extent.intersectsExtent(extent);
+    }
+  }]);
   return FileSource;
-})(_Source2['default']);
+}(_Source2["default"]);
 
 var _default = FileSource;
-exports['default'] = _default;
+exports["default"] = _default;

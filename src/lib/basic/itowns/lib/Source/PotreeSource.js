@@ -1,68 +1,31 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _Source2 = _interopRequireDefault(require('./Source'));
+var _Source2 = _interopRequireDefault(require("./Source"));
 
-var _Fetcher = _interopRequireDefault(require('../Provider/Fetcher'));
+var _Fetcher = _interopRequireDefault(require("../Provider/Fetcher"));
 
-var _PotreeBinParser = _interopRequireDefault(
-  require('../Parser/PotreeBinParser'),
-);
+var _PotreeBinParser = _interopRequireDefault(require("../Parser/PotreeBinParser"));
 
-var _PotreeCinParser = _interopRequireDefault(
-  require('../Parser/PotreeCinParser'),
-);
+var _PotreeCinParser = _interopRequireDefault(require("../Parser/PotreeCinParser"));
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 /**
  * @classdesc
@@ -70,8 +33,8 @@ function _isNativeReflectConstruct() {
  *
  *
  */
-var PotreeSource = /*#__PURE__*/ (function (_Source) {
-  (0, _inherits2['default'])(PotreeSource, _Source);
+var PotreeSource = /*#__PURE__*/function (_Source) {
+  (0, _inherits2["default"])(PotreeSource, _Source);
 
   var _super = _createSuper(PotreeSource);
 
@@ -131,7 +94,7 @@ var PotreeSource = /*#__PURE__*/ (function (_Source) {
   function PotreeSource(source) {
     var _this;
 
-    (0, _classCallCheck2['default'])(this, PotreeSource);
+    (0, _classCallCheck2["default"])(this, PotreeSource);
 
     if (!source.file) {
       throw new Error('New PotreeSource: file is required');
@@ -139,32 +102,22 @@ var PotreeSource = /*#__PURE__*/ (function (_Source) {
 
     _this = _super.call(this, source);
     _this.file = source.file;
-    _this.fetcher = _Fetcher['default'].arrayBuffer;
+    _this.fetcher = _Fetcher["default"].arrayBuffer;
     _this.extensionOctree = 'hrc'; // For cloud specification visit:
     // https://github.com/PropellerAero/potree-propeller-private/blob/master/docs/file_format.md#cloudjs
 
-    _this.whenReady = (
-      source.cloud
-        ? Promise.resolve(source.cloud)
-        : _Fetcher['default'].json(
-            ''.concat(_this.url, '/').concat(_this.file),
-            _this.networkOptions,
-          )
-    ).then(function (cloud) {
+    _this.whenReady = (source.cloud ? Promise.resolve(source.cloud) : _Fetcher["default"].json("".concat(_this.url, "/").concat(_this.file), _this.networkOptions)).then(function (cloud) {
       _this.pointAttributes = cloud.pointAttributes;
-      _this.baseurl = ''.concat(_this.url, '/').concat(cloud.octreeDir, '/r');
+      _this.baseurl = "".concat(_this.url, "/").concat(cloud.octreeDir, "/r");
       _this.extension = cloud.pointAttributes === 'CIN' ? 'cin' : 'bin';
-      _this.parse =
-        _this.extension === 'cin'
-          ? _PotreeCinParser['default'].parse
-          : _PotreeBinParser['default'].parse;
+      _this.parse = _this.extension === 'cin' ? _PotreeCinParser["default"].parse : _PotreeBinParser["default"].parse;
       return cloud;
     });
     return _this;
   }
 
   return PotreeSource;
-})(_Source2['default']);
+}(_Source2["default"]);
 
 var _default = PotreeSource;
-exports['default'] = _default;
+exports["default"] = _default;

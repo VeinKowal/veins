@@ -4,47 +4,51 @@
  * - requires power-of-2 sized render target with enabled mipmaps
  */
 
-var DOFMipMapShader = {
-  uniforms: {
-    tColor: { value: null },
-    tDepth: { value: null },
-    focus: { value: 1.0 },
-    maxblur: { value: 1.0 },
-  },
+const DOFMipMapShader = {
 
-  vertexShader: [
-    'varying vec2 vUv;',
+	uniforms: {
 
-    'void main() {',
+		'tColor': { value: null },
+		'tDepth': { value: null },
+		'focus': { value: 1.0 },
+		'maxblur': { value: 1.0 }
 
-    '	vUv = uv;',
-    '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+	},
 
-    '}',
-  ].join('\n'),
+	vertexShader: /* glsl */`
 
-  fragmentShader: [
-    'uniform float focus;',
-    'uniform float maxblur;',
+		varying vec2 vUv;
 
-    'uniform sampler2D tColor;',
-    'uniform sampler2D tDepth;',
+		void main() {
 
-    'varying vec2 vUv;',
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    'void main() {',
+		}`,
 
-    '	vec4 depth = texture2D( tDepth, vUv );',
+	fragmentShader: /* glsl */`
 
-    '	float factor = depth.x - focus;',
+		uniform float focus;
+		uniform float maxblur;
 
-    '	vec4 col = texture2D( tColor, vUv, 2.0 * maxblur * abs( focus - depth.x ) );',
+		uniform sampler2D tColor;
+		uniform sampler2D tDepth;
 
-    '	gl_FragColor = col;',
-    '	gl_FragColor.a = 1.0;',
+		varying vec2 vUv;
 
-    '}',
-  ].join('\n'),
+		void main() {
+
+			vec4 depth = texture2D( tDepth, vUv );
+
+			float factor = depth.x - focus;
+
+			vec4 col = texture2D( tColor, vUv, 2.0 * maxblur * abs( focus - depth.x ) );
+
+			gl_FragColor = col;
+			gl_FragColor.a = 1.0;
+
+		}`
+
 };
 
 export { DOFMipMapShader };

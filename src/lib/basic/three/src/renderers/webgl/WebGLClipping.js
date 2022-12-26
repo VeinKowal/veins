@@ -1,135 +1,167 @@
 import { Matrix3 } from '../../math/Matrix3.js';
 import { Plane } from '../../math/Plane.js';
 
-function WebGLClipping(properties) {
-  const scope = this;
+function WebGLClipping( properties ) {
 
-  let globalState = null,
-    numGlobalPlanes = 0,
-    localClippingEnabled = false,
-    renderingShadows = false;
+	const scope = this;
 
-  const plane = new Plane(),
-    viewNormalMatrix = new Matrix3(),
-    uniform = { value: null, needsUpdate: false };
+	let globalState = null,
+		numGlobalPlanes = 0,
+		localClippingEnabled = false,
+		renderingShadows = false;
 
-  this.uniform = uniform;
-  this.numPlanes = 0;
-  this.numIntersection = 0;
+	const plane = new Plane(),
+		viewNormalMatrix = new Matrix3(),
 
-  this.init = function (planes, enableLocalClipping, camera) {
-    const enabled =
-      planes.length !== 0 ||
-      enableLocalClipping ||
-      // enable state of previous frame - the clipping code has to
-      // run another frame in order to reset the state:
-      numGlobalPlanes !== 0 ||
-      localClippingEnabled;
+		uniform = { value: null, needsUpdate: false };
 
-    localClippingEnabled = enableLocalClipping;
+	this.uniform = uniform;
+	this.numPlanes = 0;
+	this.numIntersection = 0;
 
-    globalState = projectPlanes(planes, camera, 0);
-    numGlobalPlanes = planes.length;
+	this.init = function ( planes, enableLocalClipping, camera ) {
 
-    return enabled;
-  };
+		const enabled =
+			planes.length !== 0 ||
+			enableLocalClipping ||
+			// enable state of previous frame - the clipping code has to
+			// run another frame in order to reset the state:
+			numGlobalPlanes !== 0 ||
+			localClippingEnabled;
 
-  this.beginShadows = function () {
-    renderingShadows = true;
-    projectPlanes(null);
-  };
+		localClippingEnabled = enableLocalClipping;
 
-  this.endShadows = function () {
-    renderingShadows = false;
-    resetGlobalState();
-  };
+		globalState = projectPlanes( planes, camera, 0 );
+		numGlobalPlanes = planes.length;
 
-  this.setState = function (material, camera, useCache) {
-    const planes = material.clippingPlanes,
-      clipIntersection = material.clipIntersection,
-      clipShadows = material.clipShadows;
+		return enabled;
 
-    const materialProperties = properties.get(material);
+	};
 
-    if (
-      !localClippingEnabled ||
-      planes === null ||
-      planes.length === 0 ||
-      (renderingShadows && !clipShadows)
-    ) {
-      // there's no local clipping
+	this.beginShadows = function () {
 
-      if (renderingShadows) {
-        // there's no global clipping
+		renderingShadows = true;
+		projectPlanes( null );
 
-        projectPlanes(null);
-      } else {
-        resetGlobalState();
-      }
-    } else {
-      const nGlobal = renderingShadows ? 0 : numGlobalPlanes,
-        lGlobal = nGlobal * 4;
+	};
 
-      let dstArray = materialProperties.clippingState || null;
+	this.endShadows = function () {
 
-      uniform.value = dstArray; // ensure unique state
+		renderingShadows = false;
+		resetGlobalState();
 
-      dstArray = projectPlanes(planes, camera, lGlobal, useCache);
+	};
 
-      for (let i = 0; i !== lGlobal; ++i) {
-        dstArray[i] = globalState[i];
-      }
+	this.setState = function ( material, camera, useCache ) {
 
-      materialProperties.clippingState = dstArray;
-      this.numIntersection = clipIntersection ? this.numPlanes : 0;
-      this.numPlanes += nGlobal;
-    }
-  };
+		const planes = material.clippingPlanes,
+			clipIntersection = material.clipIntersection,
+			clipShadows = material.clipShadows;
 
-  function resetGlobalState() {
-    if (uniform.value !== globalState) {
-      uniform.value = globalState;
-      uniform.needsUpdate = numGlobalPlanes > 0;
-    }
+		const materialProperties = properties.get( material );
 
-    scope.numPlanes = numGlobalPlanes;
-    scope.numIntersection = 0;
-  }
+		if ( ! localClippingEnabled || planes === null || planes.length === 0 || renderingShadows && ! clipShadows ) {
 
-  function projectPlanes(planes, camera, dstOffset, skipTransform) {
-    const nPlanes = planes !== null ? planes.length : 0;
-    let dstArray = null;
+			// there's no local clipping
 
-    if (nPlanes !== 0) {
-      dstArray = uniform.value;
+			if ( renderingShadows ) {
 
-      if (skipTransform !== true || dstArray === null) {
-        const flatSize = dstOffset + nPlanes * 4,
-          viewMatrix = camera.matrixWorldInverse;
+				// there's no global clipping
 
-        viewNormalMatrix.getNormalMatrix(viewMatrix);
+				projectPlanes( null );
 
-        if (dstArray === null || dstArray.length < flatSize) {
-          dstArray = new Float32Array(flatSize);
-        }
+			} else {
 
-        for (let i = 0, i4 = dstOffset; i !== nPlanes; ++i, i4 += 4) {
-          plane.copy(planes[i]).applyMatrix4(viewMatrix, viewNormalMatrix);
+				resetGlobalState();
 
-          plane.normal.toArray(dstArray, i4);
-          dstArray[i4 + 3] = plane.constant;
-        }
-      }
+			}
 
-      uniform.value = dstArray;
-      uniform.needsUpdate = true;
-    }
+		} else {
 
-    scope.numPlanes = nPlanes;
-    scope.numIntersection = 0;
+			const nGlobal = renderingShadows ? 0 : numGlobalPlanes,
+				lGlobal = nGlobal * 4;
 
-    return dstArray;
-  }
+			let dstArray = materialProperties.clippingState || null;
+
+			uniform.value = dstArray; // ensure unique state
+
+			dstArray = projectPlanes( planes, camera, lGlobal, useCache );
+
+			for ( let i = 0; i !== lGlobal; ++ i ) {
+
+				dstArray[ i ] = globalState[ i ];
+
+			}
+
+			materialProperties.clippingState = dstArray;
+			this.numIntersection = clipIntersection ? this.numPlanes : 0;
+			this.numPlanes += nGlobal;
+
+		}
+
+
+	};
+
+	function resetGlobalState() {
+
+		if ( uniform.value !== globalState ) {
+
+			uniform.value = globalState;
+			uniform.needsUpdate = numGlobalPlanes > 0;
+
+		}
+
+		scope.numPlanes = numGlobalPlanes;
+		scope.numIntersection = 0;
+
+	}
+
+	function projectPlanes( planes, camera, dstOffset, skipTransform ) {
+
+		const nPlanes = planes !== null ? planes.length : 0;
+		let dstArray = null;
+
+		if ( nPlanes !== 0 ) {
+
+			dstArray = uniform.value;
+
+			if ( skipTransform !== true || dstArray === null ) {
+
+				const flatSize = dstOffset + nPlanes * 4,
+					viewMatrix = camera.matrixWorldInverse;
+
+				viewNormalMatrix.getNormalMatrix( viewMatrix );
+
+				if ( dstArray === null || dstArray.length < flatSize ) {
+
+					dstArray = new Float32Array( flatSize );
+
+				}
+
+				for ( let i = 0, i4 = dstOffset; i !== nPlanes; ++ i, i4 += 4 ) {
+
+					plane.copy( planes[ i ] ).applyMatrix4( viewMatrix, viewNormalMatrix );
+
+					plane.normal.toArray( dstArray, i4 );
+					dstArray[ i4 + 3 ] = plane.constant;
+
+				}
+
+			}
+
+			uniform.value = dstArray;
+			uniform.needsUpdate = true;
+
+		}
+
+		scope.numPlanes = nPlanes;
+		scope.numIntersection = 0;
+
+		return dstArray;
+
+	}
+
 }
+
 
 export { WebGLClipping };

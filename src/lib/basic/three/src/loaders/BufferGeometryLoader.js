@@ -11,198 +11,214 @@ import { InterleavedBuffer } from '../core/InterleavedBuffer.js';
 import { getTypedArray } from '../utils.js';
 
 class BufferGeometryLoader extends Loader {
-  constructor(manager) {
-    super(manager);
-  }
 
-  load(url, onLoad, onProgress, onError) {
-    const scope = this;
+	constructor( manager ) {
 
-    const loader = new FileLoader(scope.manager);
-    loader.setPath(scope.path);
-    loader.setRequestHeader(scope.requestHeader);
-    loader.setWithCredentials(scope.withCredentials);
-    loader.load(
-      url,
-      function (text) {
-        try {
-          onLoad(scope.parse(JSON.parse(text)));
-        } catch (e) {
-          if (onError) {
-            onError(e);
-          } else {
-            console.error(e);
-          }
+		super( manager );
 
-          scope.manager.itemError(url);
-        }
-      },
-      onProgress,
-      onError,
-    );
-  }
+	}
 
-  parse(json) {
-    const interleavedBufferMap = {};
-    const arrayBufferMap = {};
+	load( url, onLoad, onProgress, onError ) {
 
-    function getInterleavedBuffer(json, uuid) {
-      if (interleavedBufferMap[uuid] !== undefined)
-        return interleavedBufferMap[uuid];
+		const scope = this;
 
-      const interleavedBuffers = json.interleavedBuffers;
-      const interleavedBuffer = interleavedBuffers[uuid];
+		const loader = new FileLoader( scope.manager );
+		loader.setPath( scope.path );
+		loader.setRequestHeader( scope.requestHeader );
+		loader.setWithCredentials( scope.withCredentials );
+		loader.load( url, function ( text ) {
 
-      const buffer = getArrayBuffer(json, interleavedBuffer.buffer);
+			try {
 
-      const array = getTypedArray(interleavedBuffer.type, buffer);
-      const ib = new InterleavedBuffer(array, interleavedBuffer.stride);
-      ib.uuid = interleavedBuffer.uuid;
+				onLoad( scope.parse( JSON.parse( text ) ) );
 
-      interleavedBufferMap[uuid] = ib;
+			} catch ( e ) {
 
-      return ib;
-    }
+				if ( onError ) {
 
-    function getArrayBuffer(json, uuid) {
-      if (arrayBufferMap[uuid] !== undefined) return arrayBufferMap[uuid];
+					onError( e );
 
-      const arrayBuffers = json.arrayBuffers;
-      const arrayBuffer = arrayBuffers[uuid];
+				} else {
 
-      const ab = new Uint32Array(arrayBuffer).buffer;
+					console.error( e );
 
-      arrayBufferMap[uuid] = ab;
+				}
 
-      return ab;
-    }
+				scope.manager.itemError( url );
 
-    const geometry = json.isInstancedBufferGeometry
-      ? new InstancedBufferGeometry()
-      : new BufferGeometry();
+			}
 
-    const index = json.data.index;
+		}, onProgress, onError );
 
-    if (index !== undefined) {
-      const typedArray = getTypedArray(index.type, index.array);
-      geometry.setIndex(new BufferAttribute(typedArray, 1));
-    }
+	}
 
-    const attributes = json.data.attributes;
+	parse( json ) {
 
-    for (const key in attributes) {
-      const attribute = attributes[key];
-      let bufferAttribute;
+		const interleavedBufferMap = {};
+		const arrayBufferMap = {};
 
-      if (attribute.isInterleavedBufferAttribute) {
-        const interleavedBuffer = getInterleavedBuffer(
-          json.data,
-          attribute.data,
-        );
-        bufferAttribute = new InterleavedBufferAttribute(
-          interleavedBuffer,
-          attribute.itemSize,
-          attribute.offset,
-          attribute.normalized,
-        );
-      } else {
-        const typedArray = getTypedArray(attribute.type, attribute.array);
-        const bufferAttributeConstr = attribute.isInstancedBufferAttribute
-          ? InstancedBufferAttribute
-          : BufferAttribute;
-        bufferAttribute = new bufferAttributeConstr(
-          typedArray,
-          attribute.itemSize,
-          attribute.normalized,
-        );
-      }
+		function getInterleavedBuffer( json, uuid ) {
 
-      if (attribute.name !== undefined) bufferAttribute.name = attribute.name;
-      if (attribute.usage !== undefined)
-        bufferAttribute.setUsage(attribute.usage);
+			if ( interleavedBufferMap[ uuid ] !== undefined ) return interleavedBufferMap[ uuid ];
 
-      if (attribute.updateRange !== undefined) {
-        bufferAttribute.updateRange.offset = attribute.updateRange.offset;
-        bufferAttribute.updateRange.count = attribute.updateRange.count;
-      }
+			const interleavedBuffers = json.interleavedBuffers;
+			const interleavedBuffer = interleavedBuffers[ uuid ];
 
-      geometry.setAttribute(key, bufferAttribute);
-    }
+			const buffer = getArrayBuffer( json, interleavedBuffer.buffer );
 
-    const morphAttributes = json.data.morphAttributes;
+			const array = getTypedArray( interleavedBuffer.type, buffer );
+			const ib = new InterleavedBuffer( array, interleavedBuffer.stride );
+			ib.uuid = interleavedBuffer.uuid;
 
-    if (morphAttributes) {
-      for (const key in morphAttributes) {
-        const attributeArray = morphAttributes[key];
+			interleavedBufferMap[ uuid ] = ib;
 
-        const array = [];
+			return ib;
 
-        for (let i = 0, il = attributeArray.length; i < il; i++) {
-          const attribute = attributeArray[i];
-          let bufferAttribute;
+		}
 
-          if (attribute.isInterleavedBufferAttribute) {
-            const interleavedBuffer = getInterleavedBuffer(
-              json.data,
-              attribute.data,
-            );
-            bufferAttribute = new InterleavedBufferAttribute(
-              interleavedBuffer,
-              attribute.itemSize,
-              attribute.offset,
-              attribute.normalized,
-            );
-          } else {
-            const typedArray = getTypedArray(attribute.type, attribute.array);
-            bufferAttribute = new BufferAttribute(
-              typedArray,
-              attribute.itemSize,
-              attribute.normalized,
-            );
-          }
+		function getArrayBuffer( json, uuid ) {
 
-          if (attribute.name !== undefined)
-            bufferAttribute.name = attribute.name;
-          array.push(bufferAttribute);
-        }
+			if ( arrayBufferMap[ uuid ] !== undefined ) return arrayBufferMap[ uuid ];
 
-        geometry.morphAttributes[key] = array;
-      }
-    }
+			const arrayBuffers = json.arrayBuffers;
+			const arrayBuffer = arrayBuffers[ uuid ];
 
-    const morphTargetsRelative = json.data.morphTargetsRelative;
+			const ab = new Uint32Array( arrayBuffer ).buffer;
 
-    if (morphTargetsRelative) {
-      geometry.morphTargetsRelative = true;
-    }
+			arrayBufferMap[ uuid ] = ab;
 
-    const groups = json.data.groups || json.data.drawcalls || json.data.offsets;
+			return ab;
 
-    if (groups !== undefined) {
-      for (let i = 0, n = groups.length; i !== n; ++i) {
-        const group = groups[i];
+		}
 
-        geometry.addGroup(group.start, group.count, group.materialIndex);
-      }
-    }
+		const geometry = json.isInstancedBufferGeometry ? new InstancedBufferGeometry() : new BufferGeometry();
 
-    const boundingSphere = json.data.boundingSphere;
+		const index = json.data.index;
 
-    if (boundingSphere !== undefined) {
-      const center = new Vector3();
+		if ( index !== undefined ) {
 
-      if (boundingSphere.center !== undefined) {
-        center.fromArray(boundingSphere.center);
-      }
+			const typedArray = getTypedArray( index.type, index.array );
+			geometry.setIndex( new BufferAttribute( typedArray, 1 ) );
 
-      geometry.boundingSphere = new Sphere(center, boundingSphere.radius);
-    }
+		}
 
-    if (json.name) geometry.name = json.name;
-    if (json.userData) geometry.userData = json.userData;
+		const attributes = json.data.attributes;
 
-    return geometry;
-  }
+		for ( const key in attributes ) {
+
+			const attribute = attributes[ key ];
+			let bufferAttribute;
+
+			if ( attribute.isInterleavedBufferAttribute ) {
+
+				const interleavedBuffer = getInterleavedBuffer( json.data, attribute.data );
+				bufferAttribute = new InterleavedBufferAttribute( interleavedBuffer, attribute.itemSize, attribute.offset, attribute.normalized );
+
+			} else {
+
+				const typedArray = getTypedArray( attribute.type, attribute.array );
+				const bufferAttributeConstr = attribute.isInstancedBufferAttribute ? InstancedBufferAttribute : BufferAttribute;
+				bufferAttribute = new bufferAttributeConstr( typedArray, attribute.itemSize, attribute.normalized );
+
+			}
+
+			if ( attribute.name !== undefined ) bufferAttribute.name = attribute.name;
+			if ( attribute.usage !== undefined ) bufferAttribute.setUsage( attribute.usage );
+
+			if ( attribute.updateRange !== undefined ) {
+
+				bufferAttribute.updateRange.offset = attribute.updateRange.offset;
+				bufferAttribute.updateRange.count = attribute.updateRange.count;
+
+			}
+
+			geometry.setAttribute( key, bufferAttribute );
+
+		}
+
+		const morphAttributes = json.data.morphAttributes;
+
+		if ( morphAttributes ) {
+
+			for ( const key in morphAttributes ) {
+
+				const attributeArray = morphAttributes[ key ];
+
+				const array = [];
+
+				for ( let i = 0, il = attributeArray.length; i < il; i ++ ) {
+
+					const attribute = attributeArray[ i ];
+					let bufferAttribute;
+
+					if ( attribute.isInterleavedBufferAttribute ) {
+
+						const interleavedBuffer = getInterleavedBuffer( json.data, attribute.data );
+						bufferAttribute = new InterleavedBufferAttribute( interleavedBuffer, attribute.itemSize, attribute.offset, attribute.normalized );
+
+					} else {
+
+						const typedArray = getTypedArray( attribute.type, attribute.array );
+						bufferAttribute = new BufferAttribute( typedArray, attribute.itemSize, attribute.normalized );
+
+					}
+
+					if ( attribute.name !== undefined ) bufferAttribute.name = attribute.name;
+					array.push( bufferAttribute );
+
+				}
+
+				geometry.morphAttributes[ key ] = array;
+
+			}
+
+		}
+
+		const morphTargetsRelative = json.data.morphTargetsRelative;
+
+		if ( morphTargetsRelative ) {
+
+			geometry.morphTargetsRelative = true;
+
+		}
+
+		const groups = json.data.groups || json.data.drawcalls || json.data.offsets;
+
+		if ( groups !== undefined ) {
+
+			for ( let i = 0, n = groups.length; i !== n; ++ i ) {
+
+				const group = groups[ i ];
+
+				geometry.addGroup( group.start, group.count, group.materialIndex );
+
+			}
+
+		}
+
+		const boundingSphere = json.data.boundingSphere;
+
+		if ( boundingSphere !== undefined ) {
+
+			const center = new Vector3();
+
+			if ( boundingSphere.center !== undefined ) {
+
+				center.fromArray( boundingSphere.center );
+
+			}
+
+			geometry.boundingSphere = new Sphere( center, boundingSphere.radius );
+
+		}
+
+		if ( json.name ) geometry.name = json.name;
+		if ( json.userData ) geometry.userData = json.userData;
+
+		return geometry;
+
+	}
+
 }
 
 export { BufferGeometryLoader };

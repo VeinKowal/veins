@@ -1,228 +1,271 @@
-THREE.EdgeSplitModifier = function () {
-  var A = new THREE.Vector3();
-  var B = new THREE.Vector3();
-  var C = new THREE.Vector3();
+( function () {
 
-  var positions, normals;
-  var indexes;
-  var pointToIndexMap, splitIndexes;
-  let oldNormals;
+	const _A = new THREE.Vector3();
 
-  function computeNormals() {
-    normals = new Float32Array(indexes.length * 3);
+	const _B = new THREE.Vector3();
 
-    for (var i = 0; i < indexes.length; i += 3) {
-      var index = indexes[i];
+	const _C = new THREE.Vector3();
 
-      A.set(
-        positions[3 * index],
-        positions[3 * index + 1],
-        positions[3 * index + 2],
-      );
+	class EdgeSplitModifier {
 
-      index = indexes[i + 1];
-      B.set(
-        positions[3 * index],
-        positions[3 * index + 1],
-        positions[3 * index + 2],
-      );
+		modify( geometry, cutOffAngle, tryKeepNormals = true ) {
 
-      index = indexes[i + 2];
-      C.set(
-        positions[3 * index],
-        positions[3 * index + 1],
-        positions[3 * index + 2],
-      );
+			function computeNormals() {
 
-      C.sub(B);
-      A.sub(B);
+				normals = new Float32Array( indexes.length * 3 );
 
-      var normal = C.cross(A).normalize();
+				for ( let i = 0; i < indexes.length; i += 3 ) {
 
-      for (var j = 0; j < 3; j++) {
-        normals[3 * (i + j)] = normal.x;
-        normals[3 * (i + j) + 1] = normal.y;
-        normals[3 * (i + j) + 2] = normal.z;
-      }
-    }
-  }
+					let index = indexes[ i ];
 
-  function mapPositionsToIndexes() {
-    pointToIndexMap = Array(positions.length / 3);
+					_A.set( positions[ 3 * index ], positions[ 3 * index + 1 ], positions[ 3 * index + 2 ] );
 
-    for (var i = 0; i < indexes.length; i++) {
-      var index = indexes[i];
+					index = indexes[ i + 1 ];
 
-      if (pointToIndexMap[index] == null) {
-        pointToIndexMap[index] = [];
-      }
+					_B.set( positions[ 3 * index ], positions[ 3 * index + 1 ], positions[ 3 * index + 2 ] );
 
-      pointToIndexMap[index].push(i);
-    }
-  }
+					index = indexes[ i + 2 ];
 
-  function edgeSplitToGroups(indexes, cutOff, firstIndex) {
-    A.set(
-      normals[3 * firstIndex],
-      normals[3 * firstIndex + 1],
-      normals[3 * firstIndex + 2],
-    ).normalize();
+					_C.set( positions[ 3 * index ], positions[ 3 * index + 1 ], positions[ 3 * index + 2 ] );
 
-    var result = {
-      splitGroup: [],
-      currentGroup: [firstIndex],
-    };
+					_C.sub( _B );
 
-    for (var j of indexes) {
-      if (j !== firstIndex) {
-        B.set(
-          normals[3 * j],
-          normals[3 * j + 1],
-          normals[3 * j + 2],
-        ).normalize();
+					_A.sub( _B );
 
-        if (B.dot(A) < cutOff) {
-          result.splitGroup.push(j);
-        } else {
-          result.currentGroup.push(j);
-        }
-      }
-    }
+					const normal = _C.cross( _A ).normalize();
 
-    return result;
-  }
+					for ( let j = 0; j < 3; j ++ ) {
 
-  function edgeSplit(indexes, cutOff, original = null) {
-    if (indexes.length === 0) return;
+						normals[ 3 * ( i + j ) ] = normal.x;
+						normals[ 3 * ( i + j ) + 1 ] = normal.y;
+						normals[ 3 * ( i + j ) + 2 ] = normal.z;
 
-    var groupResults = [];
+					}
 
-    for (var index of indexes) {
-      groupResults.push(edgeSplitToGroups(indexes, cutOff, index));
-    }
+				}
 
-    var result = groupResults[0];
+			}
 
-    for (var groupResult of groupResults) {
-      if (groupResult.currentGroup.length > result.currentGroup.length) {
-        result = groupResult;
-      }
-    }
+			function mapPositionsToIndexes() {
 
-    if (original != null) {
-      splitIndexes.push({
-        original: original,
-        indexes: result.currentGroup,
-      });
-    }
+				pointToIndexMap = Array( positions.length / 3 );
 
-    if (result.splitGroup.length) {
-      edgeSplit(result.splitGroup, cutOff, original || result.currentGroup[0]);
-    }
-  }
+				for ( let i = 0; i < indexes.length; i ++ ) {
 
-  this.modify = function (geometry, cutOffAngle, tryKeepNormals = true) {
-    if (geometry.isGeometry === true) {
-      console.error(
-        'THREE.EdgeSplitModifier no longer supports THREE.Geometry. Use THREE.BufferGeometry instead.',
-      );
-      return;
-    }
+					const index = indexes[ i ];
 
-    let hadNormals = false;
-    oldNormals = null;
+					if ( pointToIndexMap[ index ] == null ) {
 
-    if (geometry.attributes.normal) {
-      hadNormals = true;
+						pointToIndexMap[ index ] = [];
 
-      geometry = geometry.clone();
+					}
 
-      if (tryKeepNormals === true && geometry.index !== null) {
-        oldNormals = geometry.attributes.normal.array;
-      }
+					pointToIndexMap[ index ].push( i );
 
-      geometry.deleteAttribute('normal');
-    }
+				}
 
-    if (geometry.index == null) {
-      if (THREE.BufferGeometryUtils === undefined) {
-        throw 'THREE.EdgeSplitModifier relies on THREE.BufferGeometryUtils';
-      }
+			}
 
-      geometry = THREE.BufferGeometryUtils.mergeVertices(geometry);
-    }
+			function edgeSplitToGroups( indexes, cutOff, firstIndex ) {
 
-    indexes = geometry.index.array;
-    positions = geometry.getAttribute('position').array;
+				_A.set( normals[ 3 * firstIndex ], normals[ 3 * firstIndex + 1 ], normals[ 3 * firstIndex + 2 ] ).normalize();
 
-    computeNormals();
-    mapPositionsToIndexes();
+				const result = {
+					splitGroup: [],
+					currentGroup: [ firstIndex ]
+				};
 
-    splitIndexes = [];
+				for ( const j of indexes ) {
 
-    for (var vertexIndexes of pointToIndexMap) {
-      edgeSplit(vertexIndexes, Math.cos(cutOffAngle) - 0.001);
-    }
+					if ( j !== firstIndex ) {
 
-    const newAttributes = {};
-    for (const name of Object.keys(geometry.attributes)) {
-      const oldAttribute = geometry.attributes[name];
-      const newArray = new oldAttribute.array.constructor(
-        (indexes.length + splitIndexes.length) * oldAttribute.itemSize,
-      );
-      newArray.set(oldAttribute.array);
-      newAttributes[name] = new THREE.BufferAttribute(
-        newArray,
-        oldAttribute.itemSize,
-        oldAttribute.normalized,
-      );
-    }
+						_B.set( normals[ 3 * j ], normals[ 3 * j + 1 ], normals[ 3 * j + 2 ] ).normalize();
 
-    var newIndexes = new Uint32Array(indexes.length);
-    newIndexes.set(indexes);
+						if ( _B.dot( _A ) < cutOff ) {
 
-    for (var i = 0; i < splitIndexes.length; i++) {
-      var split = splitIndexes[i];
-      var index = indexes[split.original];
+							result.splitGroup.push( j );
 
-      for (const attribute of Object.values(newAttributes)) {
-        for (let j = 0; j < attribute.itemSize; j++) {
-          attribute.array[(indexes.length + i) * attribute.itemSize + j] =
-            attribute.array[index * attribute.itemSize + j];
-        }
-      }
+						} else {
 
-      for (var j of split.indexes) {
-        newIndexes[j] = indexes.length + i;
-      }
-    }
+							result.currentGroup.push( j );
 
-    geometry = new THREE.BufferGeometry();
-    geometry.setIndex(new THREE.BufferAttribute(newIndexes, 1));
+						}
 
-    for (const name of Object.keys(newAttributes)) {
-      geometry.setAttribute(name, newAttributes[name]);
-    }
+					}
 
-    if (hadNormals) {
-      geometry.computeVertexNormals();
+				}
 
-      if (oldNormals !== null) {
-        const changedNormals = new Array(oldNormals.length / 3).fill(false);
+				return result;
 
-        for (const splitData of splitIndexes)
-          changedNormals[splitData.original] = true;
+			}
 
-        for (let i = 0; i < changedNormals.length; i++) {
-          if (changedNormals[i] === false) {
-            for (let j = 0; j < 3; j++)
-              geometry.attributes.normal.array[3 * i + j] =
-                oldNormals[3 * i + j];
-          }
-        }
-      }
-    }
+			function edgeSplit( indexes, cutOff, original = null ) {
 
-    return geometry;
-  };
-};
+				if ( indexes.length === 0 ) return;
+				const groupResults = [];
+
+				for ( const index of indexes ) {
+
+					groupResults.push( edgeSplitToGroups( indexes, cutOff, index ) );
+
+				}
+
+				let result = groupResults[ 0 ];
+
+				for ( const groupResult of groupResults ) {
+
+					if ( groupResult.currentGroup.length > result.currentGroup.length ) {
+
+						result = groupResult;
+
+					}
+
+				}
+
+				if ( original != null ) {
+
+					splitIndexes.push( {
+						original: original,
+						indexes: result.currentGroup
+					} );
+
+				}
+
+				if ( result.splitGroup.length ) {
+
+					edgeSplit( result.splitGroup, cutOff, original || result.currentGroup[ 0 ] );
+
+				}
+
+			}
+
+			if ( geometry.isGeometry === true ) {
+
+				console.error( 'THREE.EdgeSplitModifier no longer supports THREE.Geometry. Use THREE.BufferGeometry instead.' );
+				return;
+
+			}
+
+			let hadNormals = false;
+			let oldNormals = null;
+
+			if ( geometry.attributes.normal ) {
+
+				hadNormals = true;
+				geometry = geometry.clone();
+
+				if ( tryKeepNormals === true && geometry.index !== null ) {
+
+					oldNormals = geometry.attributes.normal.array;
+
+				}
+
+				geometry.deleteAttribute( 'normal' );
+
+			}
+
+			if ( geometry.index == null ) {
+
+				if ( THREE.BufferGeometryUtils === undefined ) {
+
+					throw 'THREE.EdgeSplitModifier relies on THREE.BufferGeometryUtils';
+
+				}
+
+				geometry = THREE.BufferGeometryUtils.mergeVertices( geometry );
+
+			}
+
+			const indexes = geometry.index.array;
+			const positions = geometry.getAttribute( 'position' ).array;
+			let normals;
+			let pointToIndexMap;
+			computeNormals();
+			mapPositionsToIndexes();
+			const splitIndexes = [];
+
+			for ( const vertexIndexes of pointToIndexMap ) {
+
+				edgeSplit( vertexIndexes, Math.cos( cutOffAngle ) - 0.001 );
+
+			}
+
+			const newAttributes = {};
+
+			for ( const name of Object.keys( geometry.attributes ) ) {
+
+				const oldAttribute = geometry.attributes[ name ];
+				const newArray = new oldAttribute.array.constructor( ( indexes.length + splitIndexes.length ) * oldAttribute.itemSize );
+				newArray.set( oldAttribute.array );
+				newAttributes[ name ] = new THREE.BufferAttribute( newArray, oldAttribute.itemSize, oldAttribute.normalized );
+
+			}
+
+			const newIndexes = new Uint32Array( indexes.length );
+			newIndexes.set( indexes );
+
+			for ( let i = 0; i < splitIndexes.length; i ++ ) {
+
+				const split = splitIndexes[ i ];
+				const index = indexes[ split.original ];
+
+				for ( const attribute of Object.values( newAttributes ) ) {
+
+					for ( let j = 0; j < attribute.itemSize; j ++ ) {
+
+						attribute.array[ ( indexes.length + i ) * attribute.itemSize + j ] = attribute.array[ index * attribute.itemSize + j ];
+
+					}
+
+				}
+
+				for ( const j of split.indexes ) {
+
+					newIndexes[ j ] = indexes.length + i;
+
+				}
+
+			}
+
+			geometry = new THREE.BufferGeometry();
+			geometry.setIndex( new THREE.BufferAttribute( newIndexes, 1 ) );
+
+			for ( const name of Object.keys( newAttributes ) ) {
+
+				geometry.setAttribute( name, newAttributes[ name ] );
+
+			}
+
+			if ( hadNormals ) {
+
+				geometry.computeVertexNormals();
+
+				if ( oldNormals !== null ) {
+
+					const changedNormals = new Array( oldNormals.length / 3 ).fill( false );
+
+					for ( const splitData of splitIndexes ) changedNormals[ splitData.original ] = true;
+
+					for ( let i = 0; i < changedNormals.length; i ++ ) {
+
+						if ( changedNormals[ i ] === false ) {
+
+							for ( let j = 0; j < 3; j ++ ) geometry.attributes.normal.array[ 3 * i + j ] = oldNormals[ 3 * i + j ];
+
+						}
+
+					}
+
+				}
+
+			}
+
+			return geometry;
+
+		}
+
+	}
+
+	THREE.EdgeSplitModifier = EdgeSplitModifier;
+
+} )();

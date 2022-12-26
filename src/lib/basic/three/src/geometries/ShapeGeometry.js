@@ -3,129 +3,164 @@ import { Float32BufferAttribute } from '../core/BufferAttribute.js';
 import { ShapeUtils } from '../extras/ShapeUtils.js';
 
 class ShapeGeometry extends BufferGeometry {
-  constructor(shapes, curveSegments = 12) {
-    super();
-    this.type = 'ShapeGeometry';
 
-    this.parameters = {
-      shapes: shapes,
-      curveSegments: curveSegments,
-    };
+	constructor( shapes, curveSegments = 12 ) {
 
-    // buffers
+		super();
+		this.type = 'ShapeGeometry';
 
-    const indices = [];
-    const vertices = [];
-    const normals = [];
-    const uvs = [];
+		this.parameters = {
+			shapes: shapes,
+			curveSegments: curveSegments
+		};
 
-    // helper variables
+		// buffers
 
-    let groupStart = 0;
-    let groupCount = 0;
+		const indices = [];
+		const vertices = [];
+		const normals = [];
+		const uvs = [];
 
-    // allow single and array values for "shapes" parameter
+		// helper variables
 
-    if (Array.isArray(shapes) === false) {
-      addShape(shapes);
-    } else {
-      for (let i = 0; i < shapes.length; i++) {
-        addShape(shapes[i]);
+		let groupStart = 0;
+		let groupCount = 0;
 
-        this.addGroup(groupStart, groupCount, i); // enables MultiMaterial support
+		// allow single and array values for "shapes" parameter
 
-        groupStart += groupCount;
-        groupCount = 0;
-      }
-    }
+		if ( Array.isArray( shapes ) === false ) {
 
-    // build geometry
+			addShape( shapes );
 
-    this.setIndex(indices);
-    this.setAttribute('position', new Float32BufferAttribute(vertices, 3));
-    this.setAttribute('normal', new Float32BufferAttribute(normals, 3));
-    this.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
+		} else {
 
-    // helper functions
+			for ( let i = 0; i < shapes.length; i ++ ) {
 
-    function addShape(shape) {
-      const indexOffset = vertices.length / 3;
-      const points = shape.extractPoints(curveSegments);
+				addShape( shapes[ i ] );
 
-      let shapeVertices = points.shape;
-      const shapeHoles = points.holes;
+				this.addGroup( groupStart, groupCount, i ); // enables MultiMaterial support
 
-      // check direction of vertices
+				groupStart += groupCount;
+				groupCount = 0;
 
-      if (ShapeUtils.isClockWise(shapeVertices) === false) {
-        shapeVertices = shapeVertices.reverse();
-      }
+			}
 
-      for (let i = 0, l = shapeHoles.length; i < l; i++) {
-        const shapeHole = shapeHoles[i];
+		}
 
-        if (ShapeUtils.isClockWise(shapeHole) === true) {
-          shapeHoles[i] = shapeHole.reverse();
-        }
-      }
+		// build geometry
 
-      const faces = ShapeUtils.triangulateShape(shapeVertices, shapeHoles);
+		this.setIndex( indices );
+		this.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
+		this.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
+		this.setAttribute( 'uv', new Float32BufferAttribute( uvs, 2 ) );
 
-      // join vertices of inner and outer paths to a single array
 
-      for (let i = 0, l = shapeHoles.length; i < l; i++) {
-        const shapeHole = shapeHoles[i];
-        shapeVertices = shapeVertices.concat(shapeHole);
-      }
+		// helper functions
 
-      // vertices, normals, uvs
+		function addShape( shape ) {
 
-      for (let i = 0, l = shapeVertices.length; i < l; i++) {
-        const vertex = shapeVertices[i];
+			const indexOffset = vertices.length / 3;
+			const points = shape.extractPoints( curveSegments );
 
-        vertices.push(vertex.x, vertex.y, 0);
-        normals.push(0, 0, 1);
-        uvs.push(vertex.x, vertex.y); // world uvs
-      }
+			let shapeVertices = points.shape;
+			const shapeHoles = points.holes;
 
-      // incides
+			// check direction of vertices
 
-      for (let i = 0, l = faces.length; i < l; i++) {
-        const face = faces[i];
+			if ( ShapeUtils.isClockWise( shapeVertices ) === false ) {
 
-        const a = face[0] + indexOffset;
-        const b = face[1] + indexOffset;
-        const c = face[2] + indexOffset;
+				shapeVertices = shapeVertices.reverse();
 
-        indices.push(a, b, c);
-        groupCount += 3;
-      }
-    }
-  }
+			}
 
-  toJSON() {
-    const data = BufferGeometry.prototype.toJSON.call(this);
+			for ( let i = 0, l = shapeHoles.length; i < l; i ++ ) {
 
-    const shapes = this.parameters.shapes;
+				const shapeHole = shapeHoles[ i ];
 
-    return toJSON(shapes, data);
-  }
+				if ( ShapeUtils.isClockWise( shapeHole ) === true ) {
+
+					shapeHoles[ i ] = shapeHole.reverse();
+
+				}
+
+			}
+
+			const faces = ShapeUtils.triangulateShape( shapeVertices, shapeHoles );
+
+			// join vertices of inner and outer paths to a single array
+
+			for ( let i = 0, l = shapeHoles.length; i < l; i ++ ) {
+
+				const shapeHole = shapeHoles[ i ];
+				shapeVertices = shapeVertices.concat( shapeHole );
+
+			}
+
+			// vertices, normals, uvs
+
+			for ( let i = 0, l = shapeVertices.length; i < l; i ++ ) {
+
+				const vertex = shapeVertices[ i ];
+
+				vertices.push( vertex.x, vertex.y, 0 );
+				normals.push( 0, 0, 1 );
+				uvs.push( vertex.x, vertex.y ); // world uvs
+
+			}
+
+			// incides
+
+			for ( let i = 0, l = faces.length; i < l; i ++ ) {
+
+				const face = faces[ i ];
+
+				const a = face[ 0 ] + indexOffset;
+				const b = face[ 1 ] + indexOffset;
+				const c = face[ 2 ] + indexOffset;
+
+				indices.push( a, b, c );
+				groupCount += 3;
+
+			}
+
+		}
+
+	}
+
+	toJSON() {
+
+		const data = super.toJSON();
+
+		const shapes = this.parameters.shapes;
+
+		return toJSON( shapes, data );
+
+	}
+
 }
 
-function toJSON(shapes, data) {
-  data.shapes = [];
+function toJSON( shapes, data ) {
 
-  if (Array.isArray(shapes)) {
-    for (let i = 0, l = shapes.length; i < l; i++) {
-      const shape = shapes[i];
+	data.shapes = [];
 
-      data.shapes.push(shape.uuid);
-    }
-  } else {
-    data.shapes.push(shapes.uuid);
-  }
+	if ( Array.isArray( shapes ) ) {
 
-  return data;
+		for ( let i = 0, l = shapes.length; i < l; i ++ ) {
+
+			const shape = shapes[ i ];
+
+			data.shapes.push( shape.uuid );
+
+		}
+
+	} else {
+
+		data.shapes.push( shapes.uuid );
+
+	}
+
+	return data;
+
 }
 
 export { ShapeGeometry, ShapeGeometry as ShapeBufferGeometry };

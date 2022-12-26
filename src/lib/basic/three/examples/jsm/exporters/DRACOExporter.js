@@ -14,210 +14,207 @@
 
 /* global DracoEncoderModule */
 
-var DRACOExporter = function () {};
+class DRACOExporter {
 
-DRACOExporter.prototype = {
-  constructor: DRACOExporter,
+	parse( object, options = {
+		decodeSpeed: 5,
+		encodeSpeed: 5,
+		encoderMethod: DRACOExporter.MESH_EDGEBREAKER_ENCODING,
+		quantization: [ 16, 8, 8, 8, 8 ],
+		exportUvs: true,
+		exportNormals: true,
+		exportColor: false,
+	} ) {
 
-  parse: function (object, options) {
-    if (object.isBufferGeometry === true) {
-      throw new Error(
-        'DRACOExporter: The first parameter of parse() is now an instance of Mesh or Points.',
-      );
-    }
+		if ( object.isBufferGeometry === true ) {
 
-    if (DracoEncoderModule === undefined) {
-      throw new Error(
-        'THREE.DRACOExporter: required the draco_decoder to work.',
-      );
-    }
+			throw new Error( 'DRACOExporter: The first parameter of parse() is now an instance of Mesh or Points.' );
 
-    if (options === undefined) {
-      options = {
-        decodeSpeed: 5,
-        encodeSpeed: 5,
-        encoderMethod: DRACOExporter.MESH_EDGEBREAKER_ENCODING,
-        quantization: [16, 8, 8, 8, 8],
-        exportUvs: true,
-        exportNormals: true,
-        exportColor: false,
-      };
-    }
+		}
 
-    var geometry = object.geometry;
+		if ( DracoEncoderModule === undefined ) {
 
-    var dracoEncoder = DracoEncoderModule();
-    var encoder = new dracoEncoder.Encoder();
-    var builder;
-    var dracoObject;
+			throw new Error( 'THREE.DRACOExporter: required the draco_decoder to work.' );
 
-    if (geometry.isBufferGeometry !== true) {
-      throw new Error(
-        'THREE.DRACOExporter.parse(geometry, options): geometry is not a THREE.BufferGeometry instance.',
-      );
-    }
+		}
 
-    if (object.isMesh === true) {
-      builder = new dracoEncoder.MeshBuilder();
-      dracoObject = new dracoEncoder.Mesh();
+		const geometry = object.geometry;
 
-      var vertices = geometry.getAttribute('position');
-      builder.AddFloatAttributeToMesh(
-        dracoObject,
-        dracoEncoder.POSITION,
-        vertices.count,
-        vertices.itemSize,
-        vertices.array,
-      );
+		const dracoEncoder = DracoEncoderModule();
+		const encoder = new dracoEncoder.Encoder();
+		let builder;
+		let dracoObject;
 
-      var faces = geometry.getIndex();
 
-      if (faces !== null) {
-        builder.AddFacesToMesh(dracoObject, faces.count / 3, faces.array);
-      } else {
-        var faces = new (vertices.count > 65535 ? Uint32Array : Uint16Array)(
-          vertices.count,
-        );
+		if ( geometry.isBufferGeometry !== true ) {
 
-        for (var i = 0; i < faces.length; i++) {
-          faces[i] = i;
-        }
+			throw new Error( 'THREE.DRACOExporter.parse(geometry, options): geometry is not a THREE.BufferGeometry instance.' );
 
-        builder.AddFacesToMesh(dracoObject, vertices.count, faces);
-      }
+		}
 
-      if (options.exportNormals === true) {
-        var normals = geometry.getAttribute('normal');
+		if ( object.isMesh === true ) {
 
-        if (normals !== undefined) {
-          builder.AddFloatAttributeToMesh(
-            dracoObject,
-            dracoEncoder.NORMAL,
-            normals.count,
-            normals.itemSize,
-            normals.array,
-          );
-        }
-      }
+			builder = new dracoEncoder.MeshBuilder();
+			dracoObject = new dracoEncoder.Mesh();
 
-      if (options.exportUvs === true) {
-        var uvs = geometry.getAttribute('uv');
+			const vertices = geometry.getAttribute( 'position' );
+			builder.AddFloatAttributeToMesh( dracoObject, dracoEncoder.POSITION, vertices.count, vertices.itemSize, vertices.array );
 
-        if (uvs !== undefined) {
-          builder.AddFloatAttributeToMesh(
-            dracoObject,
-            dracoEncoder.TEX_COORD,
-            uvs.count,
-            uvs.itemSize,
-            uvs.array,
-          );
-        }
-      }
+			const faces = geometry.getIndex();
 
-      if (options.exportColor === true) {
-        var colors = geometry.getAttribute('color');
+			if ( faces !== null ) {
 
-        if (colors !== undefined) {
-          builder.AddFloatAttributeToMesh(
-            dracoObject,
-            dracoEncoder.COLOR,
-            colors.count,
-            colors.itemSize,
-            colors.array,
-          );
-        }
-      }
-    } else if (object.isPoints === true) {
-      builder = new dracoEncoder.PointCloudBuilder();
-      dracoObject = new dracoEncoder.PointCloud();
+				builder.AddFacesToMesh( dracoObject, faces.count / 3, faces.array );
 
-      var vertices = geometry.getAttribute('position');
-      builder.AddFloatAttribute(
-        dracoObject,
-        dracoEncoder.POSITION,
-        vertices.count,
-        vertices.itemSize,
-        vertices.array,
-      );
+			} else {
 
-      if (options.exportColor === true) {
-        var colors = geometry.getAttribute('color');
+				const faces = new ( vertices.count > 65535 ? Uint32Array : Uint16Array )( vertices.count );
 
-        if (colors !== undefined) {
-          builder.AddFloatAttribute(
-            dracoObject,
-            dracoEncoder.COLOR,
-            colors.count,
-            colors.itemSize,
-            colors.array,
-          );
-        }
-      }
-    } else {
-      throw new Error('DRACOExporter: Unsupported object type.');
-    }
+				for ( let i = 0; i < faces.length; i ++ ) {
 
-    //Compress using draco encoder
+					faces[ i ] = i;
 
-    var encodedData = new dracoEncoder.DracoInt8Array();
+				}
 
-    //Sets the desired encoding and decoding speed for the given options from 0 (slowest speed, but the best compression) to 10 (fastest, but the worst compression).
+				builder.AddFacesToMesh( dracoObject, vertices.count, faces );
 
-    var encodeSpeed =
-      options.encodeSpeed !== undefined ? options.encodeSpeed : 5;
-    var decodeSpeed =
-      options.decodeSpeed !== undefined ? options.decodeSpeed : 5;
+			}
 
-    encoder.SetSpeedOptions(encodeSpeed, decodeSpeed);
+			if ( options.exportNormals === true ) {
 
-    // Sets the desired encoding method for a given geometry.
+				const normals = geometry.getAttribute( 'normal' );
 
-    if (options.encoderMethod !== undefined) {
-      encoder.SetEncodingMethod(options.encoderMethod);
-    }
+				if ( normals !== undefined ) {
 
-    // Sets the quantization (number of bits used to represent) compression options for a named attribute.
-    // The attribute values will be quantized in a box defined by the maximum extent of the attribute values.
-    if (options.quantization !== undefined) {
-      for (var i = 0; i < 5; i++) {
-        if (options.quantization[i] !== undefined) {
-          encoder.SetAttributeQuantization(i, options.quantization[i]);
-        }
-      }
-    }
+					builder.AddFloatAttributeToMesh( dracoObject, dracoEncoder.NORMAL, normals.count, normals.itemSize, normals.array );
 
-    var length;
+				}
 
-    if (object.isMesh === true) {
-      length = encoder.EncodeMeshToDracoBuffer(dracoObject, encodedData);
-    } else {
-      length = encoder.EncodePointCloudToDracoBuffer(
-        dracoObject,
-        true,
-        encodedData,
-      );
-    }
+			}
 
-    dracoEncoder.destroy(dracoObject);
+			if ( options.exportUvs === true ) {
 
-    if (length === 0) {
-      throw new Error('THREE.DRACOExporter: Draco encoding failed.');
-    }
+				const uvs = geometry.getAttribute( 'uv' );
 
-    //Copy encoded data to buffer.
-    var outputData = new Int8Array(new ArrayBuffer(length));
+				if ( uvs !== undefined ) {
 
-    for (var i = 0; i < length; i++) {
-      outputData[i] = encodedData.GetValue(i);
-    }
+					builder.AddFloatAttributeToMesh( dracoObject, dracoEncoder.TEX_COORD, uvs.count, uvs.itemSize, uvs.array );
 
-    dracoEncoder.destroy(encodedData);
-    dracoEncoder.destroy(encoder);
-    dracoEncoder.destroy(builder);
+				}
 
-    return outputData;
-  },
-};
+			}
+
+			if ( options.exportColor === true ) {
+
+				const colors = geometry.getAttribute( 'color' );
+
+				if ( colors !== undefined ) {
+
+					builder.AddFloatAttributeToMesh( dracoObject, dracoEncoder.COLOR, colors.count, colors.itemSize, colors.array );
+
+				}
+
+			}
+
+		} else if ( object.isPoints === true ) {
+
+			builder = new dracoEncoder.PointCloudBuilder();
+			dracoObject = new dracoEncoder.PointCloud();
+
+			const vertices = geometry.getAttribute( 'position' );
+			builder.AddFloatAttribute( dracoObject, dracoEncoder.POSITION, vertices.count, vertices.itemSize, vertices.array );
+
+			if ( options.exportColor === true ) {
+
+				const colors = geometry.getAttribute( 'color' );
+
+				if ( colors !== undefined ) {
+
+					builder.AddFloatAttribute( dracoObject, dracoEncoder.COLOR, colors.count, colors.itemSize, colors.array );
+
+				}
+
+			}
+
+		} else {
+
+			throw new Error( 'DRACOExporter: Unsupported object type.' );
+
+		}
+
+		//Compress using draco encoder
+
+		const encodedData = new dracoEncoder.DracoInt8Array();
+
+		//Sets the desired encoding and decoding speed for the given options from 0 (slowest speed, but the best compression) to 10 (fastest, but the worst compression).
+
+		const encodeSpeed = ( options.encodeSpeed !== undefined ) ? options.encodeSpeed : 5;
+		const decodeSpeed = ( options.decodeSpeed !== undefined ) ? options.decodeSpeed : 5;
+
+		encoder.SetSpeedOptions( encodeSpeed, decodeSpeed );
+
+		// Sets the desired encoding method for a given geometry.
+
+		if ( options.encoderMethod !== undefined ) {
+
+			encoder.SetEncodingMethod( options.encoderMethod );
+
+		}
+
+		// Sets the quantization (number of bits used to represent) compression options for a named attribute.
+		// The attribute values will be quantized in a box defined by the maximum extent of the attribute values.
+		if ( options.quantization !== undefined ) {
+
+			for ( let i = 0; i < 5; i ++ ) {
+
+				if ( options.quantization[ i ] !== undefined ) {
+
+					encoder.SetAttributeQuantization( i, options.quantization[ i ] );
+
+				}
+
+			}
+
+		}
+
+		let length;
+
+		if ( object.isMesh === true ) {
+
+			length = encoder.EncodeMeshToDracoBuffer( dracoObject, encodedData );
+
+		} else {
+
+			length = encoder.EncodePointCloudToDracoBuffer( dracoObject, true, encodedData );
+
+		}
+
+		dracoEncoder.destroy( dracoObject );
+
+		if ( length === 0 ) {
+
+			throw new Error( 'THREE.DRACOExporter: Draco encoding failed.' );
+
+		}
+
+		//Copy encoded data to buffer.
+		const outputData = new Int8Array( new ArrayBuffer( length ) );
+
+		for ( let i = 0; i < length; i ++ ) {
+
+			outputData[ i ] = encodedData.GetValue( i );
+
+		}
+
+		dracoEncoder.destroy( encodedData );
+		dracoEncoder.destroy( encoder );
+		dracoEncoder.destroy( builder );
+
+		return outputData;
+
+	}
+
+}
 
 // Encoder methods
 
@@ -231,7 +228,7 @@ DRACOExporter.TRIANGULAR_MESH = 1;
 
 // Attribute type
 
-DRACOExporter.INVALID = -1;
+DRACOExporter.INVALID = - 1;
 DRACOExporter.POSITION = 0;
 DRACOExporter.NORMAL = 1;
 DRACOExporter.COLOR = 2;

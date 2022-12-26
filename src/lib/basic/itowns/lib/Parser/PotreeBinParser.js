@@ -1,84 +1,23 @@
-'use strict';
+"use strict";
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if (
-      Array.isArray(o) ||
-      (it = _unsupportedIterableToArray(o)) ||
-      (allowArrayLike && o && typeof o.length === 'number')
-    ) {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          if (i >= o.length) return { done: true };
-          return { done: false, value: o[i++] };
-        },
-        e: function e(_e) {
-          throw _e;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
-    );
-  }
-  var normalCompletion = true,
-    didErr = false,
-    err;
-  return {
-    s: function s() {
-      it = o[Symbol.iterator]();
-    },
-    n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
-    },
-    f: function f() {
-      try {
-        if (!normalCompletion && it['return'] != null) it['return']();
-      } finally {
-        if (didErr) throw err;
-      }
-    },
-  };
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === 'Object' && o.constructor) n = o.constructor.name;
-  if (n === 'Map' || n === 'Set') return Array.from(o);
-  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 // See the different constants holding ordinal, name, numElements, byteSize in PointAttributes.cpp in PotreeConverter
 // elementByteSize is byteSize / numElements
@@ -86,13 +25,13 @@ var POINT_ATTTRIBUTES = {
   POSITION_CARTESIAN: {
     numElements: 3,
     arrayType: Float32Array,
-    attributeName: 'position',
+    attributeName: 'position'
   },
   COLOR_PACKED: {
     numElements: 4,
     arrayType: Uint8Array,
     attributeName: 'color',
-    normalized: true,
+    normalized: true
   },
   INTENSITY: {
     numElements: 1,
@@ -100,13 +39,13 @@ var POINT_ATTTRIBUTES = {
     // using Float32Array because Float16Array doesn't exist
     arrayType: Uint16Array,
     attributeName: 'intensity',
-    normalized: true,
+    normalized: true
   },
   CLASSIFICATION: {
     numElements: 1,
     arrayType: Uint8Array,
     attributeName: 'classification',
-    normalized: true,
+    normalized: true
   },
   // Note: at the time of writing, PotreeConverter will only generate normals in Oct16 format
   // see PotreeConverter.cpp:121
@@ -114,19 +53,19 @@ var POINT_ATTTRIBUTES = {
   NORMAL_SPHEREMAPPED: {
     numElements: 2,
     arrayType: Uint8Array,
-    attributeName: 'sphereMappedNormal',
+    attributeName: 'sphereMappedNormal'
   },
   // see https://web.archive.org/web/20150303053317/http://lgdv.cs.fau.de/get/1602
   NORMAL_OCT16: {
     numElements: 2,
     arrayType: Uint8Array,
-    attributeName: 'oct16Normal',
+    attributeName: 'oct16Normal'
   },
   NORMAL: {
     numElements: 3,
     arrayType: Float32Array,
-    attributeName: 'normal',
-  },
+    attributeName: 'normal'
+  }
 };
 
 var _loop = function () {
@@ -137,22 +76,15 @@ var _loop = function () {
   attr.byteSize = attr.numElements * attr.numByte;
   attr.normalized = attr.normalized || false; // chrome is known to perform badly when we call a method without respecting its arity
 
-  var fnName = 'getUint'.concat(attr.numByte * 8);
-  attr.getValue =
-    attr.numByte === 1
-      ? function (view, offset) {
-          return view[fnName](offset);
-        }
-      : function (view, offset) {
-          return view[fnName](offset, true);
-        };
+  var fnName = "getUint".concat(attr.numByte * 8);
+  attr.getValue = attr.numByte === 1 ? function (view, offset) {
+    return view[fnName](offset);
+  } : function (view, offset) {
+    return view[fnName](offset, true);
+  };
 };
 
-for (
-  var _i = 0, _Object$keys = Object.keys(POINT_ATTTRIBUTES);
-  _i < _Object$keys.length;
-  _i++
-) {
+for (var _i = 0, _Object$keys = Object.keys(POINT_ATTTRIBUTES); _i < _Object$keys.length; _i++) {
   _loop();
 }
 
@@ -176,11 +108,11 @@ var _default = {
 
     var pointByteSize = 0;
 
-    var _iterator = _createForOfIteratorHelper(options['in'].pointAttributes),
-      _step;
+    var _iterator = _createForOfIteratorHelper(options["in"].pointAttributes),
+        _step;
 
     try {
-      for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var potreeName = _step.value;
         pointByteSize += POINT_ATTTRIBUTES[potreeName].byteSize;
       }
@@ -195,26 +127,19 @@ var _default = {
     var elemOffset = 0;
     var attrOffset = 0;
 
-    var _iterator2 = _createForOfIteratorHelper(options['in'].pointAttributes),
-      _step2;
+    var _iterator2 = _createForOfIteratorHelper(options["in"].pointAttributes),
+        _step2;
 
     try {
-      for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
         var _potreeName = _step2.value;
         var attr = POINT_ATTTRIBUTES[_potreeName];
         var arrayLength = attr.numElements * numPoints;
         var array = new attr.arrayType(arrayLength);
 
-        for (
-          var arrayOffset = 0;
-          arrayOffset < arrayLength;
-          arrayOffset += attr.numElements
-        ) {
+        for (var arrayOffset = 0; arrayOffset < arrayLength; arrayOffset += attr.numElements) {
           for (var elemIdx = 0; elemIdx < attr.numElements; elemIdx++) {
-            array[arrayOffset + elemIdx] = attr.getValue(
-              view,
-              attrOffset + elemIdx * attr.numByte,
-            );
+            array[arrayOffset + elemIdx] = attr.getValue(view, attrOffset + elemIdx * attr.numByte);
           }
 
           attrOffset += pointByteSize;
@@ -222,10 +147,7 @@ var _default = {
 
         elemOffset += attr.byteSize;
         attrOffset = elemOffset;
-        geometry.setAttribute(
-          attr.attributeName,
-          new THREE.BufferAttribute(array, attr.numElements, attr.normalized),
-        );
+        geometry.setAttribute(attr.attributeName, new THREE.BufferAttribute(array, attr.numElements, attr.normalized));
       }
     } catch (err) {
       _iterator2.e(err);
@@ -235,6 +157,6 @@ var _default = {
 
     geometry.computeBoundingBox();
     return Promise.resolve(geometry);
-  },
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

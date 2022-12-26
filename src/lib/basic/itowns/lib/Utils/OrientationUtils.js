@@ -1,36 +1,35 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-var _proj = _interopRequireDefault(require('proj4'));
+var _proj = _interopRequireDefault(require("proj4"));
 
-var _Coordinates = _interopRequireDefault(
-  require('../Core/Geographic/Coordinates'),
-);
+var _Coordinates = _interopRequireDefault(require("../Core/Geographic/Coordinates"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 var DEG2RAD = THREE.MathUtils.DEG2RAD;
 var matrix = new THREE.Matrix4();
 var north = new THREE.Vector3();
 var east = new THREE.Vector3();
 var axis = new THREE.Vector3().set(0, 0, 1);
-var coord = new _Coordinates['default']('EPSG:4326', 0, 0, 0);
+var coord = new _Coordinates["default"]('EPSG:4326', 0, 0, 0);
 var euler = new THREE.Euler();
 var quat = new THREE.Quaternion();
 
 function quaternionIdentity(coordinates) {
-  var target =
-    arguments.length > 1 && arguments[1] !== undefined
-      ? arguments[1]
-      : new THREE.Quaternion();
+  var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
   return coordinates ? target.set(0, 0, 0, 1) : quaternionIdentity;
 }
 /**
@@ -54,6 +53,7 @@ function quaternionIdentity(coordinates) {
  *
  * @module OrientationUtils
  */
+
 
 var _default = {
   /**
@@ -81,16 +81,10 @@ var _default = {
    * @return {THREE.Quaternion} target quaternion
    */
   quaternionFromRollPitchHeading: function quaternionFromRollPitchHeading() {
-    var roll =
-      arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-    var pitch =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    var heading =
-      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-    var target =
-      arguments.length > 3 && arguments[3] !== undefined
-        ? arguments[3]
-        : new THREE.Quaternion();
+    var roll = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var pitch = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var heading = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var target = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : new THREE.Quaternion();
     roll *= DEG2RAD;
     pitch *= DEG2RAD;
     heading *= DEG2RAD; // return this.setFromEuler(euler.set(pitch, roll, heading , 'ZXY')).conjugate();
@@ -119,16 +113,10 @@ var _default = {
    * @return {THREE.Quaternion} target quaternion
    */
   quaternionFromOmegaPhiKappa: function quaternionFromOmegaPhiKappa() {
-    var omega =
-      arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-    var phi =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    var kappa =
-      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-    var target =
-      arguments.length > 3 && arguments[3] !== undefined
-        ? arguments[3]
-        : new THREE.Quaternion();
+    var omega = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var phi = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var kappa = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var target = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : new THREE.Quaternion();
     omega *= DEG2RAD;
     phi *= DEG2RAD;
     kappa *= DEG2RAD;
@@ -148,35 +136,14 @@ var _default = {
    * @return {THREE.Quaternion} target quaternion
    */
   quaternionFromAttitude: function quaternionFromAttitude(attitude) {
-    var target =
-      arguments.length > 1 && arguments[1] !== undefined
-        ? arguments[1]
-        : new THREE.Quaternion();
+    var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
 
-    if (
-      attitude.roll !== undefined ||
-      attitude.pitch !== undefined ||
-      attitude.heading !== undefined
-    ) {
-      return this.quaternionFromRollPitchHeading(
-        attitude.roll,
-        attitude.pitch,
-        attitude.heading,
-        target,
-      );
+    if (attitude.roll !== undefined || attitude.pitch !== undefined || attitude.heading !== undefined) {
+      return this.quaternionFromRollPitchHeading(attitude.roll, attitude.pitch, attitude.heading, target);
     }
 
-    if (
-      attitude.omega !== undefined ||
-      attitude.phi !== undefined ||
-      attitude.kappa !== undefined
-    ) {
-      return this.quaternionFromOmegaPhiKappa(
-        attitude.omega,
-        attitude.phi,
-        attitude.kappa,
-        target,
-      );
+    if (attitude.omega !== undefined || attitude.phi !== undefined || attitude.kappa !== undefined) {
+      return this.quaternionFromOmegaPhiKappa(attitude.omega, attitude.phi, attitude.kappa, target);
     }
 
     return target.set(0, 0, 0, 1);
@@ -193,7 +160,7 @@ var _default = {
    * @property {Coordinates} coordinates the origin of the local East North Up
    * (ENU) frame
    * @property {THREE.Quaternion} [target=new THREE.Quaternion()] output Quaternion.
-   */
+  */
 
   /**
    * A Projection object models a Coordinate Reference System (CRS).
@@ -216,25 +183,20 @@ var _default = {
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
    */
   quaternionFromEnuToGeocent: function quaternionFromEnuToGeocent(coordinates) {
-    var target =
-      arguments.length > 1 && arguments[1] !== undefined
-        ? arguments[1]
-        : new THREE.Quaternion();
+    var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
 
     if (coordinates) {
       return this.quaternionFromEnuToGeocent()(coordinates, target);
     }
 
     return function (coordinates) {
-      var target =
-        arguments.length > 1 && arguments[1] !== undefined
-          ? arguments[1]
-          : new THREE.Quaternion();
+      var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
       var up = coordinates.geodesicNormal;
 
       if (up.x == 0 && up.y == 0) {
         return target.set(0, 0, 0, 1);
       } // this is an optimized version of matrix.lookAt(up, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 1));
+
 
       east.set(-up.y, up.x, 0).normalize();
       north.crossVectors(up, east);
@@ -255,10 +217,7 @@ var _default = {
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
    */
   quaternionFromGeocentToEnu: function quaternionFromGeocentToEnu(coordinates) {
-    var target =
-      arguments.length > 1 && arguments[1] !== undefined
-        ? arguments[1]
-        : new THREE.Quaternion();
+    var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
 
     if (coordinates) {
       return this.quaternionFromGeocentToEnu()(coordinates, target);
@@ -266,10 +225,7 @@ var _default = {
 
     var toGeocent = this.quaternionFromEnuToGeocent();
     return function (coordinates) {
-      var target =
-        arguments.length > 1 && arguments[1] !== undefined
-          ? arguments[1]
-          : new THREE.Quaternion();
+      var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
       return toGeocent(coordinates, target).conjugate();
     };
   },
@@ -288,12 +244,9 @@ var _default = {
    * (ENU) frame
    * @param {THREE.Quaternion} [target=new THREE.Quaternion()] output Quaternion
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
-   */
+  */
   quaternionFromLCCToEnu: function quaternionFromLCCToEnu(proj, coordinates) {
-    var target =
-      arguments.length > 2 && arguments[2] !== undefined
-        ? arguments[2]
-        : new THREE.Quaternion();
+    var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new THREE.Quaternion();
 
     if (coordinates) {
       return this.quaternionFromLCCToEnu(proj)(coordinates, target);
@@ -301,10 +254,7 @@ var _default = {
 
     var sinlat0 = Math.sin(proj.lat0);
     return function (coordinates) {
-      var target =
-        arguments.length > 1 && arguments[1] !== undefined
-          ? arguments[1]
-          : new THREE.Quaternion();
+      var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
 
       var _long = coordinates.as(coord.crs, coord).longitude * DEG2RAD;
 
@@ -326,12 +276,9 @@ var _default = {
    * (ENU) frame
    * @param {THREE.Quaternion} [target=new THREE.Quaternion()] output Quaternion
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
-   */
+  */
   quaternionFromEnuToLCC: function quaternionFromEnuToLCC(proj, coordinates) {
-    var target =
-      arguments.length > 2 && arguments[2] !== undefined
-        ? arguments[2]
-        : new THREE.Quaternion();
+    var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new THREE.Quaternion();
 
     if (coordinates) {
       return this.quaternionFromEnuToLCC(proj)(coordinates, target);
@@ -339,10 +286,7 @@ var _default = {
 
     var fromLCC = this.quaternionFromLCCToEnu(proj);
     return function (coordinates) {
-      var target =
-        arguments.length > 1 && arguments[1] !== undefined
-          ? arguments[1]
-          : new THREE.Quaternion();
+      var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
       return fromLCC(coordinates, target).conjugate();
     };
   },
@@ -364,15 +308,9 @@ var _default = {
    * (ENU) frame
    * @param {THREE.Quaternion} [target=new THREE.Quaternion()] output Quaternion
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
-   */
-  quaternionFromTMercToEnu: function quaternionFromTMercToEnu(
-    proj,
-    coordinates,
-  ) {
-    var target =
-      arguments.length > 2 && arguments[2] !== undefined
-        ? arguments[2]
-        : new THREE.Quaternion();
+  */
+  quaternionFromTMercToEnu: function quaternionFromTMercToEnu(proj, coordinates) {
+    var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new THREE.Quaternion();
 
     if (coordinates) {
       return this.quaternionFromTMercToEnu(proj)(coordinates, target);
@@ -383,10 +321,7 @@ var _default = {
     var e2 = proj.e * proj.e;
     var eta0 = proj.e ? e2 / (1 - e2) : a2 / b2 - 1;
     return function (coordinates) {
-      var target =
-        arguments.length > 1 && arguments[1] !== undefined
-          ? arguments[1]
-          : new THREE.Quaternion();
+      var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
       coordinates.as(coord.crs, coord);
 
       var _long2 = coord.longitude * DEG2RAD;
@@ -398,14 +333,7 @@ var _default = {
       var coslat2 = coslat * coslat;
       var dl2 = dlong * dlong * coslat2;
       var eta2 = eta0 * coslat2;
-      return target.setFromAxisAngle(
-        axis,
-        dlong *
-          sinlat *
-          (1 +
-            (dl2 / 3) * (1 + 3 * eta2 + 2 * eta2 * eta2) +
-            (dl2 * dl2 * (2 - sinlat / coslat)) / 15),
-      );
+      return target.setFromAxisAngle(axis, dlong * sinlat * (1 + dl2 / 3 * (1 + 3 * eta2 + 2 * eta2 * eta2) + dl2 * dl2 * (2 - sinlat / coslat) / 15));
     };
   },
 
@@ -427,15 +355,9 @@ var _default = {
    * (ENU) frame
    * @param {THREE.Quaternion} [target=new THREE.Quaternion()] output Quaternion
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
-   */
-  quaternionFromEnuToTMerc: function quaternionFromEnuToTMerc(
-    proj,
-    coordinates,
-  ) {
-    var target =
-      arguments.length > 2 && arguments[2] !== undefined
-        ? arguments[2]
-        : new THREE.Quaternion();
+  */
+  quaternionFromEnuToTMerc: function quaternionFromEnuToTMerc(proj, coordinates) {
+    var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new THREE.Quaternion();
 
     if (coordinates) {
       return this.quaternionFromEnuToTMerc(proj)(coordinates, target);
@@ -443,10 +365,7 @@ var _default = {
 
     var fromTMerc = this.quaternionFromTMercToEnu(proj);
     return function (coordinates) {
-      var target =
-        arguments.length > 1 && arguments[1] !== undefined
-          ? arguments[1]
-          : new THREE.Quaternion();
+      var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
       return fromTMerc(coordinates, target).conjugate();
     };
   },
@@ -461,16 +380,13 @@ var _default = {
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
    */
   quaternionFromLongLatToEnu: function quaternionFromLongLatToEnu(coordinates) {
-    var target =
-      arguments.length > 1 && arguments[1] !== undefined
-        ? arguments[1]
-        : new THREE.Quaternion();
+    var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
     return quaternionIdentity(coordinates, target);
   },
 
   /**
-   * Computes the rotation from the local East North Up (ENU) frame to a LongLat frame.
-   * The identity quaternion (0,0,0,1) is returned, as longlat and ENU frame are assumed to be aligned.
+  * Computes the rotation from the local East North Up (ENU) frame to a LongLat frame.
+  * The identity quaternion (0,0,0,1) is returned, as longlat and ENU frame are assumed to be aligned.
    *
    * @param {Coordinates} [coordinates]  coordinates the origin of the local East North Up
    * (ENU) frame
@@ -478,10 +394,7 @@ var _default = {
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
    */
   quaternionFromEnuToLongLat: function quaternionFromEnuToLongLat(coordinates) {
-    var target =
-      arguments.length > 1 && arguments[1] !== undefined
-        ? arguments[1]
-        : new THREE.Quaternion();
+    var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
     return quaternionIdentity(coordinates, target);
   },
 
@@ -498,14 +411,8 @@ var _default = {
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
    */
   quaternionUnimplemented: function quaternionUnimplemented(proj, coordinates) {
-    var target =
-      arguments.length > 2 && arguments[2] !== undefined
-        ? arguments[2]
-        : new THREE.Quaternion();
-    console.warn(
-      'This quaternion function is not implemented for projections of type',
-      proj.projName,
-    );
+    var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new THREE.Quaternion();
+    console.warn('This quaternion function is not implemented for projections of type', proj.projName);
     return quaternionIdentity(coordinates, target);
   },
 
@@ -521,22 +428,14 @@ var _default = {
    * @param {THREE.Quaternion} [target=new THREE.Quaternion()] output Quaternion
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
    */
-  quaternionFromEnuToCRS: function quaternionFromEnuToCRS(
-    crsOrProj,
-    coordinates,
-  ) {
-    var target =
-      arguments.length > 2 && arguments[2] !== undefined
-        ? arguments[2]
-        : new THREE.Quaternion();
+  quaternionFromEnuToCRS: function quaternionFromEnuToCRS(crsOrProj, coordinates) {
+    var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new THREE.Quaternion();
 
     if (coordinates) {
       return this.quaternionFromEnuToCRS(crsOrProj)(coordinates, target);
     }
 
-    var proj = crsOrProj.projName
-      ? crsOrProj
-      : _proj['default'].defs(crsOrProj);
+    var proj = crsOrProj.projName ? crsOrProj : _proj["default"].defs(crsOrProj);
 
     switch (proj.projName) {
       case 'geocent':
@@ -568,22 +467,14 @@ var _default = {
    * @param {THREE.Quaternion} [target=new THREE.Quaternion()] output Quaternion
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
    */
-  quaternionFromCRSToEnu: function quaternionFromCRSToEnu(
-    crsOrProj,
-    coordinates,
-  ) {
-    var target =
-      arguments.length > 2 && arguments[2] !== undefined
-        ? arguments[2]
-        : new THREE.Quaternion();
+  quaternionFromCRSToEnu: function quaternionFromCRSToEnu(crsOrProj, coordinates) {
+    var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new THREE.Quaternion();
 
     if (coordinates) {
       return this.quaternionFromCRSToEnu(crsOrProj)(coordinates, target);
     }
 
-    var proj = crsOrProj.projName
-      ? crsOrProj
-      : _proj['default'].defs(crsOrProj);
+    var proj = crsOrProj.projName ? crsOrProj : _proj["default"].defs(crsOrProj);
 
     switch (proj.projName) {
       case 'geocent':
@@ -613,16 +504,9 @@ var _default = {
    * (ENU) frame
    * @param {THREE.Quaternion} [target=new THREE.Quaternion()] output Quaternion
    * @return {FunctionOrQuaternion} The target quaternion if coordinates is defined, otherwise, a function to compute it from coordinates.
-   */
-  quaternionFromCRSToCRS: function quaternionFromCRSToCRS(
-    crsIn,
-    crsOut,
-    coordinates,
-  ) {
-    var target =
-      arguments.length > 3 && arguments[3] !== undefined
-        ? arguments[3]
-        : new THREE.Quaternion();
+  */
+  quaternionFromCRSToCRS: function quaternionFromCRSToCRS(crsIn, crsOut, coordinates) {
+    var target = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : new THREE.Quaternion();
 
     if (coordinates) {
       return this.quaternionFromCRSToCRS(crsIn, crsOut)(coordinates, target);
@@ -630,23 +514,18 @@ var _default = {
 
     if (crsIn == crsOut) {
       return function () {
-        var target =
-          arguments.length > 1 && arguments[1] !== undefined
-            ? arguments[1]
-            : new THREE.Quaternion();
+        var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
         return target.set(0, 0, 0, 1);
       };
     } // get rotations from the local East/North/Up (ENU) frame to both CRS.
 
+
     var fromCrs = this.quaternionFromCRSToEnu(crsIn);
     var toCrs = this.quaternionFromEnuToCRS(crsOut);
     return function (origin) {
-      var target =
-        arguments.length > 1 && arguments[1] !== undefined
-          ? arguments[1]
-          : new THREE.Quaternion();
+      var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Quaternion();
       return toCrs(origin, target).multiply(fromCrs(origin, quat));
     };
-  },
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

@@ -1,65 +1,101 @@
 import Node from '../core/Node.js';
 
 class MathNode extends Node {
-  static NORMALIZE = 'normalize';
-  static INVERSE_TRANSFORM_DIRETION = 'inverseTransformDirection';
 
-  constructor(method, a, b = null) {
-    super();
+	static NORMALIZE = 'normalize';
+	static NEGATE = 'negate';
+	static LENGTH = 'length';
 
-    this.method = method;
+	constructor( method, a, b = null ) {
 
-    this.a = a;
-    this.b = b;
-  }
+		super();
 
-  getType(builder) {
-    const method = this.method;
+		this.method = method;
 
-    if (method === MathNode.INVERSE_TRANSFORM_DIRETION) {
-      return 'vec3';
-    } else {
-      const typeA = this.a.getType(builder);
+		this.a = a;
+		this.b = b;
 
-      if (this.b !== null) {
-        if (builder.getTypeLength(typeB) > builder.getTypeLength(typeA)) {
-          // anytype x anytype: use the greater length vector
+	}
 
-          return typeB;
-        }
-      }
+	getInputType( builder ) {
 
-      return typeA;
-    }
-  }
+		const typeA = this.a.getType( builder );
 
-  generate(builder, output) {
-    const method = this.method;
-    const type = this.getType(builder);
+		if ( this.b !== null ) {
 
-    let a = null,
-      b = null;
+			const typeB = this.b.getType( builder );
 
-    if (method === MathNode.INVERSE_TRANSFORM_DIRETION) {
-      a = this.a.build(builder, 'vec3');
-      b = this.b.build(builder, 'mat4');
+			if ( builder.getTypeLength( typeB ) > builder.getTypeLength( typeA ) ) {
 
-      // add in FunctionNode later
-      return `normalize( ( vec4( ${a}, 0.0 ) * ${b} ).xyz )`;
-    } else {
-      a = this.a.build(builder, type);
+				// anytype x anytype: use the greater length vector
 
-      if (this.b !== null) {
-        b = this.b.build(builder, type);
-      }
-    }
+				return typeB;
 
-    if (b !== null) {
-      return builder.format(`${method}( ${a}, ${b} )`, type, output);
-    } else {
-      return builder.format(`${method}( ${a} )`, type, output);
-    }
-  }
+			}
+
+		}
+
+		return typeA;
+
+	}
+
+	getType( builder ) {
+
+		const method = this.method;
+
+		if ( method === MathNode.LENGTH ) {
+
+			return 'float';
+
+		} else if (
+			method === MathNode.TRANSFORM_DIRETION ||
+			method === MathNode.INVERSE_TRANSFORM_DIRETION
+		) {
+
+			return 'vec3';
+
+		} else {
+
+			return this.getInputType( builder );
+
+		}
+
+	}
+
+	generate( builder, output ) {
+
+		const method = this.method;
+		const type = this.getInputType( builder );
+
+		const a = this.a.build( builder, type );
+		let b = null;
+
+		if ( this.b !== null ) {
+
+			b = this.b.build( builder, type );
+
+		}
+
+		if ( b !== null ) {
+
+			return builder.format( `${method}( ${a}, ${b} )`, type, output );
+
+		} else {
+
+			if ( method === MathNode.NEGATE ) {
+
+				return builder.format( `( -${a} )`, type, output );
+
+			} else {
+
+				return builder.format( `${method}( ${a} )`, type, output );
+
+			}
+
+		}
+
+	}
+
 }
 
 export default MathNode;

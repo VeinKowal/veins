@@ -1,51 +1,55 @@
-THREE.SavePass = function (renderTarget) {
-  THREE.Pass.call(this);
+( function () {
 
-  if (THREE.CopyShader === undefined)
-    console.error('THREE.SavePass relies on THREE.CopyShader');
+	class SavePass extends THREE.Pass {
 
-  var shader = THREE.CopyShader;
+		constructor( renderTarget ) {
 
-  this.textureID = 'tDiffuse';
+			super();
+			if ( THREE.CopyShader === undefined ) console.error( 'THREE.SavePass relies on THREE.CopyShader' );
+			const shader = THREE.CopyShader;
+			this.textureID = 'tDiffuse';
+			this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+			this.material = new THREE.ShaderMaterial( {
+				uniforms: this.uniforms,
+				vertexShader: shader.vertexShader,
+				fragmentShader: shader.fragmentShader
+			} );
+			this.renderTarget = renderTarget;
 
-  this.uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+			if ( this.renderTarget === undefined ) {
 
-  this.material = new THREE.ShaderMaterial({
-    uniforms: this.uniforms,
-    vertexShader: shader.vertexShader,
-    fragmentShader: shader.fragmentShader,
-  });
+				this.renderTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, {
+					minFilter: THREE.LinearFilter,
+					magFilter: THREE.LinearFilter,
+					format: THREE.RGBFormat
+				} );
+				this.renderTarget.texture.name = 'SavePass.rt';
 
-  this.renderTarget = renderTarget;
+			}
 
-  if (this.renderTarget === undefined) {
-    this.renderTarget = new THREE.WebGLRenderTarget(
-      window.innerWidth,
-      window.innerHeight,
-      {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBFormat,
-      },
-    );
-    this.renderTarget.texture.name = 'SavePass.rt';
-  }
+			this.needsSwap = false;
+			this.fsQuad = new THREE.FullScreenQuad( this.material );
 
-  this.needsSwap = false;
+		}
 
-  this.fsQuad = new THREE.Pass.FullScreenQuad(this.material);
-};
+		render( renderer, writeBuffer, readBuffer
+			/*, deltaTime, maskActive */
+		) {
 
-THREE.SavePass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
-  constructor: THREE.SavePass,
+			if ( this.uniforms[ this.textureID ] ) {
 
-  render: function (renderer, writeBuffer, readBuffer) {
-    if (this.uniforms[this.textureID]) {
-      this.uniforms[this.textureID].value = readBuffer.texture;
-    }
+				this.uniforms[ this.textureID ].value = readBuffer.texture;
 
-    renderer.setRenderTarget(this.renderTarget);
-    if (this.clear) renderer.clear();
-    this.fsQuad.render(renderer);
-  },
-});
+			}
+
+			renderer.setRenderTarget( this.renderTarget );
+			if ( this.clear ) renderer.clear();
+			this.fsQuad.render( renderer );
+
+		}
+
+	}
+
+	THREE.SavePass = SavePass;
+
+} )();

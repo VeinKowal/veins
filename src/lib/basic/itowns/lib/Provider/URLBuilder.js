@@ -1,15 +1,15 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _Extent = _interopRequireDefault(require('../Core/Geographic/Extent'));
+var _Extent = _interopRequireDefault(require("../Core/Geographic/Extent"));
 
-var extent = new _Extent['default']('EPSG:4326', [0, 0, 0, 0]);
+var extent = new _Extent["default"]('EPSG:4326', [0, 0, 0, 0]);
 var subDomainsCount = 0;
 
 function subDomains(url) {
@@ -20,10 +20,7 @@ function subDomains(url) {
   }
 
   var subDomainsList = subDomainsPtrn[1].split('|');
-  return url.replace(
-    subDomainsPtrn[0],
-    subDomainsList[subDomainsCount++ % subDomainsList.length],
-  );
+  return url.replace(subDomainsPtrn[0], subDomainsList[subDomainsCount++ % subDomainsList.length]);
 }
 /**
  * This module performs basic operations around urls, to replace some elements
@@ -37,6 +34,7 @@ function subDomains(url) {
  *
  * @module URLBuilder
  */
+
 
 var _default = {
   /**
@@ -72,12 +70,7 @@ var _default = {
    * @return {string} the formed url
    */
   xyz: function (coords, source) {
-    return subDomains(
-      source.url
-        .replace(/(\$\{z\}|%TILEMATRIX)/, coords.zoom)
-        .replace(/(\$\{y\}|%ROW)/, coords.row)
-        .replace(/(\$\{x\}|%COL)/, coords.col),
-    );
+    return subDomains(source.url.replace(/(\$\{z\}|%TILEMATRIX)/, source.tileMatrixCallback(coords.zoom)).replace(/(\$\{y\}|%ROW)/, coords.row).replace(/(\$\{x\}|%COL)/, coords.col));
   },
 
   /**
@@ -113,13 +106,8 @@ var _default = {
     var e = extent.east.toFixed(precision);
     var n = extent.north.toFixed(precision);
     var bboxInUnit = source.axisOrder || 'wsen';
-    bboxInUnit = bboxInUnit
-      .replace('w', ''.concat(w, ','))
-      .replace('s', ''.concat(s, ','))
-      .replace('e', ''.concat(e, ','))
-      .replace('n', ''.concat(n, ','))
-      .slice(0, -1);
+    bboxInUnit = bboxInUnit.replace('w', "".concat(w, ",")).replace('s', "".concat(s, ",")).replace('e', "".concat(e, ",")).replace('n', "".concat(n, ",")).slice(0, -1);
     return subDomains(source.url.replace('%bbox', bboxInUnit));
-  },
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

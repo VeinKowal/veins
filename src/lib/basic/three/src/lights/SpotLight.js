@@ -3,57 +3,66 @@ import { SpotLightShadow } from './SpotLightShadow.js';
 import { Object3D } from '../core/Object3D.js';
 
 class SpotLight extends Light {
-  constructor(
-    color,
-    intensity,
-    distance = 0,
-    angle = Math.PI / 3,
-    penumbra = 0,
-    decay = 1,
-  ) {
-    super(color, intensity);
 
-    this.type = 'SpotLight';
+	constructor( color, intensity, distance = 0, angle = Math.PI / 3, penumbra = 0, decay = 1 ) {
 
-    this.position.copy(Object3D.DefaultUp);
-    this.updateMatrix();
+		super( color, intensity );
 
-    this.target = new Object3D();
+		this.type = 'SpotLight';
 
-    this.distance = distance;
-    this.angle = angle;
-    this.penumbra = penumbra;
-    this.decay = decay; // for physically correct lights, should be 2.
+		this.position.copy( Object3D.DefaultUp );
+		this.updateMatrix();
 
-    this.shadow = new SpotLightShadow();
-  }
+		this.target = new Object3D();
 
-  get power() {
-    // intensity = power per solid angle.
-    // ref: equation (17) from https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
-    return this.intensity * Math.PI;
-  }
+		this.distance = distance;
+		this.angle = angle;
+		this.penumbra = penumbra;
+		this.decay = decay; // for physically correct lights, should be 2.
 
-  set power(power) {
-    // intensity = power per solid angle.
-    // ref: equation (17) from https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
-    this.intensity = power / Math.PI;
-  }
+		this.shadow = new SpotLightShadow();
 
-  copy(source) {
-    super.copy(source);
+	}
 
-    this.distance = source.distance;
-    this.angle = source.angle;
-    this.penumbra = source.penumbra;
-    this.decay = source.decay;
+	get power() {
 
-    this.target = source.target.clone();
+		// intensity = power per solid angle.
+		// ref: equation (17) from https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+		return this.intensity * Math.PI;
 
-    this.shadow = source.shadow.clone();
+	}
 
-    return this;
-  }
+	set power( power ) {
+
+		// intensity = power per solid angle.
+		// ref: equation (17) from https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
+		this.intensity = power / Math.PI;
+
+	}
+
+	dispose() {
+
+		this.shadow.dispose();
+
+	}
+
+	copy( source ) {
+
+		super.copy( source );
+
+		this.distance = source.distance;
+		this.angle = source.angle;
+		this.penumbra = source.penumbra;
+		this.decay = source.decay;
+
+		this.target = source.target.clone();
+
+		this.shadow = source.shadow.clone();
+
+		return this;
+
+	}
+
 }
 
 SpotLight.prototype.isSpotLight = true;

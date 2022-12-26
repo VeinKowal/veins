@@ -1,66 +1,31 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _RasterLayer2 = _interopRequireDefault(require('./RasterLayer'));
+var _RasterLayer2 = _interopRequireDefault(require("./RasterLayer"));
 
-var _LayeredMaterialNodeProcessing = require('../Process/LayeredMaterialNodeProcessing');
+var _LayeredMaterialNodeProcessing = require("../Process/LayeredMaterialNodeProcessing");
 
-var _RasterTile = require('../Renderer/RasterTile');
+var _RasterTile = require("../Renderer/RasterTile");
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 /**
  * @property {boolean} isElevationLayer - Used to checkout whether this layer is
@@ -81,8 +46,8 @@ function _isNativeReflectConstruct() {
  * @property {number} colorTextureElevationMinZ - elevation minimum in `useColorTextureElevation` mode.
  * @property {number} colorTextureElevationMaxZ - elevation maximum in `useColorTextureElevation` mode.
  */
-var ElevationLayer = /*#__PURE__*/ (function (_RasterLayer) {
-  (0, _inherits2['default'])(ElevationLayer, _RasterLayer);
+var ElevationLayer = /*#__PURE__*/function (_RasterLayer) {
+  (0, _inherits2["default"])(ElevationLayer, _RasterLayer);
 
   var _super = _createSuper(ElevationLayer);
 
@@ -119,17 +84,15 @@ var ElevationLayer = /*#__PURE__*/ (function (_RasterLayer) {
   function ElevationLayer(id) {
     var _this;
 
-    var config =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    (0, _classCallCheck2['default'])(this, ElevationLayer);
+    var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    (0, _classCallCheck2["default"])(this, ElevationLayer);
     _this = _super.call(this, id, config);
     _this.isElevationLayer = true; // This is used to add a factor needed to color texture
 
     var baseScale = 1.0;
 
     if (_this.useColorTextureElevation) {
-      baseScale =
-        _this.colorTextureElevationMaxZ - _this.colorTextureElevationMinZ;
+      baseScale = _this.colorTextureElevationMaxZ - _this.colorTextureElevationMinZ;
     }
 
     _this.defineLayerProperty('scale', _this.scale || 1.0, function (self) {
@@ -151,48 +114,33 @@ var ElevationLayer = /*#__PURE__*/ (function (_RasterLayer) {
    * @return     {RasterElevationTile}  The raster elevation node added.
    */
 
-  (0, _createClass2['default'])(ElevationLayer, [
-    {
-      key: 'setupRasterNode',
-      value: function setupRasterNode(node) {
-        var _this2 = this;
 
-        var rasterElevationNode = new _RasterTile.RasterElevationTile(
-          node.material,
-          this,
-        );
-        node.material.addLayer(rasterElevationNode);
-        node.material.setSequenceElevation(this.id); // bounding box initialisation
+  (0, _createClass2["default"])(ElevationLayer, [{
+    key: "setupRasterNode",
+    value: function setupRasterNode(node) {
+      var _this2 = this;
 
-        var updateBBox = function () {
-          return node.setBBoxZ(
-            rasterElevationNode.min,
-            rasterElevationNode.max,
-            _this2.scale,
-          );
-        };
+      var rasterElevationNode = new _RasterTile.RasterElevationTile(node.material, this);
+      node.material.addLayer(rasterElevationNode);
+      node.material.setSequenceElevation(this.id); // bounding box initialisation
 
-        updateBBox(); // listen elevation updating
+      var updateBBox = function () {
+        return node.setBBoxZ(rasterElevationNode.min, rasterElevationNode.max, _this2.scale);
+      };
 
-        rasterElevationNode.addEventListener('updatedElevation', updateBBox);
-        return rasterElevationNode;
-      },
-    },
-    {
-      key: 'update',
-      value: function update(context, layer, node, parent) {
-        return (0,
-        _LayeredMaterialNodeProcessing.updateLayeredMaterialNodeElevation)(
-          context,
-          this,
-          node,
-          parent,
-        );
-      },
-    },
-  ]);
+      updateBBox(); // listen elevation updating
+
+      rasterElevationNode.addEventListener('updatedElevation', updateBBox);
+      return rasterElevationNode;
+    }
+  }, {
+    key: "update",
+    value: function update(context, layer, node, parent) {
+      return (0, _LayeredMaterialNodeProcessing.updateLayeredMaterialNodeElevation)(context, this, node, parent);
+    }
+  }]);
   return ElevationLayer;
-})(_RasterLayer2['default']);
+}(_RasterLayer2["default"]);
 
 var _default = ElevationLayer;
-exports['default'] = _default;
+exports["default"] = _default;

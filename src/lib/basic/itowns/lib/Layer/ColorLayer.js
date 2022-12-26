@@ -1,70 +1,35 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _RasterLayer2 = _interopRequireDefault(require('./RasterLayer'));
+var _RasterLayer2 = _interopRequireDefault(require("./RasterLayer"));
 
-var _LayeredMaterialNodeProcessing = require('../Process/LayeredMaterialNodeProcessing');
+var _LayeredMaterialNodeProcessing = require("../Process/LayeredMaterialNodeProcessing");
 
-var _RasterTile = require('../Renderer/RasterTile');
+var _RasterTile = require("../Renderer/RasterTile");
 
-var _Style = _interopRequireDefault(require('../Core/Style'));
+var _Style = _interopRequireDefault(require("../Core/Style"));
 
-var _Undeprecator = require('../Core/Deprecated/Undeprecator');
+var _Undeprecator = require("../Core/Deprecated/Undeprecator");
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 /**
  * Fires when the visiblity of the layer has changed.
@@ -99,8 +64,8 @@ function _isNativeReflectConstruct() {
  * * `3`: custom shader effect (defined `ShaderChunk.customBodyColorLayer` and `ShaderChunk.customHeaderColorLayer`).
  * @property {number} effect_parameter - amount value used with effect applied on raster color.
  */
-var ColorLayer = /*#__PURE__*/ (function (_RasterLayer) {
-  (0, _inherits2['default'])(ColorLayer, _RasterLayer);
+var ColorLayer = /*#__PURE__*/function (_RasterLayer) {
+  (0, _inherits2["default"])(ColorLayer, _RasterLayer);
 
   var _super = _createSuper(ColorLayer);
 
@@ -151,13 +116,12 @@ var ColorLayer = /*#__PURE__*/ (function (_RasterLayer) {
   function ColorLayer(id) {
     var _this;
 
-    var config =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    (0, _classCallCheck2['default'])(this, ColorLayer);
+    var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    (0, _classCallCheck2["default"])(this, ColorLayer);
     (0, _Undeprecator.deprecatedColorLayerOptions)(config);
     _this = _super.call(this, id, config);
     _this.isColorLayer = true;
-    _this.style = new _Style['default'](config.style);
+    _this.style = new _Style["default"](config.style);
 
     _this.defineLayerProperty('visible', true);
 
@@ -166,9 +130,7 @@ var ColorLayer = /*#__PURE__*/ (function (_RasterLayer) {
     _this.defineLayerProperty('sequence', 0);
 
     _this.transparent = config.transparent || _this.opacity < 1.0;
-    _this.noTextureParentOutsideLimit = config.source
-      ? config.source.isFileSource
-      : false; // Feature options
+    _this.noTextureParentOutsideLimit = config.source ? config.source.isFileSource : false; // Feature options
 
     _this.buildExtent = true;
     _this.structure = '2d';
@@ -182,35 +144,24 @@ var ColorLayer = /*#__PURE__*/ (function (_RasterLayer) {
    * @return     {RasterColorTile}  The raster color node added.
    */
 
-  (0, _createClass2['default'])(ColorLayer, [
-    {
-      key: 'setupRasterNode',
-      value: function setupRasterNode(node) {
-        var rasterColorNode = new _RasterTile.RasterColorTile(
-          node.material,
-          this,
-        );
-        node.material.addLayer(rasterColorNode); // set up ColorLayer ordering.
 
-        node.material.setSequence(this.parent.colorLayersOrder);
-        return rasterColorNode;
-      },
-    },
-    {
-      key: 'update',
-      value: function update(context, layer, node, parent) {
-        return (0,
-        _LayeredMaterialNodeProcessing.updateLayeredMaterialNodeImagery)(
-          context,
-          this,
-          node,
-          parent,
-        );
-      },
-    },
-  ]);
+  (0, _createClass2["default"])(ColorLayer, [{
+    key: "setupRasterNode",
+    value: function setupRasterNode(node) {
+      var rasterColorNode = new _RasterTile.RasterColorTile(node.material, this);
+      node.material.addLayer(rasterColorNode); // set up ColorLayer ordering.
+
+      node.material.setSequence(this.parent.colorLayersOrder);
+      return rasterColorNode;
+    }
+  }, {
+    key: "update",
+    value: function update(context, layer, node, parent) {
+      return (0, _LayeredMaterialNodeProcessing.updateLayeredMaterialNodeImagery)(context, this, node, parent);
+    }
+  }]);
   return ColorLayer;
-})(_RasterLayer2['default']);
+}(_RasterLayer2["default"]);
 
 var _default = ColorLayer;
-exports['default'] = _default;
+exports["default"] = _default;

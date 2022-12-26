@@ -1,33 +1,39 @@
-import { Matrix4, Vector2 } from '../../../build/three.module.js';
+import {
+	Matrix4,
+	Vector2
+} from 'three';
 
-var SSRrShader = {
-  defines: {
-    MAX_STEP: 0,
-    PERSPECTIVE_CAMERA: true,
-    SPECULAR: true,
-    FILL_HOLE: true,
-    INFINITE_THICK: false,
-  },
+const SSRrShader = {
 
-  uniforms: {
-    tDiffuse: { value: null },
-    tSpecular: { value: null },
-    tNormalSelects: { value: null },
-    tRefractive: { value: null },
-    tDepth: { value: null },
-    tDepthSelects: { value: null },
-    cameraNear: { value: null },
-    cameraFar: { value: null },
-    resolution: { value: new Vector2() },
-    cameraProjectionMatrix: { value: new Matrix4() },
-    cameraInverseProjectionMatrix: { value: new Matrix4() },
-    ior: { value: 1.03 },
-    cameraRange: { value: 0 },
-    maxDistance: { value: 180 },
-    surfDist: { value: 0.007 },
-  },
+	defines: {
+		MAX_STEP: 0,
+		PERSPECTIVE_CAMERA: true,
+		SPECULAR: true,
+		FILL_HOLE: true,
+		INFINITE_THICK: false,
+	},
 
-  vertexShader: /* glsl */ `
+	uniforms: {
+
+		'tDiffuse': { value: null },
+		'tSpecular': { value: null },
+		'tNormalSelects': { value: null },
+		'tRefractive': { value: null },
+		'tDepth': { value: null },
+		'tDepthSelects': { value: null },
+		'cameraNear': { value: null },
+		'cameraFar': { value: null },
+		'resolution': { value: new Vector2() },
+		'cameraProjectionMatrix': { value: new Matrix4() },
+		'cameraInverseProjectionMatrix': { value: new Matrix4() },
+		'ior': { value: 1.03 },
+		'cameraRange': { value: 0 },
+		'maxDistance': { value: 180 },
+		'surfDist': { value: .007 },
+
+	},
+
+	vertexShader: /* glsl */`
 
 		varying vec2 vUv;
 
@@ -41,7 +47,7 @@ var SSRrShader = {
 
 	`,
 
-  fragmentShader: /* glsl */ `
+	fragmentShader: /* glsl */`
 		// precision highp float;
 		precision highp sampler2D;
 		varying vec2 vUv;
@@ -227,21 +233,25 @@ var SSRrShader = {
 				// gl_FragColor=texture2D(tDiffuse,vUv);//For afterward add color mix feature.
 			#endif
 		}
-	`,
+	`
+
 };
 
 var SSRrDepthShader = {
-  defines: {
-    PERSPECTIVE_CAMERA: 1,
-  },
 
-  uniforms: {
-    tDepth: { value: null },
-    cameraNear: { value: null },
-    cameraFar: { value: null },
-  },
+	defines: {
+		'PERSPECTIVE_CAMERA': 1
+	},
 
-  vertexShader: /* glsl */ `
+	uniforms: {
+
+		'tDepth': { value: null },
+		'cameraNear': { value: null },
+		'cameraFar': { value: null },
+
+	},
+
+	vertexShader: /* glsl */`
 
 		varying vec2 vUv;
 
@@ -254,7 +264,7 @@ var SSRrDepthShader = {
 
 	`,
 
-  fragmentShader: /* glsl */ `
+	fragmentShader: /* glsl */`
 
 		uniform sampler2D tDepth;
 
@@ -290,7 +300,8 @@ var SSRrDepthShader = {
 
 		}
 
-	`,
+	`
+
 };
 
 export { SSRrShader, SSRrDepthShader };

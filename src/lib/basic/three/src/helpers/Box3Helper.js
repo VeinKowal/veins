@@ -5,44 +5,45 @@ import { Float32BufferAttribute } from '../core/BufferAttribute.js';
 import { BufferGeometry } from '../core/BufferGeometry.js';
 
 class Box3Helper extends LineSegments {
-  constructor(box, color = 0xffff00) {
-    const indices = new Uint16Array([
-      0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7,
-    ]);
 
-    const positions = [
-      1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, 1, 1, -1, -1, 1, -1, -1, -1, -1,
-      1, -1, -1,
-    ];
+	constructor( box, color = 0xffff00 ) {
 
-    const geometry = new BufferGeometry();
+		const indices = new Uint16Array( [ 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 ] );
 
-    geometry.setIndex(new BufferAttribute(indices, 1));
+		const positions = [ 1, 1, 1, - 1, 1, 1, - 1, - 1, 1, 1, - 1, 1, 1, 1, - 1, - 1, 1, - 1, - 1, - 1, - 1, 1, - 1, - 1 ];
 
-    geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
+		const geometry = new BufferGeometry();
 
-    super(geometry, new LineBasicMaterial({ color: color, toneMapped: false }));
+		geometry.setIndex( new BufferAttribute( indices, 1 ) );
 
-    this.box = box;
+		geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
 
-    this.type = 'Box3Helper';
+		super( geometry, new LineBasicMaterial( { color: color, toneMapped: false } ) );
 
-    this.geometry.computeBoundingSphere();
-  }
+		this.box = box;
 
-  updateMatrixWorld(force) {
-    const box = this.box;
+		this.type = 'Box3Helper';
 
-    if (box.isEmpty()) return;
+		this.geometry.computeBoundingSphere();
 
-    box.getCenter(this.position);
+	}
 
-    box.getSize(this.scale);
+	updateMatrixWorld( force ) {
 
-    this.scale.multiplyScalar(0.5);
+		const box = this.box;
 
-    super.updateMatrixWorld(force);
-  }
+		if ( box.isEmpty() ) return;
+
+		box.getCenter( this.position );
+
+		box.getSize( this.scale );
+
+		this.scale.multiplyScalar( 0.5 );
+
+		super.updateMatrixWorld( force );
+
+	}
+
 }
 
 export { Box3Helper };

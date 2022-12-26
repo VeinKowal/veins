@@ -1,58 +1,25 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _TMSSource2 = _interopRequireDefault(require('./TMSSource'));
+var _TMSSource2 = _interopRequireDefault(require("./TMSSource"));
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 /**
  * @classdesc
@@ -109,8 +76,8 @@ function _isNativeReflectConstruct() {
  * // Add the layer
  * view.addLayer(colorLayer);
  */
-var WMTSSource = /*#__PURE__*/ (function (_TMSSource) {
-  (0, _inherits2['default'])(WMTSSource, _TMSSource);
+var WMTSSource = /*#__PURE__*/function (_TMSSource) {
+  (0, _inherits2["default"])(WMTSSource, _TMSSource);
 
   var _super = _createSuper(WMTSSource);
 
@@ -123,7 +90,7 @@ var WMTSSource = /*#__PURE__*/ (function (_TMSSource) {
   function WMTSSource(source) {
     var _this;
 
-    (0, _classCallCheck2['default'])(this, WMTSSource);
+    (0, _classCallCheck2["default"])(this, WMTSSource);
 
     if (!source.name) {
       throw new Error('New WMTSSource: name is required');
@@ -131,21 +98,12 @@ var WMTSSource = /*#__PURE__*/ (function (_TMSSource) {
 
     _this = _super.call(this, source);
     _this.isWMTSSource = true;
-    _this.url =
-      ''.concat(_this.url) +
-      '?LAYER='.concat(source.name) +
-      '&FORMAT='.concat(_this.format) +
-      '&SERVICE=WMTS' +
-      '&VERSION='.concat(source.version || '1.0.0') +
-      '&REQUEST=GetTile' +
-      '&STYLE='.concat(source.style || 'normal') +
-      '&TILEMATRIXSET='.concat(source.tileMatrixSet) +
-      '&TILEMATRIX=%TILEMATRIX&TILEROW=%ROW&TILECOL=%COL';
+    _this.url = "".concat(_this.url) + "?LAYER=".concat(source.name) + "&FORMAT=".concat(_this.format) + '&SERVICE=WMTS' + "&VERSION=".concat(source.version || '1.0.0') + '&REQUEST=GetTile' + "&STYLE=".concat(source.style || 'normal') + "&TILEMATRIXSET=".concat(source.tileMatrixSet) + '&TILEMATRIX=%TILEMATRIX&TILEROW=%ROW&TILECOL=%COL';
     return _this;
   }
 
   return WMTSSource;
-})(_TMSSource2['default']);
+}(_TMSSource2["default"]);
 
 var _default = WMTSSource;
-exports['default'] = _default;
+exports["default"] = _default;

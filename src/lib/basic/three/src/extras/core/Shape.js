@@ -1,77 +1,102 @@
 import { Path } from './Path.js';
-import { MathUtils } from '../../math/MathUtils.js';
+import * as MathUtils from '../../math/MathUtils.js';
 
 class Shape extends Path {
-  constructor(points) {
-    super(points);
 
-    this.uuid = MathUtils.generateUUID();
+	constructor( points ) {
 
-    this.type = 'Shape';
+		super( points );
 
-    this.holes = [];
-  }
+		this.uuid = MathUtils.generateUUID();
 
-  getPointsHoles(divisions) {
-    const holesPts = [];
+		this.type = 'Shape';
 
-    for (let i = 0, l = this.holes.length; i < l; i++) {
-      holesPts[i] = this.holes[i].getPoints(divisions);
-    }
+		this.holes = [];
 
-    return holesPts;
-  }
+	}
 
-  // get points of shape and holes (keypoints based on segments parameter)
+	getPointsHoles( divisions ) {
 
-  extractPoints(divisions) {
-    return {
-      shape: this.getPoints(divisions),
-      holes: this.getPointsHoles(divisions),
-    };
-  }
+		const holesPts = [];
 
-  copy(source) {
-    super.copy(source);
+		for ( let i = 0, l = this.holes.length; i < l; i ++ ) {
 
-    this.holes = [];
+			holesPts[ i ] = this.holes[ i ].getPoints( divisions );
 
-    for (let i = 0, l = source.holes.length; i < l; i++) {
-      const hole = source.holes[i];
+		}
 
-      this.holes.push(hole.clone());
-    }
+		return holesPts;
 
-    return this;
-  }
+	}
 
-  toJSON() {
-    const data = super.toJSON();
+	// get points of shape and holes (keypoints based on segments parameter)
 
-    data.uuid = this.uuid;
-    data.holes = [];
+	extractPoints( divisions ) {
 
-    for (let i = 0, l = this.holes.length; i < l; i++) {
-      const hole = this.holes[i];
-      data.holes.push(hole.toJSON());
-    }
+		return {
 
-    return data;
-  }
+			shape: this.getPoints( divisions ),
+			holes: this.getPointsHoles( divisions )
 
-  fromJSON(json) {
-    super.fromJSON(json);
+		};
 
-    this.uuid = json.uuid;
-    this.holes = [];
+	}
 
-    for (let i = 0, l = json.holes.length; i < l; i++) {
-      const hole = json.holes[i];
-      this.holes.push(new Path().fromJSON(hole));
-    }
+	copy( source ) {
 
-    return this;
-  }
+		super.copy( source );
+
+		this.holes = [];
+
+		for ( let i = 0, l = source.holes.length; i < l; i ++ ) {
+
+			const hole = source.holes[ i ];
+
+			this.holes.push( hole.clone() );
+
+		}
+
+		return this;
+
+	}
+
+	toJSON() {
+
+		const data = super.toJSON();
+
+		data.uuid = this.uuid;
+		data.holes = [];
+
+		for ( let i = 0, l = this.holes.length; i < l; i ++ ) {
+
+			const hole = this.holes[ i ];
+			data.holes.push( hole.toJSON() );
+
+		}
+
+		return data;
+
+	}
+
+	fromJSON( json ) {
+
+		super.fromJSON( json );
+
+		this.uuid = json.uuid;
+		this.holes = [];
+
+		for ( let i = 0, l = json.holes.length; i < l; i ++ ) {
+
+			const hole = json.holes[ i ];
+			this.holes.push( new Path().fromJSON( hole ) );
+
+		}
+
+		return this;
+
+	}
+
 }
+
 
 export { Shape };

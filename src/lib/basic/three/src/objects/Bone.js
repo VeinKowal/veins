@@ -1,15 +1,17 @@
 import { Object3D } from '../core/Object3D.js';
 
-function Bone() {
-  Object3D.call(this);
+class Bone extends Object3D {
 
-  this.type = 'Bone';
+	constructor() {
+
+		super();
+
+		this.type = 'Bone';
+
+	}
+
 }
 
-Bone.prototype = Object.assign(Object.create(Object3D.prototype), {
-  constructor: Bone,
-
-  isBone: true,
-});
+Bone.prototype.isBone = true;
 
 export { Bone };

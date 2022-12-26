@@ -1,52 +1,69 @@
-THREE.MorphAnimMesh = function (geometry, material) {
-  THREE.Mesh.call(this, geometry, material);
+( function () {
 
-  this.type = 'MorphAnimMesh';
+	class MorphAnimMesh extends THREE.Mesh {
 
-  this.mixer = new THREE.AnimationMixer(this);
-  this.activeAction = null;
-};
+		constructor( geometry, material ) {
 
-THREE.MorphAnimMesh.prototype = Object.create(THREE.Mesh.prototype);
-THREE.MorphAnimMesh.prototype.constructor = THREE.MorphAnimMesh;
+			super( geometry, material );
+			this.type = 'MorphAnimMesh';
+			this.mixer = new THREE.AnimationMixer( this );
+			this.activeAction = null;
 
-THREE.MorphAnimMesh.prototype.setDirectionForward = function () {
-  this.mixer.timeScale = 1.0;
-};
+		}
 
-THREE.MorphAnimMesh.prototype.setDirectionBackward = function () {
-  this.mixer.timeScale = -1.0;
-};
+		setDirectionForward() {
 
-THREE.MorphAnimMesh.prototype.playAnimation = function (label, fps) {
-  if (this.activeAction) {
-    this.activeAction.stop();
-    this.activeAction = null;
-  }
+			this.mixer.timeScale = 1.0;
 
-  var clip = THREE.AnimationClip.findByName(this, label);
+		}
 
-  if (clip) {
-    var action = this.mixer.clipAction(clip);
-    action.timeScale = (clip.tracks.length * fps) / clip.duration;
-    this.activeAction = action.play();
-  } else {
-    throw new Error(
-      'THREE.MorphAnimMesh: animations[' +
-        label +
-        '] undefined in .playAnimation()',
-    );
-  }
-};
+		setDirectionBackward() {
 
-THREE.MorphAnimMesh.prototype.updateAnimation = function (delta) {
-  this.mixer.update(delta);
-};
+			this.mixer.timeScale = - 1.0;
 
-THREE.MorphAnimMesh.prototype.copy = function (source) {
-  THREE.Mesh.prototype.copy.call(this, source);
+		}
 
-  this.mixer = new THREE.AnimationMixer(this);
+		playAnimation( label, fps ) {
 
-  return this;
-};
+			if ( this.activeAction ) {
+
+				this.activeAction.stop();
+				this.activeAction = null;
+
+			}
+
+			const clip = THREE.AnimationClip.findByName( this, label );
+
+			if ( clip ) {
+
+				const action = this.mixer.clipAction( clip );
+				action.timeScale = clip.tracks.length * fps / clip.duration;
+				this.activeAction = action.play();
+
+			} else {
+
+				throw new Error( 'THREE.MorphAnimMesh: animations[' + label + '] undefined in .playAnimation()' );
+
+			}
+
+		}
+
+		updateAnimation( delta ) {
+
+			this.mixer.update( delta );
+
+		}
+
+		copy( source ) {
+
+			super.copy( source );
+			this.mixer = new THREE.AnimationMixer( this );
+			return this;
+
+		}
+
+	}
+
+	THREE.MorphAnimMesh = MorphAnimMesh;
+
+} )();

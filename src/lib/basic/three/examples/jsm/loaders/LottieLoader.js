@@ -1,67 +1,73 @@
 import {
-  FileLoader,
-  Loader,
-  CanvasTexture,
-  NearestFilter,
-} from '../../../build/three.module.js';
+	FileLoader,
+	Loader,
+	CanvasTexture,
+	NearestFilter
+} from 'three';
 
 class LottieLoader extends Loader {
-  setQuality(value) {
-    this._quality = value;
-  }
 
-  load(url, onLoad, onProgress, onError) {
-    const quality = this._quality || 1;
+	setQuality( value ) {
 
-    const texture = new CanvasTexture();
-    texture.minFilter = NearestFilter;
+		this._quality = value;
 
-    const loader = new FileLoader(this.manager);
-    loader.setPath(this.path);
-    loader.setWithCredentials(this.withCredentials);
+	}
 
-    loader.load(
-      url,
-      function (text) {
-        const data = JSON.parse(text);
+	load( url, onLoad, onProgress, onError ) {
 
-        // bodymoving uses container.offetWidth and offsetHeight
-        // to define width/height
+		const quality = this._quality || 1;
 
-        const container = document.createElement('div');
-        container.style.width = data.w + 'px';
-        container.style.height = data.h + 'px';
-        document.body.appendChild(container);
+		const texture = new CanvasTexture();
+		texture.minFilter = NearestFilter;
 
-        // eslint-disable-next-line no-undef
-        const animation = bodymovin.loadAnimation({
-          container: container,
-          animType: 'canvas',
-          loop: true,
-          autoplay: true,
-          animationData: data,
-          rendererSettings: { dpr: quality },
-        });
+		const loader = new FileLoader( this.manager );
+		loader.setPath( this.path );
+		loader.setWithCredentials( this.withCredentials );
 
-        texture.animation = animation;
-        texture.image = animation.container;
+		loader.load( url, function ( text ) {
 
-        animation.addEventListener('enterFrame', function () {
-          texture.needsUpdate = true;
-        });
+			const data = JSON.parse( text );
 
-        container.style.display = 'none';
+			// bodymoving uses container.offetWidth and offsetHeight
+			// to define width/height
 
-        if (onLoad !== undefined) {
-          onLoad(texture);
-        }
-      },
-      onProgress,
-      onError,
-    );
+			const container = document.createElement( 'div' );
+			container.style.width = data.w + 'px';
+			container.style.height = data.h + 'px';
+			document.body.appendChild( container );
 
-    return texture;
-  }
+			const animation = bodymovin.loadAnimation( {
+				container: container,
+				animType: 'canvas',
+				loop: true,
+				autoplay: true,
+				animationData: data,
+				rendererSettings: { dpr: quality }
+			} );
+
+			texture.animation = animation;
+			texture.image = animation.container;
+
+			animation.addEventListener( 'enterFrame', function () {
+
+				texture.needsUpdate = true;
+
+			} );
+
+			container.style.display = 'none';
+
+			if ( onLoad !== undefined ) {
+
+				onLoad( texture );
+
+			}
+
+		}, onProgress, onError );
+
+		return texture;
+
+	}
+
 }
 
 export { LottieLoader };

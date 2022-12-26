@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = handlingError;
+exports["default"] = handlingError;
 // max retry loading before changing the status to definitiveError
 var MAX_RETRY = 4;
 
@@ -18,10 +18,9 @@ function handlingError(err, node, layer, targetLevel, view) {
   } else if (err instanceof SyntaxError) {
     node.layerUpdateState[layer.id].failure(0, true);
   } else {
-    var definitiveError =
-      node.layerUpdateState[layer.id].errorCount > MAX_RETRY;
+    var definitiveError = node.layerUpdateState[layer.id].errorCount > MAX_RETRY;
     node.layerUpdateState[layer.id].failure(Date.now(), definitiveError, {
-      targetLevel: targetLevel,
+      targetLevel: targetLevel
     });
 
     if (!definitiveError) {

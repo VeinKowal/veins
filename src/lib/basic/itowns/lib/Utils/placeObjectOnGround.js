@@ -1,51 +1,44 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-var _DEMUtils = _interopRequireDefault(require('./DEMUtils'));
+var _DEMUtils = _interopRequireDefault(require("./DEMUtils"));
 
-var _Coordinates = _interopRequireDefault(
-  require('../Core/Geographic/Coordinates'),
-);
+var _Coordinates = _interopRequireDefault(require("../Core/Geographic/Coordinates"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 var temp = {
   v: new THREE.Vector3(),
-  coord1: new _Coordinates['default']('EPSG:4978'),
-  coord2: new _Coordinates['default']('EPSG:4978'),
-  offset: new THREE.Vector2(),
+  coord1: new _Coordinates["default"]('EPSG:4978'),
+  coord2: new _Coordinates["default"]('EPSG:4978'),
+  offset: new THREE.Vector2()
 };
 
 function _updateVector3(layer, method, nodes, vecCRS, vec, offset) {
-  var matrices =
-    arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : {};
+  var matrices = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : {};
   var coords = arguments.length > 7 ? arguments[7] : undefined;
   var cache = arguments.length > 8 ? arguments[8] : undefined;
-  var coord = coords || new _Coordinates['default'](vecCRS);
+  var coord = coords || new _Coordinates["default"](vecCRS);
 
   if (matrices.worldFromLocal) {
-    coord.setFromVector3(
-      temp.v.copy(vec).applyMatrix4(matrices.worldFromLocal),
-    );
+    coord.setFromVector3(temp.v.copy(vec).applyMatrix4(matrices.worldFromLocal));
   } else {
     coord.setFromVector3(vec);
   }
 
-  var result = _DEMUtils['default'].getTerrainObjectAt(
-    layer,
-    coord,
-    method,
-    nodes,
-    cache,
-  );
+  var result = _DEMUtils["default"].getTerrainObjectAt(layer, coord, method, nodes, cache);
 
   if (result) {
     result.coord.z += offset;
@@ -58,7 +51,7 @@ function _updateVector3(layer, method, nodes, vecCRS, vec, offset) {
     return {
       id: result.texture.id,
       version: result.texture.version,
-      tile: result.tile,
+      tile: result.tile
     };
   }
 }
@@ -88,13 +81,11 @@ function _updateVector3(layer, method, nodes, vecCRS, vec, offset) {
 
 /* istanbul ignore next */
 
+
 function placeObjectOnGround(layer, crs, obj) {
-  var options =
-    arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   var tileHint = arguments.length > 4 ? arguments[4] : undefined;
-  console.warn(
-    'placeObjectOnGround has been deprecated because it needs review and test',
-  );
+  console.warn('placeObjectOnGround has been deprecated because it needs review and test');
   var tiles;
 
   if (tileHint) {
@@ -110,22 +101,10 @@ function placeObjectOnGround(layer, crs, obj) {
 
     var matrices = {
       worldFromLocal: obj.parent ? obj.parent.matrixWorld : undefined,
-      localFromWorld: obj.parent
-        ? new THREE.Matrix4().copy(obj.parent.matrixWorld).invert()
-        : undefined,
+      localFromWorld: obj.parent ? new THREE.Matrix4().copy(obj.parent.matrixWorld).invert() : undefined
     };
 
-    var result = _updateVector3(
-      layer,
-      options.method || _DEMUtils['default'].FAST_READ_Z,
-      tiles,
-      crs,
-      obj.position,
-      options.offset || 0,
-      matrices,
-      undefined,
-      options.cache ? options.cache[0] : undefined,
-    );
+    var result = _updateVector3(layer, options.method || _DEMUtils["default"].FAST_READ_Z, tiles, crs, obj.position, options.offset || 0, matrices, undefined, options.cache ? options.cache[0] : undefined);
 
     if (result) {
       if (options.cache) {
@@ -139,7 +118,7 @@ function placeObjectOnGround(layer, crs, obj) {
   } else {
     var _matrices = {
       worldFromLocal: obj.matrixWorld,
-      localFromWorld: new THREE.Matrix4().copy(obj.matrixWorld).invert(),
+      localFromWorld: new THREE.Matrix4().copy(obj.matrixWorld).invert()
     };
     var geometry = obj.geometry;
 
@@ -149,22 +128,12 @@ function placeObjectOnGround(layer, crs, obj) {
       }
 
       var success = true;
-      var coord = new _Coordinates['default'](crs);
+      var coord = new _Coordinates["default"](crs);
 
       for (var i = 0; i < geometry.vertices.length; i++) {
         var cached = options.cache ? options.cache[i] : undefined;
 
-        var _result = _updateVector3(
-          layer,
-          options.method || _DEMUtils['default'].FAST_READ_Z,
-          tiles,
-          crs,
-          geometry.vertices[i],
-          options.offset || 0,
-          _matrices,
-          coord,
-          cached,
-        );
+        var _result = _updateVector3(layer, options.method || _DEMUtils["default"].FAST_READ_Z, tiles, crs, geometry.vertices[i], options.offset || 0, _matrices, coord, cached);
 
         if (options.cache) {
           options.cache[i] = _result;
@@ -185,7 +154,7 @@ function placeObjectOnGround(layer, crs, obj) {
       var _success = true;
       var tmp = new THREE.Vector3();
 
-      var _coord = new _Coordinates['default'](crs);
+      var _coord = new _Coordinates["default"](crs);
 
       for (var _i = 0; _i < geometry.attributes.position.count; _i++) {
         var _cached = options.cache ? options.cache[_i] : undefined;
@@ -193,17 +162,7 @@ function placeObjectOnGround(layer, crs, obj) {
         tmp.fromBufferAttribute(geometry.attributes.position, _i);
         var prev = tmp.z;
 
-        var _result2 = _updateVector3(
-          layer,
-          options.method || _DEMUtils['default'].FAST_READ_Z,
-          tiles,
-          crs,
-          tmp,
-          options.offset || 0,
-          _matrices,
-          _coord,
-          _cached,
-        );
+        var _result2 = _updateVector3(layer, options.method || _DEMUtils["default"].FAST_READ_Z, tiles, crs, tmp, options.offset || 0, _matrices, _coord, _cached);
 
         if (options.cache) {
           options.cache[_i] = _result2;
@@ -226,4 +185,4 @@ function placeObjectOnGround(layer, crs, obj) {
 }
 
 var _default = placeObjectOnGround;
-exports['default'] = _default;
+exports["default"] = _default;

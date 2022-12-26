@@ -1,25 +1,33 @@
 import Node from '../core/Node.js';
 
 class SwitchNode extends Node {
-  constructor(node, components = 'x') {
-    super();
 
-    this.node = node;
-    this.components = components;
-  }
+	constructor( node, components = 'x' ) {
 
-  getType(builder) {
-    return builder.getTypeFromLength(this.components.length);
-  }
+		super();
 
-  generate(builder, output) {
-    const nodeType = this.node.getType(builder);
-    const nodeSnippet = this.node.build(builder, nodeType);
+		this.node = node;
+		this.components = components;
 
-    const snippet = `${nodeSnippet}.${this.components}`;
+	}
 
-    return builder.format(snippet, this.getType(builder), output);
-  }
+	getType( builder ) {
+
+		return builder.getTypeFromLength( this.components.length );
+
+	}
+
+	generate( builder, output ) {
+
+		const nodeType = this.node.getType( builder );
+		const nodeSnippet = this.node.build( builder, nodeType );
+
+		const snippet = `${nodeSnippet}.${this.components}`;
+
+		return builder.format( snippet, this.getType( builder ), output );
+
+	}
+
 }
 
 export default SwitchNode;

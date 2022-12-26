@@ -1,114 +1,75 @@
-'use strict';
+"use strict";
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _assertThisInitialized2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/assertThisInitialized'),
-);
+var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
-var _get2 = _interopRequireDefault(require('@babel/runtime/helpers/get'));
+var _get2 = _interopRequireDefault(require("@babel/runtime/helpers/get"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-var Distortion = /*#__PURE__*/ (function () {
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+var Distortion = /*#__PURE__*/function () {
   function Distortion(size) {
-    (0, _classCallCheck2['default'])(this, Distortion);
+    (0, _classCallCheck2["default"])(this, Distortion);
     this.size = size;
     this.pps = null;
     this.polynom = null;
     this.l1l2 = null;
   }
 
-  (0, _createClass2['default'])(Distortion, [
-    {
-      key: 'setFromMicmacCalibration',
-      value: function setFromMicmacCalibration(distortion) {
-        var imageYDown =
-          arguments.length > 1 && arguments[1] !== undefined
-            ? arguments[1]
-            : true;
-        this.pps = new THREE.Vector2().fromArray(distortion.pps);
-        this.polynom = new THREE.Vector4().fromArray(distortion.poly357);
-        this.l1l2 = new THREE.Vector3(); // inverse Y pps convention image micmac
+  (0, _createClass2["default"])(Distortion, [{
+    key: "setFromMicmacCalibration",
+    value: function setFromMicmacCalibration(distortion) {
+      var imageYDown = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      this.pps = new THREE.Vector2().fromArray(distortion.pps);
+      this.polynom = new THREE.Vector4().fromArray(distortion.poly357);
+      this.l1l2 = new THREE.Vector3(); // inverse Y pps convention image micmac
 
-        this.pps.y = imageYDown ? this.size.y - this.pps.y : this.pps.y;
-        this.polynom.w = Math.pow(distortion.limit, 2);
+      this.pps.y = imageYDown ? this.size.y - this.pps.y : this.pps.y;
+      this.polynom.w = Math.pow(distortion.limit, 2);
 
-        if (distortion.l1l2) {
-          this.l1l2.fromArray(distortion.l1l2);
-          this.l1l2.z = distortion.etats;
-        }
-      },
-    },
-    {
-      key: 'clone',
-      value: function clone() {
-        var dest = new Distortion(this.size.clone());
-        dest.pps = this.pps.clone();
-        dest.polynom = this.polynom.clone();
-        dest.l1l2 = this.l1l2.clone();
-        return dest;
-      },
-    },
-  ]);
+      if (distortion.l1l2) {
+        this.l1l2.fromArray(distortion.l1l2);
+        this.l1l2.z = distortion.etats;
+      }
+    }
+  }, {
+    key: "clone",
+    value: function clone() {
+      var dest = new Distortion(this.size.clone());
+      dest.pps = this.pps.clone();
+      dest.polynom = this.polynom.clone();
+      dest.l1l2 = this.l1l2.clone();
+      return dest;
+    }
+  }]);
   return Distortion;
-})();
+}();
 
 var zoom = new THREE.Vector3();
 /**
@@ -116,8 +77,8 @@ var zoom = new THREE.Vector3();
  * So we can build a ThreeJs perspective camera from size and focal information.
  */
 
-var OrientedImageCamera = /*#__PURE__*/ (function (_THREE$PerspectiveCam) {
-  (0, _inherits2['default'])(OrientedImageCamera, _THREE$PerspectiveCam);
+var OrientedImageCamera = /*#__PURE__*/function (_THREE$PerspectiveCam) {
+  (0, _inherits2["default"])(OrientedImageCamera, _THREE$PerspectiveCam);
 
   var _super = _createSuper(OrientedImageCamera);
 
@@ -134,18 +95,14 @@ var OrientedImageCamera = /*#__PURE__*/ (function (_THREE$PerspectiveCam) {
   function OrientedImageCamera() {
     var _this;
 
-    var size =
-      arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1024;
-    var focal =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1024;
+    var size = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1024;
+    var focal = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1024;
     var center = arguments.length > 2 ? arguments[2] : undefined;
-    var near =
-      arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0.1;
-    var far =
-      arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 10000;
+    var near = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0.1;
+    var far = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 10000;
     var skew = arguments.length > 5 ? arguments[5] : undefined;
     var aspect = arguments.length > 6 ? arguments[6] : undefined;
-    (0, _classCallCheck2['default'])(this, OrientedImageCamera);
+    (0, _classCallCheck2["default"])(this, OrientedImageCamera);
     size = size.isVector2 ? size : new THREE.Vector2(size, size);
     aspect = aspect || size.x / size.y;
     _this = _super.call(this, undefined, aspect, near, far);
@@ -154,28 +111,17 @@ var OrientedImageCamera = /*#__PURE__*/ (function (_THREE$PerspectiveCam) {
     _this.center = center || size.clone().multiplyScalar(0.5);
     _this.skew = skew || 0;
     _this.textureMatrixWorldInverse = new THREE.Matrix4();
-    Object.defineProperty(
-      (0, _assertThisInitialized2['default'])(_this),
-      'fov',
-      {
-        get: function get() {
-          return (
-            2 *
-            THREE.MathUtils.radToDeg(
-              Math.atan2(_this.size.y, 2 * _this.focal.y),
-            )
-          );
-        },
-        // setting the fov overwrites focal.x and focal.y
-        set: function set(fov) {
-          var focal =
-            (0.5 * _this.size.y) /
-            Math.tan(THREE.MathUtils.degToRad(fov * 0.5));
-          _this.focal.x = focal;
-          _this.focal.y = focal;
-        },
+    Object.defineProperty((0, _assertThisInitialized2["default"])(_this), 'fov', {
+      get: function get() {
+        return 2 * THREE.MathUtils.radToDeg(Math.atan2(_this.size.y, 2 * _this.focal.y));
       },
-    );
+      // setting the fov overwrites focal.x and focal.y
+      set: function set(fov) {
+        var focal = 0.5 * _this.size.y / Math.tan(THREE.MathUtils.degToRad(fov * 0.5));
+        _this.focal.x = focal;
+        _this.focal.y = focal;
+      }
+    });
     _this.distortion = new Distortion(_this.size);
     _this.maskPath = undefined;
     _this.mask = undefined;
@@ -187,67 +133,53 @@ var OrientedImageCamera = /*#__PURE__*/ (function (_THREE$PerspectiveCam) {
   // update the projection matrix depending on other variables
   // focal, center and size...
 
-  (0, _createClass2['default'])(OrientedImageCamera, [
-    {
-      key: 'updateProjectionMatrix',
-      value: function updateProjectionMatrix() {
-        if (!this.focal) {
-          return;
-        }
 
-        var near = this.near;
-        var sx = near / this.focal.x;
-        var sy = near / this.focal.y;
-        var left = -sx * this.center.x;
-        var bottom = -sy * this.center.y;
-        var right = left + sx * this.size.x;
-        var top = bottom + sy * this.size.y;
-        this.projectionMatrix.makePerspective(
-          left,
-          right,
-          top,
-          bottom,
-          near,
-          this.far,
-        );
-        this.projectionMatrix.elements[4] = (2 * this.skew) / this.size.x; // take zoom and aspect into account
+  (0, _createClass2["default"])(OrientedImageCamera, [{
+    key: "updateProjectionMatrix",
+    value: function updateProjectionMatrix() {
+      if (!this.focal) {
+        return;
+      }
 
-        var textureAspect = this.size.x / this.size.y;
-        var aspectRatio = this.aspect / textureAspect;
-        zoom.set(this.zoom, this.zoom, 1);
+      var near = this.near;
+      var sx = near / this.focal.x;
+      var sy = near / this.focal.y;
+      var left = -sx * this.center.x;
+      var bottom = -sy * this.center.y;
+      var right = left + sx * this.size.x;
+      var top = bottom + sy * this.size.y;
+      this.projectionMatrix.makePerspective(left, right, top, bottom, near, this.far);
+      this.projectionMatrix.elements[4] = 2 * this.skew / this.size.x; // take zoom and aspect into account
 
-        if (aspectRatio > 1) {
-          zoom.x /= aspectRatio;
-        } else {
-          zoom.y *= aspectRatio;
-        }
+      var textureAspect = this.size.x / this.size.y;
+      var aspectRatio = this.aspect / textureAspect;
+      zoom.set(this.zoom, this.zoom, 1);
 
-        this.projectionMatrix.scale(zoom);
-      },
-    },
-    {
-      key: 'copy',
-      value: function copy(source, recursive) {
-        (0, _get2['default'])(
-          (0, _getPrototypeOf2['default'])(OrientedImageCamera.prototype),
-          'copy',
-          this,
-        ).call(this, source, recursive);
-        this.size = source.size.clone();
-        this.focal = source.focal.clone();
-        this.center = source.center.clone();
-        this.distortion = source.distortion.clone();
-        this.textureMatrixWorldInverse =
-          source.textureMatrixWorldInverse.clone();
-        this.skew = source.skew;
-        this.maskPath = source.maskPath;
-        this.mask = source.mask;
-        return this;
-      },
-    },
-  ]);
+      if (aspectRatio > 1) {
+        zoom.x /= aspectRatio;
+      } else {
+        zoom.y *= aspectRatio;
+      }
+
+      this.projectionMatrix.scale(zoom);
+    }
+  }, {
+    key: "copy",
+    value: function copy(source, recursive) {
+      (0, _get2["default"])((0, _getPrototypeOf2["default"])(OrientedImageCamera.prototype), "copy", this).call(this, source, recursive);
+      this.size = source.size.clone();
+      this.focal = source.focal.clone();
+      this.center = source.center.clone();
+      this.distortion = source.distortion.clone();
+      this.textureMatrixWorldInverse = source.textureMatrixWorldInverse.clone();
+      this.skew = source.skew;
+      this.maskPath = source.maskPath;
+      this.mask = source.mask;
+      return this;
+    }
+  }]);
   return OrientedImageCamera;
-})(THREE.PerspectiveCamera);
+}(THREE.PerspectiveCamera);
 
 var _default = OrientedImageCamera;
-exports['default'] = _default;
+exports["default"] = _default;

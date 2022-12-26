@@ -1,90 +1,21 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if (
-      Array.isArray(o) ||
-      (it = _unsupportedIterableToArray(o)) ||
-      (allowArrayLike && o && typeof o.length === 'number')
-    ) {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          if (i >= o.length) return { done: true };
-          return { done: false, value: o[i++] };
-        },
-        e: function e(_e) {
-          throw _e;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
-    );
-  }
-  var normalCompletion = true,
-    didErr = false,
-    err;
-  return {
-    s: function s() {
-      it = o[Symbol.iterator]();
-    },
-    n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
-    },
-    f: function f() {
-      try {
-        if (!normalCompletion && it['return'] != null) it['return']();
-      } finally {
-        if (didErr) throw err;
-      }
-    },
-  };
-}
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === 'Object' && o.constructor) n = o.constructor.name;
-  if (n === 'Map' || n === 'Set') return Array.from(o);
-  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
-}
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 /**
  * @classdesc
@@ -101,14 +32,14 @@ function _arrayLikeToArray(arr, len) {
  * the instance in this class. Goal: Ease the retrieval of the properties of an
  * instance.
  */
-var C3DTBatchTableHierarchyExtension = /*#__PURE__*/ (function () {
+var C3DTBatchTableHierarchyExtension = /*#__PURE__*/function () {
   /**
    * Constructor of the C3DTBatchTableHierarchyExtension class.
    * @param {Object} json - The parsed json of the batch table part of the 3D
    * Tiles [Batch Table Hierarchy Extension](https://github.com/AnalyticalGraphicsInc/3d-tiles/tree/master/extensions/3DTILES_batch_table_hierarchy)
    */
   function C3DTBatchTableHierarchyExtension(json) {
-    (0, _classCallCheck2['default'])(this, C3DTBatchTableHierarchyExtension);
+    (0, _classCallCheck2["default"])(this, C3DTBatchTableHierarchyExtension);
     this.classes = json.classes;
     this.inverseHierarchy = {};
     this.instancesIdxs = []; // Counts the number of instances of a class
@@ -123,6 +54,7 @@ var C3DTBatchTableHierarchyExtension = /*#__PURE__*/ (function () {
       parentCounts = new Array(json.instancesLength);
       parentCounts.fill(1);
     } // for each instance
+
 
     for (var i = 0; i < json.instancesLength; i++) {
       // for each parent of the current instance
@@ -147,7 +79,7 @@ var C3DTBatchTableHierarchyExtension = /*#__PURE__*/ (function () {
 
       this.instancesIdxs[i] = {
         classId: classId,
-        instanceIdx: classCounter[classId],
+        instanceIdx: classCounter[classId]
       };
       classCounter[classId]++;
     }
@@ -160,51 +92,49 @@ var C3DTBatchTableHierarchyExtension = /*#__PURE__*/ (function () {
    * extension, for the feature with id=featureId and for its parents
    */
 
-  (0, _createClass2['default'])(C3DTBatchTableHierarchyExtension, [
-    {
-      key: 'getInfoById',
-      value: function getInfoById(featureId) {
-        var instanceProperties = {}; // get feature class name
 
-        var instanceClassId = this.instancesIdxs[featureId].classId;
-        var featureClass = this.classes[instanceClassId].name; // get feature properties and values
+  (0, _createClass2["default"])(C3DTBatchTableHierarchyExtension, [{
+    key: "getInfoById",
+    value: function getInfoById(featureId) {
+      var instanceProperties = {}; // get feature class name
 
-        var instanceIdx = this.instancesIdxs[featureId].instanceIdx;
-        var instances = this.classes[instanceClassId].instances;
+      var instanceClassId = this.instancesIdxs[featureId].classId;
+      var featureClass = this.classes[instanceClassId].name; // get feature properties and values
 
-        for (var key in instances) {
-          if (Object.prototype.hasOwnProperty.call(instances, key)) {
-            instanceProperties[key] = instances[key][instanceIdx];
-          }
-        } // create return object: className: {featureProperties and values}
+      var instanceIdx = this.instancesIdxs[featureId].instanceIdx;
+      var instances = this.classes[instanceClassId].instances;
 
-        var pickingInfo = {};
-        pickingInfo[featureClass] = instanceProperties; // If this feature has parent(s), recurse on them
+      for (var key in instances) {
+        if (Object.prototype.hasOwnProperty.call(instances, key)) {
+          instanceProperties[key] = instances[key][instanceIdx];
+        }
+      } // create return object: className: {featureProperties and values}
 
-        if (this.inverseHierarchy && this.inverseHierarchy[featureId]) {
-          var _iterator = _createForOfIteratorHelper(
-              this.inverseHierarchy[featureId],
-            ),
+
+      var pickingInfo = {};
+      pickingInfo[featureClass] = instanceProperties; // If this feature has parent(s), recurse on them
+
+      if (this.inverseHierarchy && this.inverseHierarchy[featureId]) {
+        var _iterator = _createForOfIteratorHelper(this.inverseHierarchy[featureId]),
             _step;
 
-          try {
-            for (_iterator.s(); !(_step = _iterator.n()).done; ) {
-              var parentID = _step.value;
-              Object.assign(pickingInfo, this.getInfoById(parentID));
-            }
-          } catch (err) {
-            _iterator.e(err);
-          } finally {
-            _iterator.f();
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var parentID = _step.value;
+            Object.assign(pickingInfo, this.getInfoById(parentID));
           }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
         }
+      }
 
-        return pickingInfo;
-      },
-    },
-  ]);
+      return pickingInfo;
+    }
+  }]);
   return C3DTBatchTableHierarchyExtension;
-})();
+}();
 
 var _default = C3DTBatchTableHierarchyExtension;
-exports['default'] = _default;
+exports["default"] = _default;

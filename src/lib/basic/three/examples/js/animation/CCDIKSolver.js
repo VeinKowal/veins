@@ -1,4 +1,27 @@
-/**
+( function () {
+
+	const _q = new THREE.Quaternion();
+
+	const _targetPos = new THREE.Vector3();
+
+	const _targetVec = new THREE.Vector3();
+
+	const _effectorPos = new THREE.Vector3();
+
+	const _effectorVec = new THREE.Vector3();
+
+	const _linkPos = new THREE.Vector3();
+
+	const _invLinkQ = new THREE.Quaternion();
+
+	const _linkScale = new THREE.Vector3();
+
+	const _axis = new THREE.Vector3();
+
+	const _vector = new THREE.Vector3();
+
+	const _matrix = new THREE.Matrix4();
+	/**
  * CCD Algorithm
  *  - https://sites.google.com/site/auraliusproject/ccd-algorithm
  *
@@ -18,399 +41,393 @@
  * } ];
  */
 
-THREE.CCDIKSolver = (function () {
-  /**
+
+	class CCDIKSolver {
+
+		/**
    * @param {THREE.SkinnedMesh} mesh
    * @param {Array<Object>} iks
    */
-  function CCDIKSolver(mesh, iks) {
-    this.mesh = mesh;
-    this.iks = iks || [];
+		constructor( mesh, iks = [] ) {
 
-    this._valid();
-  }
+			this.mesh = mesh;
+			this.iks = iks;
 
-  CCDIKSolver.prototype = {
-    constructor: CCDIKSolver,
+			this._valid();
 
-    /**
-     * Update all IK bones.
-     *
-     * @return {CCDIKSolver}
-     */
-    update: function () {
-      var iks = this.iks;
-
-      for (var i = 0, il = iks.length; i < il; i++) {
-        this.updateOne(iks[i]);
-      }
-
-      return this;
-    },
-
-    /**
-     * Update one IK bone
-     *
-     * @param {Object} ik parameter
-     * @return {THREE.CCDIKSolver}
-     */
-    updateOne: (function () {
-      var q = new THREE.Quaternion();
-      var targetPos = new THREE.Vector3();
-      var targetVec = new THREE.Vector3();
-      var effectorPos = new THREE.Vector3();
-      var effectorVec = new THREE.Vector3();
-      var linkPos = new THREE.Vector3();
-      var invLinkQ = new THREE.Quaternion();
-      var linkScale = new THREE.Vector3();
-      var axis = new THREE.Vector3();
-      var vector = new THREE.Vector3();
-
-      return function update(ik) {
-        var bones = this.mesh.skeleton.bones;
-
-        // for reference overhead reduction in loop
-        var math = Math;
-
-        var effector = bones[ik.effector];
-        var target = bones[ik.target];
-
-        // don't use getWorldPosition() here for the performance
-        // because it calls updateMatrixWorld( true ) inside.
-        targetPos.setFromMatrixPosition(target.matrixWorld);
-
-        var links = ik.links;
-        var iteration = ik.iteration !== undefined ? ik.iteration : 1;
-
-        for (var i = 0; i < iteration; i++) {
-          var rotated = false;
-
-          for (var j = 0, jl = links.length; j < jl; j++) {
-            var link = bones[links[j].index];
-
-            // skip this link and following links.
-            // this skip is used for MMD performance optimization.
-            if (links[j].enabled === false) break;
-
-            var limitation = links[j].limitation;
-            var rotationMin = links[j].rotationMin;
-            var rotationMax = links[j].rotationMax;
-
-            // don't use getWorldPosition/Quaternion() here for the performance
-            // because they call updateMatrixWorld( true ) inside.
-            link.matrixWorld.decompose(linkPos, invLinkQ, linkScale);
-            invLinkQ.invert();
-            effectorPos.setFromMatrixPosition(effector.matrixWorld);
-
-            // work in link world
-            effectorVec.subVectors(effectorPos, linkPos);
-            effectorVec.applyQuaternion(invLinkQ);
-            effectorVec.normalize();
-
-            targetVec.subVectors(targetPos, linkPos);
-            targetVec.applyQuaternion(invLinkQ);
-            targetVec.normalize();
-
-            var angle = targetVec.dot(effectorVec);
-
-            if (angle > 1.0) {
-              angle = 1.0;
-            } else if (angle < -1.0) {
-              angle = -1.0;
-            }
-
-            angle = math.acos(angle);
-
-            // skip if changing angle is too small to prevent vibration of bone
-            // Refer to http://www20.atpages.jp/katwat/three.js_r58/examples/mytest37/mmd.three.js
-            if (angle < 1e-5) continue;
-
-            if (ik.minAngle !== undefined && angle < ik.minAngle) {
-              angle = ik.minAngle;
-            }
-
-            if (ik.maxAngle !== undefined && angle > ik.maxAngle) {
-              angle = ik.maxAngle;
-            }
-
-            axis.crossVectors(effectorVec, targetVec);
-            axis.normalize();
-
-            q.setFromAxisAngle(axis, angle);
-            link.quaternion.multiply(q);
-
-            // TODO: re-consider the limitation specification
-            if (limitation !== undefined) {
-              var c = link.quaternion.w;
-
-              if (c > 1.0) c = 1.0;
-
-              var c2 = math.sqrt(1 - c * c);
-              link.quaternion.set(
-                limitation.x * c2,
-                limitation.y * c2,
-                limitation.z * c2,
-                c,
-              );
-            }
-
-            if (rotationMin !== undefined) {
-              link.rotation.setFromVector3(
-                link.rotation.toVector3(vector).max(rotationMin),
-              );
-            }
-
-            if (rotationMax !== undefined) {
-              link.rotation.setFromVector3(
-                link.rotation.toVector3(vector).min(rotationMax),
-              );
-            }
-
-            link.updateMatrixWorld(true);
-
-            rotated = true;
-          }
-
-          if (!rotated) break;
-        }
-
-        return this;
-      };
-    })(),
-
-    /**
-     * Creates Helper
-     *
-     * @return {CCDIKHelper}
-     */
-    createHelper: function () {
-      return new CCDIKHelper(this.mesh, this.mesh.geometry.userData.MMD.iks);
-    },
-
-    // private methods
-
-    _valid: function () {
-      var iks = this.iks;
-      var bones = this.mesh.skeleton.bones;
-
-      for (var i = 0, il = iks.length; i < il; i++) {
-        var ik = iks[i];
-        var effector = bones[ik.effector];
-        var links = ik.links;
-        var link0, link1;
-
-        link0 = effector;
-
-        for (var j = 0, jl = links.length; j < jl; j++) {
-          link1 = bones[links[j].index];
-
-          if (link0.parent !== link1) {
-            console.warn(
-              'THREE.CCDIKSolver: bone ' +
-                link0.name +
-                ' is not the child of bone ' +
-                link1.name,
-            );
-          }
-
-          link0 = link1;
-        }
-      }
-    },
-  };
-
-  /**
-   * Visualize IK bones
+		}
+		/**
+   * Update all IK bones.
    *
-   * @param {SkinnedMesh} mesh
-   * @param {Array<Object>} iks
+   * @return {CCDIKSolver}
    */
-  function CCDIKHelper(mesh, iks) {
-    THREE.Object3D.call(this);
 
-    this.root = mesh;
-    this.iks = iks || [];
 
-    this.matrix.copy(mesh.matrixWorld);
-    this.matrixAutoUpdate = false;
+		update() {
 
-    this.sphereGeometry = new THREE.SphereGeometry(0.25, 16, 8);
+			const iks = this.iks;
 
-    this.targetSphereMaterial = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(0xff8888),
-      depthTest: false,
-      depthWrite: false,
-      transparent: true,
-    });
+			for ( let i = 0, il = iks.length; i < il; i ++ ) {
 
-    this.effectorSphereMaterial = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(0x88ff88),
-      depthTest: false,
-      depthWrite: false,
-      transparent: true,
-    });
+				this.updateOne( iks[ i ] );
 
-    this.linkSphereMaterial = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(0x8888ff),
-      depthTest: false,
-      depthWrite: false,
-      transparent: true,
-    });
+			}
 
-    this.lineMaterial = new THREE.LineBasicMaterial({
-      color: new THREE.Color(0xff0000),
-      depthTest: false,
-      depthWrite: false,
-      transparent: true,
-    });
+			return this;
 
-    this._init();
-  }
+		}
+		/**
+   * Update one IK bone
+   *
+   * @param {Object} ik parameter
+   * @return {CCDIKSolver}
+   */
 
-  CCDIKHelper.prototype = Object.assign(
-    Object.create(THREE.Object3D.prototype),
-    {
-      constructor: CCDIKHelper,
 
-      /**
-       * Updates IK bones visualization.
-       */
-      updateMatrixWorld: (function () {
-        var matrix = new THREE.Matrix4();
-        var vector = new THREE.Vector3();
+		updateOne( ik ) {
 
-        function getPosition(bone, matrixWorldInv) {
-          return vector
-            .setFromMatrixPosition(bone.matrixWorld)
-            .applyMatrix4(matrixWorldInv);
-        }
+			const bones = this.mesh.skeleton.bones; // for reference overhead reduction in loop
 
-        function setPositionOfBoneToAttributeArray(
-          array,
-          index,
-          bone,
-          matrixWorldInv,
-        ) {
-          var v = getPosition(bone, matrixWorldInv);
+			const math = Math;
+			const effector = bones[ ik.effector ];
+			const target = bones[ ik.target ]; // don't use getWorldPosition() here for the performance
+			// because it calls updateMatrixWorld( true ) inside.
 
-          array[index * 3 + 0] = v.x;
-          array[index * 3 + 1] = v.y;
-          array[index * 3 + 2] = v.z;
-        }
+			_targetPos.setFromMatrixPosition( target.matrixWorld );
 
-        return function updateMatrixWorld(force) {
-          var mesh = this.root;
+			const links = ik.links;
+			const iteration = ik.iteration !== undefined ? ik.iteration : 1;
 
-          if (this.visible) {
-            var offset = 0;
+			for ( let i = 0; i < iteration; i ++ ) {
 
-            var iks = this.iks;
-            var bones = mesh.skeleton.bones;
+				let rotated = false;
 
-            matrix.copy(mesh.matrixWorld).invert();
+				for ( let j = 0, jl = links.length; j < jl; j ++ ) {
 
-            for (var i = 0, il = iks.length; i < il; i++) {
-              var ik = iks[i];
+					const link = bones[ links[ j ].index ]; // skip this link and following links.
+					// this skip is used for MMD performance optimization.
 
-              var targetBone = bones[ik.target];
-              var effectorBone = bones[ik.effector];
+					if ( links[ j ].enabled === false ) break;
+					const limitation = links[ j ].limitation;
+					const rotationMin = links[ j ].rotationMin;
+					const rotationMax = links[ j ].rotationMax; // don't use getWorldPosition/Quaternion() here for the performance
+					// because they call updateMatrixWorld( true ) inside.
 
-              var targetMesh = this.children[offset++];
-              var effectorMesh = this.children[offset++];
+					link.matrixWorld.decompose( _linkPos, _invLinkQ, _linkScale );
 
-              targetMesh.position.copy(getPosition(targetBone, matrix));
-              effectorMesh.position.copy(getPosition(effectorBone, matrix));
+					_invLinkQ.invert();
 
-              for (var j = 0, jl = ik.links.length; j < jl; j++) {
-                var link = ik.links[j];
-                var linkBone = bones[link.index];
+					_effectorPos.setFromMatrixPosition( effector.matrixWorld ); // work in link world
 
-                var linkMesh = this.children[offset++];
 
-                linkMesh.position.copy(getPosition(linkBone, matrix));
-              }
+					_effectorVec.subVectors( _effectorPos, _linkPos );
 
-              var line = this.children[offset++];
-              var array = line.geometry.attributes.position.array;
+					_effectorVec.applyQuaternion( _invLinkQ );
 
-              setPositionOfBoneToAttributeArray(array, 0, targetBone, matrix);
-              setPositionOfBoneToAttributeArray(array, 1, effectorBone, matrix);
+					_effectorVec.normalize();
 
-              for (var j = 0, jl = ik.links.length; j < jl; j++) {
-                var link = ik.links[j];
-                var linkBone = bones[link.index];
-                setPositionOfBoneToAttributeArray(
-                  array,
-                  j + 2,
-                  linkBone,
-                  matrix,
-                );
-              }
+					_targetVec.subVectors( _targetPos, _linkPos );
 
-              line.geometry.attributes.position.needsUpdate = true;
-            }
-          }
+					_targetVec.applyQuaternion( _invLinkQ );
 
-          this.matrix.copy(mesh.matrixWorld);
+					_targetVec.normalize();
 
-          THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
-        };
-      })(),
+					let angle = _targetVec.dot( _effectorVec );
 
-      // private method
+					if ( angle > 1.0 ) {
 
-      _init: function () {
-        var scope = this;
-        var iks = this.iks;
+						angle = 1.0;
 
-        function createLineGeometry(ik) {
-          var geometry = new THREE.BufferGeometry();
-          var vertices = new Float32Array((2 + ik.links.length) * 3);
-          geometry.setAttribute(
-            'position',
-            new THREE.BufferAttribute(vertices, 3),
-          );
+					} else if ( angle < - 1.0 ) {
 
-          return geometry;
-        }
+						angle = - 1.0;
 
-        function createTargetMesh() {
-          return new THREE.Mesh(
-            scope.sphereGeometry,
-            scope.targetSphereMaterial,
-          );
-        }
+					}
 
-        function createEffectorMesh() {
-          return new THREE.Mesh(
-            scope.sphereGeometry,
-            scope.effectorSphereMaterial,
-          );
-        }
+					angle = math.acos( angle ); // skip if changing angle is too small to prevent vibration of bone
+					// Refer to http://www20.atpages.jp/katwat/three.js_r58/examples/mytest37/mmd.three.js
 
-        function createLinkMesh() {
-          return new THREE.Mesh(scope.sphereGeometry, scope.linkSphereMaterial);
-        }
+					if ( angle < 1e-5 ) continue;
 
-        function createLine(ik) {
-          return new THREE.Line(createLineGeometry(ik), scope.lineMaterial);
-        }
+					if ( ik.minAngle !== undefined && angle < ik.minAngle ) {
 
-        for (var i = 0, il = iks.length; i < il; i++) {
-          var ik = iks[i];
+						angle = ik.minAngle;
 
-          this.add(createTargetMesh());
-          this.add(createEffectorMesh());
+					}
 
-          for (var j = 0, jl = ik.links.length; j < jl; j++) {
-            this.add(createLinkMesh());
-          }
+					if ( ik.maxAngle !== undefined && angle > ik.maxAngle ) {
 
-          this.add(createLine(ik));
-        }
-      },
-    },
-  );
+						angle = ik.maxAngle;
 
-  return CCDIKSolver;
-})();
+					}
+
+					_axis.crossVectors( _effectorVec, _targetVec );
+
+					_axis.normalize();
+
+					_q.setFromAxisAngle( _axis, angle );
+
+					link.quaternion.multiply( _q ); // TODO: re-consider the limitation specification
+
+					if ( limitation !== undefined ) {
+
+						let c = link.quaternion.w;
+						if ( c > 1.0 ) c = 1.0;
+						const c2 = math.sqrt( 1 - c * c );
+						link.quaternion.set( limitation.x * c2, limitation.y * c2, limitation.z * c2, c );
+
+					}
+
+					if ( rotationMin !== undefined ) {
+
+						link.rotation.setFromVector3( link.rotation.toVector3( _vector ).max( rotationMin ) );
+
+					}
+
+					if ( rotationMax !== undefined ) {
+
+						link.rotation.setFromVector3( link.rotation.toVector3( _vector ).min( rotationMax ) );
+
+					}
+
+					link.updateMatrixWorld( true );
+					rotated = true;
+
+				}
+
+				if ( ! rotated ) break;
+
+			}
+
+			return this;
+
+		}
+		/**
+   * Creates Helper
+   *
+   * @return {CCDIKHelper}
+   */
+
+
+		createHelper() {
+
+			return new CCDIKHelper( this.mesh, this.mesh.geometry.userData.MMD.iks );
+
+		} // private methods
+
+
+		_valid() {
+
+			const iks = this.iks;
+			const bones = this.mesh.skeleton.bones;
+
+			for ( let i = 0, il = iks.length; i < il; i ++ ) {
+
+				const ik = iks[ i ];
+				const effector = bones[ ik.effector ];
+				const links = ik.links;
+				let link0, link1;
+				link0 = effector;
+
+				for ( let j = 0, jl = links.length; j < jl; j ++ ) {
+
+					link1 = bones[ links[ j ].index ];
+
+					if ( link0.parent !== link1 ) {
+
+						console.warn( 'THREE.CCDIKSolver: bone ' + link0.name + ' is not the child of bone ' + link1.name );
+
+					}
+
+					link0 = link1;
+
+				}
+
+			}
+
+		}
+
+	}
+
+	function getPosition( bone, matrixWorldInv ) {
+
+		return _vector.setFromMatrixPosition( bone.matrixWorld ).applyMatrix4( matrixWorldInv );
+
+	}
+
+	function setPositionOfBoneToAttributeArray( array, index, bone, matrixWorldInv ) {
+
+		const v = getPosition( bone, matrixWorldInv );
+		array[ index * 3 + 0 ] = v.x;
+		array[ index * 3 + 1 ] = v.y;
+		array[ index * 3 + 2 ] = v.z;
+
+	}
+	/**
+ * Visualize IK bones
+ *
+ * @param {SkinnedMesh} mesh
+ * @param {Array<Object>} iks
+ */
+
+
+	class CCDIKHelper extends THREE.Object3D {
+
+		constructor( mesh, iks = [] ) {
+
+			super();
+			this.root = mesh;
+			this.iks = iks;
+			this.matrix.copy( mesh.matrixWorld );
+			this.matrixAutoUpdate = false;
+			this.sphereGeometry = new THREE.SphereGeometry( 0.25, 16, 8 );
+			this.targetSphereMaterial = new THREE.MeshBasicMaterial( {
+				color: new THREE.Color( 0xff8888 ),
+				depthTest: false,
+				depthWrite: false,
+				transparent: true
+			} );
+			this.effectorSphereMaterial = new THREE.MeshBasicMaterial( {
+				color: new THREE.Color( 0x88ff88 ),
+				depthTest: false,
+				depthWrite: false,
+				transparent: true
+			} );
+			this.linkSphereMaterial = new THREE.MeshBasicMaterial( {
+				color: new THREE.Color( 0x8888ff ),
+				depthTest: false,
+				depthWrite: false,
+				transparent: true
+			} );
+			this.lineMaterial = new THREE.LineBasicMaterial( {
+				color: new THREE.Color( 0xff0000 ),
+				depthTest: false,
+				depthWrite: false,
+				transparent: true
+			} );
+
+			this._init();
+
+		}
+		/**
+   * Updates IK bones visualization.
+   */
+
+
+		updateMatrixWorld( force ) {
+
+			const mesh = this.root;
+
+			if ( this.visible ) {
+
+				let offset = 0;
+				const iks = this.iks;
+				const bones = mesh.skeleton.bones;
+
+				_matrix.copy( mesh.matrixWorld ).invert();
+
+				for ( let i = 0, il = iks.length; i < il; i ++ ) {
+
+					const ik = iks[ i ];
+					const targetBone = bones[ ik.target ];
+					const effectorBone = bones[ ik.effector ];
+					const targetMesh = this.children[ offset ++ ];
+					const effectorMesh = this.children[ offset ++ ];
+					targetMesh.position.copy( getPosition( targetBone, _matrix ) );
+					effectorMesh.position.copy( getPosition( effectorBone, _matrix ) );
+
+					for ( let j = 0, jl = ik.links.length; j < jl; j ++ ) {
+
+						const link = ik.links[ j ];
+						const linkBone = bones[ link.index ];
+						const linkMesh = this.children[ offset ++ ];
+						linkMesh.position.copy( getPosition( linkBone, _matrix ) );
+
+					}
+
+					const line = this.children[ offset ++ ];
+					const array = line.geometry.attributes.position.array;
+					setPositionOfBoneToAttributeArray( array, 0, targetBone, _matrix );
+					setPositionOfBoneToAttributeArray( array, 1, effectorBone, _matrix );
+
+					for ( let j = 0, jl = ik.links.length; j < jl; j ++ ) {
+
+						const link = ik.links[ j ];
+						const linkBone = bones[ link.index ];
+						setPositionOfBoneToAttributeArray( array, j + 2, linkBone, _matrix );
+
+					}
+
+					line.geometry.attributes.position.needsUpdate = true;
+
+				}
+
+			}
+
+			this.matrix.copy( mesh.matrixWorld );
+			super.updateMatrixWorld( force );
+
+		} // private method
+
+
+		_init() {
+
+			const scope = this;
+			const iks = this.iks;
+
+			function createLineGeometry( ik ) {
+
+				const geometry = new THREE.BufferGeometry();
+				const vertices = new Float32Array( ( 2 + ik.links.length ) * 3 );
+				geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				return geometry;
+
+			}
+
+			function createTargetMesh() {
+
+				return new THREE.Mesh( scope.sphereGeometry, scope.targetSphereMaterial );
+
+			}
+
+			function createEffectorMesh() {
+
+				return new THREE.Mesh( scope.sphereGeometry, scope.effectorSphereMaterial );
+
+			}
+
+			function createLinkMesh() {
+
+				return new THREE.Mesh( scope.sphereGeometry, scope.linkSphereMaterial );
+
+			}
+
+			function createLine( ik ) {
+
+				return new THREE.Line( createLineGeometry( ik ), scope.lineMaterial );
+
+			}
+
+			for ( let i = 0, il = iks.length; i < il; i ++ ) {
+
+				const ik = iks[ i ];
+				this.add( createTargetMesh() );
+				this.add( createEffectorMesh() );
+
+				for ( let j = 0, jl = ik.links.length; j < jl; j ++ ) {
+
+					this.add( createLinkMesh() );
+
+				}
+
+				this.add( createLine( ik ) );
+
+			}
+
+		}
+
+	}
+
+	THREE.CCDIKSolver = CCDIKSolver;
+
+} )();

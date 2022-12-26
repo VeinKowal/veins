@@ -1,135 +1,144 @@
 import {
-  CubeTexture,
-  DataTexture,
-  FileLoader,
-  FloatType,
-  HalfFloatType,
-  LinearEncoding,
-  LinearFilter,
-  Loader,
-  NearestFilter,
-  RGBAFormat,
-  RGBEEncoding,
-  RGBFormat,
-  UnsignedByteType,
-} from '../../../build/three.module.js';
+	CubeTexture,
+	DataTexture,
+	FileLoader,
+	FloatType,
+	HalfFloatType,
+	LinearEncoding,
+	LinearFilter,
+	Loader,
+	NearestFilter,
+	RGBAFormat,
+	RGBEEncoding,
+	RGBFormat,
+	UnsignedByteType
+} from 'three';
 import { RGBELoader } from '../loaders/RGBELoader.js';
 
-var HDRCubeTextureLoader = function (manager) {
-  Loader.call(this, manager);
+class HDRCubeTextureLoader extends Loader {
 
-  this.hdrLoader = new RGBELoader();
-  this.type = UnsignedByteType;
-};
+	constructor( manager ) {
 
-HDRCubeTextureLoader.prototype = Object.assign(
-  Object.create(Loader.prototype),
-  {
-    constructor: HDRCubeTextureLoader,
+		super( manager );
 
-    load: function (urls, onLoad, onProgress, onError) {
-      if (!Array.isArray(urls)) {
-        console.warn(
-          'THREE.HDRCubeTextureLoader signature has changed. Use .setDataType() instead.',
-        );
+		this.hdrLoader = new RGBELoader();
+		this.type = UnsignedByteType;
 
-        this.setDataType(urls);
+	}
 
-        urls = onLoad;
-        onLoad = onProgress;
-        onProgress = onError;
-        onError = arguments[4];
-      }
+	load( urls, onLoad, onProgress, onError ) {
 
-      var texture = new CubeTexture();
+		if ( ! Array.isArray( urls ) ) {
 
-      texture.type = this.type;
+			console.warn( 'THREE.HDRCubeTextureLoader signature has changed. Use .setDataType() instead.' );
 
-      switch (texture.type) {
-        case UnsignedByteType:
-          texture.encoding = RGBEEncoding;
-          texture.format = RGBAFormat;
-          texture.minFilter = NearestFilter;
-          texture.magFilter = NearestFilter;
-          texture.generateMipmaps = false;
-          break;
+			this.setDataType( urls );
 
-        case FloatType:
-          texture.encoding = LinearEncoding;
-          texture.format = RGBFormat;
-          texture.minFilter = LinearFilter;
-          texture.magFilter = LinearFilter;
-          texture.generateMipmaps = false;
-          break;
+			urls = onLoad;
+			onLoad = onProgress;
+			onProgress = onError;
+			onError = arguments[ 4 ];
 
-        case HalfFloatType:
-          texture.encoding = LinearEncoding;
-          texture.format = RGBFormat;
-          texture.minFilter = LinearFilter;
-          texture.magFilter = LinearFilter;
-          texture.generateMipmaps = false;
-          break;
-      }
+		}
 
-      var scope = this;
+		const texture = new CubeTexture();
 
-      var loaded = 0;
+		texture.type = this.type;
 
-      function loadHDRData(i, onLoad, onProgress, onError) {
-        new FileLoader(scope.manager)
-          .setPath(scope.path)
-          .setResponseType('arraybuffer')
-          .setWithCredentials(scope.withCredentials)
-          .load(
-            urls[i],
-            function (buffer) {
-              loaded++;
+		switch ( texture.type ) {
 
-              var texData = scope.hdrLoader.parse(buffer);
+			case UnsignedByteType:
 
-              if (!texData) return;
+				texture.encoding = RGBEEncoding;
+				texture.format = RGBAFormat;
+				texture.minFilter = NearestFilter;
+				texture.magFilter = NearestFilter;
+				texture.generateMipmaps = false;
+				break;
 
-              if (texData.data !== undefined) {
-                var dataTexture = new DataTexture(
-                  texData.data,
-                  texData.width,
-                  texData.height,
-                );
+			case FloatType:
 
-                dataTexture.type = texture.type;
-                dataTexture.encoding = texture.encoding;
-                dataTexture.format = texture.format;
-                dataTexture.minFilter = texture.minFilter;
-                dataTexture.magFilter = texture.magFilter;
-                dataTexture.generateMipmaps = texture.generateMipmaps;
+				texture.encoding = LinearEncoding;
+				texture.format = RGBFormat;
+				texture.minFilter = LinearFilter;
+				texture.magFilter = LinearFilter;
+				texture.generateMipmaps = false;
+				break;
 
-                texture.images[i] = dataTexture;
-              }
+			case HalfFloatType:
 
-              if (loaded === 6) {
-                texture.needsUpdate = true;
-                if (onLoad) onLoad(texture);
-              }
-            },
-            onProgress,
-            onError,
-          );
-      }
+				texture.encoding = LinearEncoding;
+				texture.format = RGBFormat;
+				texture.minFilter = LinearFilter;
+				texture.magFilter = LinearFilter;
+				texture.generateMipmaps = false;
+				break;
 
-      for (var i = 0; i < urls.length; i++) {
-        loadHDRData(i, onLoad, onProgress, onError);
-      }
+		}
 
-      return texture;
-    },
+		const scope = this;
 
-    setDataType: function (value) {
-      this.type = value;
-      this.hdrLoader.setDataType(value);
+		let loaded = 0;
 
-      return this;
-    },
-  },
-);
+		function loadHDRData( i, onLoad, onProgress, onError ) {
+
+			new FileLoader( scope.manager )
+				.setPath( scope.path )
+				.setResponseType( 'arraybuffer' )
+				.setWithCredentials( scope.withCredentials )
+				.load( urls[ i ], function ( buffer ) {
+
+					loaded ++;
+
+					const texData = scope.hdrLoader.parse( buffer );
+
+					if ( ! texData ) return;
+
+					if ( texData.data !== undefined ) {
+
+						const dataTexture = new DataTexture( texData.data, texData.width, texData.height );
+
+						dataTexture.type = texture.type;
+						dataTexture.encoding = texture.encoding;
+						dataTexture.format = texture.format;
+						dataTexture.minFilter = texture.minFilter;
+						dataTexture.magFilter = texture.magFilter;
+						dataTexture.generateMipmaps = texture.generateMipmaps;
+
+						texture.images[ i ] = dataTexture;
+
+					}
+
+					if ( loaded === 6 ) {
+
+						texture.needsUpdate = true;
+						if ( onLoad ) onLoad( texture );
+
+					}
+
+				}, onProgress, onError );
+
+		}
+
+		for ( let i = 0; i < urls.length; i ++ ) {
+
+			loadHDRData( i, onLoad, onProgress, onError );
+
+		}
+
+		return texture;
+
+	}
+
+	setDataType( value ) {
+
+		this.type = value;
+		this.hdrLoader.setDataType( value );
+
+		return this;
+
+	}
+
+}
 
 export { HDRCubeTextureLoader };

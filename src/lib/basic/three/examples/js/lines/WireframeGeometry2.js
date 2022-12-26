@@ -1,18 +1,19 @@
-THREE.WireframeGeometry2 = function (geometry) {
-  THREE.LineSegmentsGeometry.call(this);
+( function () {
 
-  this.type = 'WireframeGeometry2';
+	class WireframeGeometry2 extends THREE.LineSegmentsGeometry {
 
-  this.fromWireframeGeometry(new THREE.WireframeGeometry(geometry));
+		constructor( geometry ) {
 
-  // set colors, maybe
-};
+			super();
+			this.type = 'WireframeGeometry2';
+			this.fromWireframeGeometry( new THREE.WireframeGeometry( geometry ) ); // set colors, maybe
 
-THREE.WireframeGeometry2.prototype = Object.assign(
-  Object.create(THREE.LineSegmentsGeometry.prototype),
-  {
-    constructor: THREE.WireframeGeometry2,
+		}
 
-    isWireframeGeometry2: true,
-  },
-);
+	}
+
+	WireframeGeometry2.prototype.isWireframeGeometry2 = true;
+
+	THREE.WireframeGeometry2 = WireframeGeometry2;
+
+} )();

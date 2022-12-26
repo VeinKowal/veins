@@ -3,68 +3,71 @@
  */
 
 var ToneMapShader = {
-  uniforms: {
-    tDiffuse: { value: null },
-    averageLuminance: { value: 1.0 },
-    luminanceMap: { value: null },
-    maxLuminance: { value: 16.0 },
-    minLuminance: { value: 0.01 },
-    middleGrey: { value: 0.6 },
-  },
 
-  vertexShader: [
-    'varying vec2 vUv;',
+	uniforms: {
 
-    'void main() {',
+		'tDiffuse': { value: null },
+		'averageLuminance': { value: 1.0 },
+		'luminanceMap': { value: null },
+		'maxLuminance': { value: 16.0 },
+		'minLuminance': { value: 0.01 },
+		'middleGrey': { value: 0.6 }
+	},
 
-    '	vUv = uv;',
-    '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+	vertexShader: /* glsl */`
 
-    '}',
-  ].join('\n'),
+		varying vec2 vUv;
 
-  fragmentShader: [
-    '#include <common>',
+		void main() {
 
-    'uniform sampler2D tDiffuse;',
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    'varying vec2 vUv;',
+		}`,
 
-    'uniform float middleGrey;',
-    'uniform float minLuminance;',
-    'uniform float maxLuminance;',
-    '#ifdef ADAPTED_LUMINANCE',
-    '	uniform sampler2D luminanceMap;',
-    '#else',
-    '	uniform float averageLuminance;',
-    '#endif',
+	fragmentShader: /* glsl */`
 
-    'vec3 ToneMap( vec3 vColor ) {',
-    '	#ifdef ADAPTED_LUMINANCE',
-    // Get the calculated average luminance
-    '		float fLumAvg = texture2D(luminanceMap, vec2(0.5, 0.5)).r;',
-    '	#else',
-    '		float fLumAvg = averageLuminance;',
-    '	#endif',
+		#include <common>
 
-    // Calculate the luminance of the current pixel
-    '	float fLumPixel = linearToRelativeLuminance( vColor );',
+		uniform sampler2D tDiffuse;
 
-    // Apply the modified operator (Eq. 4)
-    '	float fLumScaled = (fLumPixel * middleGrey) / max( minLuminance, fLumAvg );',
+		varying vec2 vUv;
 
-    '	float fLumCompressed = (fLumScaled * (1.0 + (fLumScaled / (maxLuminance * maxLuminance)))) / (1.0 + fLumScaled);',
-    '	return fLumCompressed * vColor;',
-    '}',
+		uniform float middleGrey;
+		uniform float minLuminance;
+		uniform float maxLuminance;
+		#ifdef ADAPTED_LUMINANCE
+			uniform sampler2D luminanceMap;
+		#else
+			uniform float averageLuminance;
+		#endif
 
-    'void main() {',
+		vec3 ToneMap( vec3 vColor ) {
+			#ifdef ADAPTED_LUMINANCE
+				// Get the calculated average luminance
+				float fLumAvg = texture2D(luminanceMap, vec2(0.5, 0.5)).r;
+			#else
+				float fLumAvg = averageLuminance;
+			#endif
 
-    '	vec4 texel = texture2D( tDiffuse, vUv );',
+			// Calculate the luminance of the current pixel
+			float fLumPixel = linearToRelativeLuminance( vColor );
 
-    '	gl_FragColor = vec4( ToneMap( texel.xyz ), texel.w );',
+			// Apply the modified operator (Eq. 4)
+			float fLumScaled = (fLumPixel * middleGrey) / max( minLuminance, fLumAvg );
 
-    '}',
-  ].join('\n'),
+			float fLumCompressed = (fLumScaled * (1.0 + (fLumScaled / (maxLuminance * maxLuminance)))) / (1.0 + fLumScaled);
+			return fLumCompressed * vColor;
+		}
+
+		void main() {
+
+			vec4 texel = texture2D( tDiffuse, vUv );
+
+			gl_FragColor = vec4( ToneMap( texel.xyz ), texel.w );
+
+		}`
+
 };
 
 export { ToneMapShader };

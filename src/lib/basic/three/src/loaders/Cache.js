@@ -1,31 +1,42 @@
 const Cache = {
-  enabled: false,
 
-  files: {},
+	enabled: false,
 
-  add: function (key, file) {
-    if (this.enabled === false) return;
+	files: {},
 
-    // console.log( 'THREE.Cache', 'Adding key:', key );
+	add: function ( key, file ) {
 
-    this.files[key] = file;
-  },
+		if ( this.enabled === false ) return;
 
-  get: function (key) {
-    if (this.enabled === false) return;
+		// console.log( 'THREE.Cache', 'Adding key:', key );
 
-    // console.log( 'THREE.Cache', 'Checking key:', key );
+		this.files[ key ] = file;
 
-    return this.files[key];
-  },
+	},
 
-  remove: function (key) {
-    delete this.files[key];
-  },
+	get: function ( key ) {
 
-  clear: function () {
-    this.files = {};
-  },
+		if ( this.enabled === false ) return;
+
+		// console.log( 'THREE.Cache', 'Checking key:', key );
+
+		return this.files[ key ];
+
+	},
+
+	remove: function ( key ) {
+
+		delete this.files[ key ];
+
+	},
+
+	clear: function () {
+
+		this.files = {};
+
+	}
+
 };
+
 
 export { Cache };

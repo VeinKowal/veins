@@ -20,53 +20,57 @@ import { BasicDepthPacking } from '../constants.js';
  */
 
 class MeshDepthMaterial extends Material {
-  constructor(parameters) {
-    super();
 
-    this.type = 'MeshDepthMaterial';
+	constructor( parameters ) {
 
-    this.depthPacking = BasicDepthPacking;
+		super();
 
-    this.skinning = false;
-    this.morphTargets = false;
+		this.type = 'MeshDepthMaterial';
 
-    this.map = null;
+		this.depthPacking = BasicDepthPacking;
 
-    this.alphaMap = null;
+		this.morphTargets = false;
 
-    this.displacementMap = null;
-    this.displacementScale = 1;
-    this.displacementBias = 0;
+		this.map = null;
 
-    this.wireframe = false;
-    this.wireframeLinewidth = 1;
+		this.alphaMap = null;
 
-    this.fog = false;
+		this.displacementMap = null;
+		this.displacementScale = 1;
+		this.displacementBias = 0;
 
-    this.setValues(parameters);
-  }
+		this.wireframe = false;
+		this.wireframeLinewidth = 1;
 
-  copy(source) {
-    super.copy(source);
+		this.fog = false;
 
-    this.depthPacking = source.depthPacking;
+		this.setValues( parameters );
 
-    this.skinning = source.skinning;
-    this.morphTargets = source.morphTargets;
+	}
 
-    this.map = source.map;
+	copy( source ) {
 
-    this.alphaMap = source.alphaMap;
+		super.copy( source );
 
-    this.displacementMap = source.displacementMap;
-    this.displacementScale = source.displacementScale;
-    this.displacementBias = source.displacementBias;
+		this.depthPacking = source.depthPacking;
 
-    this.wireframe = source.wireframe;
-    this.wireframeLinewidth = source.wireframeLinewidth;
+		this.morphTargets = source.morphTargets;
 
-    return this;
-  }
+		this.map = source.map;
+
+		this.alphaMap = source.alphaMap;
+
+		this.displacementMap = source.displacementMap;
+		this.displacementScale = source.displacementScale;
+		this.displacementBias = source.displacementBias;
+
+		this.wireframe = source.wireframe;
+		this.wireframeLinewidth = source.wireframeLinewidth;
+
+		return this;
+
+	}
+
 }
 
 MeshDepthMaterial.prototype.isMeshDepthMaterial = true;

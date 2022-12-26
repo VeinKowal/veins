@@ -6,12 +6,12 @@ var ThreeLoader = {};
 
 // Utility method to use Promise.
 function defer() {
-  var deferredPromise = {};
-  deferredPromise.promise = new Promise(function _(resolve, reject) {
-    deferredPromise.resolve = resolve;
-    deferredPromise.reject = reject;
-  });
-  return deferredPromise;
+    var deferredPromise = {};
+    deferredPromise.promise = new Promise(function _(resolve, reject) {
+        deferredPromise.resolve = resolve;
+        deferredPromise.reject = reject;
+    });
+    return deferredPromise;
 }
 
 /**
@@ -20,15 +20,15 @@ function defer() {
  * @returns {Promise} A promise resolved when the script is loaded.
  */
 function loadScriptAsync(uri) {
-  var deferredPromise = defer();
-  var tag = document.createElement('script');
-  tag.async = true;
-  tag.onload = function r() {
-    deferredPromise.resolve();
-  };
-  tag.src = uri;
-  document.body.append(tag);
-  return deferredPromise.promise;
+    var deferredPromise = defer();
+    var tag = document.createElement('script');
+    tag.async = true;
+    tag.onload = function r() {
+        deferredPromise.resolve();
+    };
+    tag.src = uri;
+    document.body.append(tag);
+    return deferredPromise.promise;
 }
 
 /**
@@ -38,23 +38,16 @@ function loadScriptAsync(uri) {
  * @returns {Promise} A promise with the ThreeJS Loader
  */
 ThreeLoader.getThreeJsLoader = function getThreeJsLoader(format) {
-  var deferredPromise = defer();
-  // eslint-disable-next-line no-undef
-  THREE = itowns.THREE;
-  loadScriptAsync(
-    'https://cdn.rawgit.com/mrdoob/three.js/r' +
-      itowns.THREE.REVISION +
-      '/examples/js/loaders/' +
-      format +
-      'Loader.js',
-  )
-    .then(function createLoader() {
-      deferredPromise.resolve(new itowns.THREE[format + 'Loader'](manager));
-    })
-    .catch(function error(e) {
-      console.error('Error creating', format, 'loader : ', e);
-    });
-  return deferredPromise.promise;
+    var deferredPromise = defer();
+    // eslint-disable-next-line no-undef
+    THREE = itowns.THREE;
+    loadScriptAsync('https://cdn.rawgit.com/mrdoob/three.js/r' + itowns.THREE.REVISION + '/examples/js/loaders/' + format + 'Loader.js')
+        .then(function createLoader() {
+            deferredPromise.resolve(new itowns.THREE[format + 'Loader'](manager));
+        }).catch(function error(e) {
+            console.error('Error creating', format, 'loader : ', e);
+        });
+    return deferredPromise.promise;
 };
 
 /**
@@ -64,14 +57,9 @@ ThreeLoader.getThreeJsLoader = function getThreeJsLoader(format) {
  * @returns {Promise} A promise resolved when the ressource is loaded.
  */
 ThreeLoader.useThreeJsLoader = function useThreeJsLoader(loader, url) {
-  var deferredPromise = defer();
-  loader.load(
-    url,
-    deferredPromise.resolve,
-    function _() {},
-    deferredPromise.reject,
-  );
-  return deferredPromise.promise;
+    var deferredPromise = defer();
+    loader.load(url, deferredPromise.resolve, function _() {}, deferredPromise.reject);
+    return deferredPromise.promise;
 };
 
 /**
@@ -83,7 +71,7 @@ ThreeLoader.useThreeJsLoader = function useThreeJsLoader(loader, url) {
  */
 // eslint-disable-next-line no-unused-vars
 ThreeLoader.load = function load(format, url) {
-  return ThreeLoader.getThreeJsLoader(format).then(function _(loader) {
-    return ThreeLoader.useThreeJsLoader(loader, url);
-  });
+    return ThreeLoader.getThreeJsLoader(format).then(function _(loader) {
+        return ThreeLoader.useThreeJsLoader(loader, url);
+    });
 };

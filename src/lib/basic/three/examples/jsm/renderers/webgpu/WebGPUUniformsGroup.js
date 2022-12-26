@@ -2,258 +2,298 @@ import WebGPUBinding from './WebGPUBinding.js';
 import { GPUBindingType } from './constants.js';
 
 class WebGPUUniformsGroup extends WebGPUBinding {
-  constructor(name) {
-    super(name);
 
-    // the order of uniforms in this array must match the order of uniforms in the shader
+	constructor( name ) {
 
-    this.uniforms = [];
+		super( name );
 
-    this.onBeforeUpdate = function () {};
+		 // the order of uniforms in this array must match the order of uniforms in the shader
 
-    this.bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
-    this.type = GPUBindingType.UniformBuffer;
-    this.visibility = GPUShaderStage.VERTEX;
+		this.uniforms = [];
 
-    this.usage = GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST;
+		this.onBeforeUpdate = function () {};
 
-    this.array = null; // set by the renderer
-    this.bufferGPU = null; // set by the renderer
-  }
+		this.bytesPerElement = Float32Array.BYTES_PER_ELEMENT;
+		this.type = GPUBindingType.UniformBuffer;
+		this.visibility = GPUShaderStage.VERTEX;
 
-  addUniform(uniform) {
-    this.uniforms.push(uniform);
+		this.usage = GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST;
 
-    return this;
-  }
+		this.array = null; // set by the renderer
+		this.bufferGPU = null; // set by the renderer
 
-  removeUniform(uniform) {
-    const index = this.uniforms.indexOf(uniform);
+	}
 
-    if (index !== -1) {
-      this.uniforms.splice(index, 1);
-    }
+	addUniform( uniform ) {
 
-    return this;
-  }
+		this.uniforms.push( uniform );
 
-  setOnBeforeUpdate(callback) {
-    this.onBeforeUpdate = callback;
+		return this;
 
-    return this;
-  }
+	}
 
-  getByteLength() {
-    let offset = 0; // global buffer offset in bytes
-    const chunkSize = 16; // size of a chunk in bytes (STD140 layout)
+	removeUniform( uniform ) {
 
-    for (let i = 0, l = this.uniforms.length; i < l; i++) {
-      const uniform = this.uniforms[i];
+		const index = this.uniforms.indexOf( uniform );
 
-      // offset within a single chunk in bytes
+		if ( index !== - 1 ) {
 
-      const chunkOffset = offset % chunkSize;
-      const remainingSizeInChunk = chunkSize - chunkOffset;
+			this.uniforms.splice( index, 1 );
 
-      // check for chunk overflow
+		}
 
-      if (chunkOffset !== 0 && remainingSizeInChunk - uniform.boundary < 0) {
-        // add padding and adjust offset
+		return this;
 
-        offset += chunkSize - chunkOffset;
-      }
+	}
 
-      uniform.offset = offset / this.bytesPerElement;
+	setOnBeforeUpdate( callback ) {
 
-      offset += uniform.itemSize * this.bytesPerElement;
-    }
+		this.onBeforeUpdate = callback;
 
-    return offset;
-  }
+		return this;
 
-  update() {
-    let updated = false;
+	}
 
-    for (const uniform of this.uniforms) {
-      if (this.updateByType(uniform) === true) {
-        updated = true;
-      }
-    }
+	getByteLength() {
 
-    return updated;
-  }
+		let offset = 0; // global buffer offset in bytes
+		const chunkSize = 16; // size of a chunk in bytes (STD140 layout)
 
-  updateByType(uniform) {
-    if (uniform.isFloatUniform) return this.updateNumber(uniform);
-    if (uniform.isVector2Uniform) return this.updateVector2(uniform);
-    if (uniform.isVector3Uniform) return this.updateVector3(uniform);
-    if (uniform.isVector4Uniform) return this.updateVector4(uniform);
-    if (uniform.isColorUniform) return this.updateColor(uniform);
-    if (uniform.isMatrix3Uniform) return this.updateMatrix3(uniform);
-    if (uniform.isMatrix4Uniform) return this.updateMatrix4(uniform);
+		for ( let i = 0, l = this.uniforms.length; i < l; i ++ ) {
 
-    console.error(
-      'THREE.WebGPUUniformsGroup: Unsupported uniform type.',
-      uniform,
-    );
-  }
+			const uniform = this.uniforms[ i ];
 
-  updateNumber(uniform) {
-    let updated = false;
+			// offset within a single chunk in bytes
 
-    const a = this.array;
-    const v = uniform.getValue();
-    const offset = uniform.offset;
+			const chunkOffset = offset % chunkSize;
+			const remainingSizeInChunk = chunkSize - chunkOffset;
 
-    if (a[offset] !== v) {
-      a[offset] = v;
-      updated = true;
-    }
+			// conformance tests
 
-    return updated;
-  }
+			if ( chunkOffset !== 0 && ( remainingSizeInChunk - uniform.boundary ) < 0 ) {
 
-  updateVector2(uniform) {
-    let updated = false;
+				// check for chunk overflow
 
-    const a = this.array;
-    const v = uniform.getValue();
-    const offset = uniform.offset;
+				offset += ( chunkSize - chunkOffset );
 
-    if (a[offset + 0] !== v.x || a[offset + 1] !== v.y) {
-      a[offset + 0] = v.x;
-      a[offset + 1] = v.y;
+			} else if ( chunkOffset % uniform.boundary !== 0 ) {
 
-      updated = true;
-    }
+				// check for correct alignment
 
-    return updated;
-  }
+				offset += ( chunkOffset % uniform.boundary );
 
-  updateVector3(uniform) {
-    let updated = false;
+			}
 
-    const a = this.array;
-    const v = uniform.getValue();
-    const offset = uniform.offset;
+			uniform.offset = ( offset / this.bytesPerElement );
 
-    if (
-      a[offset + 0] !== v.x ||
-      a[offset + 1] !== v.y ||
-      a[offset + 2] !== v.z
-    ) {
-      a[offset + 0] = v.x;
-      a[offset + 1] = v.y;
-      a[offset + 2] = v.z;
+			offset += ( uniform.itemSize * this.bytesPerElement );
 
-      updated = true;
-    }
+		}
 
-    return updated;
-  }
+		return offset;
 
-  updateVector4(uniform) {
-    let updated = false;
+	}
 
-    const a = this.array;
-    const v = uniform.getValue();
-    const offset = uniform.offset;
+	update() {
 
-    if (
-      a[offset + 0] !== v.x ||
-      a[offset + 1] !== v.y ||
-      a[offset + 2] !== v.z ||
-      a[offset + 4] !== v.w
-    ) {
-      a[offset + 0] = v.x;
-      a[offset + 1] = v.y;
-      a[offset + 2] = v.z;
-      a[offset + 3] = v.w;
+		let updated = false;
 
-      updated = true;
-    }
+		for ( const uniform of this.uniforms ) {
 
-    return updated;
-  }
+			if ( this.updateByType( uniform ) === true ) {
 
-  updateColor(uniform) {
-    let updated = false;
+				updated = true;
 
-    const a = this.array;
-    const c = uniform.getValue();
-    const offset = uniform.offset;
+			}
 
-    if (
-      a[offset + 0] !== c.r ||
-      a[offset + 1] !== c.g ||
-      a[offset + 2] !== c.b
-    ) {
-      a[offset + 0] = c.r;
-      a[offset + 1] = c.g;
-      a[offset + 2] = c.b;
+		}
 
-      updated = true;
-    }
+		return updated;
 
-    return updated;
-  }
+	}
 
-  updateMatrix3(uniform) {
-    let updated = false;
+	updateByType( uniform ) {
 
-    const a = this.array;
-    const e = uniform.getValue().elements;
-    const offset = uniform.offset;
+		if ( uniform.isFloatUniform ) return this.updateNumber( uniform );
+		if ( uniform.isVector2Uniform ) return this.updateVector2( uniform );
+		if ( uniform.isVector3Uniform ) return this.updateVector3( uniform );
+		if ( uniform.isVector4Uniform ) return this.updateVector4( uniform );
+		if ( uniform.isColorUniform ) return this.updateColor( uniform );
+		if ( uniform.isMatrix3Uniform ) return this.updateMatrix3( uniform );
+		if ( uniform.isMatrix4Uniform ) return this.updateMatrix4( uniform );
 
-    if (
-      a[offset + 0] !== e[0] ||
-      a[offset + 1] !== e[1] ||
-      a[offset + 2] !== e[2] ||
-      a[offset + 4] !== e[3] ||
-      a[offset + 5] !== e[4] ||
-      a[offset + 6] !== e[5] ||
-      a[offset + 8] !== e[6] ||
-      a[offset + 9] !== e[7] ||
-      a[offset + 10] !== e[8]
-    ) {
-      a[offset + 0] = e[0];
-      a[offset + 1] = e[1];
-      a[offset + 2] = e[2];
-      a[offset + 4] = e[3];
-      a[offset + 5] = e[4];
-      a[offset + 6] = e[5];
-      a[offset + 8] = e[6];
-      a[offset + 9] = e[7];
-      a[offset + 10] = e[8];
+		console.error( 'THREE.WebGPUUniformsGroup: Unsupported uniform type.', uniform );
 
-      updated = true;
-    }
+	}
 
-    return updated;
-  }
+	updateNumber( uniform ) {
 
-  updateMatrix4(uniform) {
-    let updated = false;
+		let updated = false;
 
-    const a = this.array;
-    const e = uniform.getValue().elements;
-    const offset = uniform.offset;
+		const a = this.array;
+		const v = uniform.getValue();
+		const offset = uniform.offset;
 
-    if (arraysEqual(a, e, offset) === false) {
-      a.set(e, offset);
-      updated = true;
-    }
+		if ( a[ offset ] !== v ) {
 
-    return updated;
-  }
+			a[ offset ] = v;
+			updated = true;
+
+		}
+
+		return updated;
+
+	}
+
+	updateVector2( uniform ) {
+
+		let updated = false;
+
+		const a = this.array;
+		const v = uniform.getValue();
+		const offset = uniform.offset;
+
+		if ( a[ offset + 0 ] !== v.x || a[ offset + 1 ] !== v.y ) {
+
+			a[ offset + 0 ] = v.x;
+			a[ offset + 1 ] = v.y;
+
+			updated = true;
+
+		}
+
+		return updated;
+
+	}
+
+	updateVector3( uniform ) {
+
+		let updated = false;
+
+		const a = this.array;
+		const v = uniform.getValue();
+		const offset = uniform.offset;
+
+		if ( a[ offset + 0 ] !== v.x || a[ offset + 1 ] !== v.y || a[ offset + 2 ] !== v.z ) {
+
+			a[ offset + 0 ] = v.x;
+			a[ offset + 1 ] = v.y;
+			a[ offset + 2 ] = v.z;
+
+			updated = true;
+
+		}
+
+		return updated;
+
+	}
+
+	updateVector4( uniform ) {
+
+		let updated = false;
+
+		const a = this.array;
+		const v = uniform.getValue();
+		const offset = uniform.offset;
+
+		if ( a[ offset + 0 ] !== v.x || a[ offset + 1 ] !== v.y || a[ offset + 2 ] !== v.z || a[ offset + 4 ] !== v.w ) {
+
+			a[ offset + 0 ] = v.x;
+			a[ offset + 1 ] = v.y;
+			a[ offset + 2 ] = v.z;
+			a[ offset + 3 ] = v.w;
+
+			updated = true;
+
+		}
+
+		return updated;
+
+	}
+
+	updateColor( uniform ) {
+
+		let updated = false;
+
+		const a = this.array;
+		const c = uniform.getValue();
+		const offset = uniform.offset;
+
+		if ( a[ offset + 0 ] !== c.r || a[ offset + 1 ] !== c.g || a[ offset + 2 ] !== c.b ) {
+
+			a[ offset + 0 ] = c.r;
+			a[ offset + 1 ] = c.g;
+			a[ offset + 2 ] = c.b;
+
+			updated = true;
+
+		}
+
+		return updated;
+
+	}
+
+	updateMatrix3( uniform ) {
+
+		let updated = false;
+
+		const a = this.array;
+		const e = uniform.getValue().elements;
+		const offset = uniform.offset;
+
+		if ( a[ offset + 0 ] !== e[ 0 ] || a[ offset + 1 ] !== e[ 1 ] || a[ offset + 2 ] !== e[ 2 ] ||
+			a[ offset + 4 ] !== e[ 3 ] || a[ offset + 5 ] !== e[ 4 ] || a[ offset + 6 ] !== e[ 5 ] ||
+			a[ offset + 8 ] !== e[ 6 ] || a[ offset + 9 ] !== e[ 7 ] || a[ offset + 10 ] !== e[ 8 ] ) {
+
+			a[ offset + 0 ] = e[ 0 ];
+			a[ offset + 1 ] = e[ 1 ];
+			a[ offset + 2 ] = e[ 2 ];
+			a[ offset + 4 ] = e[ 3 ];
+			a[ offset + 5 ] = e[ 4 ];
+			a[ offset + 6 ] = e[ 5 ];
+			a[ offset + 8 ] = e[ 6 ];
+			a[ offset + 9 ] = e[ 7 ];
+			a[ offset + 10 ] = e[ 8 ];
+
+			updated = true;
+
+		}
+
+		return updated;
+
+	}
+
+	updateMatrix4( uniform ) {
+
+		let updated = false;
+
+		const a = this.array;
+		const e = uniform.getValue().elements;
+		const offset = uniform.offset;
+
+		if ( arraysEqual( a, e, offset ) === false ) {
+
+			a.set( e, offset );
+			updated = true;
+
+		}
+
+		return updated;
+
+	}
+
 }
 
-function arraysEqual(a, b, offset) {
-  for (let i = 0, l = b.length; i < l; i++) {
-    if (a[offset + i] !== b[i]) return false;
-  }
+function arraysEqual( a, b, offset ) {
 
-  return true;
+	for ( let i = 0, l = b.length; i < l; i ++ ) {
+
+		if ( a[ offset + i ] !== b[ i ] ) return false;
+
+	}
+
+	return true;
+
 }
 
 WebGPUUniformsGroup.prototype.isUniformsGroup = true;

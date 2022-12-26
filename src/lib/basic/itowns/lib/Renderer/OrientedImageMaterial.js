@@ -1,103 +1,45 @@
-'use strict';
+"use strict";
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-var _Capabilities = _interopRequireDefault(
-  require('../Core/System/Capabilities'),
-);
+var _Capabilities = _interopRequireDefault(require("../Core/System/Capabilities"));
 
-var _ShaderUtils = _interopRequireDefault(require('./Shader/ShaderUtils'));
+var _ShaderUtils = _interopRequireDefault(require("./Shader/ShaderUtils"));
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 /* babel-plugin-inline-import './Shader/ProjectiveTextureVS.glsl' */
-var textureVS =
-  '#include <itowns/WebGL2_pars_vertex>\n#include <itowns/precision_qualifier>\n#include <itowns/project_pars_vertex>\n#include <itowns/projective_texturing_pars_vertex>\n#include <common>\n#include <logdepthbuf_pars_vertex>\n\nvarying vec3 vNormal;\nattribute vec3 normal;\n\nvoid main() {\n    #include <begin_vertex>\n    #include <project_vertex>\n    vNormal = normal;\n    #include <itowns/projective_texturing_vertex>\n    #include <logdepthbuf_vertex>\n}\n';
+var textureVS = "#include <itowns/WebGL2_pars_vertex>\n#include <itowns/precision_qualifier>\n#include <itowns/project_pars_vertex>\n#include <itowns/projective_texturing_pars_vertex>\n#include <common>\n#include <logdepthbuf_pars_vertex>\n\nvarying vec3 vNormal;\nattribute vec3 normal;\n\nvoid main() {\n    #include <begin_vertex>\n    #include <project_vertex>\n    vNormal = normal;\n    #include <itowns/projective_texturing_vertex>\n    #include <logdepthbuf_vertex>\n}\n";
 
 /* babel-plugin-inline-import './Shader/ProjectiveTextureFS.glsl' */
-var textureFS =
-  '#include <itowns/WebGL2_pars_fragment>\n#include <itowns/precision_qualifier>\n#include <logdepthbuf_pars_fragment>\n#include <itowns/projective_texturing_pars_fragment>\nvarying vec3 vNormal;\n\n#ifdef USE_BASE_MATERIAL\nstruct noPT {\n    vec3 lightDirection;\n    vec3 ambient;\n    float opacity;\n};\n\nuniform noPT noProjectiveMaterial;\n#endif\n\nvoid main(void)\n{\n    #include <logdepthbuf_fragment>\n    #ifdef USE_BASE_MATERIAL\n    float nDotVP = (max(0.1, dot(vNormal, normalize(noProjectiveMaterial.lightDirection))));\n    vec4 color = vec4(noProjectiveMaterial.ambient + nDotVP, 0.0);\n    #else\n    vec4 color = vec4(0.0);\n    #endif\n\n    #pragma unroll_loop\n    for (int i = 0; i < ORIENTED_IMAGES_COUNT; i++) {\n        color = projectiveTextureColor(projectiveTextureCoords[ ORIENTED_IMAGES_COUNT - 1 - i ], projectiveTextureDistortion[ ORIENTED_IMAGES_COUNT - 1 - i ], projectiveTexture[ ORIENTED_IMAGES_COUNT - 1 - i ], mask[ORIENTED_IMAGES_COUNT - 1 - i], color);\n    }\n\n    #ifdef USE_BASE_MATERIAL\n    color.a = color.a < 1.0 ? max(noProjectiveMaterial.opacity, color.a) : 1.0 ;\n    gl_FragColor = vec4(color.rgb, color.a * opacity);\n    #else\n    gl_FragColor = vec4(color.rgb / color.a, opacity);\n    #endif\n\n}\n';
-var ndcToTextureMatrix = new THREE.Matrix4().set(
-  1,
-  0,
-  0,
-  1,
-  0,
-  1,
-  0,
-  1,
-  0,
-  0,
-  2,
-  0,
-  0,
-  0,
-  0,
-  2,
-);
-var noMask = new THREE.DataTexture(
-  new Uint8Array([255, 255, 255]),
-  1,
-  1,
-  THREE.RGBFormat,
-  THREE.UnsignedByteType,
-);
+var textureFS = "#include <itowns/WebGL2_pars_fragment>\n#include <itowns/precision_qualifier>\n#include <logdepthbuf_pars_fragment>\n#include <itowns/projective_texturing_pars_fragment>\nvarying vec3 vNormal;\n\n#ifdef USE_BASE_MATERIAL\nstruct noPT {\n    vec3 lightDirection;\n    vec3 ambient;\n    float opacity;\n};\n\nuniform noPT noProjectiveMaterial;\n#endif\n\nvoid main(void)\n{\n    #include <logdepthbuf_fragment>\n    #ifdef USE_BASE_MATERIAL\n    float nDotVP = (max(0.1, dot(vNormal, normalize(noProjectiveMaterial.lightDirection))));\n    vec4 color = vec4(noProjectiveMaterial.ambient + nDotVP, 0.0);\n    #else\n    vec4 color = vec4(0.0);\n    #endif\n\n    #pragma unroll_loop\n    for (int i = 0; i < ORIENTED_IMAGES_COUNT; i++) {\n        color = projectiveTextureColor(projectiveTextureCoords[ ORIENTED_IMAGES_COUNT - 1 - i ], projectiveTextureDistortion[ ORIENTED_IMAGES_COUNT - 1 - i ], projectiveTexture[ ORIENTED_IMAGES_COUNT - 1 - i ], mask[ORIENTED_IMAGES_COUNT - 1 - i], color);\n    }\n\n    #ifdef USE_BASE_MATERIAL\n    color.a = color.a < 1.0 ? max(noProjectiveMaterial.opacity, color.a) : 1.0 ;\n    gl_FragColor = vec4(color.rgb, color.a * opacity);\n    #else\n    gl_FragColor = vec4(color.rgb / color.a, opacity);\n    #endif\n\n}\n";
+var ndcToTextureMatrix = new THREE.Matrix4().set(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 2);
+var noMask = new THREE.DataTexture(new Uint8Array([255, 255, 255]), 1, 1, THREE.RGBFormat, THREE.UnsignedByteType);
 var noTexture = new THREE.Texture();
 var rawShaderMaterial = new THREE.RawShaderMaterial();
 /**
@@ -119,8 +61,8 @@ var rawShaderMaterial = new THREE.RawShaderMaterial();
  * To get a more comprehensive support of camera Micmac models, you can consider using [three-photogrammetric-camera]{@link https://github.com/mbredif/three-photogrammetric-camera} instead.
  */
 
-var OrientedImageMaterial = /*#__PURE__*/ (function (_THREE$RawShaderMater) {
-  (0, _inherits2['default'])(OrientedImageMaterial, _THREE$RawShaderMater);
+var OrientedImageMaterial = /*#__PURE__*/function (_THREE$RawShaderMater) {
+  (0, _inherits2["default"])(OrientedImageMaterial, _THREE$RawShaderMater);
 
   var _super = _createSuper(OrientedImageMaterial);
 
@@ -145,12 +87,10 @@ var OrientedImageMaterial = /*#__PURE__*/ (function (_THREE$RawShaderMater) {
   function OrientedImageMaterial(cameras) {
     var _this;
 
-    var options =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    (0, _classCallCheck2['default'])(this, OrientedImageMaterial);
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    (0, _classCallCheck2["default"])(this, OrientedImageMaterial);
     options.side = options.side !== undefined ? options.side : THREE.DoubleSide;
-    options.transparent =
-      options.transparent !== undefined ? options.transparent : true;
+    options.transparent = options.transparent !== undefined ? options.transparent : true;
     options.opacity = options.opacity !== undefined ? options.opacity : 1; // Filter the rawShaderMaterial options
 
     var rawShaderMaterialOptions = {};
@@ -166,41 +106,24 @@ var OrientedImageMaterial = /*#__PURE__*/ (function (_THREE$RawShaderMater) {
     }
 
     _this = _super.call(this, rawShaderMaterialOptions);
-    _this.defines.ORIENTED_IMAGES_COUNT =
-      options.OrientedImagesCount !== undefined
-        ? options.OrientedImagesCount
-        : cameras.length; // verify that number of textures doesn't exceed GPU capabilities
+    _this.defines.ORIENTED_IMAGES_COUNT = options.OrientedImagesCount !== undefined ? options.OrientedImagesCount : cameras.length; // verify that number of textures doesn't exceed GPU capabilities
 
-    var maxTexturesUnits = _Capabilities['default'].getMaxTextureUnitsCount();
+    var maxTexturesUnits = _Capabilities["default"].getMaxTextureUnitsCount();
 
     if (_this.defines.ORIENTED_IMAGES_COUNT > maxTexturesUnits) {
-      console.warn(
-        "OrientedImageMaterial: Can't project "
-          .concat(
-            cameras.length,
-            " textures, because it's more than GPU capabilities maximum texture units (",
-          )
-          .concat(maxTexturesUnits, ')'),
-      ); // Clamp number of textures used
+      console.warn("OrientedImageMaterial: Can't project ".concat(cameras.length, " textures, because it's more than GPU capabilities maximum texture units (").concat(maxTexturesUnits, ")")); // Clamp number of textures used
 
       _this.defines.ORIENTED_IMAGES_COUNT = maxTexturesUnits - 1;
-      console.warn(
-        "OrientedImageMaterial: We'll use only the first ".concat(
-          _this.defines.ORIENTED_IMAGES_COUNT,
-          ' cameras.',
-        ),
-      );
+      console.warn("OrientedImageMaterial: We'll use only the first ".concat(_this.defines.ORIENTED_IMAGES_COUNT, " cameras."));
     }
 
     if (options.useBaseMaterial) {
       _this.defines.USE_BASE_MATERIAL = true;
     }
 
-    _this.defines.USE_DISTORTION = Number(
-      cameras.some(function (camera) {
-        return camera.distortion.pps !== null;
-      }),
-    );
+    _this.defines.USE_DISTORTION = Number(cameras.some(function (camera) {
+      return camera.distortion.pps !== null;
+    }));
     _this.alphaBorder = options.alphaBorder | 20;
     _this.defines.DEBUG_ALPHA_BORDER = options.debugAlphaBorder | 0;
     _this.cameras = cameras;
@@ -221,9 +144,7 @@ var OrientedImageMaterial = /*#__PURE__*/ (function (_THREE$RawShaderMater) {
     }
 
     _this.uniforms.opacity = new THREE.Uniform(_this.opacity);
-    _this.uniforms.projectiveTextureAlphaBorder = new THREE.Uniform(
-      _this.alphaBorder,
-    );
+    _this.uniforms.projectiveTextureAlphaBorder = new THREE.Uniform(_this.alphaBorder);
     _this.uniforms.projectiveTextureDistortion = new THREE.Uniform(distortion);
     _this.uniforms.projectiveTextureMatrix = new THREE.Uniform(textureMatrix);
     _this.uniforms.projectiveTexture = new THREE.Uniform(texture);
@@ -232,120 +153,102 @@ var OrientedImageMaterial = /*#__PURE__*/ (function (_THREE$RawShaderMater) {
     _this.uniforms.noProjectiveMaterial = new THREE.Uniform({
       lightDirection: new THREE.Vector3(0.5, 0.5, -0.5),
       ambient: new THREE.Color(0.1, 0.1, 0.1),
-      opacity: 0.75,
+      opacity: 0.75
     });
 
-    if (_Capabilities['default'].isLogDepthBufferSupported()) {
+    if (_Capabilities["default"].isLogDepthBufferSupported()) {
       _this.defines.USE_LOGDEPTHBUF = 1;
       _this.defines.USE_LOGDEPTHBUF_EXT = 1;
     }
 
     _this.vertexShader = textureVS;
-    _this.fragmentShader = _ShaderUtils['default'].unrollLoops(
-      textureFS,
-      _this.defines,
-    );
+    _this.fragmentShader = _ShaderUtils["default"].unrollLoops(textureFS, _this.defines);
     return _this;
   }
 
-  (0, _createClass2['default'])(OrientedImageMaterial, [
-    {
-      key: 'onBeforeCompile',
-      value: function onBeforeCompile(shader, renderer) {
-        if (renderer.capabilities.isWebGL2) {
-          this.defines.WEBGL2 = true;
-          shader.glslVersion = '300 es';
-        }
-      },
-      /**
-       * Set new textures and new position/orientation of the camera set.
-       * @param {THREE.Texture} textures - Array of [THREE.Texture]{@link https://threejs.org/docs/#api/en/textures/Texture}.
-       * @param {Object} feature - New position / orientation of the set of cameras
-       * @param {Array} camerasNames - camera names of panoramic feature
-       * @param {THREE.Vector3} feature.position - New position.
-       * @param {THREE.Quaternion} feature.quaternion - New orientation.
-       */
-    },
-    {
-      key: 'setTextures',
-      value: function setTextures(textures, feature, camerasNames) {
-        var _this2 = this;
+  (0, _createClass2["default"])(OrientedImageMaterial, [{
+    key: "onBeforeCompile",
+    value: function onBeforeCompile(shader, renderer) {
+      if (renderer.capabilities.isWebGL2) {
+        this.defines.WEBGL2 = true;
+        shader.glslVersion = '300 es';
+      }
+    }
+    /**
+     * Set new textures and new position/orientation of the camera set.
+     * @param {THREE.Texture} textures - Array of [THREE.Texture]{@link https://threejs.org/docs/#api/en/textures/Texture}.
+     * @param {Object} feature - New position / orientation of the set of cameras
+     * @param {Array} camerasNames - camera names of panoramic feature
+     * @param {THREE.Vector3} feature.position - New position.
+     * @param {THREE.Quaternion} feature.quaternion - New orientation.
+     */
 
-        if (!textures) {
-          return;
-        }
+  }, {
+    key: "setTextures",
+    value: function setTextures(textures, feature, camerasNames) {
+      var _this2 = this;
 
-        this.group.position.copy(feature.position);
-        this.group.quaternion.copy(feature.quaternion);
+      if (!textures) {
+        return;
+      }
 
-        var _loop = function (i) {
-          _this2.uniforms.projectiveTexture.value[i].dispose();
+      this.group.position.copy(feature.position);
+      this.group.quaternion.copy(feature.quaternion);
 
-          _this2.uniforms.projectiveTexture.value[i] = textures[i]; // check camera changes
+      var _loop = function (i) {
+        _this2.uniforms.projectiveTexture.value[i].dispose();
 
-          if (camerasNames) {
-            var currentCamera = _this2.group.children[i];
+        _this2.uniforms.projectiveTexture.value[i] = textures[i]; // check camera changes
 
-            if (camerasNames[i] != currentCamera.name) {
-              var camera = _this2.cameras.find(function (cam) {
-                return cam.name === camerasNames[i];
-              });
+        if (camerasNames) {
+          var currentCamera = _this2.group.children[i];
 
-              _this2.uniforms.mask.value[i] = camera.maskTexture || noMask;
-              _this2.uniforms.mask.value[i].needsUpdate = true;
-              _this2.uniforms.projectiveTextureDistortion.value[i] =
-                camera.distortion;
-              _this2.group.children[i] = camera;
-              camera.parent = _this2.group;
-            }
+          if (camerasNames[i] != currentCamera.name) {
+            var camera = _this2.cameras.find(function (cam) {
+              return cam.name === camerasNames[i];
+            });
+
+            _this2.uniforms.mask.value[i] = camera.maskTexture || noMask;
+            _this2.uniforms.mask.value[i].needsUpdate = true;
+            _this2.uniforms.projectiveTextureDistortion.value[i] = camera.distortion;
+            _this2.group.children[i] = camera;
+            camera.parent = _this2.group;
           }
-
-          _this2.group.children[i].needsUpdate = true;
-        };
-
-        for (
-          var i = 0;
-          i < textures.length && i < this.defines.ORIENTED_IMAGES_COUNT;
-          ++i
-        ) {
-          _loop(i);
         }
 
-        this.group.updateMatrixWorld(true); // update the matrixWorldInverse of the cameras
-      },
-      /**
-       * Udate the uniforms using the current value of camera.matrixWorld.
-       * Need to be called when the camera of the scene has changed.
-       * @param {THREE.Camera} viewCamera - Camera of the scene.
-       */
-    },
-    {
-      key: 'updateUniforms',
-      value: function updateUniforms(viewCamera) {
-        for (var i = 0; i < this.group.children.length; ++i) {
-          var camera = this.group.children[i];
+        _this2.group.children[i].needsUpdate = true;
+      };
 
-          if (camera.needsUpdate) {
-            camera.textureMatrixWorldInverse.multiplyMatrices(
-              ndcToTextureMatrix,
-              camera.projectionMatrix,
-            );
-            camera.textureMatrixWorldInverse.multiply(
-              camera.matrixWorldInverse,
-            );
-            camera.needsUpdate = false;
-          }
+      for (var i = 0; i < textures.length && i < this.defines.ORIENTED_IMAGES_COUNT; ++i) {
+        _loop(i);
+      }
 
-          this.uniforms.projectiveTextureMatrix.value[i].multiplyMatrices(
-            camera.textureMatrixWorldInverse,
-            viewCamera.matrixWorld,
-          );
+      this.group.updateMatrixWorld(true); // update the matrixWorldInverse of the cameras
+    }
+    /**
+     * Udate the uniforms using the current value of camera.matrixWorld.
+     * Need to be called when the camera of the scene has changed.
+     * @param {THREE.Camera} viewCamera - Camera of the scene.
+     */
+
+  }, {
+    key: "updateUniforms",
+    value: function updateUniforms(viewCamera) {
+      for (var i = 0; i < this.group.children.length; ++i) {
+        var camera = this.group.children[i];
+
+        if (camera.needsUpdate) {
+          camera.textureMatrixWorldInverse.multiplyMatrices(ndcToTextureMatrix, camera.projectionMatrix);
+          camera.textureMatrixWorldInverse.multiply(camera.matrixWorldInverse);
+          camera.needsUpdate = false;
         }
-      },
-    },
-  ]);
+
+        this.uniforms.projectiveTextureMatrix.value[i].multiplyMatrices(camera.textureMatrixWorldInverse, viewCamera.matrixWorld);
+      }
+    }
+  }]);
   return OrientedImageMaterial;
-})(THREE.RawShaderMaterial);
+}(THREE.RawShaderMaterial);
 
 var _default = OrientedImageMaterial;
-exports['default'] = _default;
+exports["default"] = _default;

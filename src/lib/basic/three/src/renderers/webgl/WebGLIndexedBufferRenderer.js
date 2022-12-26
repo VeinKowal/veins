@@ -1,62 +1,71 @@
-function WebGLIndexedBufferRenderer(gl, extensions, info, capabilities) {
-  const isWebGL2 = capabilities.isWebGL2;
+function WebGLIndexedBufferRenderer( gl, extensions, info, capabilities ) {
 
-  let mode;
+	const isWebGL2 = capabilities.isWebGL2;
 
-  function setMode(value) {
-    mode = value;
-  }
+	let mode;
 
-  let type, bytesPerElement;
+	function setMode( value ) {
 
-  function setIndex(value) {
-    type = value.type;
-    bytesPerElement = value.bytesPerElement;
-  }
+		mode = value;
 
-  function render(start, count) {
-    gl.drawElements(mode, count, type, start * bytesPerElement);
+	}
 
-    info.update(count, mode, 1);
-  }
+	let type, bytesPerElement;
 
-  function renderInstances(start, count, primcount) {
-    if (primcount === 0) return;
+	function setIndex( value ) {
 
-    let extension, methodName;
+		type = value.type;
+		bytesPerElement = value.bytesPerElement;
 
-    if (isWebGL2) {
-      extension = gl;
-      methodName = 'drawElementsInstanced';
-    } else {
-      extension = extensions.get('ANGLE_instanced_arrays');
-      methodName = 'drawElementsInstancedANGLE';
+	}
 
-      if (extension === null) {
-        console.error(
-          'THREE.WebGLIndexedBufferRenderer: using THREE.InstancedBufferGeometry but hardware does not support extension ANGLE_instanced_arrays.',
-        );
-        return;
-      }
-    }
+	function render( start, count ) {
 
-    extension[methodName](
-      mode,
-      count,
-      type,
-      start * bytesPerElement,
-      primcount,
-    );
+		gl.drawElements( mode, count, type, start * bytesPerElement );
 
-    info.update(count, mode, primcount);
-  }
+		info.update( count, mode, 1 );
 
-  //
+	}
 
-  this.setMode = setMode;
-  this.setIndex = setIndex;
-  this.render = render;
-  this.renderInstances = renderInstances;
+	function renderInstances( start, count, primcount ) {
+
+		if ( primcount === 0 ) return;
+
+		let extension, methodName;
+
+		if ( isWebGL2 ) {
+
+			extension = gl;
+			methodName = 'drawElementsInstanced';
+
+		} else {
+
+			extension = extensions.get( 'ANGLE_instanced_arrays' );
+			methodName = 'drawElementsInstancedANGLE';
+
+			if ( extension === null ) {
+
+				console.error( 'THREE.WebGLIndexedBufferRenderer: using THREE.InstancedBufferGeometry but hardware does not support extension ANGLE_instanced_arrays.' );
+				return;
+
+			}
+
+		}
+
+		extension[ methodName ]( mode, count, type, start * bytesPerElement, primcount );
+
+		info.update( count, mode, primcount );
+
+	}
+
+	//
+
+	this.setMode = setMode;
+	this.setIndex = setIndex;
+	this.render = render;
+	this.renderInstances = renderInstances;
+
 }
+
 
 export { WebGLIndexedBufferRenderer };

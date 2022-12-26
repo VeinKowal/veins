@@ -1,56 +1,60 @@
-import { ShaderMaterial, UniformsUtils } from '../../../build/three.module.js';
-import { Pass } from '../postprocessing/Pass.js';
+import {
+	ShaderMaterial,
+	UniformsUtils
+} from 'three';
+import { Pass, FullScreenQuad } from '../postprocessing/Pass.js';
 import { CopyShader } from '../shaders/CopyShader.js';
 
-var TexturePass = function (map, opacity) {
-  Pass.call(this);
+class TexturePass extends Pass {
 
-  if (CopyShader === undefined)
-    console.error('THREE.TexturePass relies on CopyShader');
+	constructor( map, opacity ) {
 
-  var shader = CopyShader;
+		super();
 
-  this.map = map;
-  this.opacity = opacity !== undefined ? opacity : 1.0;
+		if ( CopyShader === undefined ) console.error( 'THREE.TexturePass relies on CopyShader' );
 
-  this.uniforms = UniformsUtils.clone(shader.uniforms);
+		const shader = CopyShader;
 
-  this.material = new ShaderMaterial({
-    uniforms: this.uniforms,
-    vertexShader: shader.vertexShader,
-    fragmentShader: shader.fragmentShader,
-    depthTest: false,
-    depthWrite: false,
-  });
+		this.map = map;
+		this.opacity = ( opacity !== undefined ) ? opacity : 1.0;
 
-  this.needsSwap = false;
+		this.uniforms = UniformsUtils.clone( shader.uniforms );
 
-  this.fsQuad = new Pass.FullScreenQuad(null);
-};
+		this.material = new ShaderMaterial( {
 
-TexturePass.prototype = Object.assign(Object.create(Pass.prototype), {
-  constructor: TexturePass,
+			uniforms: this.uniforms,
+			vertexShader: shader.vertexShader,
+			fragmentShader: shader.fragmentShader,
+			depthTest: false,
+			depthWrite: false
 
-  render: function (
-    renderer,
-    writeBuffer,
-    readBuffer /*, deltaTime, maskActive */,
-  ) {
-    var oldAutoClear = renderer.autoClear;
-    renderer.autoClear = false;
+		} );
 
-    this.fsQuad.material = this.material;
+		this.needsSwap = false;
 
-    this.uniforms['opacity'].value = this.opacity;
-    this.uniforms['tDiffuse'].value = this.map;
-    this.material.transparent = this.opacity < 1.0;
+		this.fsQuad = new FullScreenQuad( null );
 
-    renderer.setRenderTarget(this.renderToScreen ? null : readBuffer);
-    if (this.clear) renderer.clear();
-    this.fsQuad.render(renderer);
+	}
 
-    renderer.autoClear = oldAutoClear;
-  },
-});
+	render( renderer, writeBuffer, readBuffer /*, deltaTime, maskActive */ ) {
+
+		const oldAutoClear = renderer.autoClear;
+		renderer.autoClear = false;
+
+		this.fsQuad.material = this.material;
+
+		this.uniforms[ 'opacity' ].value = this.opacity;
+		this.uniforms[ 'tDiffuse' ].value = this.map;
+		this.material.transparent = ( this.opacity < 1.0 );
+
+		renderer.setRenderTarget( this.renderToScreen ? null : readBuffer );
+		if ( this.clear ) renderer.clear();
+		this.fsQuad.render( renderer );
+
+		renderer.autoClear = oldAutoClear;
+
+	}
+
+}
 
 export { TexturePass };

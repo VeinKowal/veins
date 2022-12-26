@@ -1,42 +1,54 @@
 import Node from './Node.js';
 
 class InputNode extends Node {
-  constructor(type) {
-    super(type);
 
-    this.constant = false;
-  }
+	constructor( type ) {
 
-  setConst(value) {
-    this.constant = value;
+		super( type );
 
-    return this;
-  }
+		this.constant = false;
 
-  getConst() {
-    return this.constant;
-  }
+	}
 
-  generateConst(builder) {
-    return builder.getConst(this.getType(builder), this.value);
-  }
+	setConst( value ) {
 
-  generate(builder, output) {
-    const type = this.getType(builder);
+		this.constant = value;
 
-    if (this.constant === true) {
-      return builder.format(this.generateConst(builder), type, output);
-    } else {
-      const nodeUniform = builder.getUniformFromNode(
-        this,
-        builder.shaderStage,
-        this.getType(builder),
-      );
-      const propertyName = builder.getPropertyName(nodeUniform);
+		return this;
 
-      return builder.format(propertyName, type, output);
-    }
-  }
+	}
+
+	getConst() {
+
+		return this.constant;
+
+	}
+
+	generateConst( builder ) {
+
+		return builder.getConst( this.getType( builder ), this.value );
+
+	}
+
+	generate( builder, output ) {
+
+		const type = this.getType( builder );
+
+		if ( this.constant === true ) {
+
+			return builder.format( this.generateConst( builder ), type, output );
+
+		} else {
+
+			const nodeUniform = builder.getUniformFromNode( this, builder.shaderStage, this.getType( builder ) );
+			const propertyName = builder.getPropertyName( nodeUniform );
+
+			return builder.format( propertyName, type, output );
+
+		}
+
+	}
+
 }
 
 InputNode.prototype.isInputNode = true;

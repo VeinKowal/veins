@@ -1,17 +1,17 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _togeojson = require('@tmcw/togeojson');
+var _togeojson = require("@tmcw/togeojson");
 
-var _GeoJsonParser = _interopRequireDefault(require('./GeoJsonParser'));
+var _GeoJsonParser = _interopRequireDefault(require("./GeoJsonParser"));
 
-var _Undeprecator = require('../Core/Deprecated/Undeprecator');
+var _Undeprecator = require("../Core/Deprecated/Undeprecator");
 
 /**
  * The GpxParser module provides a [parse]{@link module:GpxParser.parse}
@@ -33,10 +33,7 @@ var _default = {
    */
   parse: function parse(gpxFile, options) {
     options = (0, _Undeprecator.deprecatedParsingOptionsToNewOne)(options);
-    return _GeoJsonParser['default'].parse(
-      (0, _togeojson.gpx)(gpxFile),
-      options,
-    );
-  },
+    return _GeoJsonParser["default"].parse((0, _togeojson.gpx)(gpxFile), options);
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

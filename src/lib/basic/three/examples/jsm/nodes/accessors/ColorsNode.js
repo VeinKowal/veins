@@ -1,46 +1,56 @@
 import { TempNode } from '../core/TempNode.js';
 
-var vertexDict = ['color', 'color2'],
-  fragmentDict = ['vColor', 'vColor2'];
+var vertexDict = [ 'color', 'color2' ],
+	fragmentDict = [ 'vColor', 'vColor2' ];
 
-function ColorsNode(index) {
-  TempNode.call(this, 'v4', { shared: false });
+class ColorsNode extends TempNode {
 
-  this.index = index || 0;
+	constructor( index ) {
+
+		super( 'v4', { shared: false } );
+
+		this.index = index || 0;
+
+	}
+
+	generate( builder, output ) {
+
+		builder.requires.color[ this.index ] = true;
+
+		const result = builder.isShader( 'vertex' ) ? vertexDict[ this.index ] : fragmentDict[ this.index ];
+
+		return builder.format( result, this.getType( builder ), output );
+
+	}
+
+	copy( source ) {
+
+		super.copy( source );
+
+		this.index = source.index;
+
+		return this;
+
+	}
+
+	toJSON( meta ) {
+
+		let data = this.getJSONNode( meta );
+
+		if ( ! data ) {
+
+			data = this.createJSONNode( meta );
+
+			data.index = this.index;
+
+		}
+
+		return data;
+
+	}
+
 }
 
-ColorsNode.prototype = Object.create(TempNode.prototype);
-ColorsNode.prototype.constructor = ColorsNode;
 ColorsNode.prototype.nodeType = 'Colors';
-
-ColorsNode.prototype.generate = function (builder, output) {
-  builder.requires.color[this.index] = true;
-
-  var result = builder.isShader('vertex')
-    ? vertexDict[this.index]
-    : fragmentDict[this.index];
-
-  return builder.format(result, this.getType(builder), output);
-};
-
-ColorsNode.prototype.copy = function (source) {
-  TempNode.prototype.copy.call(this, source);
-
-  this.index = source.index;
-
-  return this;
-};
-
-ColorsNode.prototype.toJSON = function (meta) {
-  var data = this.getJSONNode(meta);
-
-  if (!data) {
-    data = this.createJSONNode(meta);
-
-    data.index = this.index;
-  }
-
-  return data;
-};
 
 export { ColorsNode };

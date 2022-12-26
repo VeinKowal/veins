@@ -1,23 +1,27 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-var _Feature2Texture = _interopRequireDefault(require('./Feature2Texture'));
+var _Feature2Texture = _interopRequireDefault(require("./Feature2Texture"));
 
-var _Extent = _interopRequireDefault(require('../Core/Geographic/Extent'));
+var _Extent = _interopRequireDefault(require("../Core/Geographic/Extent"));
 
-var _Crs = _interopRequireDefault(require('../Core/Geographic/Crs'));
+var _Crs = _interopRequireDefault(require("../Core/Geographic/Crs"));
 
-var extentTexture = new _Extent['default']('EPSG:4326', [0, 0, 0, 0]);
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+var extentTexture = new _Extent["default"]('EPSG:4326', [0, 0, 0, 0]);
 
 var textureLayer = function (texture, layer) {
   texture.generateMipmaps = false;
@@ -38,21 +42,9 @@ var _default = {
 
     if (data.isFeatureCollection) {
       var backgroundLayer = layer.source.backgroundLayer;
-      var backgroundColor =
-        backgroundLayer && backgroundLayer.paint
-          ? new THREE.Color(backgroundLayer.paint['background-color'])
-          : undefined;
-      extentDestination.as(
-        _Crs['default'].formatToEPSG(layer.crs),
-        extentTexture,
-      );
-      texture = _Feature2Texture['default'].createTextureFromFeature(
-        data,
-        extentTexture,
-        256,
-        layer.style,
-        backgroundColor,
-      );
+      var backgroundColor = backgroundLayer && backgroundLayer.paint ? new THREE.Color(backgroundLayer.paint['background-color']) : undefined;
+      extentDestination.as(_Crs["default"].formatToEPSG(layer.crs), extentTexture);
+      texture = _Feature2Texture["default"].createTextureFromFeature(data, extentTexture, 256, layer.style, backgroundColor);
       texture.features = data;
       texture.extent = extentDestination;
     } else if (data.isTexture) {
@@ -73,6 +65,6 @@ var _default = {
 
       return textureLayer(texture, layer);
     }
-  },
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

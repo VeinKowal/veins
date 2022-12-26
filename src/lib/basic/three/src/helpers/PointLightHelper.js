@@ -3,29 +3,28 @@ import { MeshBasicMaterial } from '../materials/MeshBasicMaterial.js';
 import { SphereGeometry } from '../geometries/SphereGeometry.js';
 
 class PointLightHelper extends Mesh {
-  constructor(light, sphereSize, color) {
-    const geometry = new SphereGeometry(sphereSize, 4, 2);
-    const material = new MeshBasicMaterial({
-      wireframe: true,
-      fog: false,
-      toneMapped: false,
-    });
 
-    super(geometry, material);
+	constructor( light, sphereSize, color ) {
 
-    this.light = light;
-    this.light.updateMatrixWorld();
+		const geometry = new SphereGeometry( sphereSize, 4, 2 );
+		const material = new MeshBasicMaterial( { wireframe: true, fog: false, toneMapped: false } );
 
-    this.color = color;
+		super( geometry, material );
 
-    this.type = 'PointLightHelper';
+		this.light = light;
+		this.light.updateMatrixWorld();
 
-    this.matrix = this.light.matrixWorld;
-    this.matrixAutoUpdate = false;
+		this.color = color;
 
-    this.update();
+		this.type = 'PointLightHelper';
 
-    /*
+		this.matrix = this.light.matrixWorld;
+		this.matrixAutoUpdate = false;
+
+		this.update();
+
+
+		/*
 	// TODO: delete this comment?
 	const distanceGeometry = new THREE.IcosahedronBufferGeometry( 1, 2 );
 	const distanceMaterial = new THREE.MeshBasicMaterial( { color: hexColor, fog: false, wireframe: true, opacity: 0.1, transparent: true } );
@@ -47,21 +46,29 @@ class PointLightHelper extends Mesh {
 
 	this.add( this.lightDistance );
 	*/
-  }
 
-  dispose() {
-    this.geometry.dispose();
-    this.material.dispose();
-  }
+	}
 
-  update() {
-    if (this.color !== undefined) {
-      this.material.color.set(this.color);
-    } else {
-      this.material.color.copy(this.light.color);
-    }
+	dispose() {
 
-    /*
+		this.geometry.dispose();
+		this.material.dispose();
+
+	}
+
+	update() {
+
+		if ( this.color !== undefined ) {
+
+			this.material.color.set( this.color );
+
+		} else {
+
+			this.material.color.copy( this.light.color );
+
+		}
+
+		/*
 		const d = this.light.distance;
 
 		if ( d === 0.0 ) {
@@ -75,7 +82,10 @@ class PointLightHelper extends Mesh {
 
 		}
 		*/
-  }
+
+	}
+
 }
+
 
 export { PointLightHelper };

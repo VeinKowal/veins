@@ -3,7 +3,7 @@
  *@author guoweiyu.
  *@date 2021-08-24 14:57:14.
  */
-import { MarkerConfigType } from './type';
+import type { MarkerConfigType } from './type';
 import { CSS3DObject } from '../../lib/renderers/CSS3DRenderer';
 import { Group, Sprite, SpriteMaterial, TextureLoader } from 'three';
 import Marker from './index';
@@ -11,6 +11,7 @@ import Marker from './index';
 class ImgMarker extends Group {
   constructor(config: MarkerConfigType) {
     super();
+    this.isImgMarker = true;
     this.userData.type = 'Marker';
     this.createMarker(config);
   }
@@ -59,7 +60,7 @@ class ImgMarker extends Group {
     if (marker) {
       this.add(marker);
       id && +id && (this.id = +id);
-      size && marker.scale.set(size, size, size);
+      size && marker.scale.setScalar(size * 10);
       parent && parent.add(this);
 
       if (localPosition) {

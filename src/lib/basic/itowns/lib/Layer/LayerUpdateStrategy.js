@@ -1,16 +1,12 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.chooseNextLevelToFetch = chooseNextLevelToFetch;
-exports.STRATEGY_DICHOTOMY =
-  exports.STRATEGY_PROGRESSIVE =
-  exports.STRATEGY_GROUP =
-  exports.STRATEGY_MIN_NETWORK_TRAFFIC =
-    void 0;
+exports.STRATEGY_DICHOTOMY = exports.STRATEGY_PROGRESSIVE = exports.STRATEGY_GROUP = exports.STRATEGY_MIN_NETWORK_TRAFFIC = void 0;
 
-var _RasterTile = require('../Renderer/RasterTile');
+var _RasterTile = require("../Renderer/RasterTile");
 
 /**
  * This modules implements various layer update strategies.
@@ -40,6 +36,7 @@ function _minimizeNetworkTraffic(node, nodeLevel, currentLevel) {
 //     * nodeLevel = 7 -> 7
 //     * nodeLevel = 15 -> 12
 
+
 function _group(nodeLevel, options) {
   var f = options.groups.filter(function (val) {
     return val <= nodeLevel;
@@ -53,9 +50,9 @@ function _progressive(nodeLevel, currentLevel, options) {
 // This produces smoother transitions and a single fetch updates multiple
 // tiles thanks to caching.
 
+
 function _dichotomy(nodeLevel, currentLevel) {
-  var options =
-    arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
   if (currentLevel == _RasterTile.EMPTY_TEXTURE_ZOOM) {
     return options.zoom ? options.zoom.min : 0;
@@ -65,10 +62,7 @@ function _dichotomy(nodeLevel, currentLevel) {
 }
 
 function chooseNextLevelToFetch(strategy, node) {
-  var nodeLevel =
-    arguments.length > 2 && arguments[2] !== undefined
-      ? arguments[2]
-      : node.level;
+  var nodeLevel = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : node.level;
   var currentLevel = arguments.length > 3 ? arguments[3] : undefined;
   var layer = arguments.length > 4 ? arguments[4] : undefined;
   var failureParams = arguments.length > 5 ? arguments[5] : undefined;
@@ -76,15 +70,8 @@ function chooseNextLevelToFetch(strategy, node) {
   var maxZoom = layer.source.zoom ? layer.source.zoom.max : Infinity;
 
   if (failureParams.lowestLevelError != Infinity) {
-    nextLevelToFetch = _dichotomy(
-      failureParams.lowestLevelError,
-      currentLevel,
-      layer.source,
-    );
-    nextLevelToFetch =
-      failureParams.lowestLevelError == nextLevelToFetch
-        ? nextLevelToFetch - 1
-        : nextLevelToFetch;
+    nextLevelToFetch = _dichotomy(failureParams.lowestLevelError, currentLevel, layer.source);
+    nextLevelToFetch = failureParams.lowestLevelError == nextLevelToFetch ? nextLevelToFetch - 1 : nextLevelToFetch;
 
     if (strategy == STRATEGY_GROUP) {
       nextLevelToFetch = _group(nextLevelToFetch, layer.updateStrategy.options);
@@ -95,14 +82,11 @@ function chooseNextLevelToFetch(strategy, node) {
         nextLevelToFetch = _group(nodeLevel, layer.updateStrategy.options);
         break;
 
-      case STRATEGY_PROGRESSIVE: {
-        nextLevelToFetch = _progressive(
-          nodeLevel,
-          currentLevel,
-          layer.updateStrategy.options,
-        );
-        break;
-      }
+      case STRATEGY_PROGRESSIVE:
+        {
+          nextLevelToFetch = _progressive(nodeLevel, currentLevel, layer.updateStrategy.options);
+          break;
+        }
 
       case STRATEGY_DICHOTOMY:
         nextLevelToFetch = _dichotomy(nodeLevel, currentLevel, layer.source);
@@ -111,11 +95,7 @@ function chooseNextLevelToFetch(strategy, node) {
 
       case STRATEGY_MIN_NETWORK_TRAFFIC:
       default:
-        nextLevelToFetch = _minimizeNetworkTraffic(
-          node,
-          nodeLevel,
-          currentLevel,
-        );
+        nextLevelToFetch = _minimizeNetworkTraffic(node, nodeLevel, currentLevel);
     }
 
     nextLevelToFetch = Math.min(nextLevelToFetch, maxZoom);

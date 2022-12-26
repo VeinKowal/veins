@@ -1,43 +1,49 @@
-import { Color } from '../../../build/three.module.js';
+import {
+	Color
+} from 'three';
 
 /**
  * Colorify shader
  */
 
-var ColorifyShader = {
-  uniforms: {
-    tDiffuse: { value: null },
-    color: { value: new Color(0xffffff) },
-  },
+const ColorifyShader = {
 
-  vertexShader: [
-    'varying vec2 vUv;',
+	uniforms: {
 
-    'void main() {',
+		'tDiffuse': { value: null },
+		'color': { value: new Color( 0xffffff ) }
 
-    '	vUv = uv;',
-    '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+	},
 
-    '}',
-  ].join('\n'),
+	vertexShader: /* glsl */`
 
-  fragmentShader: [
-    'uniform vec3 color;',
-    'uniform sampler2D tDiffuse;',
+		varying vec2 vUv;
 
-    'varying vec2 vUv;',
+		void main() {
 
-    'void main() {',
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    '	vec4 texel = texture2D( tDiffuse, vUv );',
+		}`,
 
-    '	vec3 luma = vec3( 0.299, 0.587, 0.114 );',
-    '	float v = dot( texel.xyz, luma );',
+	fragmentShader: /* glsl */`
 
-    '	gl_FragColor = vec4( v * color, texel.w );',
+		uniform vec3 color;
+		uniform sampler2D tDiffuse;
 
-    '}',
-  ].join('\n'),
+		varying vec2 vUv;
+
+		void main() {
+
+			vec4 texel = texture2D( tDiffuse, vUv );
+
+			vec3 luma = vec3( 0.299, 0.587, 0.114 );
+			float v = dot( texel.xyz, luma );
+
+			gl_FragColor = vec4( v * color, texel.w );
+
+		}`
+
 };
 
 export { ColorifyShader };

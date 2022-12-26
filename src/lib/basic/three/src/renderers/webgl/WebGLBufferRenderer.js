@@ -1,48 +1,61 @@
-function WebGLBufferRenderer(gl, extensions, info, capabilities) {
-  const isWebGL2 = capabilities.isWebGL2;
+function WebGLBufferRenderer( gl, extensions, info, capabilities ) {
 
-  let mode;
+	const isWebGL2 = capabilities.isWebGL2;
 
-  function setMode(value) {
-    mode = value;
-  }
+	let mode;
 
-  function render(start, count) {
-    gl.drawArrays(mode, start, count);
+	function setMode( value ) {
 
-    info.update(count, mode, 1);
-  }
+		mode = value;
 
-  function renderInstances(start, count, primcount) {
-    if (primcount === 0) return;
+	}
 
-    let extension, methodName;
+	function render( start, count ) {
 
-    if (isWebGL2) {
-      extension = gl;
-      methodName = 'drawArraysInstanced';
-    } else {
-      extension = extensions.get('ANGLE_instanced_arrays');
-      methodName = 'drawArraysInstancedANGLE';
+		gl.drawArrays( mode, start, count );
 
-      if (extension === null) {
-        console.error(
-          'THREE.WebGLBufferRenderer: using THREE.InstancedBufferGeometry but hardware does not support extension ANGLE_instanced_arrays.',
-        );
-        return;
-      }
-    }
+		info.update( count, mode, 1 );
 
-    extension[methodName](mode, start, count, primcount);
+	}
 
-    info.update(count, mode, primcount);
-  }
+	function renderInstances( start, count, primcount ) {
 
-  //
+		if ( primcount === 0 ) return;
 
-  this.setMode = setMode;
-  this.render = render;
-  this.renderInstances = renderInstances;
+		let extension, methodName;
+
+		if ( isWebGL2 ) {
+
+			extension = gl;
+			methodName = 'drawArraysInstanced';
+
+		} else {
+
+			extension = extensions.get( 'ANGLE_instanced_arrays' );
+			methodName = 'drawArraysInstancedANGLE';
+
+			if ( extension === null ) {
+
+				console.error( 'THREE.WebGLBufferRenderer: using THREE.InstancedBufferGeometry but hardware does not support extension ANGLE_instanced_arrays.' );
+				return;
+
+			}
+
+		}
+
+		extension[ methodName ]( mode, start, count, primcount );
+
+		info.update( count, mode, primcount );
+
+	}
+
+	//
+
+	this.setMode = setMode;
+	this.render = render;
+	this.renderInstances = renderInstances;
+
 }
+
 
 export { WebGLBufferRenderer };

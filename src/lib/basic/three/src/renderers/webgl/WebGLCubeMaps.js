@@ -1,83 +1,103 @@
-import {
-  CubeReflectionMapping,
-  CubeRefractionMapping,
-  EquirectangularReflectionMapping,
-  EquirectangularRefractionMapping,
-} from '../../constants.js';
+import { CubeReflectionMapping, CubeRefractionMapping, EquirectangularReflectionMapping, EquirectangularRefractionMapping } from '../../constants.js';
 import { WebGLCubeRenderTarget } from '../WebGLCubeRenderTarget.js';
 
-function WebGLCubeMaps(renderer) {
-  let cubemaps = new WeakMap();
+function WebGLCubeMaps( renderer ) {
 
-  function mapTextureMapping(texture, mapping) {
-    if (mapping === EquirectangularReflectionMapping) {
-      texture.mapping = CubeReflectionMapping;
-    } else if (mapping === EquirectangularRefractionMapping) {
-      texture.mapping = CubeRefractionMapping;
-    }
+	let cubemaps = new WeakMap();
 
-    return texture;
-  }
+	function mapTextureMapping( texture, mapping ) {
 
-  function get(texture) {
-    if (texture && texture.isTexture) {
-      const mapping = texture.mapping;
+		if ( mapping === EquirectangularReflectionMapping ) {
 
-      if (
-        mapping === EquirectangularReflectionMapping ||
-        mapping === EquirectangularRefractionMapping
-      ) {
-        if (cubemaps.has(texture)) {
-          const cubemap = cubemaps.get(texture).texture;
-          return mapTextureMapping(cubemap, texture.mapping);
-        } else {
-          const image = texture.image;
+			texture.mapping = CubeReflectionMapping;
 
-          if (image && image.height > 0) {
-            const currentRenderTarget = renderer.getRenderTarget();
+		} else if ( mapping === EquirectangularRefractionMapping ) {
 
-            const renderTarget = new WebGLCubeRenderTarget(image.height / 2);
-            renderTarget.fromEquirectangularTexture(renderer, texture);
-            cubemaps.set(texture, renderTarget);
+			texture.mapping = CubeRefractionMapping;
 
-            renderer.setRenderTarget(currentRenderTarget);
+		}
 
-            texture.addEventListener('dispose', onTextureDispose);
+		return texture;
 
-            return mapTextureMapping(renderTarget.texture, texture.mapping);
-          } else {
-            // image not yet ready. try the conversion next frame
+	}
 
-            return null;
-          }
-        }
-      }
-    }
+	function get( texture ) {
 
-    return texture;
-  }
+		if ( texture && texture.isTexture ) {
 
-  function onTextureDispose(event) {
-    const texture = event.target;
+			const mapping = texture.mapping;
 
-    texture.removeEventListener('dispose', onTextureDispose);
+			if ( mapping === EquirectangularReflectionMapping || mapping === EquirectangularRefractionMapping ) {
 
-    const cubemap = cubemaps.get(texture);
+				if ( cubemaps.has( texture ) ) {
 
-    if (cubemap !== undefined) {
-      cubemaps.delete(texture);
-      cubemap.dispose();
-    }
-  }
+					const cubemap = cubemaps.get( texture ).texture;
+					return mapTextureMapping( cubemap, texture.mapping );
 
-  function dispose() {
-    cubemaps = new WeakMap();
-  }
+				} else {
 
-  return {
-    get: get,
-    dispose: dispose,
-  };
+					const image = texture.image;
+
+					if ( image && image.height > 0 ) {
+
+						const currentRenderTarget = renderer.getRenderTarget();
+
+						const renderTarget = new WebGLCubeRenderTarget( image.height / 2 );
+						renderTarget.fromEquirectangularTexture( renderer, texture );
+						cubemaps.set( texture, renderTarget );
+
+						renderer.setRenderTarget( currentRenderTarget );
+
+						texture.addEventListener( 'dispose', onTextureDispose );
+
+						return mapTextureMapping( renderTarget.texture, texture.mapping );
+
+					} else {
+
+						// image not yet ready. try the conversion next frame
+
+						return null;
+
+					}
+
+				}
+
+			}
+
+		}
+
+		return texture;
+
+	}
+
+	function onTextureDispose( event ) {
+
+		const texture = event.target;
+
+		texture.removeEventListener( 'dispose', onTextureDispose );
+
+		const cubemap = cubemaps.get( texture );
+
+		if ( cubemap !== undefined ) {
+
+			cubemaps.delete( texture );
+			cubemap.dispose();
+
+		}
+
+	}
+
+	function dispose() {
+
+		cubemaps = new WeakMap();
+
+	}
+
+	return {
+		get: get,
+		dispose: dispose
+	};
+
 }
 
 export { WebGLCubeMaps };

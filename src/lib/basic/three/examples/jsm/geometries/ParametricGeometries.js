@@ -1,89 +1,93 @@
 import {
-  BufferGeometry,
-  Curve,
-  ParametricGeometry,
-  Vector3,
-} from '../../../build/three.module.js';
+	Curve,
+	ParametricGeometry,
+	Vector3
+} from 'three';
 
 /**
  * Experimenting of primitive geometry creation using Surface Parametric equations
  */
 
-var ParametricGeometries = {
-  klein: function (v, u, target) {
-    u *= Math.PI;
-    v *= 2 * Math.PI;
+const ParametricGeometries = {
 
-    u = u * 2;
-    var x, y, z;
-    if (u < Math.PI) {
-      x =
-        3 * Math.cos(u) * (1 + Math.sin(u)) +
-        2 * (1 - Math.cos(u) / 2) * Math.cos(u) * Math.cos(v);
-      z =
-        -8 * Math.sin(u) -
-        2 * (1 - Math.cos(u) / 2) * Math.sin(u) * Math.cos(v);
-    } else {
-      x =
-        3 * Math.cos(u) * (1 + Math.sin(u)) +
-        2 * (1 - Math.cos(u) / 2) * Math.cos(v + Math.PI);
-      z = -8 * Math.sin(u);
-    }
+	klein: function ( v, u, target ) {
 
-    y = -2 * (1 - Math.cos(u) / 2) * Math.sin(v);
+		u *= Math.PI;
+		v *= 2 * Math.PI;
 
-    target.set(x, y, z);
-  },
+		u = u * 2;
+		let x, z;
+		if ( u < Math.PI ) {
 
-  plane: function (width, height) {
-    return function (u, v, target) {
-      var x = u * width;
-      var y = 0;
-      var z = v * height;
+			x = 3 * Math.cos( u ) * ( 1 + Math.sin( u ) ) + ( 2 * ( 1 - Math.cos( u ) / 2 ) ) * Math.cos( u ) * Math.cos( v );
+			z = - 8 * Math.sin( u ) - 2 * ( 1 - Math.cos( u ) / 2 ) * Math.sin( u ) * Math.cos( v );
 
-      target.set(x, y, z);
-    };
-  },
+		} else {
 
-  mobius: function (u, t, target) {
-    // flat mobius strip
-    // http://www.wolframalpha.com/input/?i=M%C3%B6bius+strip+parametric+equations&lk=1&a=ClashPrefs_*Surface.MoebiusStrip.SurfaceProperty.ParametricEquations-
-    u = u - 0.5;
-    var v = 2 * Math.PI * t;
+			x = 3 * Math.cos( u ) * ( 1 + Math.sin( u ) ) + ( 2 * ( 1 - Math.cos( u ) / 2 ) ) * Math.cos( v + Math.PI );
+			z = - 8 * Math.sin( u );
 
-    var x, y, z;
+		}
 
-    var a = 2;
+		const y = - 2 * ( 1 - Math.cos( u ) / 2 ) * Math.sin( v );
 
-    x = Math.cos(v) * (a + u * Math.cos(v / 2));
-    y = Math.sin(v) * (a + u * Math.cos(v / 2));
-    z = u * Math.sin(v / 2);
+		target.set( x, y, z );
 
-    target.set(x, y, z);
-  },
+	},
 
-  mobius3d: function (u, t, target) {
-    // volumetric mobius strip
+	plane: function ( width, height ) {
 
-    u *= Math.PI;
-    t *= 2 * Math.PI;
+		return function ( u, v, target ) {
 
-    u = u * 2;
-    var phi = u / 2;
-    var major = 2.25,
-      a = 0.125,
-      b = 0.65;
+			const x = u * width;
+			const y = 0;
+			const z = v * height;
 
-    var x, y, z;
+			target.set( x, y, z );
 
-    x = a * Math.cos(t) * Math.cos(phi) - b * Math.sin(t) * Math.sin(phi);
-    z = a * Math.cos(t) * Math.sin(phi) + b * Math.sin(t) * Math.cos(phi);
-    y = (major + x) * Math.sin(u);
-    x = (major + x) * Math.cos(u);
+		};
 
-    target.set(x, y, z);
-  },
+	},
+
+	mobius: function ( u, t, target ) {
+
+		// flat mobius strip
+		// http://www.wolframalpha.com/input/?i=M%C3%B6bius+strip+parametric+equations&lk=1&a=ClashPrefs_*Surface.MoebiusStrip.SurfaceProperty.ParametricEquations-
+		u = u - 0.5;
+		const v = 2 * Math.PI * t;
+
+		const a = 2;
+
+		const x = Math.cos( v ) * ( a + u * Math.cos( v / 2 ) );
+		const y = Math.sin( v ) * ( a + u * Math.cos( v / 2 ) );
+		const z = u * Math.sin( v / 2 );
+
+		target.set( x, y, z );
+
+	},
+
+	mobius3d: function ( u, t, target ) {
+
+		// volumetric mobius strip
+
+		u *= Math.PI;
+		t *= 2 * Math.PI;
+
+		u = u * 2;
+		const phi = u / 2;
+		const major = 2.25, a = 0.125, b = 0.65;
+
+		let x = a * Math.cos( t ) * Math.cos( phi ) - b * Math.sin( t ) * Math.sin( phi );
+		const z = a * Math.cos( t ) * Math.sin( phi ) + b * Math.sin( t ) * Math.cos( phi );
+		const y = ( major + x ) * Math.sin( u );
+		x = ( major + x ) * Math.cos( u );
+
+		target.set( x, y, z );
+
+	}
+
 };
+
 
 /*********************************************
  *
@@ -91,180 +95,159 @@ var ParametricGeometries = {
  *
  *********************************************/
 
-ParametricGeometries.TubeGeometry = function (
-  path,
-  segments,
-  radius,
-  segmentsRadius,
-  closed,
-) {
-  this.path = path;
-  this.segments = segments || 64;
-  this.radius = radius || 1;
-  this.segmentsRadius = segmentsRadius || 8;
-  this.closed = closed || false;
+ParametricGeometries.TubeGeometry = class TubeGeometry extends ParametricGeometry {
 
-  var scope = this,
-    numpoints = this.segments + 1;
+	constructor( path, segments = 64, radius = 1, segmentsRadius = 8, closed = false ) {
 
-  var frames = path.computeFrenetFrames(segments, closed),
-    tangents = frames.tangents,
-    normals = frames.normals,
-    binormals = frames.binormals;
+		const numpoints = segments + 1;
 
-  // proxy internals
+		const frames = path.computeFrenetFrames( segments, closed ),
+			tangents = frames.tangents,
+			normals = frames.normals,
+			binormals = frames.binormals;
 
-  this.tangents = tangents;
-  this.normals = normals;
-  this.binormals = binormals;
+		const position = new Vector3();
 
-  var position = new Vector3();
+		function ParametricTube( u, v, target ) {
 
-  var ParametricTube = function (u, v, target) {
-    v *= 2 * Math.PI;
+			v *= 2 * Math.PI;
 
-    var i = u * (numpoints - 1);
-    i = Math.floor(i);
+			const i = Math.floor( u * ( numpoints - 1 ) );
 
-    path.getPointAt(u, position);
+			path.getPointAt( u, position );
 
-    var normal = normals[i];
-    var binormal = binormals[i];
+			const normal = normals[ i ];
+			const binormal = binormals[ i ];
 
-    var cx = -scope.radius * Math.cos(v); // TODO: Hack: Negating it so it faces outside.
-    var cy = scope.radius * Math.sin(v);
+			const cx = - radius * Math.cos( v ); // TODO: Hack: Negating it so it faces outside.
+			const cy = radius * Math.sin( v );
 
-    position.x += cx * normal.x + cy * binormal.x;
-    position.y += cx * normal.y + cy * binormal.y;
-    position.z += cx * normal.z + cy * binormal.z;
+			position.x += cx * normal.x + cy * binormal.x;
+			position.y += cx * normal.y + cy * binormal.y;
+			position.z += cx * normal.z + cy * binormal.z;
 
-    target.copy(position);
-  };
+			target.copy( position );
 
-  ParametricGeometry.call(this, ParametricTube, segments, segmentsRadius);
+		}
+
+		super( ParametricTube, segments, segmentsRadius );
+
+		// proxy internals
+
+		this.tangents = tangents;
+		this.normals = normals;
+		this.binormals = binormals;
+
+		this.path = path;
+		this.segments = segments;
+		this.radius = radius;
+		this.segmentsRadius = segmentsRadius;
+		this.closed = closed;
+
+	}
+
 };
 
-ParametricGeometries.TubeGeometry.prototype = Object.create(
-  BufferGeometry.prototype,
-);
-ParametricGeometries.TubeGeometry.prototype.constructor =
-  ParametricGeometries.TubeGeometry;
 
 /*********************************************
- *
- * Parametric Replacement for TorusKnotGeometry
- *
- *********************************************/
-ParametricGeometries.TorusKnotGeometry = function (
-  radius,
-  tube,
-  segmentsT,
-  segmentsR,
-  p,
-  q,
-) {
-  this.radius = radius || 200;
-  this.tube = tube || 40;
-  this.segmentsT = segmentsT || 64;
-  this.segmentsR = segmentsR || 8;
-  this.p = p || 2;
-  this.q = q || 3;
+  *
+  * Parametric Replacement for TorusKnotGeometry
+  *
+  *********************************************/
+ParametricGeometries.TorusKnotGeometry = class TorusKnotGeometry extends ParametricGeometries.TubeGeometry {
 
-  function TorusKnotCurve() {
-    Curve.call(this);
-  }
+	constructor( radius = 200, tube = 40, segmentsT = 64, segmentsR = 8, p = 2, q = 3 ) {
 
-  TorusKnotCurve.prototype = Object.create(Curve.prototype);
-  TorusKnotCurve.prototype.constructor = TorusKnotCurve;
+		class TorusKnotCurve extends Curve {
 
-  TorusKnotCurve.prototype.getPoint = function (t, optionalTarget) {
-    var point = optionalTarget || new Vector3();
+			getPoint( t, optionalTarget = new Vector3() ) {
 
-    t *= Math.PI * 2;
+				const point = optionalTarget;
 
-    var r = 0.5;
+				t *= Math.PI * 2;
 
-    var x = (1 + r * Math.cos(q * t)) * Math.cos(p * t);
-    var y = (1 + r * Math.cos(q * t)) * Math.sin(p * t);
-    var z = r * Math.sin(q * t);
+				const r = 0.5;
 
-    return point.set(x, y, z).multiplyScalar(radius);
-  };
+				const x = ( 1 + r * Math.cos( q * t ) ) * Math.cos( p * t );
+				const y = ( 1 + r * Math.cos( q * t ) ) * Math.sin( p * t );
+				const z = r * Math.sin( q * t );
 
-  var segments = segmentsT;
-  var radiusSegments = segmentsR;
-  var extrudePath = new TorusKnotCurve();
+				return point.set( x, y, z ).multiplyScalar( radius );
 
-  ParametricGeometries.TubeGeometry.call(
-    this,
-    extrudePath,
-    segments,
-    tube,
-    radiusSegments,
-    true,
-    false,
-  );
+			}
+
+		}
+
+		const segments = segmentsT;
+		const radiusSegments = segmentsR;
+		const extrudePath = new TorusKnotCurve();
+
+		super( extrudePath, segments, tube, radiusSegments, true, false );
+
+		this.radius = radius;
+		this.tube = tube;
+		this.segmentsT = segmentsT;
+		this.segmentsR = segmentsR;
+		this.p = p;
+		this.q = q;
+
+	}
+
 };
-
-ParametricGeometries.TorusKnotGeometry.prototype = Object.create(
-  BufferGeometry.prototype,
-);
-ParametricGeometries.TorusKnotGeometry.prototype.constructor =
-  ParametricGeometries.TorusKnotGeometry;
 
 /*********************************************
- *
- * Parametric Replacement for SphereGeometry
- *
- *********************************************/
-ParametricGeometries.SphereGeometry = function (size, u, v) {
-  function sphere(u, v, target) {
-    u *= Math.PI;
-    v *= 2 * Math.PI;
+  *
+  * Parametric Replacement for SphereGeometry
+  *
+  *********************************************/
+ParametricGeometries.SphereGeometry = class SphereGeometry extends ParametricGeometry {
 
-    var x = size * Math.sin(u) * Math.cos(v);
-    var y = size * Math.sin(u) * Math.sin(v);
-    var z = size * Math.cos(u);
+	constructor( size, u, v ) {
 
-    target.set(x, y, z);
-  }
+		function sphere( u, v, target ) {
 
-  ParametricGeometry.call(this, sphere, u, v);
+			u *= Math.PI;
+			v *= 2 * Math.PI;
+
+			var x = size * Math.sin( u ) * Math.cos( v );
+			var y = size * Math.sin( u ) * Math.sin( v );
+			var z = size * Math.cos( u );
+
+			target.set( x, y, z );
+
+		}
+
+		super( sphere, u, v );
+
+	}
+
 };
 
-ParametricGeometries.SphereGeometry.prototype = Object.create(
-  BufferGeometry.prototype,
-);
-ParametricGeometries.SphereGeometry.prototype.constructor =
-  ParametricGeometries.SphereGeometry;
 
 /*********************************************
- *
- * Parametric Replacement for PlaneGeometry
- *
- *********************************************/
+  *
+  * Parametric Replacement for PlaneGeometry
+  *
+  *********************************************/
 
-ParametricGeometries.PlaneGeometry = function (
-  width,
-  depth,
-  segmentsWidth,
-  segmentsDepth,
-) {
-  function plane(u, v, target) {
-    var x = u * width;
-    var y = 0;
-    var z = v * depth;
+ParametricGeometries.PlaneGeometry = class PlaneGeometry extends ParametricGeometry {
 
-    target.set(x, y, z);
-  }
+	constructor( width, depth, segmentsWidth, segmentsDepth ) {
 
-  ParametricGeometry.call(this, plane, segmentsWidth, segmentsDepth);
+		function plane( u, v, target ) {
+
+			const x = u * width;
+			const y = 0;
+			const z = v * depth;
+
+			target.set( x, y, z );
+
+		}
+
+		super( plane, segmentsWidth, segmentsDepth );
+
+	}
+
 };
-
-ParametricGeometries.PlaneGeometry.prototype = Object.create(
-  BufferGeometry.prototype,
-);
-ParametricGeometries.PlaneGeometry.prototype.constructor =
-  ParametricGeometries.PlaneGeometry;
 
 export { ParametricGeometries };

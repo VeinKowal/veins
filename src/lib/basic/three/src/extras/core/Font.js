@@ -1,121 +1,141 @@
 import { ShapePath } from './ShapePath.js';
 
 class Font {
-  constructor(data) {
-    this.type = 'Font';
 
-    this.data = data;
-  }
+	constructor( data ) {
 
-  generateShapes(text, size = 100) {
-    const shapes = [];
-    const paths = createPaths(text, size, this.data);
+		this.type = 'Font';
 
-    for (let p = 0, pl = paths.length; p < pl; p++) {
-      Array.prototype.push.apply(shapes, paths[p].toShapes());
-    }
+		this.data = data;
 
-    return shapes;
-  }
+	}
+
+	generateShapes( text, size = 100 ) {
+
+		const shapes = [];
+		const paths = createPaths( text, size, this.data );
+
+		for ( let p = 0, pl = paths.length; p < pl; p ++ ) {
+
+			Array.prototype.push.apply( shapes, paths[ p ].toShapes() );
+
+		}
+
+		return shapes;
+
+	}
+
 }
 
-function createPaths(text, size, data) {
-  const chars = Array.from(text);
-  const scale = size / data.resolution;
-  const line_height =
-    (data.boundingBox.yMax - data.boundingBox.yMin + data.underlineThickness) *
-    scale;
+function createPaths( text, size, data ) {
 
-  const paths = [];
+	const chars = Array.from( text );
+	const scale = size / data.resolution;
+	const line_height = ( data.boundingBox.yMax - data.boundingBox.yMin + data.underlineThickness ) * scale;
 
-  let offsetX = 0,
-    offsetY = 0;
+	const paths = [];
 
-  for (let i = 0; i < chars.length; i++) {
-    const char = chars[i];
+	let offsetX = 0, offsetY = 0;
 
-    if (char === '\n') {
-      offsetX = 0;
-      offsetY -= line_height;
-    } else {
-      const ret = createPath(char, scale, offsetX, offsetY, data);
-      offsetX += ret.offsetX;
-      paths.push(ret.path);
-    }
-  }
+	for ( let i = 0; i < chars.length; i ++ ) {
 
-  return paths;
+		const char = chars[ i ];
+
+		if ( char === '\n' ) {
+
+			offsetX = 0;
+			offsetY -= line_height;
+
+		} else {
+
+			const ret = createPath( char, scale, offsetX, offsetY, data );
+			offsetX += ret.offsetX;
+			paths.push( ret.path );
+
+		}
+
+	}
+
+	return paths;
+
 }
 
-function createPath(char, scale, offsetX, offsetY, data) {
-  const glyph = data.glyphs[char] || data.glyphs['?'];
+function createPath( char, scale, offsetX, offsetY, data ) {
 
-  if (!glyph) {
-    console.error(
-      'THREE.Font: character "' +
-        char +
-        '" does not exists in font family ' +
-        data.familyName +
-        '.',
-    );
+	const glyph = data.glyphs[ char ] || data.glyphs[ '?' ];
 
-    return;
-  }
+	if ( ! glyph ) {
 
-  const path = new ShapePath();
+		console.error( 'THREE.Font: character "' + char + '" does not exists in font family ' + data.familyName + '.' );
 
-  let x, y, cpx, cpy, cpx1, cpy1, cpx2, cpy2;
+		return;
 
-  if (glyph.o) {
-    const outline =
-      glyph._cachedOutline || (glyph._cachedOutline = glyph.o.split(' '));
+	}
 
-    for (let i = 0, l = outline.length; i < l; ) {
-      const action = outline[i++];
+	const path = new ShapePath();
 
-      switch (action) {
-        case 'm': // moveTo
-          x = outline[i++] * scale + offsetX;
-          y = outline[i++] * scale + offsetY;
+	let x, y, cpx, cpy, cpx1, cpy1, cpx2, cpy2;
 
-          path.moveTo(x, y);
+	if ( glyph.o ) {
 
-          break;
+		const outline = glyph._cachedOutline || ( glyph._cachedOutline = glyph.o.split( ' ' ) );
 
-        case 'l': // lineTo
-          x = outline[i++] * scale + offsetX;
-          y = outline[i++] * scale + offsetY;
+		for ( let i = 0, l = outline.length; i < l; ) {
 
-          path.lineTo(x, y);
+			const action = outline[ i ++ ];
 
-          break;
+			switch ( action ) {
 
-        case 'q': // quadraticCurveTo
-          cpx = outline[i++] * scale + offsetX;
-          cpy = outline[i++] * scale + offsetY;
-          cpx1 = outline[i++] * scale + offsetX;
-          cpy1 = outline[i++] * scale + offsetY;
+				case 'm': // moveTo
 
-          path.quadraticCurveTo(cpx1, cpy1, cpx, cpy);
+					x = outline[ i ++ ] * scale + offsetX;
+					y = outline[ i ++ ] * scale + offsetY;
 
-          break;
+					path.moveTo( x, y );
 
-        case 'b': // bezierCurveTo
-          cpx = outline[i++] * scale + offsetX;
-          cpy = outline[i++] * scale + offsetY;
-          cpx1 = outline[i++] * scale + offsetX;
-          cpy1 = outline[i++] * scale + offsetY;
-          cpx2 = outline[i++] * scale + offsetX;
-          cpy2 = outline[i++] * scale + offsetY;
+					break;
 
-          path.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, cpx, cpy);
+				case 'l': // lineTo
 
-          break;
-      }
-    }
-  }
+					x = outline[ i ++ ] * scale + offsetX;
+					y = outline[ i ++ ] * scale + offsetY;
 
-  return { offsetX: glyph.ha * scale, path: path };
+					path.lineTo( x, y );
+
+					break;
+
+				case 'q': // quadraticCurveTo
+
+					cpx = outline[ i ++ ] * scale + offsetX;
+					cpy = outline[ i ++ ] * scale + offsetY;
+					cpx1 = outline[ i ++ ] * scale + offsetX;
+					cpy1 = outline[ i ++ ] * scale + offsetY;
+
+					path.quadraticCurveTo( cpx1, cpy1, cpx, cpy );
+
+					break;
+
+				case 'b': // bezierCurveTo
+
+					cpx = outline[ i ++ ] * scale + offsetX;
+					cpy = outline[ i ++ ] * scale + offsetY;
+					cpx1 = outline[ i ++ ] * scale + offsetX;
+					cpy1 = outline[ i ++ ] * scale + offsetY;
+					cpx2 = outline[ i ++ ] * scale + offsetX;
+					cpy2 = outline[ i ++ ] * scale + offsetY;
+
+					path.bezierCurveTo( cpx1, cpy1, cpx2, cpy2, cpx, cpy );
+
+					break;
+
+			}
+
+		}
+
+	}
+
+	return { offsetX: glyph.ha * scale, path: path };
+
 }
 
 Font.prototype.isFont = true;

@@ -7,198 +7,208 @@ import { Matrix3 } from '../../math/Matrix3.js';
  */
 
 const UniformsLib = {
-  common: {
-    diffuse: { value: new Color(0xeeeeee) },
-    opacity: { value: 1.0 },
 
-    map: { value: null },
-    uvTransform: { value: new Matrix3() },
-    uv2Transform: { value: new Matrix3() },
+	common: {
 
-    alphaMap: { value: null },
-  },
+		diffuse: { value: new Color( 0xffffff ) },
+		opacity: { value: 1.0 },
 
-  specularmap: {
-    specularMap: { value: null },
-  },
+		map: { value: null },
+		uvTransform: { value: new Matrix3() },
+		uv2Transform: { value: new Matrix3() },
 
-  envmap: {
-    envMap: { value: null },
-    flipEnvMap: { value: -1 },
-    reflectivity: { value: 1.0 },
-    refractionRatio: { value: 0.98 },
-    maxMipLevel: { value: 0 },
-  },
+		alphaMap: { value: null },
 
-  aomap: {
-    aoMap: { value: null },
-    aoMapIntensity: { value: 1 },
-  },
+	},
 
-  lightmap: {
-    lightMap: { value: null },
-    lightMapIntensity: { value: 1 },
-  },
+	specularmap: {
 
-  emissivemap: {
-    emissiveMap: { value: null },
-  },
+		specularMap: { value: null },
 
-  bumpmap: {
-    bumpMap: { value: null },
-    bumpScale: { value: 1 },
-  },
+	},
 
-  normalmap: {
-    normalMap: { value: null },
-    normalScale: { value: new Vector2(1, 1) },
-  },
+	envmap: {
 
-  displacementmap: {
-    displacementMap: { value: null },
-    displacementScale: { value: 1 },
-    displacementBias: { value: 0 },
-  },
+		envMap: { value: null },
+		flipEnvMap: { value: - 1 },
+		reflectivity: { value: 1.0 },
+		refractionRatio: { value: 0.98 },
+		maxMipLevel: { value: 0 }
 
-  roughnessmap: {
-    roughnessMap: { value: null },
-  },
+	},
 
-  metalnessmap: {
-    metalnessMap: { value: null },
-  },
+	aomap: {
 
-  gradientmap: {
-    gradientMap: { value: null },
-  },
+		aoMap: { value: null },
+		aoMapIntensity: { value: 1 }
 
-  fog: {
-    fogDensity: { value: 0.00025 },
-    fogNear: { value: 1 },
-    fogFar: { value: 2000 },
-    fogColor: { value: new Color(0xffffff) },
-  },
+	},
 
-  lights: {
-    ambientLightColor: { value: [] },
+	lightmap: {
 
-    lightProbe: { value: [] },
+		lightMap: { value: null },
+		lightMapIntensity: { value: 1 }
 
-    directionalLights: {
-      value: [],
-      properties: {
-        direction: {},
-        color: {},
-      },
-    },
+	},
 
-    directionalLightShadows: {
-      value: [],
-      properties: {
-        shadowBias: {},
-        shadowNormalBias: {},
-        shadowRadius: {},
-        shadowMapSize: {},
-      },
-    },
+	emissivemap: {
 
-    directionalShadowMap: { value: [] },
-    directionalShadowMatrix: { value: [] },
+		emissiveMap: { value: null }
 
-    spotLights: {
-      value: [],
-      properties: {
-        color: {},
-        position: {},
-        direction: {},
-        distance: {},
-        coneCos: {},
-        penumbraCos: {},
-        decay: {},
-      },
-    },
+	},
 
-    spotLightShadows: {
-      value: [],
-      properties: {
-        shadowBias: {},
-        shadowNormalBias: {},
-        shadowRadius: {},
-        shadowMapSize: {},
-      },
-    },
+	bumpmap: {
 
-    spotShadowMap: { value: [] },
-    spotShadowMatrix: { value: [] },
+		bumpMap: { value: null },
+		bumpScale: { value: 1 }
 
-    pointLights: {
-      value: [],
-      properties: {
-        color: {},
-        position: {},
-        decay: {},
-        distance: {},
-      },
-    },
+	},
 
-    pointLightShadows: {
-      value: [],
-      properties: {
-        shadowBias: {},
-        shadowNormalBias: {},
-        shadowRadius: {},
-        shadowMapSize: {},
-        shadowCameraNear: {},
-        shadowCameraFar: {},
-      },
-    },
+	normalmap: {
 
-    pointShadowMap: { value: [] },
-    pointShadowMatrix: { value: [] },
+		normalMap: { value: null },
+		normalScale: { value: new Vector2( 1, 1 ) }
 
-    hemisphereLights: {
-      value: [],
-      properties: {
-        direction: {},
-        skyColor: {},
-        groundColor: {},
-      },
-    },
+	},
 
-    // TODO (abelnation): RectAreaLight BRDF data needs to be moved from example to main src
-    rectAreaLights: {
-      value: [],
-      properties: {
-        color: {},
-        position: {},
-        width: {},
-        height: {},
-      },
-    },
+	displacementmap: {
 
-    ltc_1: { value: null },
-    ltc_2: { value: null },
-  },
+		displacementMap: { value: null },
+		displacementScale: { value: 1 },
+		displacementBias: { value: 0 }
 
-  points: {
-    diffuse: { value: new Color(0xeeeeee) },
-    opacity: { value: 1.0 },
-    size: { value: 1.0 },
-    scale: { value: 1.0 },
-    map: { value: null },
-    alphaMap: { value: null },
-    uvTransform: { value: new Matrix3() },
-  },
+	},
 
-  sprite: {
-    diffuse: { value: new Color(0xeeeeee) },
-    opacity: { value: 1.0 },
-    center: { value: new Vector2(0.5, 0.5) },
-    rotation: { value: 0.0 },
-    map: { value: null },
-    alphaMap: { value: null },
-    uvTransform: { value: new Matrix3() },
-  },
+	roughnessmap: {
+
+		roughnessMap: { value: null }
+
+	},
+
+	metalnessmap: {
+
+		metalnessMap: { value: null }
+
+	},
+
+	gradientmap: {
+
+		gradientMap: { value: null }
+
+	},
+
+	fog: {
+
+		fogDensity: { value: 0.00025 },
+		fogNear: { value: 1 },
+		fogFar: { value: 2000 },
+		fogColor: { value: new Color( 0xffffff ) }
+
+	},
+
+	lights: {
+
+		ambientLightColor: { value: [] },
+
+		lightProbe: { value: [] },
+
+		directionalLights: { value: [], properties: {
+			direction: {},
+			color: {}
+		} },
+
+		directionalLightShadows: { value: [], properties: {
+			shadowBias: {},
+			shadowNormalBias: {},
+			shadowRadius: {},
+			shadowMapSize: {}
+		} },
+
+		directionalShadowMap: { value: [] },
+		directionalShadowMatrix: { value: [] },
+
+		spotLights: { value: [], properties: {
+			color: {},
+			position: {},
+			direction: {},
+			distance: {},
+			coneCos: {},
+			penumbraCos: {},
+			decay: {}
+		} },
+
+		spotLightShadows: { value: [], properties: {
+			shadowBias: {},
+			shadowNormalBias: {},
+			shadowRadius: {},
+			shadowMapSize: {}
+		} },
+
+		spotShadowMap: { value: [] },
+		spotShadowMatrix: { value: [] },
+
+		pointLights: { value: [], properties: {
+			color: {},
+			position: {},
+			decay: {},
+			distance: {}
+		} },
+
+		pointLightShadows: { value: [], properties: {
+			shadowBias: {},
+			shadowNormalBias: {},
+			shadowRadius: {},
+			shadowMapSize: {},
+			shadowCameraNear: {},
+			shadowCameraFar: {}
+		} },
+
+		pointShadowMap: { value: [] },
+		pointShadowMatrix: { value: [] },
+
+		hemisphereLights: { value: [], properties: {
+			direction: {},
+			skyColor: {},
+			groundColor: {}
+		} },
+
+		// TODO (abelnation): RectAreaLight BRDF data needs to be moved from example to main src
+		rectAreaLights: { value: [], properties: {
+			color: {},
+			position: {},
+			width: {},
+			height: {}
+		} },
+
+		ltc_1: { value: null },
+		ltc_2: { value: null }
+
+	},
+
+	points: {
+
+		diffuse: { value: new Color( 0xffffff ) },
+		opacity: { value: 1.0 },
+		size: { value: 1.0 },
+		scale: { value: 1.0 },
+		map: { value: null },
+		alphaMap: { value: null },
+		uvTransform: { value: new Matrix3() }
+
+	},
+
+	sprite: {
+
+		diffuse: { value: new Color( 0xffffff ) },
+		opacity: { value: 1.0 },
+		center: { value: new Vector2( 0.5, 0.5 ) },
+		rotation: { value: 0.0 },
+		map: { value: null },
+		alphaMap: { value: null },
+		uvTransform: { value: new Matrix3() }
+
+	}
+
 };
 
 export { UniformsLib };

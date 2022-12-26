@@ -8,7 +8,6 @@ import { Vector3 } from '../math/Vector3.js';
  *  nearDistance: <float>,
  *  farDistance: <float>,
  *
- *  skinning: <bool>,
  *  morphTargets: <bool>,
  *
  *  map: new THREE.Texture( <Image> ),
@@ -23,51 +22,55 @@ import { Vector3 } from '../math/Vector3.js';
  */
 
 class MeshDistanceMaterial extends Material {
-  constructor(parameters) {
-    super();
 
-    this.type = 'MeshDistanceMaterial';
+	constructor( parameters ) {
 
-    this.referencePosition = new Vector3();
-    this.nearDistance = 1;
-    this.farDistance = 1000;
+		super();
 
-    this.skinning = false;
-    this.morphTargets = false;
+		this.type = 'MeshDistanceMaterial';
 
-    this.map = null;
+		this.referencePosition = new Vector3();
+		this.nearDistance = 1;
+		this.farDistance = 1000;
 
-    this.alphaMap = null;
+		this.morphTargets = false;
 
-    this.displacementMap = null;
-    this.displacementScale = 1;
-    this.displacementBias = 0;
+		this.map = null;
 
-    this.fog = false;
+		this.alphaMap = null;
 
-    this.setValues(parameters);
-  }
+		this.displacementMap = null;
+		this.displacementScale = 1;
+		this.displacementBias = 0;
 
-  copy(source) {
-    super.copy(source);
+		this.fog = false;
 
-    this.referencePosition.copy(source.referencePosition);
-    this.nearDistance = source.nearDistance;
-    this.farDistance = source.farDistance;
+		this.setValues( parameters );
 
-    this.skinning = source.skinning;
-    this.morphTargets = source.morphTargets;
+	}
 
-    this.map = source.map;
+	copy( source ) {
 
-    this.alphaMap = source.alphaMap;
+		super.copy( source );
 
-    this.displacementMap = source.displacementMap;
-    this.displacementScale = source.displacementScale;
-    this.displacementBias = source.displacementBias;
+		this.referencePosition.copy( source.referencePosition );
+		this.nearDistance = source.nearDistance;
+		this.farDistance = source.farDistance;
 
-    return this;
-  }
+		this.morphTargets = source.morphTargets;
+
+		this.map = source.map;
+
+		this.alphaMap = source.alphaMap;
+
+		this.displacementMap = source.displacementMap;
+		this.displacementScale = source.displacementScale;
+		this.displacementBias = source.displacementBias;
+
+		return this;
+
+	}
+
 }
 
 MeshDistanceMaterial.prototype.isMeshDistanceMaterial = true;

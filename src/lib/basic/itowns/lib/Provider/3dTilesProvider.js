@@ -1,24 +1,28 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.configureTile = configureTile;
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-var _B3dmParser = _interopRequireDefault(require('../Parser/B3dmParser'));
+var _B3dmParser = _interopRequireDefault(require("../Parser/B3dmParser"));
 
-var _PntsParser = _interopRequireDefault(require('../Parser/PntsParser'));
+var _PntsParser = _interopRequireDefault(require("../Parser/PntsParser"));
 
-var _Fetcher = _interopRequireDefault(require('./Fetcher'));
+var _Fetcher = _interopRequireDefault(require("./Fetcher"));
 
-var _Utf8Decoder = _interopRequireDefault(require('../Utils/Utf8Decoder'));
+var _Utf8Decoder = _interopRequireDefault(require("../Utils/Utf8Decoder"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function b3dmToMesh(data, layer, url) {
   var urlBase = THREE.LoaderUtils.extractUrlBase(url);
@@ -28,40 +32,36 @@ function b3dmToMesh(data, layer, url) {
     overrideMaterials: layer.overrideMaterials,
     doNotPatchMaterial: layer.doNotPatchMaterial,
     opacity: layer.opacity,
-    registeredExtensions: layer.registeredExtensions,
+    registeredExtensions: layer.registeredExtensions
   };
-  return _B3dmParser['default'].parse(data, options).then(function (result) {
+  return _B3dmParser["default"].parse(data, options).then(function (result) {
     var batchTable = result.batchTable; // object3d is actually a THREE.Scene
 
     var object3d = result.gltf.scene;
     return {
       batchTable: batchTable,
-      object3d: object3d,
+      object3d: object3d
     };
   });
 }
 
 function pntsParse(data, layer) {
-  return _PntsParser['default']
-    .parse(data, layer.registeredExtensions)
-    .then(function (result) {
-      var material = layer.material
-        ? layer.material.clone()
-        : new THREE.PointsMaterial({
-            size: 0.05,
-            vertexColors: true,
-          }); // creation points with geometry and material
+  return _PntsParser["default"].parse(data, layer.registeredExtensions).then(function (result) {
+    var material = layer.material ? layer.material.clone() : new THREE.PointsMaterial({
+      size: 0.05,
+      vertexColors: true
+    }); // creation points with geometry and material
 
-      var points = new THREE.Points(result.point.geometry, material);
+    var points = new THREE.Points(result.point.geometry, material);
 
-      if (result.point.offset) {
-        points.position.copy(result.point.offset);
-      }
+    if (result.point.offset) {
+      points.position.copy(result.point.offset);
+    }
 
-      return {
-        object3d: points,
-      };
-    });
+    return {
+      object3d: points
+    };
+  });
 }
 
 function configureTile(tile, layer, metadata, parent) {
@@ -117,56 +117,45 @@ function executeCommand(command) {
     var url = path.startsWith('http') ? path : metadata.baseURL + path;
     var supportedFormats = {
       b3dm: b3dmToMesh,
-      pnts: pntsParse,
+      pnts: pntsParse
     };
-    return _Fetcher['default']
-      .arrayBuffer(url, layer.source.networkOptions)
-      .then(function (result) {
-        if (result !== undefined) {
-          var func;
+    return _Fetcher["default"].arrayBuffer(url, layer.source.networkOptions).then(function (result) {
+      if (result !== undefined) {
+        var func;
 
-          var magic = _Utf8Decoder['default'].decode(
-            new Uint8Array(result, 0, 4),
-          );
+        var magic = _Utf8Decoder["default"].decode(new Uint8Array(result, 0, 4));
 
-          if (magic[0] === '{') {
-            result = JSON.parse(
-              _Utf8Decoder['default'].decode(new Uint8Array(result)),
-            );
-            var newPrefix = url.slice(0, url.lastIndexOf('/') + 1);
-            layer.tileset.extendTileset(
-              result,
-              metadata.tileId,
-              newPrefix,
-              layer.registeredExtensions,
-            );
-          } else if (magic == 'b3dm') {
-            func = supportedFormats.b3dm;
-          } else if (magic == 'pnts') {
-            func = supportedFormats.pnts;
-          } else {
-            return Promise.reject('Unsupported magic code '.concat(magic));
-          }
-
-          if (func) {
-            // TODO: request should be delayed if there is a viewerRequestVolume
-            return func(result, layer, url).then(function (content) {
-              tile.content = content.object3d;
-
-              if (content.batchTable) {
-                tile.batchTable = content.batchTable;
-              }
-
-              tile.add(content.object3d);
-              tile.traverse(setLayer);
-              return tile;
-            });
-          }
+        if (magic[0] === '{') {
+          result = JSON.parse(_Utf8Decoder["default"].decode(new Uint8Array(result)));
+          var newPrefix = url.slice(0, url.lastIndexOf('/') + 1);
+          layer.tileset.extendTileset(result, metadata.tileId, newPrefix, layer.registeredExtensions);
+        } else if (magic == 'b3dm') {
+          func = supportedFormats.b3dm;
+        } else if (magic == 'pnts') {
+          func = supportedFormats.pnts;
+        } else {
+          return Promise.reject("Unsupported magic code ".concat(magic));
         }
 
-        tile.traverse(setLayer);
-        return tile;
-      });
+        if (func) {
+          // TODO: request should be delayed if there is a viewerRequestVolume
+          return func(result, layer, url).then(function (content) {
+            tile.content = content.object3d;
+
+            if (content.batchTable) {
+              tile.batchTable = content.batchTable;
+            }
+
+            tile.add(content.object3d);
+            tile.traverse(setLayer);
+            return tile;
+          });
+        }
+      }
+
+      tile.traverse(setLayer);
+      return tile;
+    });
   } else {
     tile.traverse(setLayer);
     return Promise.resolve(tile);
@@ -174,6 +163,6 @@ function executeCommand(command) {
 }
 
 var _default = {
-  executeCommand: executeCommand,
+  executeCommand: executeCommand
 };
-exports['default'] = _default;
+exports["default"] = _default;

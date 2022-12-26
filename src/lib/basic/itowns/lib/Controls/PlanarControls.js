@@ -1,87 +1,50 @@
-'use strict';
+"use strict";
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] =
-  exports.PLANAR_CONTROL_EVENT =
-  exports.STATE =
-  exports.keys =
-    void 0;
+exports["default"] = exports.PLANAR_CONTROL_EVENT = exports.STATE = exports.keys = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _assertThisInitialized2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/assertThisInitialized'),
-);
+var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-var _MainLoop = require('../Core/MainLoop');
+var _MainLoop = require("../Core/MainLoop");
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 // event keycode
 var keys = {
   CTRL: 17,
   SPACE: 32,
   T: 84,
-  Y: 89,
+  Y: 89
 };
 exports.keys = keys;
 var mouseButtons = {
   LEFTCLICK: THREE.MOUSE.LEFT,
   MIDDLECLICK: THREE.MOUSE.MIDDLE,
-  RIGHTCLICK: THREE.MOUSE.RIGHT,
+  RIGHTCLICK: THREE.MOUSE.RIGHT
 };
 var currentPressedButton; // starting camera position and orientation target
 
@@ -98,17 +61,17 @@ var STATE = {
   PAN: 1,
   ROTATE: 2,
   TRAVEL: 3,
-  ORTHO_ZOOM: 4,
+  ORTHO_ZOOM: 4
 }; // cursor shape linked to control state
 
 exports.STATE = STATE;
 var cursor = {
-  default: 'auto',
+  "default": 'auto',
   drag: 'move',
   pan: 'cell',
   travel: 'wait',
   rotate: 'move',
-  ortho_zoom: 'wait',
+  ortho_zoom: 'wait'
 };
 var vectorZero = new THREE.Vector3(); // mouse movement
 
@@ -168,10 +131,10 @@ var defaultOptions = {
   handleCollision: true,
   minDistanceCollision: 30,
   enableSmartTravel: true,
-  enablePan: true,
+  enablePan: true
 };
 var PLANAR_CONTROL_EVENT = {
-  MOVED: 'moved',
+  MOVED: 'moved'
 };
 /**
  * Planar controls is a camera controller adapted for a planar view, with animated movements.
@@ -227,17 +190,16 @@ var PLANAR_CONTROL_EVENT = {
 
 exports.PLANAR_CONTROL_EVENT = PLANAR_CONTROL_EVENT;
 
-var PlanarControls = /*#__PURE__*/ (function (_THREE$EventDispatche) {
-  (0, _inherits2['default'])(PlanarControls, _THREE$EventDispatche);
+var PlanarControls = /*#__PURE__*/function (_THREE$EventDispatche) {
+  (0, _inherits2["default"])(PlanarControls, _THREE$EventDispatche);
 
   var _super = _createSuper(PlanarControls);
 
   function PlanarControls(view) {
     var _this;
 
-    var options =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    (0, _classCallCheck2['default'])(this, PlanarControls);
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    (0, _classCallCheck2["default"])(this, PlanarControls);
     _this = _super.call(this);
     _this.view = view;
     _this.camera = view.camera.camera3D;
@@ -254,51 +216,35 @@ var PlanarControls = /*#__PURE__*/ (function (_THREE$EventDispatche) {
 
       _this.maxAltitude = Infinity; // the zoom travel time (stored in `this.zoomTravelTime`) can't be `auto` with an orthographic camera
 
-      _this.zoomTravelTime =
-        typeof options.zoomTravelTime === 'number'
-          ? options.zoomTravelTime
-          : defaultOptions.zoomTravelTime;
+      _this.zoomTravelTime = typeof options.zoomTravelTime === 'number' ? options.zoomTravelTime : defaultOptions.zoomTravelTime;
     } else {
       // enable rotation movements
-      _this.enableRotation =
-        options.enableRotation === undefined
-          ? defaultOptions.enableRotation
-          : options.enableRotation;
+      _this.enableRotation = options.enableRotation === undefined ? defaultOptions.enableRotation : options.enableRotation;
       _this.rotateSpeed = options.rotateSpeed || defaultOptions.rotateSpeed; // enable pan movements
 
-      _this.enablePan =
-        options.enablePan === undefined
-          ? defaultOptions.enablePan
-          : options.enablePan; // minPanSpeed when close to the ground, maxPanSpeed when close to maxAltitude
+      _this.enablePan = options.enablePan === undefined ? defaultOptions.enablePan : options.enablePan; // minPanSpeed when close to the ground, maxPanSpeed when close to maxAltitude
 
       _this.minPanSpeed = options.minPanSpeed || defaultOptions.minPanSpeed;
       _this.maxPanSpeed = options.maxPanSpeed || defaultOptions.maxPanSpeed; // camera altitude is clamped under maxAltitude
 
       _this.maxAltitude = options.maxAltitude || defaultOptions.maxAltitude; // animation duration for the zoom
 
-      _this.zoomTravelTime =
-        options.zoomTravelTime || defaultOptions.zoomTravelTime;
+      _this.zoomTravelTime = options.zoomTravelTime || defaultOptions.zoomTravelTime;
     } // zoom movement is equal to the distance to the zoom target, multiplied by zoomFactor
 
+
     if (options.zoomInFactor) {
-      console.warn(
-        'Controls zoomInFactor parameter is deprecated. Use zoomFactor instead.',
-      );
+      console.warn('Controls zoomInFactor parameter is deprecated. Use zoomFactor instead.');
       options.zoomFactor = options.zoomFactor || options.zoomInFactor;
     }
 
     if (options.zoomOutFactor) {
-      console.warn(
-        'Controls zoomOutFactor parameter is deprecated. Use zoomFactor instead.',
-      );
-      options.zoomFactor =
-        options.zoomFactor || options.zoomInFactor || 1 / options.zoomOutFactor;
+      console.warn('Controls zoomOutFactor parameter is deprecated. Use zoomFactor instead.');
+      options.zoomFactor = options.zoomFactor || options.zoomInFactor || 1 / options.zoomOutFactor;
     }
 
     if (options.zoomFactor === 0) {
-      console.warn(
-        'Controls zoomFactor parameter can not be equal to 0. Its value will be set to default.',
-      );
+      console.warn('Controls zoomFactor parameter can not be equal to 0. Its value will be set to default.');
       options.zoomFactor = defaultOptions.zoomFactor;
     }
 
@@ -310,60 +256,37 @@ var PlanarControls = /*#__PURE__*/ (function (_THREE$EventDispatche) {
 
     _this.groundLevel = options.groundLevel || defaultOptions.groundLevel; // min and max duration in seconds, for animated travels with `auto` parameter
 
-    _this.autoTravelTimeMin =
-      options.autoTravelTimeMin || defaultOptions.autoTravelTimeMin;
-    _this.autoTravelTimeMax =
-      options.autoTravelTimeMax || defaultOptions.autoTravelTimeMax; // max travel duration is reached for this travel distance (empirical smoothing value)
+    _this.autoTravelTimeMin = options.autoTravelTimeMin || defaultOptions.autoTravelTimeMin;
+    _this.autoTravelTimeMax = options.autoTravelTimeMax || defaultOptions.autoTravelTimeMax; // max travel duration is reached for this travel distance (empirical smoothing value)
 
-    _this.autoTravelTimeDist =
-      options.autoTravelTimeDist || defaultOptions.autoTravelTimeDist; // after a smartZoom, camera height above ground will be between these two values
+    _this.autoTravelTimeDist = options.autoTravelTimeDist || defaultOptions.autoTravelTimeDist; // after a smartZoom, camera height above ground will be between these two values
 
     if (options.smartZoomHeightMin) {
-      console.warn(
-        'Controls smartZoomHeightMin parameter is deprecated. Use smartTravelHeightMin instead.',
-      );
-      options.smartTravelHeightMin =
-        options.smartTravelHeightMin || options.smartZoomHeightMin;
+      console.warn('Controls smartZoomHeightMin parameter is deprecated. Use smartTravelHeightMin instead.');
+      options.smartTravelHeightMin = options.smartTravelHeightMin || options.smartZoomHeightMin;
     }
 
     if (options.smartZoomHeightMax) {
-      console.warn(
-        'Controls smartZoomHeightMax parameter is deprecated. Use smartTravelHeightMax instead.',
-      );
-      options.smartTravelHeightMax =
-        options.smartTravelHeightMax || options.smartZoomHeightMax;
+      console.warn('Controls smartZoomHeightMax parameter is deprecated. Use smartTravelHeightMax instead.');
+      options.smartTravelHeightMax = options.smartTravelHeightMax || options.smartZoomHeightMax;
     }
 
-    _this.smartTravelHeightMin =
-      options.smartTravelHeightMin || defaultOptions.smartTravelHeightMin;
-    _this.smartTravelHeightMax =
-      options.smartTravelHeightMax || defaultOptions.smartTravelHeightMax; // if set to true, animated travels have 0 duration
+    _this.smartTravelHeightMin = options.smartTravelHeightMin || defaultOptions.smartTravelHeightMin;
+    _this.smartTravelHeightMax = options.smartTravelHeightMax || defaultOptions.smartTravelHeightMax; // if set to true, animated travels have 0 duration
 
     _this.instantTravel = options.instantTravel || defaultOptions.instantTravel; // the zenith angle for a camera rotation will be between these two values
 
-    _this.minZenithAngle =
-      ((options.minZenithAngle || defaultOptions.minZenithAngle) * Math.PI) /
-      180; // max value should be less than 90 deg (90 = parallel to the ground)
+    _this.minZenithAngle = (options.minZenithAngle || defaultOptions.minZenithAngle) * Math.PI / 180; // max value should be less than 90 deg (90 = parallel to the ground)
 
-    _this.maxZenithAngle =
-      ((options.maxZenithAngle || defaultOptions.maxZenithAngle) * Math.PI) /
-      180; // focus policy options
+    _this.maxZenithAngle = (options.maxZenithAngle || defaultOptions.maxZenithAngle) * Math.PI / 180; // focus policy options
 
-    _this.focusOnMouseOver =
-      options.focusOnMouseOver || defaultOptions.focusOnMouseOver;
-    _this.focusOnMouseClick =
-      options.focusOnMouseClick || defaultOptions.focusOnMouseClick; // set collision options
+    _this.focusOnMouseOver = options.focusOnMouseOver || defaultOptions.focusOnMouseOver;
+    _this.focusOnMouseClick = options.focusOnMouseClick || defaultOptions.focusOnMouseClick; // set collision options
 
-    _this.handleCollision =
-      options.handleCollision === undefined
-        ? defaultOptions.handleCollision
-        : options.handleCollision;
+    _this.handleCollision = options.handleCollision === undefined ? defaultOptions.handleCollision : options.handleCollision;
     _this.minDistanceCollision = defaultOptions.minDistanceCollision; // enable smart travel
 
-    _this.enableSmartTravel =
-      options.enableSmartTravel === undefined
-        ? defaultOptions.enableSmartTravel
-        : options.enableSmartTravel;
+    _this.enableSmartTravel = options.enableSmartTravel === undefined ? defaultOptions.enableSmartTravel : options.enableSmartTravel;
     startPosition.copy(_this.camera.position);
     startQuaternion.copy(_this.camera.quaternion); // control state
 
@@ -372,1046 +295,860 @@ var PlanarControls = /*#__PURE__*/ (function (_THREE$EventDispatche) {
 
     if (_this.view.controls) {
       // esLint-disable-next-line no-console
-      console.warn(
-        'Deprecated use of PlanarControls. See examples to correct PlanarControls implementation.',
-      );
+      console.warn('Deprecated use of PlanarControls. See examples to correct PlanarControls implementation.');
 
       _this.view.controls.dispose();
     }
 
-    _this.view.controls = (0, _assertThisInitialized2['default'])(_this); // eventListeners handlers
+    _this.view.controls = (0, _assertThisInitialized2["default"])(_this); // eventListeners handlers
 
-    _this._handlerOnKeyDown = _this.onKeyDown.bind(
-      (0, _assertThisInitialized2['default'])(_this),
-    );
-    _this._handlerOnMouseDown = _this.onMouseDown.bind(
-      (0, _assertThisInitialized2['default'])(_this),
-    );
-    _this._handlerOnMouseUp = _this.onMouseUp.bind(
-      (0, _assertThisInitialized2['default'])(_this),
-    );
-    _this._handlerOnMouseMove = _this.onMouseMove.bind(
-      (0, _assertThisInitialized2['default'])(_this),
-    );
-    _this._handlerOnMouseWheel = _this.onMouseWheel.bind(
-      (0, _assertThisInitialized2['default'])(_this),
-    );
-    _this._handlerFocusOnMouseClick = _this.onMouseClick.bind(
-      (0, _assertThisInitialized2['default'])(_this),
-    );
-    _this._handlerFocusOnMouseOver = _this.onMouseOver.bind(
-      (0, _assertThisInitialized2['default'])(_this),
-    );
-    _this._handlerContextMenu = _this.onContextMenu.bind(
-      (0, _assertThisInitialized2['default'])(_this),
-    );
-    _this._handlerUpdate = _this.update.bind(
-      (0, _assertThisInitialized2['default'])(_this),
-    ); // add this PlanarControl instance to the view's frameRequesters
+    _this._handlerOnKeyDown = _this.onKeyDown.bind((0, _assertThisInitialized2["default"])(_this));
+    _this._handlerOnMouseDown = _this.onMouseDown.bind((0, _assertThisInitialized2["default"])(_this));
+    _this._handlerOnMouseUp = _this.onMouseUp.bind((0, _assertThisInitialized2["default"])(_this));
+    _this._handlerOnMouseMove = _this.onMouseMove.bind((0, _assertThisInitialized2["default"])(_this));
+    _this._handlerOnMouseWheel = _this.onMouseWheel.bind((0, _assertThisInitialized2["default"])(_this));
+    _this._handlerFocusOnMouseClick = _this.onMouseClick.bind((0, _assertThisInitialized2["default"])(_this));
+    _this._handlerFocusOnMouseOver = _this.onMouseOver.bind((0, _assertThisInitialized2["default"])(_this));
+    _this._handlerContextMenu = _this.onContextMenu.bind((0, _assertThisInitialized2["default"])(_this));
+    _this._handlerUpdate = _this.update.bind((0, _assertThisInitialized2["default"])(_this)); // add this PlanarControl instance to the view's frameRequesters
     // with this, PlanarControl.update() will be called each frame
 
-    _this.view.addFrameRequester(
-      _MainLoop.MAIN_LOOP_EVENTS.AFTER_CAMERA_UPDATE,
-      _this._handlerUpdate,
-    ); // event listeners for user input (to activate the controls)
+    _this.view.addFrameRequester(_MainLoop.MAIN_LOOP_EVENTS.AFTER_CAMERA_UPDATE, _this._handlerUpdate); // event listeners for user input (to activate the controls)
+
 
     _this.addInputListeners();
 
     return _this;
   }
 
-  (0, _createClass2['default'])(PlanarControls, [
-    {
-      key: 'dispose',
-      value: function dispose() {
-        this.removeInputListeners();
-        this.view.removeFrameRequester(
-          _MainLoop.MAIN_LOOP_EVENTS.AFTER_CAMERA_UPDATE,
-          this._handlerUpdate,
-        );
-      },
-      /**
-       * update the view and camera if needed, and handles the animated travel
-       * @param   {number}    dt                  the delta time between two updates in millisecond
-       * @param   {boolean}   updateLoopRestarted true if we just started rendering
-       * @ignore
-       */
-    },
-    {
-      key: 'update',
-      value: function update(dt, updateLoopRestarted) {
-        // dt will not be relevant when we just started rendering. We consider a 1-frame move in this case
-        if (updateLoopRestarted) {
-          dt = 16;
+  (0, _createClass2["default"])(PlanarControls, [{
+    key: "dispose",
+    value: function dispose() {
+      this.removeInputListeners();
+      this.view.removeFrameRequester(_MainLoop.MAIN_LOOP_EVENTS.AFTER_CAMERA_UPDATE, this._handlerUpdate);
+    }
+    /**
+     * update the view and camera if needed, and handles the animated travel
+     * @param   {number}    dt                  the delta time between two updates in millisecond
+     * @param   {boolean}   updateLoopRestarted true if we just started rendering
+     * @ignore
+     */
+
+  }, {
+    key: "update",
+    value: function update(dt, updateLoopRestarted) {
+      // dt will not be relevant when we just started rendering. We consider a 1-frame move in this case
+      if (updateLoopRestarted) {
+        dt = 16;
+      }
+
+      var onMovement = this.state !== STATE.NONE;
+
+      switch (this.state) {
+        case STATE.TRAVEL:
+          this.handleTravel(dt);
+          this.view.notifyChange(this.camera);
+          break;
+
+        case STATE.ORTHO_ZOOM:
+          this.handleZoomOrtho(dt);
+          this.view.notifyChange(this.camera);
+          break;
+
+        case STATE.DRAG:
+          this.handleDragMovement();
+          this.view.notifyChange(this.camera);
+          break;
+
+        case STATE.ROTATE:
+          this.handleRotation();
+          this.view.notifyChange(this.camera);
+          break;
+
+        case STATE.PAN:
+          this.handlePanMovement();
+          this.view.notifyChange(this.camera);
+          break;
+
+        case STATE.NONE:
+        default:
+          break;
+      } // We test if camera collides to the geometry layer or is too close to the ground, and adjust its altitude in
+      // case
+
+
+      if (this.handleCollision) {
+        // check distance to the ground/surface geometry (could be another geometry layer)
+        this.view.camera.adjustAltitudeToAvoidCollisionWithLayer(this.view, this.view.tileLayer, this.minDistanceCollision);
+      }
+
+      if (onMovement) {
+        this.view.dispatchEvent({
+          type: PLANAR_CONTROL_EVENT.MOVED
+        });
+      }
+
+      deltaMousePosition.set(0, 0);
+    }
+    /**
+     * Initiate a drag movement (translation on (xy) plane). The movement value is derived from the actual world
+     * point under the mouse cursor. This allows user to 'grab' a world point and drag it to move.
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "initiateDrag",
+    value: function initiateDrag() {
+      this.state = STATE.DRAG; // the world point under mouse cursor when the drag movement is started
+
+      dragStart.copy(this.getWorldPointAtScreenXY(mousePosition)); // the difference between start and end cursor position
+
+      dragDelta.set(0, 0, 0);
+    }
+    /**
+     * Handle the drag movement (translation on (xy) plane) when user moves the mouse while in STATE.DRAG. The
+     * drag movement is previously initiated by [initiateDrag]{@link PlanarControls#initiateDrag}. Compute the
+     * drag value and update the camera controls. The movement value is derived from the actual world point under
+     * the mouse cursor. This allows the user to 'grab' a world point and drag it to move.
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "handleDragMovement",
+    value: function handleDragMovement() {
+      // the world point under the current mouse cursor position, at same altitude than dragStart
+      this.getWorldPointFromMathPlaneAtScreenXY(mousePosition, dragStart.z, dragEnd); // the difference between start and end cursor position
+
+      dragDelta.subVectors(dragStart, dragEnd); // update the camera position
+
+      this.camera.position.add(dragDelta);
+      dragDelta.set(0, 0, 0);
+    }
+    /**
+     * Initiate a pan movement (local translation on (xz) plane).
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "initiatePan",
+    value: function initiatePan() {
+      this.state = STATE.PAN;
+    }
+    /**
+     * Handle the pan movement (translation on local x / world z plane) when user moves the mouse while
+     * STATE.PAN. The drag movement is previously initiated by [initiatePan]{@link PlanarControls#initiatePan}.
+     * Compute the pan value and update the camera controls.
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "handlePanMovement",
+    value: function handlePanMovement() {
+      vect.set(-deltaMousePosition.x, deltaMousePosition.y, 0);
+      this.camera.localToWorld(vect);
+      this.camera.position.copy(vect);
+    }
+    /**
+     * Initiate a rotate (orbit) movement.
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "initiateRotation",
+    value: function initiateRotation() {
+      this.state = STATE.ROTATE;
+      centerPoint.copy(this.getWorldPointAtScreenXY(new THREE.Vector2(0.5 * this.view.mainLoop.gfxEngine.width, 0.5 * this.view.mainLoop.gfxEngine.height)));
+      var radius = this.camera.position.distanceTo(centerPoint);
+      phi = Math.acos((this.camera.position.z - centerPoint.z) / radius);
+    }
+    /**
+     * Handle the rotate movement (orbit) when user moves the mouse while in STATE.ROTATE. The movement is an
+     * orbit around `centerPoint`, the camera focus point (ground point at screen center). The rotate movement
+     * is previously initiated in [initiateRotation]{@link PlanarControls#initiateRotation}.
+     * Compute the new position value and update the camera controls.
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "handleRotation",
+    value: function handleRotation() {
+      // angle deltas
+      // deltaMousePosition is computed in onMouseMove / onMouseDowns
+      var thetaDelta = -this.rotateSpeed * deltaMousePosition.x / this.view.mainLoop.gfxEngine.width;
+      var phiDelta = -this.rotateSpeed * deltaMousePosition.y / this.view.mainLoop.gfxEngine.height; // the vector from centerPoint (focus point) to camera position
+
+      var offset = this.camera.position.clone().sub(centerPoint);
+
+      if (thetaDelta !== 0 || phiDelta !== 0) {
+        if (phi + phiDelta >= this.minZenithAngle && phi + phiDelta <= this.maxZenithAngle && phiDelta !== 0) {
+          // rotation around X (altitude)
+          phi += phiDelta;
+          vect.set(0, 0, 1);
+          quat.setFromUnitVectors(this.camera.up, vect);
+          offset.applyQuaternion(quat);
+          vect.setFromMatrixColumn(this.camera.matrix, 0);
+          quat.setFromAxisAngle(vect, phiDelta);
+          offset.applyQuaternion(quat);
+          vect.set(0, 0, 1);
+          quat.setFromUnitVectors(this.camera.up, vect).invert();
+          offset.applyQuaternion(quat);
         }
 
-        var onMovement = this.state !== STATE.NONE;
-
-        switch (this.state) {
-          case STATE.TRAVEL:
-            this.handleTravel(dt);
-            this.view.notifyChange(this.camera);
-            break;
-
-          case STATE.ORTHO_ZOOM:
-            this.handleZoomOrtho(dt);
-            this.view.notifyChange(this.camera);
-            break;
-
-          case STATE.DRAG:
-            this.handleDragMovement();
-            this.view.notifyChange(this.camera);
-            break;
-
-          case STATE.ROTATE:
-            this.handleRotation();
-            this.view.notifyChange(this.camera);
-            break;
-
-          case STATE.PAN:
-            this.handlePanMovement();
-            this.view.notifyChange(this.camera);
-            break;
-
-          case STATE.NONE:
-          default:
-            break;
-        } // We test if camera collides to the geometry layer or is too close to the ground, and adjust its altitude in
-        // case
-
-        if (this.handleCollision) {
-          // check distance to the ground/surface geometry (could be another geometry layer)
-          this.view.camera.adjustAltitudeToAvoidCollisionWithLayer(
-            this.view,
-            this.view.tileLayer,
-            this.minDistanceCollision,
-          );
+        if (thetaDelta !== 0) {
+          // rotation around Z (azimuth)
+          vect.set(0, 0, 1);
+          quat.setFromAxisAngle(vect, thetaDelta);
+          offset.applyQuaternion(quat);
         }
+      }
 
-        if (onMovement) {
-          this.view.dispatchEvent({
-            type: PLANAR_CONTROL_EVENT.MOVED,
-          });
-        }
+      this.camera.position.copy(offset); // TODO : lookAt calls an updateMatrixWorld(). It should be replaced by a new method that does not.
 
-        deltaMousePosition.set(0, 0);
-      },
-      /**
-       * Initiate a drag movement (translation on (xy) plane). The movement value is derived from the actual world
-       * point under the mouse cursor. This allows user to 'grab' a world point and drag it to move.
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'initiateDrag',
-      value: function initiateDrag() {
-        this.state = STATE.DRAG; // the world point under mouse cursor when the drag movement is started
+      this.camera.lookAt(vectorZero);
+      this.camera.position.add(centerPoint);
+      this.camera.updateMatrixWorld();
+    }
+    /**
+     * Triggers a Zoom animated movement (travel) toward / away from the world point under the mouse cursor. The
+     * zoom intensity varies according to the distance between the camera and the point. The closer to the ground,
+     * the lower the intensity. Orientation will not change (null parameter in the call to
+     * [initiateTravel]{@link PlanarControls#initiateTravel} function).
+     *
+     * @param   {Event} event   the mouse wheel event.
+     * @ignore
+     */
 
-        dragStart.copy(this.getWorldPointAtScreenXY(mousePosition)); // the difference between start and end cursor position
+  }, {
+    key: "initiateZoom",
+    value: function initiateZoom(event) {
+      var delta; // mousewheel delta
 
-        dragDelta.set(0, 0, 0);
-      },
-      /**
-       * Handle the drag movement (translation on (xy) plane) when user moves the mouse while in STATE.DRAG. The
-       * drag movement is previously initiated by [initiateDrag]{@link PlanarControls#initiateDrag}. Compute the
-       * drag value and update the camera controls. The movement value is derived from the actual world point under
-       * the mouse cursor. This allows the user to 'grab' a world point and drag it to move.
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'handleDragMovement',
-      value: function handleDragMovement() {
-        // the world point under the current mouse cursor position, at same altitude than dragStart
-        this.getWorldPointFromMathPlaneAtScreenXY(
-          mousePosition,
-          dragStart.z,
-          dragEnd,
-        ); // the difference between start and end cursor position
+      if (undefined !== event.wheelDelta) {
+        delta = event.wheelDelta;
+      } else if (undefined !== event.detail) {
+        delta = -event.detail;
+      }
 
-        dragDelta.subVectors(dragStart, dragEnd); // update the camera position
+      pointUnderCursor.copy(this.getWorldPointAtScreenXY(mousePosition));
+      var newPos = new THREE.Vector3();
 
-        this.camera.position.add(dragDelta);
-        dragDelta.set(0, 0, 0);
-      },
-      /**
-       * Initiate a pan movement (local translation on (xz) plane).
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'initiatePan',
-      value: function initiatePan() {
-        this.state = STATE.PAN;
-      },
-      /**
-       * Handle the pan movement (translation on local x / world z plane) when user moves the mouse while
-       * STATE.PAN. The drag movement is previously initiated by [initiatePan]{@link PlanarControls#initiatePan}.
-       * Compute the pan value and update the camera controls.
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'handlePanMovement',
-      value: function handlePanMovement() {
-        vect.set(-deltaMousePosition.x, deltaMousePosition.y, 0);
-        this.camera.localToWorld(vect);
-        this.camera.position.copy(vect);
-      },
-      /**
-       * Initiate a rotate (orbit) movement.
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'initiateRotation',
-      value: function initiateRotation() {
-        this.state = STATE.ROTATE;
-        centerPoint.copy(
-          this.getWorldPointAtScreenXY(
-            new THREE.Vector2(
-              0.5 * this.view.mainLoop.gfxEngine.width,
-              0.5 * this.view.mainLoop.gfxEngine.height,
-            ),
-          ),
-        );
-        var radius = this.camera.position.distanceTo(centerPoint);
-        phi = Math.acos((this.camera.position.z - centerPoint.z) / radius);
-      },
-      /**
-       * Handle the rotate movement (orbit) when user moves the mouse while in STATE.ROTATE. The movement is an
-       * orbit around `centerPoint`, the camera focus point (ground point at screen center). The rotate movement
-       * is previously initiated in [initiateRotation]{@link PlanarControls#initiateRotation}.
-       * Compute the new position value and update the camera controls.
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'handleRotation',
-      value: function handleRotation() {
-        // angle deltas
-        // deltaMousePosition is computed in onMouseMove / onMouseDowns
-        var thetaDelta =
-          (-this.rotateSpeed * deltaMousePosition.x) /
-          this.view.mainLoop.gfxEngine.width;
-        var phiDelta =
-          (-this.rotateSpeed * deltaMousePosition.y) /
-          this.view.mainLoop.gfxEngine.height; // the vector from centerPoint (focus point) to camera position
+      if (delta > 0 || delta < 0 && this.maxAltitude > this.camera.position.z) {
+        var zoomFactor = delta > 0 ? this.zoomInFactor : this.zoomOutFactor; // do not zoom if the resolution after the zoom is outside resolution limits
 
-        var offset = this.camera.position.clone().sub(centerPoint);
+        var endResolution = this.view.getPixelsToMeters() / zoomFactor;
 
-        if (thetaDelta !== 0 || phiDelta !== 0) {
-          if (
-            phi + phiDelta >= this.minZenithAngle &&
-            phi + phiDelta <= this.maxZenithAngle &&
-            phiDelta !== 0
-          ) {
-            // rotation around X (altitude)
-            phi += phiDelta;
-            vect.set(0, 0, 1);
-            quat.setFromUnitVectors(this.camera.up, vect);
-            offset.applyQuaternion(quat);
-            vect.setFromMatrixColumn(this.camera.matrix, 0);
-            quat.setFromAxisAngle(vect, phiDelta);
-            offset.applyQuaternion(quat);
-            vect.set(0, 0, 1);
-            quat.setFromUnitVectors(this.camera.up, vect).invert();
-            offset.applyQuaternion(quat);
-          }
+        if (this.maxResolution > endResolution || endResolution > this.minResolution) {
+          return;
+        } // change the camera field of view if the camera is orthographic
 
-          if (thetaDelta !== 0) {
-            // rotation around Z (azimuth)
-            vect.set(0, 0, 1);
-            quat.setFromAxisAngle(vect, thetaDelta);
-            offset.applyQuaternion(quat);
-          }
-        }
-
-        this.camera.position.copy(offset); // TODO : lookAt calls an updateMatrixWorld(). It should be replaced by a new method that does not.
-
-        this.camera.lookAt(vectorZero);
-        this.camera.position.add(centerPoint);
-        this.camera.updateMatrixWorld();
-      },
-      /**
-       * Triggers a Zoom animated movement (travel) toward / away from the world point under the mouse cursor. The
-       * zoom intensity varies according to the distance between the camera and the point. The closer to the ground,
-       * the lower the intensity. Orientation will not change (null parameter in the call to
-       * [initiateTravel]{@link PlanarControls#initiateTravel} function).
-       *
-       * @param   {Event} event   the mouse wheel event.
-       * @ignore
-       */
-    },
-    {
-      key: 'initiateZoom',
-      value: function initiateZoom(event) {
-        var delta; // mousewheel delta
-
-        if (undefined !== event.wheelDelta) {
-          delta = event.wheelDelta;
-        } else if (undefined !== event.detail) {
-          delta = -event.detail;
-        }
-
-        pointUnderCursor.copy(this.getWorldPointAtScreenXY(mousePosition));
-        var newPos = new THREE.Vector3();
-
-        if (
-          delta > 0 ||
-          (delta < 0 && this.maxAltitude > this.camera.position.z)
-        ) {
-          var zoomFactor = delta > 0 ? this.zoomInFactor : this.zoomOutFactor; // do not zoom if the resolution after the zoom is outside resolution limits
-
-          var endResolution = this.view.getPixelsToMeters() / zoomFactor;
-
-          if (
-            this.maxResolution > endResolution ||
-            endResolution > this.minResolution
-          ) {
-            return;
-          } // change the camera field of view if the camera is orthographic
-
-          if (this.camera.isOrthographicCamera) {
-            // switch state to STATE.ZOOM
-            this.state = STATE.ORTHO_ZOOM;
-            this.view.notifyChange(this.camera); // camera zoom at the beginning of zoom movement
-
-            startZoom = this.camera.zoom; // camera zoom at the end of zoom movement
-
-            endZoom = startZoom * zoomFactor; // the altitude of the target must be the same as camera's
-
-            pointUnderCursor.z = this.camera.position.z;
-            travelAlpha = 0;
-            travelDuration = this.zoomTravelTime;
-            this.updateMouseCursorType();
-          } else {
-            // target position
-            newPos.lerpVectors(
-              this.camera.position,
-              pointUnderCursor,
-              1 - 1 / zoomFactor,
-            ); // initiate travel
-
-            this.initiateTravel(newPos, this.zoomTravelTime, null, false);
-          }
-        }
-      },
-      /**
-       * Handle the animated zoom change for an orthographic camera, when state is `ZOOM`.
-       *
-       * @param   {number}    dt  the delta time between two updates in milliseconds
-       * @ignore
-       */
-    },
-    {
-      key: 'handleZoomOrtho',
-      value: function handleZoomOrtho(dt) {
-        travelAlpha = Math.min(travelAlpha + dt / 1000 / travelDuration, 1); // new zoom
-
-        var zoom = startZoom + travelAlpha * (endZoom - startZoom);
-
-        if (this.camera.zoom !== zoom) {
-          // zoom has changed
-          this.camera.zoom = zoom;
-          this.camera.updateProjectionMatrix(); // current world coordinates under the mouse
-
-          this.view.viewToNormalizedCoords(mousePosition, vect);
-          vect.z = 0;
-          vect.unproject(this.camera); // new camera position
-
-          this.camera.position.x += pointUnderCursor.x - vect.x;
-          this.camera.position.y += pointUnderCursor.y - vect.y;
-          this.camera.updateMatrixWorld(true);
-        } // completion test
-
-        this.testAnimationEnd();
-      },
-      /**
-       * Triggers a 'smart zoom' animated movement (travel) toward the point under mouse cursor. The camera will be
-       * smoothly moved and oriented close to the target, at a determined height and distance.
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'initiateSmartTravel',
-      value: function initiateSmartTravel() {
-        var pointUnderCursor = this.getWorldPointAtScreenXY(mousePosition); // direction of the movement, projected on xy plane and normalized
-
-        var dir = new THREE.Vector3();
-        dir.copy(pointUnderCursor).sub(this.camera.position);
-        dir.z = 0;
-        dir.normalize();
-        var distanceToPoint = this.camera.position.distanceTo(pointUnderCursor); // camera height (altitude above ground) at the end of the travel, 5000 is an empirical smoothing distance
-
-        var targetHeight = THREE.MathUtils.lerp(
-          this.smartTravelHeightMin,
-          this.smartTravelHeightMax,
-          Math.min(distanceToPoint / 5000, 1),
-        ); // camera position at the end of the travel
-
-        var moveTarget = new THREE.Vector3();
-        moveTarget.copy(pointUnderCursor);
-
-        if (this.enableRotation) {
-          moveTarget.add(dir.multiplyScalar(-targetHeight * 2));
-        }
-
-        moveTarget.z = pointUnderCursor.z + targetHeight;
 
         if (this.camera.isOrthographicCamera) {
-          startZoom = this.camera.zoom; // camera zoom at the end of the travel, 5000 is an empirical smoothing distance
+          // switch state to STATE.ZOOM
+          this.state = STATE.ORTHO_ZOOM;
+          this.view.notifyChange(this.camera); // camera zoom at the beginning of zoom movement
 
-          endZoom = startZoom * (1 + Math.min(distanceToPoint / 5000, 1));
-          moveTarget.z = this.camera.position.z;
-        } // initiate the travel
+          startZoom = this.camera.zoom; // camera zoom at the end of zoom movement
 
-        this.initiateTravel(moveTarget, 'auto', pointUnderCursor, true);
-      },
-      /**
-       * Triggers an animated movement and rotation for the camera.
-       *
-       * @param   {THREE.Vector3} targetPos   The target position of the camera (reached at the end).
-       * @param   {number|string}        travelTime  Set to `auto` or set to a duration in seconds. If set to `auto`,
-       * travel time will be set to a duration between `autoTravelTimeMin` and `autoTravelTimeMax` according to
-       * the distance and the angular difference between start and finish.
-       * @param   {(string|THREE.Vector3|THREE.Quaternion)}   targetOrientation   define the target rotation of
-       * the camera :
-       * <ul>
-       *     <li>if targetOrientation is a world point (Vector3) : the camera will lookAt() this point</li>
-       *     <li>if targetOrientation is a quaternion : this quaternion will define the final camera orientation </li>
-       *     <li>if targetOrientation is neither a world point nor a quaternion : the camera will keep its starting
-       *     orientation</li>
-       * </ul>
-       * @param   {boolean}       useSmooth   animation is smoothed using the `smooth(value)` function (slower
-       * at start and finish).
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'initiateTravel',
-      value: function initiateTravel(
-        targetPos,
-        travelTime,
-        targetOrientation,
-        useSmooth,
-      ) {
-        this.state = STATE.TRAVEL;
-        this.view.notifyChange(this.camera); // the progress of the travel (animation alpha)
+          endZoom = startZoom * zoomFactor; // the altitude of the target must be the same as camera's
 
-        travelAlpha = 0; // update cursor
+          pointUnderCursor.z = this.camera.position.z;
+          travelAlpha = 0;
+          travelDuration = this.zoomTravelTime;
+          this.updateMouseCursorType();
+        } else {
+          // target position
+          newPos.lerpVectors(this.camera.position, pointUnderCursor, 1 - 1 / zoomFactor); // initiate travel
 
-        this.updateMouseCursorType();
-        travelUseRotation =
-          this.enableRotation &&
-          targetOrientation &&
-          (targetOrientation.isQuaternion || targetOrientation.isVector3);
-        travelUseSmooth = useSmooth; // start position (current camera position)
+          this.initiateTravel(newPos, this.zoomTravelTime, null, false);
+        }
+      }
+    }
+    /**
+     * Handle the animated zoom change for an orthographic camera, when state is `ZOOM`.
+     *
+     * @param   {number}    dt  the delta time between two updates in milliseconds
+     * @ignore
+     */
 
-        travelStartPos.copy(this.camera.position); // start rotation (current camera rotation)
+  }, {
+    key: "handleZoomOrtho",
+    value: function handleZoomOrtho(dt) {
+      travelAlpha = Math.min(travelAlpha + dt / 1000 / travelDuration, 1); // new zoom
 
-        travelStartRot.copy(this.camera.quaternion); // setup the end rotation :
+      var zoom = startZoom + travelAlpha * (endZoom - startZoom);
+
+      if (this.camera.zoom !== zoom) {
+        // zoom has changed
+        this.camera.zoom = zoom;
+        this.camera.updateProjectionMatrix(); // current world coordinates under the mouse
+
+        this.view.viewToNormalizedCoords(mousePosition, vect);
+        vect.z = 0;
+        vect.unproject(this.camera); // new camera position
+
+        this.camera.position.x += pointUnderCursor.x - vect.x;
+        this.camera.position.y += pointUnderCursor.y - vect.y;
+        this.camera.updateMatrixWorld(true);
+      } // completion test
+
+
+      this.testAnimationEnd();
+    }
+    /**
+     * Triggers a 'smart zoom' animated movement (travel) toward the point under mouse cursor. The camera will be
+     * smoothly moved and oriented close to the target, at a determined height and distance.
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "initiateSmartTravel",
+    value: function initiateSmartTravel() {
+      var pointUnderCursor = this.getWorldPointAtScreenXY(mousePosition); // direction of the movement, projected on xy plane and normalized
+
+      var dir = new THREE.Vector3();
+      dir.copy(pointUnderCursor).sub(this.camera.position);
+      dir.z = 0;
+      dir.normalize();
+      var distanceToPoint = this.camera.position.distanceTo(pointUnderCursor); // camera height (altitude above ground) at the end of the travel, 5000 is an empirical smoothing distance
+
+      var targetHeight = THREE.MathUtils.lerp(this.smartTravelHeightMin, this.smartTravelHeightMax, Math.min(distanceToPoint / 5000, 1)); // camera position at the end of the travel
+
+      var moveTarget = new THREE.Vector3();
+      moveTarget.copy(pointUnderCursor);
+
+      if (this.enableRotation) {
+        moveTarget.add(dir.multiplyScalar(-targetHeight * 2));
+      }
+
+      moveTarget.z = pointUnderCursor.z + targetHeight;
+
+      if (this.camera.isOrthographicCamera) {
+        startZoom = this.camera.zoom; // camera zoom at the end of the travel, 5000 is an empirical smoothing distance
+
+        endZoom = startZoom * (1 + Math.min(distanceToPoint / 5000, 1));
+        moveTarget.z = this.camera.position.z;
+      } // initiate the travel
+
+
+      this.initiateTravel(moveTarget, 'auto', pointUnderCursor, true);
+    }
+    /**
+     * Triggers an animated movement and rotation for the camera.
+     *
+     * @param   {THREE.Vector3} targetPos   The target position of the camera (reached at the end).
+     * @param   {number|string}        travelTime  Set to `auto` or set to a duration in seconds. If set to `auto`,
+     * travel time will be set to a duration between `autoTravelTimeMin` and `autoTravelTimeMax` according to
+     * the distance and the angular difference between start and finish.
+     * @param   {(string|THREE.Vector3|THREE.Quaternion)}   targetOrientation   define the target rotation of
+     * the camera :
+     * <ul>
+     *     <li>if targetOrientation is a world point (Vector3) : the camera will lookAt() this point</li>
+     *     <li>if targetOrientation is a quaternion : this quaternion will define the final camera orientation </li>
+     *     <li>if targetOrientation is neither a world point nor a quaternion : the camera will keep its starting
+     *     orientation</li>
+     * </ul>
+     * @param   {boolean}       useSmooth   animation is smoothed using the `smooth(value)` function (slower
+     * at start and finish).
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "initiateTravel",
+    value: function initiateTravel(targetPos, travelTime, targetOrientation, useSmooth) {
+      this.state = STATE.TRAVEL;
+      this.view.notifyChange(this.camera); // the progress of the travel (animation alpha)
+
+      travelAlpha = 0; // update cursor
+
+      this.updateMouseCursorType();
+      travelUseRotation = this.enableRotation && targetOrientation && (targetOrientation.isQuaternion || targetOrientation.isVector3);
+      travelUseSmooth = useSmooth; // start position (current camera position)
+
+      travelStartPos.copy(this.camera.position); // start rotation (current camera rotation)
+
+      travelStartRot.copy(this.camera.quaternion); // setup the end rotation :
+
+      if (travelUseRotation) {
+        if (targetOrientation.isQuaternion) {
+          // case where targetOrientation is a quaternion
+          travelEndRot.copy(targetOrientation);
+        } else if (targetOrientation.isVector3) {
+          // case where targetOrientation is a Vector3
+          if (targetPos === targetOrientation) {
+            this.camera.lookAt(targetOrientation);
+            travelEndRot.copy(this.camera.quaternion);
+            this.camera.quaternion.copy(travelStartRot);
+          } else {
+            this.camera.position.copy(targetPos);
+            this.camera.lookAt(targetOrientation);
+            travelEndRot.copy(this.camera.quaternion);
+            this.camera.quaternion.copy(travelStartRot);
+            this.camera.position.copy(travelStartPos);
+          }
+        }
+      } // end position
+
+
+      travelEndPos.copy(targetPos); // beginning of the travel duration setup
+
+      if (this.instantTravel) {
+        travelDuration = 0;
+      } else if (travelTime === 'auto') {
+        // case where travelTime is set to `auto` : travelDuration will be a value between autoTravelTimeMin and
+        // autoTravelTimeMax depending on travel distance and travel angular difference
+        // a value between 0 and 1 according to the travel distance. Adjusted by autoTravelTimeDist parameter
+        var normalizedDistance = Math.min(1, targetPos.distanceTo(this.camera.position) / this.autoTravelTimeDist);
+        travelDuration = THREE.MathUtils.lerp(this.autoTravelTimeMin, this.autoTravelTimeMax, normalizedDistance); // if travel changes camera orientation, travel duration is adjusted according to angularDifference
+        // this allows for a smoother travel (more time for the camera to rotate)
+        // final duration will not exceed autoTravelTimeMax
 
         if (travelUseRotation) {
-          if (targetOrientation.isQuaternion) {
-            // case where targetOrientation is a quaternion
-            travelEndRot.copy(targetOrientation);
-          } else if (targetOrientation.isVector3) {
-            // case where targetOrientation is a Vector3
-            if (targetPos === targetOrientation) {
-              this.camera.lookAt(targetOrientation);
-              travelEndRot.copy(this.camera.quaternion);
-              this.camera.quaternion.copy(travelStartRot);
-            } else {
-              this.camera.position.copy(targetPos);
-              this.camera.lookAt(targetOrientation);
-              travelEndRot.copy(this.camera.quaternion);
-              this.camera.quaternion.copy(travelStartRot);
-              this.camera.position.copy(travelStartPos);
-            }
-          }
-        } // end position
-
-        travelEndPos.copy(targetPos); // beginning of the travel duration setup
-
-        if (this.instantTravel) {
-          travelDuration = 0;
-        } else if (travelTime === 'auto') {
-          // case where travelTime is set to `auto` : travelDuration will be a value between autoTravelTimeMin and
-          // autoTravelTimeMax depending on travel distance and travel angular difference
-          // a value between 0 and 1 according to the travel distance. Adjusted by autoTravelTimeDist parameter
-          var normalizedDistance = Math.min(
-            1,
-            targetPos.distanceTo(this.camera.position) /
-              this.autoTravelTimeDist,
-          );
-          travelDuration = THREE.MathUtils.lerp(
-            this.autoTravelTimeMin,
-            this.autoTravelTimeMax,
-            normalizedDistance,
-          ); // if travel changes camera orientation, travel duration is adjusted according to angularDifference
-          // this allows for a smoother travel (more time for the camera to rotate)
-          // final duration will not exceed autoTravelTimeMax
-
-          if (travelUseRotation) {
-            // value is normalized between 0 and 1
-            var angularDifference =
-              0.5 -
-              0.5 *
-                travelEndRot
-                  .normalize()
-                  .dot(this.camera.quaternion.normalize());
-            travelDuration *= 1 + 2 * angularDifference;
-            travelDuration = Math.min(travelDuration, this.autoTravelTimeMax);
-          }
-        } else {
-          // case where travelTime !== `auto` : travelTime is a duration in seconds given as parameter
-          travelDuration = travelTime;
+          // value is normalized between 0 and 1
+          var angularDifference = 0.5 - 0.5 * travelEndRot.normalize().dot(this.camera.quaternion.normalize());
+          travelDuration *= 1 + 2 * angularDifference;
+          travelDuration = Math.min(travelDuration, this.autoTravelTimeMax);
         }
-      },
-      /**
-       * Handle the animated movement and rotation of the camera in `travel` state.
-       *
-       * @param   {number}    dt  the delta time between two updates in milliseconds
-       * @ignore
-       */
-    },
-    {
-      key: 'handleTravel',
-      value: function handleTravel(dt) {
-        travelAlpha = Math.min(travelAlpha + dt / 1000 / travelDuration, 1); // the animation alpha, between 0 (start) and 1 (finish)
+      } else {
+        // case where travelTime !== `auto` : travelTime is a duration in seconds given as parameter
+        travelDuration = travelTime;
+      }
+    }
+    /**
+     * Handle the animated movement and rotation of the camera in `travel` state.
+     *
+     * @param   {number}    dt  the delta time between two updates in milliseconds
+     * @ignore
+     */
 
-        var alpha = travelUseSmooth ? this.smooth(travelAlpha) : travelAlpha; // new position
+  }, {
+    key: "handleTravel",
+    value: function handleTravel(dt) {
+      travelAlpha = Math.min(travelAlpha + dt / 1000 / travelDuration, 1); // the animation alpha, between 0 (start) and 1 (finish)
 
-        this.camera.position.lerpVectors(travelStartPos, travelEndPos, alpha);
-        var zoom = startZoom + alpha * (endZoom - startZoom); // new zoom
+      var alpha = travelUseSmooth ? this.smooth(travelAlpha) : travelAlpha; // new position
 
-        if (this.camera.isOrthographicCamera && this.camera.zoom !== zoom) {
-          this.camera.zoom = zoom;
-          this.camera.updateProjectionMatrix();
-        } // new rotation
+      this.camera.position.lerpVectors(travelStartPos, travelEndPos, alpha);
+      var zoom = startZoom + alpha * (endZoom - startZoom); // new zoom
 
-        if (travelUseRotation === true) {
-          this.camera.quaternion.slerpQuaternions(
-            travelStartRot,
-            travelEndRot,
-            alpha,
-          );
-        } // completion test
+      if (this.camera.isOrthographicCamera && this.camera.zoom !== zoom) {
+        this.camera.zoom = zoom;
+        this.camera.updateProjectionMatrix();
+      } // new rotation
 
-        this.testAnimationEnd();
-      },
-      /**
-       * Test if the currently running animation is finished (travelAlpha reached 1).
-       * If it is, reset controls to state NONE.
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'testAnimationEnd',
-      value: function testAnimationEnd() {
-        if (travelAlpha === 1) {
-          // Resume normal behaviour after animation is completed
-          this.state = STATE.NONE;
-          this.updateMouseCursorType();
-        }
-      },
-      /**
-       * Triggers an animated movement (travel) to set the camera to top view, above the focus point,
-       * at altitude = distanceToFocusPoint.
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'goToTopView',
-      value: function goToTopView() {
-        var topViewPos = new THREE.Vector3();
-        var targetQuat = new THREE.Quaternion(); // the top view position is above the camera focus point, at an altitude = distanceToPoint
 
-        topViewPos.copy(
-          this.getWorldPointAtScreenXY(
-            new THREE.Vector2(
-              0.5 * this.view.mainLoop.gfxEngine.width,
-              0.5 * this.view.mainLoop.gfxEngine.height,
-            ),
-          ),
-        );
-        topViewPos.z += Math.min(
-          this.maxAltitude,
-          this.camera.position.distanceTo(topViewPos),
-        );
-        targetQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0); // initiate the travel
+      if (travelUseRotation === true) {
+        this.camera.quaternion.slerpQuaternions(travelStartRot, travelEndRot, alpha);
+      } // completion test
 
-        this.initiateTravel(topViewPos, 'auto', targetQuat, true);
-      },
-      /**
-       * Triggers an animated movement (travel) to set the camera to starting view
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'goToStartView',
-      value: function goToStartView() {
-        // if startZoom and endZoom have not been set yet, give them neutral values
-        if (this.camera.isOrthographicCamera) {
-          startZoom = this.camera.zoom;
-          endZoom = cameraInitialZoom;
-        }
 
-        this.initiateTravel(startPosition, 'auto', startQuaternion, true);
-      },
-      /**
-       * Returns the world point (xyz) under the posXY screen point. The point belong to an abstract mathematical
-       * plane of specified altitude (does not us actual geometry).
-       *
-       * @param   {THREE.Vector2} posXY       the mouse position in screen space (unit : pixel)
-       * @param   {number}        altitude    the altitude (z) of the mathematical plane
-       * @param   {THREE.Vector3} target      the target vector3
-       * @return  {THREE.Vector3}
-       * @ignore
-       */
-    },
-    {
-      key: 'getWorldPointFromMathPlaneAtScreenXY',
-      value: function getWorldPointFromMathPlaneAtScreenXY(posXY, altitude) {
-        var target =
-          arguments.length > 2 && arguments[2] !== undefined
-            ? arguments[2]
-            : new THREE.Vector3();
-        vect2.copy(this.view.viewToNormalizedCoords(posXY));
-        rayCaster.setFromCamera(vect2, this.camera);
-        plane.constant = altitude;
-        rayCaster.ray.intersectPlane(plane, target);
+      this.testAnimationEnd();
+    }
+    /**
+     * Test if the currently running animation is finished (travelAlpha reached 1).
+     * If it is, reset controls to state NONE.
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "testAnimationEnd",
+    value: function testAnimationEnd() {
+      if (travelAlpha === 1) {
+        // Resume normal behaviour after animation is completed
+        this.state = STATE.NONE;
+        this.updateMouseCursorType();
+      }
+    }
+    /**
+     * Triggers an animated movement (travel) to set the camera to top view, above the focus point,
+     * at altitude = distanceToFocusPoint.
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "goToTopView",
+    value: function goToTopView() {
+      var topViewPos = new THREE.Vector3();
+      var targetQuat = new THREE.Quaternion(); // the top view position is above the camera focus point, at an altitude = distanceToPoint
+
+      topViewPos.copy(this.getWorldPointAtScreenXY(new THREE.Vector2(0.5 * this.view.mainLoop.gfxEngine.width, 0.5 * this.view.mainLoop.gfxEngine.height)));
+      topViewPos.z += Math.min(this.maxAltitude, this.camera.position.distanceTo(topViewPos));
+      targetQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0); // initiate the travel
+
+      this.initiateTravel(topViewPos, 'auto', targetQuat, true);
+    }
+    /**
+     * Triggers an animated movement (travel) to set the camera to starting view
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "goToStartView",
+    value: function goToStartView() {
+      // if startZoom and endZoom have not been set yet, give them neutral values
+      if (this.camera.isOrthographicCamera) {
+        startZoom = this.camera.zoom;
+        endZoom = cameraInitialZoom;
+      }
+
+      this.initiateTravel(startPosition, 'auto', startQuaternion, true);
+    }
+    /**
+     * Returns the world point (xyz) under the posXY screen point. The point belong to an abstract mathematical
+     * plane of specified altitude (does not us actual geometry).
+     *
+     * @param   {THREE.Vector2} posXY       the mouse position in screen space (unit : pixel)
+     * @param   {number}        altitude    the altitude (z) of the mathematical plane
+     * @param   {THREE.Vector3} target      the target vector3
+     * @return  {THREE.Vector3}
+     * @ignore
+     */
+
+  }, {
+    key: "getWorldPointFromMathPlaneAtScreenXY",
+    value: function getWorldPointFromMathPlaneAtScreenXY(posXY, altitude) {
+      var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new THREE.Vector3();
+      vect2.copy(this.view.viewToNormalizedCoords(posXY));
+      rayCaster.setFromCamera(vect2, this.camera);
+      plane.constant = altitude;
+      rayCaster.ray.intersectPlane(plane, target);
+      return target;
+    }
+    /**
+     * Returns the world point (xyz) under the posXY screen point. If geometry is under the cursor, the point is
+     * obtained with getPickingPositionFromDepth. If no geometry is under the cursor, the point is obtained with
+     * [getWorldPointFromMathPlaneAtScreenXY]{@link PlanarControls#getWorldPointFromMathPlaneAtScreenXY}.
+     *
+     * @param   {THREE.Vector2} posXY   the mouse position in screen space (unit : pixel)
+     * @param   {THREE.Vector3} target  the target World coordinates.
+     * @return  {THREE.Vector3}
+     * @ignore
+     */
+
+  }, {
+    key: "getWorldPointAtScreenXY",
+    value: function getWorldPointAtScreenXY(posXY) {
+      var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new THREE.Vector3();
+
+      // check if there is a valid geometry under cursor
+      if (this.view.getPickingPositionFromDepth(posXY, target)) {
         return target;
-      },
-      /**
-       * Returns the world point (xyz) under the posXY screen point. If geometry is under the cursor, the point is
-       * obtained with getPickingPositionFromDepth. If no geometry is under the cursor, the point is obtained with
-       * [getWorldPointFromMathPlaneAtScreenXY]{@link PlanarControls#getWorldPointFromMathPlaneAtScreenXY}.
-       *
-       * @param   {THREE.Vector2} posXY   the mouse position in screen space (unit : pixel)
-       * @param   {THREE.Vector3} target  the target World coordinates.
-       * @return  {THREE.Vector3}
-       * @ignore
-       */
-    },
-    {
-      key: 'getWorldPointAtScreenXY',
-      value: function getWorldPointAtScreenXY(posXY) {
-        var target =
-          arguments.length > 1 && arguments[1] !== undefined
-            ? arguments[1]
-            : new THREE.Vector3();
+      } else {
+        // if not, we use the mathematical plane at altitude = groundLevel
+        this.getWorldPointFromMathPlaneAtScreenXY(posXY, this.groundLevel, target);
+        return target;
+      }
+    }
+    /**
+     * Add all the input event listeners (activate the controls).
+     *
+     * @ignore
+     */
 
-        // check if there is a valid geometry under cursor
-        if (this.view.getPickingPositionFromDepth(posXY, target)) {
-          return target;
+  }, {
+    key: "addInputListeners",
+    value: function addInputListeners() {
+      this.view.domElement.addEventListener('keydown', this._handlerOnKeyDown, false);
+      this.view.domElement.addEventListener('mousedown', this._handlerOnMouseDown, false);
+      this.view.domElement.addEventListener('mouseup', this._handlerOnMouseUp, false);
+      this.view.domElement.addEventListener('mouseleave', this._handlerOnMouseUp, false);
+      this.view.domElement.addEventListener('mousemove', this._handlerOnMouseMove, false);
+      this.view.domElement.addEventListener('mousewheel', this._handlerOnMouseWheel, false); // focus policy
+
+      if (this.focusOnMouseOver) {
+        this.view.domElement.addEventListener('mouseover', this._handlerFocusOnMouseOver, false);
+      }
+
+      if (this.focusOnMouseClick) {
+        this.view.domElement.addEventListener('click', this._handlerFocusOnMouseClick, false);
+      } // prevent the default context menu from appearing when right-clicking
+      // this allows to use right-click for input without the menu appearing
+
+
+      this.view.domElement.addEventListener('contextmenu', this._handlerContextMenu, false); // for firefox
+
+      this.view.domElement.addEventListener('MozMousePixelScroll', this._handlerOnMouseWheel, false);
+    }
+    /**
+     * Removes all the input listeners (deactivate the controls).
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "removeInputListeners",
+    value: function removeInputListeners() {
+      this.view.domElement.removeEventListener('keydown', this._handlerOnKeyDown, true);
+      this.view.domElement.removeEventListener('mousedown', this._handlerOnMouseDown, false);
+      this.view.domElement.removeEventListener('mouseup', this._handlerOnMouseUp, false);
+      this.view.domElement.removeEventListener('mouseleave', this._handlerOnMouseUp, false);
+      this.view.domElement.removeEventListener('mousemove', this._handlerOnMouseMove, false);
+      this.view.domElement.removeEventListener('mousewheel', this._handlerOnMouseWheel, false);
+      this.view.domElement.removeEventListener('mouseover', this._handlerFocusOnMouseOver, false);
+      this.view.domElement.removeEventListener('click', this._handlerFocusOnMouseClick, false);
+      this.view.domElement.removeEventListener('contextmenu', this._handlerContextMenu, false); // for firefox
+
+      this.view.domElement.removeEventListener('MozMousePixelScroll', this._handlerOnMouseWheel, false);
+    }
+    /**
+     * Update the cursor image according to the control state.
+     *
+     * @ignore
+     */
+
+  }, {
+    key: "updateMouseCursorType",
+    value: function updateMouseCursorType() {
+      switch (this.state) {
+        case STATE.NONE:
+          this.view.domElement.style.cursor = this.cursor["default"];
+          break;
+
+        case STATE.DRAG:
+          this.view.domElement.style.cursor = this.cursor.drag;
+          break;
+
+        case STATE.PAN:
+          this.view.domElement.style.cursor = this.cursor.pan;
+          break;
+
+        case STATE.TRAVEL:
+          this.view.domElement.style.cursor = this.cursor.travel;
+          break;
+
+        case STATE.ORTHO_ZOOM:
+          this.view.domElement.style.cursor = this.cursor.ortho_zoom;
+          break;
+
+        case STATE.ROTATE:
+          this.view.domElement.style.cursor = this.cursor.rotate;
+          break;
+
+        default:
+          break;
+      }
+    }
+  }, {
+    key: "updateMousePositionAndDelta",
+    value: function updateMousePositionAndDelta(event) {
+      this.view.eventToViewCoords(event, mousePosition);
+      deltaMousePosition.copy(mousePosition).sub(lastMousePosition);
+      lastMousePosition.copy(mousePosition);
+    }
+    /**
+     * cursor modification for a specifique state.
+     *
+     * @param   {string} state   the state in which we want to change the cursor ('default', 'drag', 'pan', 'travel', 'rotate').
+     * @param   {string} newCursor   the css cursor we want to have for the specified state.
+     * @ignore
+     */
+
+  }, {
+    key: "setCursor",
+    value: function setCursor(state, newCursor) {
+      this.cursor[state] = newCursor;
+      this.updateMouseCursorType();
+    }
+    /**
+     * Catch and manage the event when a touch on the mouse is downs.
+     *
+     * @param   {Event} event   the current event (mouse left or right button clicked, mouse wheel button actioned).
+     * @ignore
+     */
+
+  }, {
+    key: "onMouseDown",
+    value: function onMouseDown(event) {
+      event.preventDefault();
+
+      if (STATE.NONE !== this.state) {
+        return;
+      }
+
+      currentPressedButton = event.button;
+      this.updateMousePositionAndDelta(event);
+
+      if (mouseButtons.LEFTCLICK === event.button) {
+        if (event.ctrlKey) {
+          if (this.enableRotation) {
+            this.initiateRotation();
+          } else {
+            return;
+          }
         } else {
-          // if not, we use the mathematical plane at altitude = groundLevel
-          this.getWorldPointFromMathPlaneAtScreenXY(
-            posXY,
-            this.groundLevel,
-            target,
-          );
-          return target;
+          this.initiateDrag();
         }
-      },
-      /**
-       * Add all the input event listeners (activate the controls).
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'addInputListeners',
-      value: function addInputListeners() {
-        this.view.domElement.addEventListener(
-          'keydown',
-          this._handlerOnKeyDown,
-          false,
-        );
-        this.view.domElement.addEventListener(
-          'mousedown',
-          this._handlerOnMouseDown,
-          false,
-        );
-        this.view.domElement.addEventListener(
-          'mouseup',
-          this._handlerOnMouseUp,
-          false,
-        );
-        this.view.domElement.addEventListener(
-          'mouseleave',
-          this._handlerOnMouseUp,
-          false,
-        );
-        this.view.domElement.addEventListener(
-          'mousemove',
-          this._handlerOnMouseMove,
-          false,
-        );
-        this.view.domElement.addEventListener(
-          'mousewheel',
-          this._handlerOnMouseWheel,
-          false,
-        ); // focus policy
-
-        if (this.focusOnMouseOver) {
-          this.view.domElement.addEventListener(
-            'mouseover',
-            this._handlerFocusOnMouseOver,
-            false,
-          );
-        }
-
-        if (this.focusOnMouseClick) {
-          this.view.domElement.addEventListener(
-            'click',
-            this._handlerFocusOnMouseClick,
-            false,
-          );
-        } // prevent the default context menu from appearing when right-clicking
-        // this allows to use right-click for input without the menu appearing
-
-        this.view.domElement.addEventListener(
-          'contextmenu',
-          this._handlerContextMenu,
-          false,
-        ); // for firefox
-
-        this.view.domElement.addEventListener(
-          'MozMousePixelScroll',
-          this._handlerOnMouseWheel,
-          false,
-        );
-      },
-      /**
-       * Removes all the input listeners (deactivate the controls).
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'removeInputListeners',
-      value: function removeInputListeners() {
-        this.view.domElement.removeEventListener(
-          'keydown',
-          this._handlerOnKeyDown,
-          true,
-        );
-        this.view.domElement.removeEventListener(
-          'mousedown',
-          this._handlerOnMouseDown,
-          false,
-        );
-        this.view.domElement.removeEventListener(
-          'mouseup',
-          this._handlerOnMouseUp,
-          false,
-        );
-        this.view.domElement.removeEventListener(
-          'mouseleave',
-          this._handlerOnMouseUp,
-          false,
-        );
-        this.view.domElement.removeEventListener(
-          'mousemove',
-          this._handlerOnMouseMove,
-          false,
-        );
-        this.view.domElement.removeEventListener(
-          'mousewheel',
-          this._handlerOnMouseWheel,
-          false,
-        );
-        this.view.domElement.removeEventListener(
-          'mouseover',
-          this._handlerFocusOnMouseOver,
-          false,
-        );
-        this.view.domElement.removeEventListener(
-          'click',
-          this._handlerFocusOnMouseClick,
-          false,
-        );
-        this.view.domElement.removeEventListener(
-          'contextmenu',
-          this._handlerContextMenu,
-          false,
-        ); // for firefox
-
-        this.view.domElement.removeEventListener(
-          'MozMousePixelScroll',
-          this._handlerOnMouseWheel,
-          false,
-        );
-      },
-      /**
-       * Update the cursor image according to the control state.
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'updateMouseCursorType',
-      value: function updateMouseCursorType() {
-        switch (this.state) {
-          case STATE.NONE:
-            this.view.domElement.style.cursor = this.cursor['default'];
-            break;
-
-          case STATE.DRAG:
-            this.view.domElement.style.cursor = this.cursor.drag;
-            break;
-
-          case STATE.PAN:
-            this.view.domElement.style.cursor = this.cursor.pan;
-            break;
-
-          case STATE.TRAVEL:
-            this.view.domElement.style.cursor = this.cursor.travel;
-            break;
-
-          case STATE.ORTHO_ZOOM:
-            this.view.domElement.style.cursor = this.cursor.ortho_zoom;
-            break;
-
-          case STATE.ROTATE:
-            this.view.domElement.style.cursor = this.cursor.rotate;
-            break;
-
-          default:
-            break;
-        }
-      },
-    },
-    {
-      key: 'updateMousePositionAndDelta',
-      value: function updateMousePositionAndDelta(event) {
-        this.view.eventToViewCoords(event, mousePosition);
-        deltaMousePosition.copy(mousePosition).sub(lastMousePosition);
-        lastMousePosition.copy(mousePosition);
-      },
-      /**
-       * cursor modification for a specifique state.
-       *
-       * @param   {string} state   the state in which we want to change the cursor ('default', 'drag', 'pan', 'travel', 'rotate').
-       * @param   {string} newCursor   the css cursor we want to have for the specified state.
-       * @ignore
-       */
-    },
-    {
-      key: 'setCursor',
-      value: function setCursor(state, newCursor) {
-        this.cursor[state] = newCursor;
-        this.updateMouseCursorType();
-      },
-      /**
-       * Catch and manage the event when a touch on the mouse is downs.
-       *
-       * @param   {Event} event   the current event (mouse left or right button clicked, mouse wheel button actioned).
-       * @ignore
-       */
-    },
-    {
-      key: 'onMouseDown',
-      value: function onMouseDown(event) {
-        event.preventDefault();
-
-        if (STATE.NONE !== this.state) {
+      } else if (mouseButtons.MIDDLECLICK === event.button) {
+        if (this.enableSmartTravel) {
+          this.initiateSmartTravel();
+        } else {
           return;
         }
+      } else if (mouseButtons.RIGHTCLICK === event.button) {
+        if (this.enablePan) {
+          this.initiatePan();
+        } else {
+          return;
+        }
+      }
 
-        currentPressedButton = event.button;
-        this.updateMousePositionAndDelta(event);
+      this.updateMouseCursorType();
+    }
+    /**
+     * Catch and manage the event when a touch on the mouse is released.
+     *
+     * @param   {Event} event   the current event
+     * @ignore
+     */
 
-        if (mouseButtons.LEFTCLICK === event.button) {
-          if (event.ctrlKey) {
-            if (this.enableRotation) {
-              this.initiateRotation();
-            } else {
-              return;
-            }
-          } else {
-            this.initiateDrag();
+  }, {
+    key: "onMouseUp",
+    value: function onMouseUp(event) {
+      event.preventDefault(); // Does not interrupt ongoing camera action if state is TRAVEL or CAMERA_OTHO. This prevents interrupting a zoom
+      // movement or a smart travel by pressing any movement key.
+      // The camera action is also uninterrupted if the released button does not match the button triggering the
+      // ongoing action. This prevents for instance exiting drag mode when right-clicking while dragging the view.
+
+      if (STATE.TRAVEL !== this.state && STATE.ORTHO_ZOOM !== this.state && currentPressedButton === event.button) {
+        this.state = STATE.NONE;
+      }
+
+      this.updateMouseCursorType();
+    }
+    /**
+     * Catch and manage the event when the mouse is moved.
+     *
+     * @param   {Event} event   the current event.
+     * @ignore
+     */
+
+  }, {
+    key: "onMouseMove",
+    value: function onMouseMove(event) {
+      event.preventDefault();
+      this.updateMousePositionAndDelta(event); // notify change if moving
+
+      if (STATE.NONE !== this.state) {
+        this.view.notifyChange();
+      }
+    }
+    /**
+     * Catch and manage the event when a key is down.
+     *
+     * @param   {Event} event   the current event
+     * @ignore
+     */
+
+  }, {
+    key: "onKeyDown",
+    value: function onKeyDown(event) {
+      if (STATE.NONE !== this.state) {
+        return;
+      }
+
+      switch (event.keyCode) {
+        case keys.T:
+          // going to top view is not relevant for an orthographic camera, since it is always top view
+          if (!this.camera.isOrthographicCamera) {
+            this.goToTopView();
           }
-        } else if (mouseButtons.MIDDLECLICK === event.button) {
+
+          break;
+
+        case keys.Y:
+          this.goToStartView();
+          break;
+
+        case keys.SPACE:
           if (this.enableSmartTravel) {
-            this.initiateSmartTravel();
-          } else {
-            return;
+            this.initiateSmartTravel(event);
           }
-        } else if (mouseButtons.RIGHTCLICK === event.button) {
-          if (this.enablePan) {
-            this.initiatePan();
-          } else {
-            return;
-          }
-        }
 
-        this.updateMouseCursorType();
-      },
-      /**
-       * Catch and manage the event when a touch on the mouse is released.
-       *
-       * @param   {Event} event   the current event
-       * @ignore
-       */
-    },
-    {
-      key: 'onMouseUp',
-      value: function onMouseUp(event) {
-        event.preventDefault(); // Does not interrupt ongoing camera action if state is TRAVEL or CAMERA_OTHO. This prevents interrupting a zoom
-        // movement or a smart travel by pressing any movement key.
-        // The camera action is also uninterrupted if the released button does not match the button triggering the
-        // ongoing action. This prevents for instance exiting drag mode when right-clicking while dragging the view.
+          break;
 
-        if (
-          STATE.TRAVEL !== this.state &&
-          STATE.ORTHO_ZOOM !== this.state &&
-          currentPressedButton === event.button
-        ) {
-          this.state = STATE.NONE;
-        }
+        default:
+          break;
+      }
+    }
+    /**
+     * Catch and manage the event when the mouse wheel is rolled.
+     *
+     * @param   {Event} event   the current event
+     * @ignore
+     */
 
-        this.updateMouseCursorType();
-      },
-      /**
-       * Catch and manage the event when the mouse is moved.
-       *
-       * @param   {Event} event   the current event.
-       * @ignore
-       */
-    },
-    {
-      key: 'onMouseMove',
-      value: function onMouseMove(event) {
-        event.preventDefault();
-        this.updateMousePositionAndDelta(event); // notify change if moving
+  }, {
+    key: "onMouseWheel",
+    value: function onMouseWheel(event) {
+      event.preventDefault();
+      event.stopPropagation();
 
-        if (STATE.NONE !== this.state) {
-          this.view.notifyChange();
-        }
-      },
-      /**
-       * Catch and manage the event when a key is down.
-       *
-       * @param   {Event} event   the current event
-       * @ignore
-       */
-    },
-    {
-      key: 'onKeyDown',
-      value: function onKeyDown(event) {
-        if (STATE.NONE !== this.state) {
-          return;
-        }
+      if (STATE.NONE === this.state) {
+        this.initiateZoom(event);
+      }
+    }
+    /**
+     * Set the focus on view's domElement according to focus policy regarding MouseOver
+     *
+     * @ignore
+     */
 
-        switch (event.keyCode) {
-          case keys.T:
-            // going to top view is not relevant for an orthographic camera, since it is always top view
-            if (!this.camera.isOrthographicCamera) {
-              this.goToTopView();
-            }
+  }, {
+    key: "onMouseOver",
+    value: function onMouseOver() {
+      this.view.domElement.focus();
+    }
+    /**
+     * Set the focus on view's domElement according to focus policy regarding MouseClick
+     *
+     * @ignore
+     */
 
-            break;
+  }, {
+    key: "onMouseClick",
+    value: function onMouseClick() {
+      this.view.domElement.focus();
+    }
+    /**
+     * Catch and manage the event when the context menu is called (by a right-click on the window). We use this
+     * to prevent the context menu from appearing so we can use right click for other inputs.
+     *
+     * @param   {Event} event   the current event
+     * @ignore
+     */
 
-          case keys.Y:
-            this.goToStartView();
-            break;
+  }, {
+    key: "onContextMenu",
+    value: function onContextMenu(event) {
+      event.preventDefault();
+    }
+    /**
+     * Smoothing function (sigmoid) : based on h01 Hermite function.
+     *
+     * @param   {number}    value   the value to be smoothed, between 0 and 1.
+     * @return  {number}            a value between 0 and 1.
+     * @ignore
+     */
 
-          case keys.SPACE:
-            if (this.enableSmartTravel) {
-              this.initiateSmartTravel(event);
-            }
-
-            break;
-
-          default:
-            break;
-        }
-      },
-      /**
-       * Catch and manage the event when the mouse wheel is rolled.
-       *
-       * @param   {Event} event   the current event
-       * @ignore
-       */
-    },
-    {
-      key: 'onMouseWheel',
-      value: function onMouseWheel(event) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (STATE.NONE === this.state) {
-          this.initiateZoom(event);
-        }
-      },
-      /**
-       * Set the focus on view's domElement according to focus policy regarding MouseOver
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'onMouseOver',
-      value: function onMouseOver() {
-        this.view.domElement.focus();
-      },
-      /**
-       * Set the focus on view's domElement according to focus policy regarding MouseClick
-       *
-       * @ignore
-       */
-    },
-    {
-      key: 'onMouseClick',
-      value: function onMouseClick() {
-        this.view.domElement.focus();
-      },
-      /**
-       * Catch and manage the event when the context menu is called (by a right-click on the window). We use this
-       * to prevent the context menu from appearing so we can use right click for other inputs.
-       *
-       * @param   {Event} event   the current event
-       * @ignore
-       */
-    },
-    {
-      key: 'onContextMenu',
-      value: function onContextMenu(event) {
-        event.preventDefault();
-      },
-      /**
-       * Smoothing function (sigmoid) : based on h01 Hermite function.
-       *
-       * @param   {number}    value   the value to be smoothed, between 0 and 1.
-       * @return  {number}            a value between 0 and 1.
-       * @ignore
-       */
-    },
-    {
-      key: 'smooth',
-      value: function smooth(value) {
-        // p between 1.0 and 1.5 (empirical)
-        return Math.pow(Math.pow(value, 2) * (3 - 2 * value), 1.2);
-      },
-    },
-  ]);
+  }, {
+    key: "smooth",
+    value: function smooth(value) {
+      // p between 1.0 and 1.5 (empirical)
+      return Math.pow(Math.pow(value, 2) * (3 - 2 * value), 1.20);
+    }
+  }]);
   return PlanarControls;
-})(THREE.EventDispatcher);
+}(THREE.EventDispatcher);
 
 var _default = PlanarControls;
-exports['default'] = _default;
+exports["default"] = _default;

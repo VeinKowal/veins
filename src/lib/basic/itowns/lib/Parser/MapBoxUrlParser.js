@@ -1,23 +1,19 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 var urlRe = /^(\w+):\/\/([^/?]*)(\/[^?]+)?\??(.+)?/;
 var config = {
   API_URL: 'https://api.mapbox.com',
   REQUIRE_ACCESS_TOKEN: true,
-  ACCESS_TOKEN: null,
+  ACCESS_TOKEN: null
 };
 
 function formatUrl(obj) {
-  var params = obj.params.length ? '?'.concat(obj.params.join('&')) : '';
-  return ''
-    .concat(obj.protocol, '://')
-    .concat(obj.authority)
-    .concat(obj.path)
-    .concat(params);
+  var params = obj.params.length ? "?".concat(obj.params.join('&')) : '';
+  return "".concat(obj.protocol, "://").concat(obj.authority).concat(obj.path).concat(params);
 }
 
 function makeAPIURL(urlObject, accessToken) {
@@ -34,7 +30,7 @@ function makeAPIURL(urlObject, accessToken) {
   }
 
   if (apiUrlObject.path !== '/') {
-    urlObject.path = ''.concat(apiUrlObject.path).concat(urlObject.path);
+    urlObject.path = "".concat(apiUrlObject.path).concat(urlObject.path);
   }
 
   if (!config.REQUIRE_ACCESS_TOKEN) {
@@ -48,15 +44,13 @@ function makeAPIURL(urlObject, accessToken) {
   }
 
   if (accessToken[0] === 's') {
-    throw new Error(
-      'Use a public access token (pk.*), not a secret access token (sk.*).',
-    );
+    throw new Error('Use a public access token (pk.*), not a secret access token (sk.*).');
   }
 
   urlObject.params = urlObject.params.filter(function (d) {
     return d.indexOf('access_token') === -1;
   });
-  urlObject.params.push('access_token='.concat(accessToken));
+  urlObject.params.push("access_token=".concat(accessToken));
   return formatUrl(urlObject);
 }
 
@@ -75,7 +69,7 @@ function parseUrl(url) {
     protocol: parts[1],
     authority: parts[2],
     path: parts[3] || '/',
-    params: parts[4] ? parts[4].split('&') : [],
+    params: parts[4] ? parts[4].split('&') : []
   };
 }
 
@@ -83,14 +77,11 @@ function normalizeSpriteURL(url, format, extension, accessToken) {
   var urlObject = parseUrl(url);
 
   if (!isMapboxURL(url)) {
-    urlObject.path += ''.concat(format).concat(extension);
+    urlObject.path += "".concat(format).concat(extension);
     return formatUrl(urlObject);
   }
 
-  urlObject.path = '/styles/v1'
-    .concat(urlObject.path, '/sprite')
-    .concat(format)
-    .concat(extension);
+  urlObject.path = "/styles/v1".concat(urlObject.path, "/sprite").concat(format).concat(extension);
   return makeAPIURL(urlObject, accessToken);
 }
 
@@ -100,7 +91,7 @@ function normalizeSourceURL(url, accessToken) {
   }
 
   var urlObject = parseUrl(url);
-  urlObject.path = '/v4/'.concat(urlObject.authority, '.json');
+  urlObject.path = "/v4/".concat(urlObject.authority, ".json");
   urlObject.params.push('secure');
   return makeAPIURL(urlObject, accessToken);
 }
@@ -111,13 +102,13 @@ function normalizeStyleURL(url, accessToken) {
   }
 
   var urlObject = parseUrl(url);
-  urlObject.path = '/styles/v1'.concat(urlObject.path);
+  urlObject.path = "/styles/v1".concat(urlObject.path);
   return makeAPIURL(urlObject, accessToken);
 }
 
 var _default = {
   normalizeStyleURL: normalizeStyleURL,
   normalizeSourceURL: normalizeSourceURL,
-  normalizeSpriteURL: normalizeSpriteURL,
+  normalizeSpriteURL: normalizeSpriteURL
 };
-exports['default'] = _default;
+exports["default"] = _default;

@@ -1,12 +1,16 @@
 import InputNode from '../core/InputNode.js';
-import { Vector4 } from '../../../../../build/three.module.js';
+import { Vector4 } from 'three';
 
 class Vector4Node extends InputNode {
-  constructor(value = new Vector4()) {
-    super('vec4');
 
-    this.value = value;
-  }
+	constructor( value = new Vector4() ) {
+
+		super( 'vec4' );
+
+		this.value = value;
+
+	}
+
 }
 
 Vector4Node.prototype.isVector4Node = true;

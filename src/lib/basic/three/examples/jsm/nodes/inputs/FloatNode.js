@@ -1,48 +1,51 @@
 import { InputNode } from '../core/InputNode.js';
 
-function FloatNode(value) {
-  InputNode.call(this, 'f');
+class FloatNode extends InputNode {
 
-  this.value = value || 0;
+	constructor( value ) {
+
+		super( 'f' );
+
+		this.value = value || 0;
+
+	}
+
+	generateReadonly( builder, output, uuid, type/*, ns, needsUpdate */ ) {
+
+		return builder.format( this.value + ( this.value % 1 ? '' : '.0' ), type, output );
+
+	}
+
+	copy( source ) {
+
+		super.copy( source );
+
+		this.value = source.value;
+
+		return this;
+
+	}
+
+	toJSON( meta ) {
+
+		let data = this.getJSONNode( meta );
+
+		if ( ! data ) {
+
+			data = this.createJSONNode( meta );
+
+			data.value = this.value;
+
+			if ( this.readonly === true ) data.readonly = true;
+
+		}
+
+		return data;
+
+	}
+
 }
 
-FloatNode.prototype = Object.create(InputNode.prototype);
-FloatNode.prototype.constructor = FloatNode;
 FloatNode.prototype.nodeType = 'Float';
-
-FloatNode.prototype.generateReadonly = function (
-  builder,
-  output,
-  uuid,
-  type /*, ns, needsUpdate */,
-) {
-  return builder.format(
-    this.value + (this.value % 1 ? '' : '.0'),
-    type,
-    output,
-  );
-};
-
-FloatNode.prototype.copy = function (source) {
-  InputNode.prototype.copy.call(this, source);
-
-  this.value = source.value;
-
-  return this;
-};
-
-FloatNode.prototype.toJSON = function (meta) {
-  var data = this.getJSONNode(meta);
-
-  if (!data) {
-    data = this.createJSONNode(meta);
-
-    data.value = this.value;
-
-    if (this.readonly === true) data.readonly = true;
-  }
-
-  return data;
-};
 
 export { FloatNode };

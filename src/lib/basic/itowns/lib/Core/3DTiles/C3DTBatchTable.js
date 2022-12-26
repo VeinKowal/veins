@@ -1,23 +1,19 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _Utf8Decoder = _interopRequireDefault(require('../../Utils/Utf8Decoder'));
+var _Utf8Decoder = _interopRequireDefault(require("../../Utils/Utf8Decoder"));
 
-var _C3DTilesTypes = _interopRequireDefault(require('./C3DTilesTypes'));
+var _C3DTilesTypes = _interopRequireDefault(require("./C3DTilesTypes"));
 
 /** @classdesc
  * A 3D Tiles
@@ -33,7 +29,7 @@ var _C3DTilesTypes = _interopRequireDefault(require('./C3DTilesTypes'));
  * stored in the following format:
  * {extensioName1: extensionObject1, extensioName2: extensionObject2, ...}
  */
-var C3DTBatchTable = /*#__PURE__*/ (function () {
+var C3DTBatchTable = /*#__PURE__*/function () {
   /**
    * @param {ArrayBuffer} buffer - batch table buffer to parse.
    * @param {ArrayBuffer} binaryLength - the length of the binary part of
@@ -41,14 +37,9 @@ var C3DTBatchTable = /*#__PURE__*/ (function () {
    * @param {number} batchLength - the length of the batch.
    * @param {Object} registeredExtensions - extensions registered to the layer
    */
-  function C3DTBatchTable(
-    buffer,
-    binaryLength,
-    batchLength,
-    registeredExtensions,
-  ) {
-    (0, _classCallCheck2['default'])(this, C3DTBatchTable);
-    this.type = _C3DTilesTypes['default'].batchtable;
+  function C3DTBatchTable(buffer, binaryLength, batchLength, registeredExtensions) {
+    (0, _classCallCheck2["default"])(this, C3DTBatchTable);
+    this.type = _C3DTilesTypes["default"].batchtable;
     this.batchLength = batchLength; // Parse Batch table content
 
     var jsonBuffer = buffer; // Batch table has a json part and can have a binary part (not supported yet)
@@ -58,7 +49,8 @@ var C3DTBatchTable = /*#__PURE__*/ (function () {
       jsonBuffer = buffer.slice(0, buffer.byteLength - binaryLength);
     } // Parse JSON content
 
-    var content = _Utf8Decoder['default'].decode(new Uint8Array(jsonBuffer));
+
+    var content = _Utf8Decoder["default"].decode(new Uint8Array(jsonBuffer));
 
     var json = JSON.parse(content); // Separate the content and the possible extensions
     // When an extension is found, we call its parser and append the
@@ -67,12 +59,10 @@ var C3DTBatchTable = /*#__PURE__*/ (function () {
     // 3dtiles_hierarchy.html)
 
     if (json.extensions) {
-      this.extensions = registeredExtensions.parseExtensions(
-        json.extensions,
-        this.type,
-      );
+      this.extensions = registeredExtensions.parseExtensions(json.extensions, this.type);
       delete json.extensions;
     } // Store batch table json content
+
 
     this.content = json;
   }
@@ -96,52 +86,41 @@ var C3DTBatchTable = /*#__PURE__*/ (function () {
    * }
    */
 
-  (0, _createClass2['default'])(C3DTBatchTable, [
-    {
-      key: 'getInfoById',
-      value: function getInfoById(batchID) {
-        // Verify that the batch ID is valid
-        if (batchID < 0 && batchID < this.batchLength) {
-          throw new Error(
-            'Batch Id ('
-              .concat(batchID, ') must be between 0 and\n            ')
-              .concat(
-                this.batchLength,
-                ' to access feature properties from the batch\n            table.',
-              ),
-          );
+
+  (0, _createClass2["default"])(C3DTBatchTable, [{
+    key: "getInfoById",
+    value: function getInfoById(batchID) {
+      // Verify that the batch ID is valid
+      if (batchID < 0 && batchID < this.batchLength) {
+        throw new Error("Batch Id (".concat(batchID, ") must be between 0 and\n            ").concat(this.batchLength, " to access feature properties from the batch\n            table."));
+      }
+
+      var featureDisplayableInfo = {};
+      featureDisplayableInfo.batchTable = {}; // Get properties from batch table content
+
+      for (var property in this.content) {
+        // check that the property is not inherited from prototype chain
+        if (Object.prototype.hasOwnProperty.call(this.content, property)) {
+          featureDisplayableInfo.batchTable[property] = this.content[property][batchID];
         }
+      } // Extensions
 
-        var featureDisplayableInfo = {};
-        featureDisplayableInfo.batchTable = {}; // Get properties from batch table content
 
-        for (var property in this.content) {
-          // check that the property is not inherited from prototype chain
-          if (Object.prototype.hasOwnProperty.call(this.content, property)) {
-            featureDisplayableInfo.batchTable[property] =
-              this.content[property][batchID];
-          }
-        } // Extensions
+      if (this.extensions) {
+        featureDisplayableInfo.extensions = {};
 
-        if (this.extensions) {
-          featureDisplayableInfo.extensions = {};
-
-          for (var extName in this.extensions) {
-            if (
-              Object.prototype.hasOwnProperty.call(this.extensions, extName)
-            ) {
-              featureDisplayableInfo.extensions[extName] =
-                this.extensions[extName].getInfoById(batchID);
-            }
+        for (var extName in this.extensions) {
+          if (Object.prototype.hasOwnProperty.call(this.extensions, extName)) {
+            featureDisplayableInfo.extensions[extName] = this.extensions[extName].getInfoById(batchID);
           }
         }
+      }
 
-        return featureDisplayableInfo;
-      },
-    },
-  ]);
+      return featureDisplayableInfo;
+    }
+  }]);
   return C3DTBatchTable;
-})();
+}();
 
 var _default = C3DTBatchTable;
-exports['default'] = _default;
+exports["default"] = _default;

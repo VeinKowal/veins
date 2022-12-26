@@ -1,10 +1,12 @@
-function WebGLShader(gl, type, string) {
-  const shader = gl.createShader(type);
+function WebGLShader( gl, type, string ) {
 
-  gl.shaderSource(shader, string);
-  gl.compileShader(shader);
+	const shader = gl.createShader( type );
 
-  return shader;
+	gl.shaderSource( shader, string );
+	gl.compileShader( shader );
+
+	return shader;
+
 }
 
 export { WebGLShader };

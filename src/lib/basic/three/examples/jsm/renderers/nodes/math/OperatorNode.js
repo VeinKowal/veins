@@ -1,65 +1,87 @@
 import Node from '../core/Node.js';
 
 class OperatorNode extends Node {
-  constructor(op, a, b) {
-    super();
 
-    this.op = op;
+	constructor( op, a, b ) {
 
-    this.a = a;
-    this.b = b;
-  }
+		super();
 
-  getType(builder) {
-    const typeA = this.a.getType(builder);
-    const typeB = this.b.getType(builder);
+		this.op = op;
 
-    if (builder.isMatrix(typeA) && builder.isVector(typeB)) {
-      // matrix x vector
+		this.a = a;
+		this.b = b;
 
-      return typeB;
-    } else if (builder.isVector(typeA) && builder.isMatrix(typeB)) {
-      // vector x matrix
+	}
 
-      return typeA;
-    } else if (builder.getTypeLength(typeB) > builder.getTypeLength(typeA)) {
-      // anytype x anytype: use the greater length vector
+	getType( builder ) {
 
-      return typeB;
-    }
+		const typeA = this.a.getType( builder );
+		const typeB = this.b.getType( builder );
 
-    return typeA;
-  }
+		if ( builder.isMatrix( typeA ) && builder.isVector( typeB ) ) {
 
-  getVectorFromMatrix(type) {
-    return 'vec' + type.substr(3);
-  }
+			// matrix x vector
 
-  generate(builder, output) {
-    let typeA = this.a.getType(builder);
-    let typeB = this.b.getType(builder);
+			return typeB;
 
-    let type = this.getType(builder);
+		} else if ( builder.isVector( typeA ) && builder.isMatrix( typeB ) ) {
 
-    if (builder.isMatrix(typeA) && builder.isVector(typeB)) {
-      // matrix x vector
+			// vector x matrix
 
-      type = typeB = this.getVectorFromMatrix(typeA);
-    } else if (builder.isVector(typeA) && builder.isMatrix(typeB)) {
-      // vector x matrix
+			return typeA;
 
-      type = typeB = this.getVectorFromMatrix(typeB);
-    } else {
-      // anytype x anytype
+		} else if ( builder.getTypeLength( typeB ) > builder.getTypeLength( typeA ) ) {
 
-      typeA = typeB = type;
-    }
+			// anytype x anytype: use the greater length vector
 
-    const a = this.a.build(builder, typeA);
-    const b = this.b.build(builder, typeB);
+			return typeB;
 
-    return builder.format(`( ${a} ${this.op} ${b} )`, type, output);
-  }
+		}
+
+		return typeA;
+
+	}
+
+	getVectorFromMatrix( type ) {
+
+		return 'vec' + type.substr( 3 );
+
+	}
+
+	generate( builder, output ) {
+
+		let typeA = this.a.getType( builder );
+		let typeB = this.b.getType( builder );
+
+		let type = this.getType( builder );
+
+		if ( builder.isMatrix( typeA ) && builder.isVector( typeB ) ) {
+
+			// matrix x vector
+
+			type = typeB = this.getVectorFromMatrix( typeA );
+
+		} else if ( builder.isVector( typeA ) && builder.isMatrix( typeB ) ) {
+
+			// vector x matrix
+
+			type = typeB = this.getVectorFromMatrix( typeB );
+
+		} else {
+
+			// anytype x anytype
+
+			typeA = typeB = type;
+
+		}
+
+		const a = this.a.build( builder, typeA );
+		const b = this.b.build( builder, typeB );
+
+		return builder.format( `( ${a} ${this.op} ${b} )`, type, output );
+
+	}
+
 }
 
 export default OperatorNode;

@@ -1,23 +1,24 @@
-import { WireframeGeometry } from '../../../build/three.module.js';
+import {
+	WireframeGeometry
+} from 'three';
 import { LineSegmentsGeometry } from '../lines/LineSegmentsGeometry.js';
 
-var WireframeGeometry2 = function (geometry) {
-  LineSegmentsGeometry.call(this);
+class WireframeGeometry2 extends LineSegmentsGeometry {
 
-  this.type = 'WireframeGeometry2';
+	constructor( geometry ) {
 
-  this.fromWireframeGeometry(new WireframeGeometry(geometry));
+		super();
 
-  // set colors, maybe
-};
+		this.type = 'WireframeGeometry2';
 
-WireframeGeometry2.prototype = Object.assign(
-  Object.create(LineSegmentsGeometry.prototype),
-  {
-    constructor: WireframeGeometry2,
+		this.fromWireframeGeometry( new WireframeGeometry( geometry ) );
 
-    isWireframeGeometry2: true,
-  },
-);
+		// set colors, maybe
+
+	}
+
+}
+
+WireframeGeometry2.prototype.isWireframeGeometry2 = true;
 
 export { WireframeGeometry2 };

@@ -1,21 +1,15 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] =
-  exports.deprecatedFeature2MeshOptions =
-  exports.deprecatedParsingOptionsToNewOne =
-  exports.deprecatedColorLayerOptions =
-    void 0;
+exports["default"] = exports.deprecatedFeature2MeshOptions = exports.deprecatedParsingOptionsToNewOne = exports.deprecatedColorLayerOptions = void 0;
 
-var _LayeredMaterial = require('../../Renderer/LayeredMaterial');
+var _LayeredMaterial = require("../../Renderer/LayeredMaterial");
 
 var deprecatedColorLayerOptions = function (options) {
   if (options.fx) {
-    console.warn(
-      'ColorLayer fx is deprecated, use ColorLayer.effect_type and ColorLayer.effect_parameter instead.',
-    );
+    console.warn('ColorLayer fx is deprecated, use ColorLayer.effect_type and ColorLayer.effect_parameter instead.');
 
     if (options.fx > 2.0) {
       options.effect_parameter = options.fx;
@@ -34,25 +28,21 @@ exports.deprecatedColorLayerOptions = deprecatedColorLayerOptions;
 var deprecatedParsingOptionsToNewOne = function (options) {
   /* istanbul ignore next */
   if (options.crsOut || options.crsIn) {
-    console.warn(
-      'Parsing options with crsIn and crsOut are deprecated, use { in, out } structure.',
-    );
+    console.warn('Parsing options with crsIn and crsOut are deprecated, use { in, out } structure.');
     var newOptions = {
-      in: {},
-      out: {},
+      "in": {},
+      out: {}
     };
-    newOptions['in'].crs = options.crsIn;
-    newOptions['in'].isInverted = options.isInverted;
-    newOptions['in'].styles = options.styles;
-    newOptions['in'].layers = options.layers;
-    newOptions['in'].filter = options.filter;
+    newOptions["in"].crs = options.crsIn;
+    newOptions["in"].isInverted = options.isInverted;
+    newOptions["in"].styles = options.styles;
+    newOptions["in"].layers = options.layers;
+    newOptions["in"].filter = options.filter;
     newOptions.out.crs = options.crsOut;
     newOptions.out.mergeFeatures = options.mergeFeatures;
 
     if (options.withAltitude && options.withNormal) {
-      console.warn(
-        'Parsing options withAltitude and withNormal is deprecated, use out.structure: 2d or 3d.',
-      );
+      console.warn('Parsing options withAltitude and withNormal is deprecated, use out.structure: 2d or 3d.');
       newOptions.out.structure = '3d';
     } else {
       newOptions.out.structure = '2d';
@@ -62,9 +52,7 @@ var deprecatedParsingOptionsToNewOne = function (options) {
     newOptions.out.style = options.style;
 
     if (options.crsOut.overrideAltitudeInToZero !== undefined) {
-      console.error(
-        'Parsing options out.overrideAltitudeInToZero is removed, use Style.xxx.base_altitude instead',
-      );
+      console.error('Parsing options out.overrideAltitudeInToZero is removed, use Style.xxx.base_altitude instead');
     }
 
     newOptions.out.filter = options.filter;
@@ -72,13 +60,8 @@ var deprecatedParsingOptionsToNewOne = function (options) {
   }
 
   if (options.out) {
-    if (
-      options.out.withAltitude !== undefined ||
-      options.out.withNormal !== undefined
-    ) {
-      console.warn(
-        'Parsing options out.withAltitude and out.withNormal is deprecated, use out.structure: 2d or 3d.',
-      );
+    if (options.out.withAltitude !== undefined || options.out.withNormal !== undefined) {
+      console.warn('Parsing options out.withAltitude and out.withNormal is deprecated, use out.structure: 2d or 3d.');
 
       if (options.out.withAltitude && options.out.withNormal) {
         options.out.structure = '3d';
@@ -88,9 +71,7 @@ var deprecatedParsingOptionsToNewOne = function (options) {
     }
 
     if (options.out.overrideAltitudeInToZero !== undefined) {
-      console.error(
-        'Parsing options out.overrideAltitudeInToZero is removed, use Style.xxx.base_altitude instead',
-      );
+      console.error('Parsing options out.overrideAltitudeInToZero is removed, use Style.xxx.base_altitude instead');
     }
   }
 
@@ -105,18 +86,14 @@ var deprecatedFeature2MeshOptions = function (options) {
   }
 
   if (options.extrude) {
-    console.error(
-      'extrude convert option is removed, use Style.fill.extrusion_height instead',
-    );
+    console.error('extrude convert option is removed, use Style.fill.extrusion_height instead');
   }
 
   if (options.altitude) {
-    console.error(
-      'altitude convert option is removed, use Style.xxx.base_altitude instead',
-    );
+    console.error('altitude convert option is removed, use Style.xxx.base_altitude instead');
   }
 };
 
 exports.deprecatedFeature2MeshOptions = deprecatedFeature2MeshOptions;
 var _default = {};
-exports['default'] = _default;
+exports["default"] = _default;

@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
 /**
  * Enumeration of implemented 3D Tiles classes. Used in C3DTExtensions to
@@ -18,7 +18,7 @@ exports['default'] = void 0;
 var C3DTilesTypes = {
   tileset: 'tileset',
   batchtable: 'batchtable',
-  boundingVolume: 'boundingVolume',
+  boundingVolume: 'boundingVolume'
 };
 var _default = C3DTilesTypes;
-exports['default'] = _default;
+exports["default"] = _default;

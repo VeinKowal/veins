@@ -1,109 +1,50 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] =
-  exports.supportedParsers =
-  exports.supportedFetchers =
-    void 0;
+exports["default"] = exports.supportedParsers = exports.supportedFetchers = void 0;
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _Extent = _interopRequireDefault(require('../Core/Geographic/Extent'));
+var _Extent = _interopRequireDefault(require("../Core/Geographic/Extent"));
 
-var _GeoJsonParser = _interopRequireDefault(require('../Parser/GeoJsonParser'));
+var _GeoJsonParser = _interopRequireDefault(require("../Parser/GeoJsonParser"));
 
-var _KMLParser = _interopRequireDefault(require('../Parser/KMLParser'));
+var _KMLParser = _interopRequireDefault(require("../Parser/KMLParser"));
 
-var _GpxParser = _interopRequireDefault(require('../Parser/GpxParser'));
+var _GpxParser = _interopRequireDefault(require("../Parser/GpxParser"));
 
-var _VectorTileParser = _interopRequireDefault(
-  require('../Parser/VectorTileParser'),
-);
+var _VectorTileParser = _interopRequireDefault(require("../Parser/VectorTileParser"));
 
-var _Fetcher = _interopRequireDefault(require('../Provider/Fetcher'));
+var _Fetcher = _interopRequireDefault(require("../Provider/Fetcher"));
 
-var _Cache = _interopRequireDefault(require('../Core/Scheduler/Cache'));
+var _Cache = _interopRequireDefault(require("../Core/Scheduler/Cache"));
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-var supportedFetchers = new Map([
-  ['image/x-bil;bits=32', _Fetcher['default'].textureFloat],
-  ['geojson', _Fetcher['default'].json],
-  ['application/json', _Fetcher['default'].json],
-  ['application/kml', _Fetcher['default'].xml],
-  ['application/gpx', _Fetcher['default'].xml],
-  [
-    'application/x-protobuf;type=mapbox-vector',
-    _Fetcher['default'].arrayBuffer,
-  ],
-]);
+var supportedFetchers = new Map([['image/x-bil;bits=32', _Fetcher["default"].textureFloat], ['geojson', _Fetcher["default"].json], ['application/json', _Fetcher["default"].json], ['application/kml', _Fetcher["default"].xml], ['application/gpx', _Fetcher["default"].xml], ['application/x-protobuf;type=mapbox-vector', _Fetcher["default"].arrayBuffer]]);
 exports.supportedFetchers = supportedFetchers;
-var supportedParsers = new Map([
-  ['geojson', _GeoJsonParser['default'].parse],
-  ['application/json', _GeoJsonParser['default'].parse],
-  ['application/kml', _KMLParser['default'].parse],
-  ['application/gpx', _GpxParser['default'].parse],
-  [
-    'application/x-protobuf;type=mapbox-vector',
-    _VectorTileParser['default'].parse,
-  ],
-]);
+var supportedParsers = new Map([['geojson', _GeoJsonParser["default"].parse], ['application/json', _GeoJsonParser["default"].parse], ['application/kml', _KMLParser["default"].parse], ['application/gpx', _GpxParser["default"].parse], ['application/x-protobuf;type=mapbox-vector', _VectorTileParser["default"].parse]]);
 exports.supportedParsers = supportedParsers;
 var noCache = {
   getByArray: function getByArray() {},
   setByArray: function setByArray(a) {
     return a;
   },
-  clear: function clear() {},
+  clear: function clear() {}
 };
 /**
  * @property {string} crs - data crs projection.
@@ -117,7 +58,7 @@ var noCache = {
  */
 
 var InformationsData = function InformationsData(options) {
-  (0, _classCallCheck2['default'])(this, InformationsData);
+  (0, _classCallCheck2["default"])(this, InformationsData);
 
   /* istanbul ignore next */
   if (options.projection) {
@@ -134,22 +75,21 @@ var InformationsData = function InformationsData(options) {
  */
 // eslint-disable-next-line
 
-var /* istanbul ignore next */
-  ParsingOptions = function ParsingOptions() {
-    (0, _classCallCheck2['default'])(this, ParsingOptions);
-  };
+
+var
+/* istanbul ignore next */
+ParsingOptions = function ParsingOptions() {
+  (0, _classCallCheck2["default"])(this, ParsingOptions);
+};
 
 function fetchSourceData(source, extent) {
   var url = source.urlFromExtent(extent);
-  return source.fetcher(url, source.networkOptions).then(
-    function (f) {
-      f.extent = extent;
-      return f;
-    },
-    function (err) {
-      return source.handlingError(err);
-    },
-  );
+  return source.fetcher(url, source.networkOptions).then(function (f) {
+    f.extent = extent;
+    return f;
+  }, function (err) {
+    return source.handlingError(err);
+  });
 }
 
 var uid = 0;
@@ -197,8 +137,8 @@ var uid = 0;
  * </ul>
  */
 
-var Source = /*#__PURE__*/ (function (_InformationsData) {
-  (0, _inherits2['default'])(Source, _InformationsData);
+var Source = /*#__PURE__*/function (_InformationsData) {
+  (0, _inherits2["default"])(Source, _InformationsData);
 
   var _super = _createSuper(Source);
 
@@ -212,7 +152,7 @@ var Source = /*#__PURE__*/ (function (_InformationsData) {
   function Source(source) {
     var _this;
 
-    (0, _classCallCheck2['default'])(this, Source);
+    (0, _classCallCheck2["default"])(this, Source);
     _this = _super.call(this, source);
     _this.isSource = true;
 
@@ -223,29 +163,22 @@ var Source = /*#__PURE__*/ (function (_InformationsData) {
     _this.uid = uid++;
     _this.url = source.url;
     _this.format = source.format;
-    _this.fetcher =
-      source.fetcher ||
-      supportedFetchers.get(source.format) ||
-      _Fetcher['default'].texture;
+    _this.fetcher = source.fetcher || supportedFetchers.get(source.format) || _Fetcher["default"].texture;
 
-    _this.parser =
-      source.parser ||
-      supportedParsers.get(source.format) ||
-      function (d) {
-        return d;
-      };
+    _this.parser = source.parser || supportedParsers.get(source.format) || function (d) {
+      return d;
+    };
 
-    _this.isVectorSource =
-      (source.parser || supportedParsers.get(source.format)) != undefined;
+    _this.isVectorSource = (source.parser || supportedParsers.get(source.format)) != undefined;
     _this.networkOptions = source.networkOptions || {
-      crossOrigin: 'anonymous',
+      crossOrigin: 'anonymous'
     };
     _this.attribution = source.attribution;
     _this.whenReady = Promise.resolve();
     _this._featuresCaches = {};
 
     if (source.extent && !source.extent.isExtent) {
-      _this.extent = new _Extent['default'](_this.crs, source.extent);
+      _this.extent = new _Extent["default"](_this.crs, source.extent);
     } else {
       _this.extent = source.extent;
     }
@@ -253,142 +186,124 @@ var Source = /*#__PURE__*/ (function (_InformationsData) {
     return _this;
   }
 
-  (0, _createClass2['default'])(Source, [
-    {
-      key: 'handlingError',
-      value: function handlingError(err) {
-        throw new Error(err);
-      },
-      /**
-       * Generates an url from an extent. This url is a link to fetch the
-       * resources inside the extent.
-       *
-       * @param {Extent} extent - Extent to convert in url.
-       * @return {string} The URL constructed from the extent.
-       */
-      // eslint-disable-next-line
-    },
-    {
-      key: 'urlFromExtent',
-      value: function urlFromExtent() {
-        throw new Error(
-          'In extended Source, you have to implement the method urlFromExtent!',
-        );
-      },
-    },
-    {
-      key: 'requestToKey',
-      value: function requestToKey(extent) {
-        return [extent.zoom, extent.row, extent.col];
-      },
-      /**
-       * Load  data from cache or Fetch/Parse data.
-       * The loaded data is a Feature or Texture.
-       *
-       * @param      {Extent}  extent   extent requested parsed data.
-       * @param      {FeatureBuildingOptions|Layer}  out     The feature returned options
-       * @return     {FeatureCollection|Texture}  The parsed data.
-       */
-    },
-    {
-      key: 'loadData',
-      value: function loadData(extent, out) {
-        var _this2 = this;
+  (0, _createClass2["default"])(Source, [{
+    key: "handlingError",
+    value: function handlingError(err) {
+      throw new Error(err);
+    }
+    /**
+     * Generates an url from an extent. This url is a link to fetch the
+     * resources inside the extent.
+     *
+     * @param {Extent} extent - Extent to convert in url.
+      * @return {string} The URL constructed from the extent.
+     */
+    // eslint-disable-next-line
 
-        var cache = this._featuresCaches[out.crs];
-        var key = this.requestToKey(extent); // try to get parsed data from cache
+  }, {
+    key: "urlFromExtent",
+    value: function urlFromExtent() {
+      throw new Error('In extended Source, you have to implement the method urlFromExtent!');
+    }
+  }, {
+    key: "requestToKey",
+    value: function requestToKey(extent) {
+      return [extent.zoom, extent.row, extent.col];
+    }
+    /**
+     * Load  data from cache or Fetch/Parse data.
+     * The loaded data is a Feature or Texture.
+     *
+     * @param      {Extent}  extent   extent requested parsed data.
+     * @param      {FeatureBuildingOptions|Layer}  out     The feature returned options
+     * @return     {FeatureCollection|Texture}  The parsed data.
+     */
 
-        var features = cache.getByArray(key);
+  }, {
+    key: "loadData",
+    value: function loadData(extent, out) {
+      var _this2 = this;
 
-        if (!features) {
-          // otherwise fetch/parse the data
-          features = cache.setByArray(
-            fetchSourceData(this, extent).then(
-              function (file) {
-                return _this2.parser(file, {
-                  out: out,
-                  in: _this2,
-                });
-              },
-              function (err) {
-                return _this2.handlingError(err);
-              },
-            ),
-            key,
-          );
-          /* istanbul ignore next */
+      var cache = this._featuresCaches[out.crs];
+      var key = this.requestToKey(extent); // try to get parsed data from cache
 
-          if (this.onParsedFile) {
-            features.then(function (feat) {
-              _this2.onParsedFile(feat);
+      var features = cache.getByArray(key);
 
-              console.warn('Source.onParsedFile was deprecated');
-              return feat;
-            });
-          }
+      if (!features) {
+        // otherwise fetch/parse the data
+        features = cache.setByArray(fetchSourceData(this, extent).then(function (file) {
+          return _this2.parser(file, {
+            out: out,
+            "in": _this2
+          });
+        }, function (err) {
+          return _this2.handlingError(err);
+        }), key);
+        /* istanbul ignore next */
+
+        if (this.onParsedFile) {
+          features.then(function (feat) {
+            _this2.onParsedFile(feat);
+
+            console.warn('Source.onParsedFile was deprecated');
+            return feat;
+          });
         }
+      }
 
-        return features;
-      },
-      /**
-       * Called when layer added.
-       *
-       * @param {object} options
-       */
-    },
-    {
-      key: 'onLayerAdded',
-      value: function onLayerAdded(options) {
-        // Added new cache by crs
-        if (!this._featuresCaches[options.out.crs]) {
-          // Cache feature only if it's vector data, the feature are cached in source.
-          // It's not necessary to cache raster in Source,
-          // because it's already cached on layer.
-          this._featuresCaches[options.out.crs] = this.isVectorSource
-            ? new _Cache['default']()
-            : noCache;
-        }
-      },
-      /**
-       * Called when layer removed.
-       *
-       * @param {options}  [options={}] options
-       */
-    },
-    {
-      key: 'onLayerRemoved',
-      value: function onLayerRemoved() {
-        var options =
-          arguments.length > 0 && arguments[0] !== undefined
-            ? arguments[0]
-            : {};
-        // delete unused cache
-        var unusedCache = this._featuresCaches[options.unusedCrs];
+      return features;
+    }
+    /**
+     * Called when layer added.
+     *
+     * @param {object} options
+     */
 
-        if (unusedCache) {
-          unusedCache.clear();
-          delete this._featuresCaches[options.unusedCrs];
-        }
-      },
-      /**
-       * Tests if an extent is inside the source limits.
-       *
-       * @param {Extent} extent - Extent to test.
-       * @return {boolean} True if the extent is inside the limit, false otherwise.
-       */
-      // eslint-disable-next-line
-    },
-    {
-      key: 'extentInsideLimit',
-      value: function extentInsideLimit() {
-        throw new Error(
-          'In extented Source, you have to implement the method extentInsideLimit!',
-        );
-      },
-    },
-  ]);
+  }, {
+    key: "onLayerAdded",
+    value: function onLayerAdded(options) {
+      // Added new cache by crs
+      if (!this._featuresCaches[options.out.crs]) {
+        // Cache feature only if it's vector data, the feature are cached in source.
+        // It's not necessary to cache raster in Source,
+        // because it's already cached on layer.
+        this._featuresCaches[options.out.crs] = this.isVectorSource ? new _Cache["default"]() : noCache;
+      }
+    }
+    /**
+     * Called when layer removed.
+     *
+     * @param {options}  [options={}] options
+     */
+
+  }, {
+    key: "onLayerRemoved",
+    value: function onLayerRemoved() {
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      // delete unused cache
+      var unusedCache = this._featuresCaches[options.unusedCrs];
+
+      if (unusedCache) {
+        unusedCache.clear();
+        delete this._featuresCaches[options.unusedCrs];
+      }
+    }
+    /**
+     * Tests if an extent is inside the source limits.
+     *
+     * @param {Extent} extent - Extent to test.
+      * @return {boolean} True if the extent is inside the limit, false otherwise.
+     */
+    // eslint-disable-next-line
+
+  }, {
+    key: "extentInsideLimit",
+    value: function extentInsideLimit() {
+      throw new Error('In extented Source, you have to implement the method extentInsideLimit!');
+    }
+  }]);
   return Source;
-})(InformationsData);
+}(InformationsData);
 
 var _default = Source;
-exports['default'] = _default;
+exports["default"] = _default;

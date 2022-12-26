@@ -1,152 +1,168 @@
 import {
-  LinearFilter,
-  Matrix3,
-  Mesh,
-  NearestFilter,
-  OrthographicCamera,
-  PlaneGeometry,
-  RGBAFormat,
-  Scene,
-  ShaderMaterial,
-  StereoCamera,
-  WebGLRenderTarget,
-} from '../../../build/three.module.js';
+	LinearFilter,
+	Matrix3,
+	Mesh,
+	NearestFilter,
+	OrthographicCamera,
+	PlaneGeometry,
+	RGBAFormat,
+	Scene,
+	ShaderMaterial,
+	StereoCamera,
+	WebGLRenderTarget
+} from 'three';
 
-var AnaglyphEffect = function (renderer, width, height) {
-  // Dubois matrices from https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.7.6968&rep=rep1&type=pdf#page=4
+class AnaglyphEffect {
 
-  this.colorMatrixLeft = new Matrix3().fromArray([
-    0.4561, -0.0400822, -0.0152161, 0.500484, -0.0378246, -0.0205971, 0.176381,
-    -0.0157589, -0.00546856,
-  ]);
+	constructor( renderer, width = 512, height = 512 ) {
 
-  this.colorMatrixRight = new Matrix3().fromArray([
-    -0.0434706, 0.378476, -0.0721527, -0.0879388, 0.73364, -0.112961,
-    -0.00155529, -0.0184503, 1.2264,
-  ]);
+		// Dubois matrices from https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.7.6968&rep=rep1&type=pdf#page=4
 
-  var _camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
+		this.colorMatrixLeft = new Matrix3().fromArray( [
+			0.456100, - 0.0400822, - 0.0152161,
+			0.500484, - 0.0378246, - 0.0205971,
+			0.176381, - 0.0157589, - 0.00546856
+		] );
 
-  var _scene = new Scene();
+		this.colorMatrixRight = new Matrix3().fromArray( [
+			- 0.0434706, 0.378476, - 0.0721527,
+			- 0.0879388, 0.73364, - 0.112961,
+			- 0.00155529, - 0.0184503, 1.2264
+		] );
 
-  var _stereo = new StereoCamera();
+		const _camera = new OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 
-  var _params = {
-    minFilter: LinearFilter,
-    magFilter: NearestFilter,
-    format: RGBAFormat,
-  };
+		const _scene = new Scene();
 
-  if (width === undefined) width = 512;
-  if (height === undefined) height = 512;
+		const _stereo = new StereoCamera();
 
-  var _renderTargetL = new WebGLRenderTarget(width, height, _params);
-  var _renderTargetR = new WebGLRenderTarget(width, height, _params);
+		const _params = { minFilter: LinearFilter, magFilter: NearestFilter, format: RGBAFormat };
 
-  var _material = new ShaderMaterial({
-    uniforms: {
-      mapLeft: { value: _renderTargetL.texture },
-      mapRight: { value: _renderTargetR.texture },
+		const _renderTargetL = new WebGLRenderTarget( width, height, _params );
+		const _renderTargetR = new WebGLRenderTarget( width, height, _params );
 
-      colorMatrixLeft: { value: this.colorMatrixLeft },
-      colorMatrixRight: { value: this.colorMatrixRight },
-    },
+		const _material = new ShaderMaterial( {
 
-    vertexShader: [
-      'varying vec2 vUv;',
+			uniforms: {
 
-      'void main() {',
+				'mapLeft': { value: _renderTargetL.texture },
+				'mapRight': { value: _renderTargetR.texture },
 
-      '	vUv = vec2( uv.x, uv.y );',
-      '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+				'colorMatrixLeft': { value: this.colorMatrixLeft },
+				'colorMatrixRight': { value: this.colorMatrixRight }
 
-      '}',
-    ].join('\n'),
+			},
 
-    fragmentShader: [
-      'uniform sampler2D mapLeft;',
-      'uniform sampler2D mapRight;',
-      'varying vec2 vUv;',
+			vertexShader: [
 
-      'uniform mat3 colorMatrixLeft;',
-      'uniform mat3 colorMatrixRight;',
+				'varying vec2 vUv;',
 
-      // These functions implement sRGB linearization and gamma correction
+				'void main() {',
 
-      'float lin( float c ) {',
-      '	return c <= 0.04045 ? c * 0.0773993808 :',
-      '			pow( c * 0.9478672986 + 0.0521327014, 2.4 );',
-      '}',
+				'	vUv = vec2( uv.x, uv.y );',
+				'	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
 
-      'vec4 lin( vec4 c ) {',
-      '	return vec4( lin( c.r ), lin( c.g ), lin( c.b ), c.a );',
-      '}',
+				'}'
 
-      'float dev( float c ) {',
-      '	return c <= 0.0031308 ? c * 12.92',
-      '			: pow( c, 0.41666 ) * 1.055 - 0.055;',
-      '}',
+			].join( '\n' ),
 
-      'void main() {',
+			fragmentShader: [
 
-      '	vec2 uv = vUv;',
+				'uniform sampler2D mapLeft;',
+				'uniform sampler2D mapRight;',
+				'varying vec2 vUv;',
 
-      '	vec4 colorL = lin( texture2D( mapLeft, uv ) );',
-      '	vec4 colorR = lin( texture2D( mapRight, uv ) );',
+				'uniform mat3 colorMatrixLeft;',
+				'uniform mat3 colorMatrixRight;',
 
-      '	vec3 color = clamp(',
-      '			colorMatrixLeft * colorL.rgb +',
-      '			colorMatrixRight * colorR.rgb, 0., 1. );',
+				// These functions implement sRGB linearization and gamma correction
 
-      '	gl_FragColor = vec4(',
-      '			dev( color.r ), dev( color.g ), dev( color.b ),',
-      '			max( colorL.a, colorR.a ) );',
+				'float lin( float c ) {',
+				'	return c <= 0.04045 ? c * 0.0773993808 :',
+				'			pow( c * 0.9478672986 + 0.0521327014, 2.4 );',
+				'}',
 
-      '}',
-    ].join('\n'),
-  });
+				'vec4 lin( vec4 c ) {',
+				'	return vec4( lin( c.r ), lin( c.g ), lin( c.b ), c.a );',
+				'}',
 
-  var _mesh = new Mesh(new PlaneGeometry(2, 2), _material);
-  _scene.add(_mesh);
+				'float dev( float c ) {',
+				'	return c <= 0.0031308 ? c * 12.92',
+				'			: pow( c, 0.41666 ) * 1.055 - 0.055;',
+				'}',
 
-  this.setSize = function (width, height) {
-    renderer.setSize(width, height);
 
-    var pixelRatio = renderer.getPixelRatio();
+				'void main() {',
 
-    _renderTargetL.setSize(width * pixelRatio, height * pixelRatio);
-    _renderTargetR.setSize(width * pixelRatio, height * pixelRatio);
-  };
+				'	vec2 uv = vUv;',
 
-  this.render = function (scene, camera) {
-    var currentRenderTarget = renderer.getRenderTarget();
+				'	vec4 colorL = lin( texture2D( mapLeft, uv ) );',
+				'	vec4 colorR = lin( texture2D( mapRight, uv ) );',
 
-    scene.updateMatrixWorld();
+				'	vec3 color = clamp(',
+				'			colorMatrixLeft * colorL.rgb +',
+				'			colorMatrixRight * colorR.rgb, 0., 1. );',
 
-    if (camera.parent === null) camera.updateMatrixWorld();
+				'	gl_FragColor = vec4(',
+				'			dev( color.r ), dev( color.g ), dev( color.b ),',
+				'			max( colorL.a, colorR.a ) );',
 
-    _stereo.update(camera);
+				'}'
 
-    renderer.setRenderTarget(_renderTargetL);
-    renderer.clear();
-    renderer.render(scene, _stereo.cameraL);
+			].join( '\n' )
 
-    renderer.setRenderTarget(_renderTargetR);
-    renderer.clear();
-    renderer.render(scene, _stereo.cameraR);
+		} );
 
-    renderer.setRenderTarget(null);
-    renderer.render(_scene, _camera);
+		const _mesh = new Mesh( new PlaneGeometry( 2, 2 ), _material );
+		_scene.add( _mesh );
 
-    renderer.setRenderTarget(currentRenderTarget);
-  };
+		this.setSize = function ( width, height ) {
 
-  this.dispose = function () {
-    if (_renderTargetL) _renderTargetL.dispose();
-    if (_renderTargetR) _renderTargetR.dispose();
-    if (_mesh) _mesh.geometry.dispose();
-    if (_material) _material.dispose();
-  };
-};
+			renderer.setSize( width, height );
+
+			const pixelRatio = renderer.getPixelRatio();
+
+			_renderTargetL.setSize( width * pixelRatio, height * pixelRatio );
+			_renderTargetR.setSize( width * pixelRatio, height * pixelRatio );
+
+		};
+
+		this.render = function ( scene, camera ) {
+
+			const currentRenderTarget = renderer.getRenderTarget();
+
+			scene.updateMatrixWorld();
+
+			if ( camera.parent === null ) camera.updateMatrixWorld();
+
+			_stereo.update( camera );
+
+			renderer.setRenderTarget( _renderTargetL );
+			renderer.clear();
+			renderer.render( scene, _stereo.cameraL );
+
+			renderer.setRenderTarget( _renderTargetR );
+			renderer.clear();
+			renderer.render( scene, _stereo.cameraR );
+
+			renderer.setRenderTarget( null );
+			renderer.render( _scene, _camera );
+
+			renderer.setRenderTarget( currentRenderTarget );
+
+		};
+
+		this.dispose = function () {
+
+			if ( _renderTargetL ) _renderTargetL.dispose();
+			if ( _renderTargetR ) _renderTargetR.dispose();
+			if ( _mesh ) _mesh.geometry.dispose();
+			if ( _material ) _material.dispose();
+
+		};
+
+	}
+
+}
 
 export { AnaglyphEffect };

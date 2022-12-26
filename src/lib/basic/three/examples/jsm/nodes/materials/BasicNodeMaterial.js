@@ -2,22 +2,25 @@ import { BasicNode } from './nodes/BasicNode.js';
 import { NodeMaterial } from './NodeMaterial.js';
 import { NodeUtils } from '../core/NodeUtils.js';
 
-function BasicNodeMaterial() {
-  var node = new BasicNode();
+class BasicNodeMaterial extends NodeMaterial {
 
-  NodeMaterial.call(this, node, node);
+	constructor() {
 
-  this.type = 'BasicNodeMaterial';
+		const node = new BasicNode();
+
+		super( node, node );
+
+		this.type = 'BasicNodeMaterial';
+
+	}
+
 }
 
-BasicNodeMaterial.prototype = Object.create(NodeMaterial.prototype);
-BasicNodeMaterial.prototype.constructor = BasicNodeMaterial;
-
-NodeUtils.addShortcuts(BasicNodeMaterial.prototype, 'fragment', [
-  'color',
-  'alpha',
-  'mask',
-  'position',
-]);
+NodeUtils.addShortcuts( BasicNodeMaterial.prototype, 'fragment', [
+	'color',
+	'alpha',
+	'mask',
+	'position'
+] );
 
 export { BasicNodeMaterial };

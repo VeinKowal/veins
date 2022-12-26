@@ -91,11 +91,12 @@ class ITownsInitializer extends BaseInitializer {
 
   public dispose() {
     try {
-      this.view.controls.dispose();
-      this.view.dispose();
       const app = this.app;
       app.view = undefined;
+      this.view.controls.dispose();
+      this.view.dispose();
       app.camera.up = new THREE.Vector3(0, 1, 0);
+      app.camera.near = 0.1;
       app.controls.length &&
         ThreeInitializer.removeOribitControl(app.controls);
       const cssOrbitControl = ThreeInitializer.initOrbitControl(
@@ -107,6 +108,53 @@ class ITownsInitializer extends BaseInitializer {
     } catch (e) {
       console.error('earth fail dispose');
     }
+  }
+
+  public convertToEarthDomMarker() {
+    const { view } = this;
+    const createFeatureAt = (coordinate) => {
+      // create new featureCollection
+      const collection = new itowns.FeatureCollection({
+        crs: view.tileLayer.extent.crs,
+        buildExtent: true,
+        structure: '2d',
+      });
+
+      // create new feature
+      const feature = collection.requestFeatureByType(itowns.FEATURE_TYPES.POINT);
+
+      // add geometries to feature
+      const geometry = feature.bindNewGeometry();
+      geometry.startSubGeometry(1, feature);
+      geometry.pushCoordinates(coordinate, feature);
+      geometry.properties.position = coordinate;
+
+      geometry.updateExtent();
+      feature.updateExtent(geometry);
+      collection.updateExtent(feature.extent);
+
+      return collection;
+    }
+
+    this.app.scene.traverse(e => {
+      if (e.isDomMarker) {
+        const box = new THREE.Box3().setFromObject(e);
+        const center = box.getCenter(new THREE.Vector3());
+        const featureCoord = new itowns.Coordinates(view.referenceCrs);
+        featureCoord.setFromVector3(center);
+        const features = createFeatureAt(featureCoord);
+        const source = new itowns.FileSource({ features });
+        const customDiv = document.createElement('div');
+        const contentDiv = e.domElement.firstElementChild.cloneNode(true);
+        contentDiv.style.display = 'block';
+        customDiv.appendChild(contentDiv);
+        const layer = new itowns.LabelLayer(`uuid-${e.uuid}`, {
+          source: source,
+          domElement: customDiv,
+        });
+        view.addLayer(layer);
+      }
+    })
   }
 }
 

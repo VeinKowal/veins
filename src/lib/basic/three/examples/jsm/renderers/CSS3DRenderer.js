@@ -1,270 +1,297 @@
-import { Matrix4, Object3D } from '../../../build/three.module.js';
+import {
+	Matrix4,
+	Object3D
+} from 'three';
 
 /**
  * Based on http://www.emagix.net/academic/mscs-project/item/camera-sync-with-css3-and-webgl-threejs
  */
 
-var CSS3DObject = function (element) {
-  Object3D.call(this);
+class CSS3DObject extends Object3D {
 
-  this.element = element || document.createElement('div');
-  this.element.style.position = 'absolute';
-  this.element.style.pointerEvents = 'auto';
+	constructor( element ) {
 
-  this.addEventListener('removed', function () {
-    this.traverse(function (object) {
-      if (
-        object.element instanceof Element &&
-        object.element.parentNode !== null
-      ) {
-        object.element.parentNode.removeChild(object.element);
-      }
-    });
-  });
-};
+		super();
 
-CSS3DObject.prototype = Object.assign(Object.create(Object3D.prototype), {
-  constructor: CSS3DObject,
+		this.element = element || document.createElement( 'div' );
+		this.element.style.position = 'absolute';
+		this.element.style.pointerEvents = 'auto';
 
-  copy: function (source, recursive) {
-    Object3D.prototype.copy.call(this, source, recursive);
+		this.addEventListener( 'removed', function () {
 
-    this.element = source.element.cloneNode(true);
+			this.traverse( function ( object ) {
 
-    return this;
-  },
-});
+				if ( object.element instanceof Element && object.element.parentNode !== null ) {
 
-var CSS3DSprite = function (element) {
-  CSS3DObject.call(this, element);
-};
+					object.element.parentNode.removeChild( object.element );
 
-CSS3DSprite.prototype = Object.create(CSS3DObject.prototype);
-CSS3DSprite.prototype.constructor = CSS3DSprite;
+				}
+
+			} );
+
+		} );
+
+	}
+
+	copy( source, recursive ) {
+
+		super.copy( source, recursive );
+
+		this.element = source.element.cloneNode( true );
+
+		return this;
+
+	}
+
+}
+
+CSS3DObject.prototype.isCSS3DObject = true;
+
+class CSS3DSprite extends CSS3DObject {
+
+	constructor( element ) {
+
+		super( element );
+
+		this.rotation2D = 0;
+
+	}
+
+	copy( source, recursive ) {
+
+		super.copy( source, recursive );
+
+		this.rotation2D = source.rotation2D;
+
+		return this;
+
+	}
+
+}
+
+CSS3DSprite.prototype.isCSS3DSprite = true;
 
 //
 
-var CSS3DRenderer = function () {
-  var _this = this;
+const _matrix = new Matrix4();
+const _matrix2 = new Matrix4();
 
-  var _width, _height;
-  var _widthHalf, _heightHalf;
+class CSS3DRenderer {
 
-  var matrix = new Matrix4();
+	constructor() {
 
-  var cache = {
-    camera: { fov: 0, style: '' },
-    objects: new WeakMap(),
-  };
+		const _this = this;
 
-  var domElement = document.createElement('div');
-  domElement.style.overflow = 'hidden';
+		let _width, _height;
+		let _widthHalf, _heightHalf;
 
-  this.domElement = domElement;
+		const cache = {
+			camera: { fov: 0, style: '' },
+			objects: new WeakMap()
+		};
 
-  var cameraElement = document.createElement('div');
+		const domElement = document.createElement( 'div' );
+		domElement.style.overflow = 'hidden';
 
-  cameraElement.style.transformStyle = 'preserve-3d';
-  cameraElement.style.pointerEvents = 'none';
+		this.domElement = domElement;
 
-  domElement.appendChild(cameraElement);
+		const cameraElement = document.createElement( 'div' );
 
-  this.getSize = function () {
-    return {
-      width: _width,
-      height: _height,
-    };
-  };
+		cameraElement.style.transformStyle = 'preserve-3d';
+		cameraElement.style.pointerEvents = 'none';
 
-  this.setSize = function (width, height) {
-    _width = width;
-    _height = height;
-    _widthHalf = _width / 2;
-    _heightHalf = _height / 2;
+		domElement.appendChild( cameraElement );
 
-    domElement.style.width = width + 'px';
-    domElement.style.height = height + 'px';
+		this.getSize = function () {
 
-    cameraElement.style.width = width + 'px';
-    cameraElement.style.height = height + 'px';
-  };
+			return {
+				width: _width,
+				height: _height
+			};
 
-  function epsilon(value) {
-    return Math.abs(value) < 1e-10 ? 0 : value;
-  }
+		};
 
-  function getCameraCSSMatrix(matrix) {
-    var elements = matrix.elements;
+		this.render = function ( scene, camera ) {
 
-    return (
-      'matrix3d(' +
-      epsilon(elements[0]) +
-      ',' +
-      epsilon(-elements[1]) +
-      ',' +
-      epsilon(elements[2]) +
-      ',' +
-      epsilon(elements[3]) +
-      ',' +
-      epsilon(elements[4]) +
-      ',' +
-      epsilon(-elements[5]) +
-      ',' +
-      epsilon(elements[6]) +
-      ',' +
-      epsilon(elements[7]) +
-      ',' +
-      epsilon(elements[8]) +
-      ',' +
-      epsilon(-elements[9]) +
-      ',' +
-      epsilon(elements[10]) +
-      ',' +
-      epsilon(elements[11]) +
-      ',' +
-      epsilon(elements[12]) +
-      ',' +
-      epsilon(-elements[13]) +
-      ',' +
-      epsilon(elements[14]) +
-      ',' +
-      epsilon(elements[15]) +
-      ')'
-    );
-  }
+			const fov = camera.projectionMatrix.elements[ 5 ] * _heightHalf;
 
-  function getObjectCSSMatrix(matrix) {
-    var elements = matrix.elements;
-    var matrix3d =
-      'matrix3d(' +
-      epsilon(elements[0]) +
-      ',' +
-      epsilon(elements[1]) +
-      ',' +
-      epsilon(elements[2]) +
-      ',' +
-      epsilon(elements[3]) +
-      ',' +
-      epsilon(-elements[4]) +
-      ',' +
-      epsilon(-elements[5]) +
-      ',' +
-      epsilon(-elements[6]) +
-      ',' +
-      epsilon(-elements[7]) +
-      ',' +
-      epsilon(elements[8]) +
-      ',' +
-      epsilon(elements[9]) +
-      ',' +
-      epsilon(elements[10]) +
-      ',' +
-      epsilon(elements[11]) +
-      ',' +
-      epsilon(elements[12]) +
-      ',' +
-      epsilon(elements[13]) +
-      ',' +
-      epsilon(elements[14]) +
-      ',' +
-      epsilon(elements[15]) +
-      ')';
+			if ( cache.camera.fov !== fov ) {
 
-    return 'translate(-50%,-50%)' + matrix3d;
-  }
+				domElement.style.perspective = camera.isPerspectiveCamera ? fov + 'px' : '';
+				cache.camera.fov = fov;
 
-  function renderObject(object, scene, camera, cameraCSSMatrix) {
-    if (object instanceof CSS3DObject) {
-      object.onBeforeRender(_this, scene, camera);
+			}
 
-      var style;
+			if ( scene.autoUpdate === true ) scene.updateMatrixWorld();
+			if ( camera.parent === null ) camera.updateMatrixWorld();
 
-      if (object instanceof CSS3DSprite) {
-        // http://swiftcoder.wordpress.com/2008/11/25/constructing-a-billboard-matrix/
+			let tx, ty;
 
-        matrix.copy(camera.matrixWorldInverse);
-        matrix.transpose();
-        matrix.copyPosition(object.matrixWorld);
-        matrix.scale(object.scale);
+			if ( camera.isOrthographicCamera ) {
 
-        matrix.elements[3] = 0;
-        matrix.elements[7] = 0;
-        matrix.elements[11] = 0;
-        matrix.elements[15] = 1;
+				tx = - ( camera.right + camera.left ) / 2;
+				ty = ( camera.top + camera.bottom ) / 2;
 
-        style = getObjectCSSMatrix(matrix);
-      } else {
-        style = getObjectCSSMatrix(object.matrixWorld);
-      }
+			}
 
-      var element = object.element;
-      var cachedObject = cache.objects.get(object);
+			const cameraCSSMatrix = camera.isOrthographicCamera ?
+				'scale(' + fov + ')' + 'translate(' + epsilon( tx ) + 'px,' + epsilon( ty ) + 'px)' + getCameraCSSMatrix( camera.matrixWorldInverse ) :
+				'translateZ(' + fov + 'px)' + getCameraCSSMatrix( camera.matrixWorldInverse );
 
-      if (cachedObject === undefined || cachedObject.style !== style) {
-        element.style.transform = style;
+			const style = cameraCSSMatrix +
+				'translate(' + _widthHalf + 'px,' + _heightHalf + 'px)';
 
-        var objectData = { style: style };
-        cache.objects.set(object, objectData);
-      }
+			if ( cache.camera.style !== style ) {
 
-      element.style.display = object.visible ? '' : 'none';
+				cameraElement.style.transform = style;
 
-      if (element.parentNode !== cameraElement) {
-        cameraElement.appendChild(element);
-      }
+				cache.camera.style = style;
 
-      object.onAfterRender(_this, scene, camera);
-    }
+			}
 
-    for (var i = 0, l = object.children.length; i < l; i++) {
-      renderObject(object.children[i], scene, camera, cameraCSSMatrix);
-    }
-  }
+			renderObject( scene, scene, camera, cameraCSSMatrix );
 
-  this.render = function (scene, camera) {
-    var fov = camera.projectionMatrix.elements[5] * _heightHalf;
+		};
 
-    if (cache.camera.fov !== fov) {
-      domElement.style.perspective = camera.isPerspectiveCamera
-        ? fov + 'px'
-        : '';
-      cache.camera.fov = fov;
-    }
+		this.setSize = function ( width, height ) {
 
-    if (scene.autoUpdate === true) scene.updateMatrixWorld();
-    if (camera.parent === null) camera.updateMatrixWorld();
+			_width = width;
+			_height = height;
+			_widthHalf = _width / 2;
+			_heightHalf = _height / 2;
 
-    if (camera.isOrthographicCamera) {
-      var tx = -(camera.right + camera.left) / 2;
-      var ty = (camera.top + camera.bottom) / 2;
-    }
+			domElement.style.width = width + 'px';
+			domElement.style.height = height + 'px';
 
-    var cameraCSSMatrix = camera.isOrthographicCamera
-      ? 'scale(' +
-        fov +
-        ')' +
-        'translate(' +
-        epsilon(tx) +
-        'px,' +
-        epsilon(ty) +
-        'px)' +
-        getCameraCSSMatrix(camera.matrixWorldInverse)
-      : 'translateZ(' +
-        fov +
-        'px)' +
-        getCameraCSSMatrix(camera.matrixWorldInverse);
+			cameraElement.style.width = width + 'px';
+			cameraElement.style.height = height + 'px';
 
-    var style =
-      cameraCSSMatrix + 'translate(' + _widthHalf + 'px,' + _heightHalf + 'px)';
+		};
 
-    if (cache.camera.style !== style) {
-      cameraElement.style.transform = style;
+		function epsilon( value ) {
 
-      cache.camera.style = style;
-    }
+			return Math.abs( value ) < 1e-10 ? 0 : value;
 
-    renderObject(scene, scene, camera, cameraCSSMatrix);
-  };
-};
+		}
+
+		function getCameraCSSMatrix( matrix ) {
+
+			const elements = matrix.elements;
+
+			return 'matrix3d(' +
+				epsilon( elements[ 0 ] ) + ',' +
+				epsilon( - elements[ 1 ] ) + ',' +
+				epsilon( elements[ 2 ] ) + ',' +
+				epsilon( elements[ 3 ] ) + ',' +
+				epsilon( elements[ 4 ] ) + ',' +
+				epsilon( - elements[ 5 ] ) + ',' +
+				epsilon( elements[ 6 ] ) + ',' +
+				epsilon( elements[ 7 ] ) + ',' +
+				epsilon( elements[ 8 ] ) + ',' +
+				epsilon( - elements[ 9 ] ) + ',' +
+				epsilon( elements[ 10 ] ) + ',' +
+				epsilon( elements[ 11 ] ) + ',' +
+				epsilon( elements[ 12 ] ) + ',' +
+				epsilon( - elements[ 13 ] ) + ',' +
+				epsilon( elements[ 14 ] ) + ',' +
+				epsilon( elements[ 15 ] ) +
+			')';
+
+		}
+
+		function getObjectCSSMatrix( matrix ) {
+
+			const elements = matrix.elements;
+			const matrix3d = 'matrix3d(' +
+				epsilon( elements[ 0 ] ) + ',' +
+				epsilon( elements[ 1 ] ) + ',' +
+				epsilon( elements[ 2 ] ) + ',' +
+				epsilon( elements[ 3 ] ) + ',' +
+				epsilon( - elements[ 4 ] ) + ',' +
+				epsilon( - elements[ 5 ] ) + ',' +
+				epsilon( - elements[ 6 ] ) + ',' +
+				epsilon( - elements[ 7 ] ) + ',' +
+				epsilon( elements[ 8 ] ) + ',' +
+				epsilon( elements[ 9 ] ) + ',' +
+				epsilon( elements[ 10 ] ) + ',' +
+				epsilon( elements[ 11 ] ) + ',' +
+				epsilon( elements[ 12 ] ) + ',' +
+				epsilon( elements[ 13 ] ) + ',' +
+				epsilon( elements[ 14 ] ) + ',' +
+				epsilon( elements[ 15 ] ) +
+			')';
+
+			return 'translate(-50%,-50%)' + matrix3d;
+
+		}
+
+		function renderObject( object, scene, camera, cameraCSSMatrix ) {
+
+			if ( object.isCSS3DObject ) {
+
+				object.onBeforeRender( _this, scene, camera );
+
+				let style;
+
+				if ( object.isCSS3DSprite ) {
+
+					// http://swiftcoder.wordpress.com/2008/11/25/constructing-a-billboard-matrix/
+
+					_matrix.copy( camera.matrixWorldInverse );
+					_matrix.transpose();
+
+					if ( object.rotation2D !== 0 ) _matrix.multiply( _matrix2.makeRotationZ( object.rotation2D ) );
+
+					_matrix.copyPosition( object.matrixWorld );
+					_matrix.scale( object.scale );
+
+					_matrix.elements[ 3 ] = 0;
+					_matrix.elements[ 7 ] = 0;
+					_matrix.elements[ 11 ] = 0;
+					_matrix.elements[ 15 ] = 1;
+
+					style = getObjectCSSMatrix( _matrix );
+
+				} else {
+
+					style = getObjectCSSMatrix( object.matrixWorld );
+
+				}
+
+				const element = object.element;
+				const cachedObject = cache.objects.get( object );
+
+				if ( cachedObject === undefined || cachedObject.style !== style ) {
+
+					element.style.transform = style;
+
+					const objectData = { style: style };
+					cache.objects.set( object, objectData );
+
+				}
+
+				element.style.display = object.visible ? '' : 'none';
+
+				if ( element.parentNode !== cameraElement ) {
+
+					cameraElement.appendChild( element );
+
+				}
+
+				object.onAfterRender( _this, scene, camera );
+
+			}
+
+			for ( let i = 0, l = object.children.length; i < l; i ++ ) {
+
+				renderObject( object.children[ i ], scene, camera, cameraCSSMatrix );
+
+			}
+
+		}
+
+	}
+
+}
 
 export { CSS3DObject, CSS3DSprite, CSS3DRenderer };

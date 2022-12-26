@@ -1,19 +1,15 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
 /** @classdesc
  * Class for managing
@@ -45,100 +41,88 @@ var _createClass2 = _interopRequireDefault(
  *      },
  * view);
  */
-var C3DTExtensions = /*#__PURE__*/ (function () {
+var C3DTExtensions = /*#__PURE__*/function () {
   function C3DTExtensions() {
-    (0, _classCallCheck2['default'])(this, C3DTExtensions);
+    (0, _classCallCheck2["default"])(this, C3DTExtensions);
   }
 
-  (0, _createClass2['default'])(C3DTExtensions, [
-    {
-      key: 'registerExtension',
-      value:
-        /**
-         * Register a 3D Tiles extension: Maps an extension name to the
-         * extensionsManagers (i.e. one class per 3D Tiles class (e.g.
-         * batch table or bounding volume).
-         * @param {string} extensionName - Name of the extension
-         * @param {object} extensionManagers - An object mapping 3D Tiles
-         * classes names (see @link{C3DTilesTypes} to the extension managers
-         * corresponding to this class. These extension managers should be able
-         * to parse the extension fragment (done in the constructor) and should
-         * have a getInfoById method if they are related to the batch table class.
-         * See {@link $3DTBatchTableHierarchyExtension} for an example of
-         * extension class.
-         */
-        function registerExtension(extensionName, extensionManagers) {
-          this[extensionName] = extensionManagers;
-        },
-      /**
-       * Get an extension manager from its name and C3DTilesType
-       * @param {string} extensionName - name of the extension.
-       * @param {C3DTilesTypes} type - type of 3DTiles class (e.g. batch
-       * table, bounding volume, tileset, etc.)
-       * @returns {object} - the extension manager corresponding to the
-       * extensioNname and type.
-       */
-    },
-    {
-      key: 'getExtension',
-      value: function getExtension(extensionName, type) {
-        if (this[extensionName] && this[extensionName][type]) {
-          return this[extensionName][type];
-        } else {
-          console.error(
-            ''
-              .concat(
-                'No extension manager registered for' + ' extension ',
-                ' ',
-              )
-              .concat(extensionName, ' and for class ')
-              .concat(type),
-          );
-        }
-      },
-      /**
-       * Test if an extension is registered
-       * @param {string} extensionName - Name of the extension
-       * @returns {boolean} - true if the extension is registered and false
-       * otherwise.
-       */
-    },
-    {
-      key: 'isExtensionRegistered',
-      value: function isExtensionRegistered(extensionName) {
-        return this[extensionName];
-      },
-      /**
-       * Parses the extensions from a given JSON (extensionsJSON) by
-       * instanciating the right class from the registered extensions.
-       * @param {object} extensionsJSON - the JSON to parse extensions from.
-       * @param {C3DTilesTypes} type - type of class asking for extensions parsing
-       * has been called. For instance, if {@link C3DTBatchTable} needs to
-       * parse its extensions, it will call parseExtension with the JSON to
-       * parse and C3DTilesTypes.batchtable as type.
-       * @returns {object} - An object with keys being the names of the
-       * extensions and values the instances of the extensions managers.
-       */
-    },
-    {
-      key: 'parseExtensions',
-      value: function parseExtensions(extensionsJSON, type) {
-        var parsedExtensions = {};
+  (0, _createClass2["default"])(C3DTExtensions, [{
+    key: "registerExtension",
+    value:
+    /**
+     * Register a 3D Tiles extension: Maps an extension name to the
+     * extensionsManagers (i.e. one class per 3D Tiles class (e.g.
+     * batch table or bounding volume).
+     * @param {string} extensionName - Name of the extension
+     * @param {object} extensionManagers - An object mapping 3D Tiles
+     * classes names (see @link{C3DTilesTypes} to the extension managers
+     * corresponding to this class. These extension managers should be able
+     * to parse the extension fragment (done in the constructor) and should
+     * have a getInfoById method if they are related to the batch table class.
+     * See {@link $3DTBatchTableHierarchyExtension} for an example of
+     * extension class.
+     */
+    function registerExtension(extensionName, extensionManagers) {
+      this[extensionName] = extensionManagers;
+    }
+    /**
+     * Get an extension manager from its name and C3DTilesType
+     * @param {string} extensionName - name of the extension.
+     * @param {C3DTilesTypes} type - type of 3DTiles class (e.g. batch
+     * table, bounding volume, tileset, etc.)
+     * @returns {object} - the extension manager corresponding to the
+     * extensioNname and type.
+     */
 
-        for (var extName in extensionsJSON) {
-          if (Object.prototype.hasOwnProperty.call(extensionsJSON, extName)) {
-            parsedExtensions[extName] = new (this.getExtension(extName, type))(
-              extensionsJSON[extName],
-            );
-          }
-        }
+  }, {
+    key: "getExtension",
+    value: function getExtension(extensionName, type) {
+      if (this[extensionName] && this[extensionName][type]) {
+        return this[extensionName][type];
+      } else {
+        console.error("".concat('No extension manager registered for' + ' extension ', " ").concat(extensionName, " and for class ").concat(type));
+      }
+    }
+    /**
+     * Test if an extension is registered
+     * @param {string} extensionName - Name of the extension
+     * @returns {boolean} - true if the extension is registered and false
+     * otherwise.
+     */
 
-        return parsedExtensions;
-      },
-    },
-  ]);
+  }, {
+    key: "isExtensionRegistered",
+    value: function isExtensionRegistered(extensionName) {
+      return this[extensionName];
+    }
+    /**
+     * Parses the extensions from a given JSON (extensionsJSON) by
+     * instanciating the right class from the registered extensions.
+     * @param {object} extensionsJSON - the JSON to parse extensions from.
+     * @param {C3DTilesTypes} type - type of class asking for extensions parsing
+     * has been called. For instance, if {@link C3DTBatchTable} needs to
+     * parse its extensions, it will call parseExtension with the JSON to
+     * parse and C3DTilesTypes.batchtable as type.
+     * @returns {object} - An object with keys being the names of the
+     * extensions and values the instances of the extensions managers.
+     */
+
+  }, {
+    key: "parseExtensions",
+    value: function parseExtensions(extensionsJSON, type) {
+      var parsedExtensions = {};
+
+      for (var extName in extensionsJSON) {
+        if (Object.prototype.hasOwnProperty.call(extensionsJSON, extName)) {
+          parsedExtensions[extName] = new (this.getExtension(extName, type))(extensionsJSON[extName]);
+        }
+      }
+
+      return parsedExtensions;
+    }
+  }]);
   return C3DTExtensions;
-})();
+}();
 
 var _default = C3DTExtensions;
-exports['default'] = _default;
+exports["default"] = _default;

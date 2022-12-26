@@ -2,50 +2,61 @@
  * Uniform Utilities
  */
 
-export function cloneUniforms(src) {
-  const dst = {};
+export function cloneUniforms( src ) {
 
-  for (const u in src) {
-    dst[u] = {};
+	const dst = {};
 
-    for (const p in src[u]) {
-      const property = src[u][p];
+	for ( const u in src ) {
 
-      if (
-        property &&
-        (property.isColor ||
-          property.isMatrix3 ||
-          property.isMatrix4 ||
-          property.isVector2 ||
-          property.isVector3 ||
-          property.isVector4 ||
-          property.isTexture ||
-          property.isQuaternion)
-      ) {
-        dst[u][p] = property.clone();
-      } else if (Array.isArray(property)) {
-        dst[u][p] = property.slice();
-      } else {
-        dst[u][p] = property;
-      }
-    }
-  }
+		dst[ u ] = {};
 
-  return dst;
+		for ( const p in src[ u ] ) {
+
+			const property = src[ u ][ p ];
+
+			if ( property && ( property.isColor ||
+				property.isMatrix3 || property.isMatrix4 ||
+				property.isVector2 || property.isVector3 || property.isVector4 ||
+				property.isTexture || property.isQuaternion ) ) {
+
+				dst[ u ][ p ] = property.clone();
+
+			} else if ( Array.isArray( property ) ) {
+
+				dst[ u ][ p ] = property.slice();
+
+			} else {
+
+				dst[ u ][ p ] = property;
+
+			}
+
+		}
+
+	}
+
+	return dst;
+
 }
 
-export function mergeUniforms(uniforms) {
-  const merged = {};
+export function mergeUniforms( uniforms ) {
 
-  for (let u = 0; u < uniforms.length; u++) {
-    const tmp = cloneUniforms(uniforms[u]);
+	const merged = {};
 
-    for (const p in tmp) {
-      merged[p] = tmp[p];
-    }
-  }
+	for ( let u = 0; u < uniforms.length; u ++ ) {
 
-  return merged;
+		const tmp = cloneUniforms( uniforms[ u ] );
+
+		for ( const p in tmp ) {
+
+			merged[ p ] = tmp[ p ];
+
+		}
+
+	}
+
+	return merged;
+
 }
 
 // Legacy

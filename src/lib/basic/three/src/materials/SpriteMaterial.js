@@ -12,41 +12,47 @@ import { Color } from '../math/Color.js';
  */
 
 class SpriteMaterial extends Material {
-  constructor(parameters) {
-    super();
 
-    this.type = 'SpriteMaterial';
+	constructor( parameters ) {
 
-    this.color = new Color(0xffffff);
+		super();
 
-    this.map = null;
+		this.type = 'SpriteMaterial';
 
-    this.alphaMap = null;
+		this.color = new Color( 0xffffff );
 
-    this.rotation = 0;
+		this.map = null;
 
-    this.sizeAttenuation = true;
+		this.alphaMap = null;
 
-    this.transparent = true;
+		this.rotation = 0;
 
-    this.setValues(parameters);
-  }
+		this.sizeAttenuation = true;
 
-  copy(source) {
-    super.copy(source);
+		this.transparent = true;
 
-    this.color.copy(source.color);
+		this.setValues( parameters );
 
-    this.map = source.map;
+	}
 
-    this.alphaMap = source.alphaMap;
+	copy( source ) {
 
-    this.rotation = source.rotation;
+		super.copy( source );
 
-    this.sizeAttenuation = source.sizeAttenuation;
+		this.color.copy( source.color );
 
-    return this;
-  }
+		this.map = source.map;
+
+		this.alphaMap = source.alphaMap;
+
+		this.rotation = source.rotation;
+
+		this.sizeAttenuation = source.sizeAttenuation;
+
+		return this;
+
+	}
+
 }
 
 SpriteMaterial.prototype.isSpriteMaterial = true;

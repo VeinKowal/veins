@@ -1,4 +1,7 @@
-import { FileLoader, Loader } from '../../../build/three.module.js';
+import {
+	FileLoader,
+	Loader
+} from 'three';
 import { opentype } from '../libs/opentype.module.min.js';
 
 /**
@@ -7,176 +10,212 @@ import { opentype } from '../libs/opentype.module.min.js';
  * to create THREE.Font objects.
  */
 
-var TTFLoader = function (manager) {
-  Loader.call(this, manager);
+class TTFLoader extends Loader {
 
-  this.reversed = false;
-};
+	constructor( manager ) {
 
-TTFLoader.prototype = Object.assign(Object.create(Loader.prototype), {
-  constructor: TTFLoader,
+		super( manager );
 
-  load: function (url, onLoad, onProgress, onError) {
-    var scope = this;
+		this.reversed = false;
 
-    var loader = new FileLoader(this.manager);
-    loader.setPath(this.path);
-    loader.setResponseType('arraybuffer');
-    loader.setRequestHeader(this.requestHeader);
-    loader.setWithCredentials(this.withCredentials);
-    loader.load(
-      url,
-      function (buffer) {
-        try {
-          onLoad(scope.parse(buffer));
-        } catch (e) {
-          if (onError) {
-            onError(e);
-          } else {
-            console.error(e);
-          }
+	}
 
-          scope.manager.itemError(url);
-        }
-      },
-      onProgress,
-      onError,
-    );
-  },
+	load( url, onLoad, onProgress, onError ) {
 
-  parse: function (arraybuffer) {
-    function convert(font, reversed) {
-      var round = Math.round;
+		const scope = this;
 
-      var glyphs = {};
-      var scale = 100000 / ((font.unitsPerEm || 2048) * 72);
+		const loader = new FileLoader( this.manager );
+		loader.setPath( this.path );
+		loader.setResponseType( 'arraybuffer' );
+		loader.setRequestHeader( this.requestHeader );
+		loader.setWithCredentials( this.withCredentials );
+		loader.load( url, function ( buffer ) {
 
-      var glyphIndexMap = font.encoding.cmap.glyphIndexMap;
-      var unicodes = Object.keys(glyphIndexMap);
+			try {
 
-      for (var i = 0; i < unicodes.length; i++) {
-        var unicode = unicodes[i];
-        var glyph = font.glyphs.glyphs[glyphIndexMap[unicode]];
+				onLoad( scope.parse( buffer ) );
 
-        if (unicode !== undefined) {
-          var token = {
-            ha: round(glyph.advanceWidth * scale),
-            x_min: round(glyph.xMin * scale),
-            x_max: round(glyph.xMax * scale),
-            o: '',
-          };
+			} catch ( e ) {
 
-          if (reversed) {
-            glyph.path.commands = reverseCommands(glyph.path.commands);
-          }
+				if ( onError ) {
 
-          glyph.path.commands.forEach(function (command) {
-            if (command.type.toLowerCase() === 'c') {
-              command.type = 'b';
-            }
+					onError( e );
 
-            token.o += command.type.toLowerCase() + ' ';
+				} else {
 
-            if (command.x !== undefined && command.y !== undefined) {
-              token.o +=
-                round(command.x * scale) + ' ' + round(command.y * scale) + ' ';
-            }
+					console.error( e );
 
-            if (command.x1 !== undefined && command.y1 !== undefined) {
-              token.o +=
-                round(command.x1 * scale) +
-                ' ' +
-                round(command.y1 * scale) +
-                ' ';
-            }
+				}
 
-            if (command.x2 !== undefined && command.y2 !== undefined) {
-              token.o +=
-                round(command.x2 * scale) +
-                ' ' +
-                round(command.y2 * scale) +
-                ' ';
-            }
-          });
+				scope.manager.itemError( url );
 
-          glyphs[String.fromCodePoint(glyph.unicode)] = token;
-        }
-      }
+			}
 
-      return {
-        glyphs: glyphs,
-        familyName: font.getEnglishName('fullName'),
-        ascender: round(font.ascender * scale),
-        descender: round(font.descender * scale),
-        underlinePosition: font.tables.post.underlinePosition,
-        underlineThickness: font.tables.post.underlineThickness,
-        boundingBox: {
-          xMin: font.tables.head.xMin,
-          xMax: font.tables.head.xMax,
-          yMin: font.tables.head.yMin,
-          yMax: font.tables.head.yMax,
-        },
-        resolution: 1000,
-        original_font_information: font.tables.name,
-      };
-    }
+		}, onProgress, onError );
 
-    function reverseCommands(commands) {
-      var paths = [];
-      var path;
+	}
 
-      commands.forEach(function (c) {
-        if (c.type.toLowerCase() === 'm') {
-          path = [c];
-          paths.push(path);
-        } else if (c.type.toLowerCase() !== 'z') {
-          path.push(c);
-        }
-      });
+	parse( arraybuffer ) {
 
-      var reversed = [];
+		function convert( font, reversed ) {
 
-      paths.forEach(function (p) {
-        var result = {
-          type: 'm',
-          x: p[p.length - 1].x,
-          y: p[p.length - 1].y,
-        };
+			const round = Math.round;
 
-        reversed.push(result);
+			const glyphs = {};
+			const scale = ( 100000 ) / ( ( font.unitsPerEm || 2048 ) * 72 );
 
-        for (var i = p.length - 1; i > 0; i--) {
-          var command = p[i];
-          var result = { type: command.type };
+			const glyphIndexMap = font.encoding.cmap.glyphIndexMap;
+			const unicodes = Object.keys( glyphIndexMap );
 
-          if (command.x2 !== undefined && command.y2 !== undefined) {
-            result.x1 = command.x2;
-            result.y1 = command.y2;
-            result.x2 = command.x1;
-            result.y2 = command.y1;
-          } else if (command.x1 !== undefined && command.y1 !== undefined) {
-            result.x1 = command.x1;
-            result.y1 = command.y1;
-          }
+			for ( let i = 0; i < unicodes.length; i ++ ) {
 
-          result.x = p[i - 1].x;
-          result.y = p[i - 1].y;
-          reversed.push(result);
-        }
-      });
+				const unicode = unicodes[ i ];
+				const glyph = font.glyphs.glyphs[ glyphIndexMap[ unicode ] ];
 
-      return reversed;
-    }
+				if ( unicode !== undefined ) {
 
-    if (typeof opentype === 'undefined') {
-      console.warn(
-        "THREE.TTFLoader: The loader requires opentype.js. Make sure it's included before using the loader.",
-      );
-      return null;
-    }
+					const token = {
+						ha: round( glyph.advanceWidth * scale ),
+						x_min: round( glyph.xMin * scale ),
+						x_max: round( glyph.xMax * scale ),
+						o: ''
+					};
 
-    return convert(opentype.parse(arraybuffer), this.reversed); // eslint-disable-line no-undef
-  },
-});
+					if ( reversed ) {
+
+						glyph.path.commands = reverseCommands( glyph.path.commands );
+
+					}
+
+					glyph.path.commands.forEach( function ( command ) {
+
+						if ( command.type.toLowerCase() === 'c' ) {
+
+							command.type = 'b';
+
+						}
+
+						token.o += command.type.toLowerCase() + ' ';
+
+						if ( command.x !== undefined && command.y !== undefined ) {
+
+							token.o += round( command.x * scale ) + ' ' + round( command.y * scale ) + ' ';
+
+						}
+
+						if ( command.x1 !== undefined && command.y1 !== undefined ) {
+
+							token.o += round( command.x1 * scale ) + ' ' + round( command.y1 * scale ) + ' ';
+
+						}
+
+						if ( command.x2 !== undefined && command.y2 !== undefined ) {
+
+							token.o += round( command.x2 * scale ) + ' ' + round( command.y2 * scale ) + ' ';
+
+						}
+
+					} );
+
+					glyphs[ String.fromCodePoint( glyph.unicode ) ] = token;
+
+				}
+
+			}
+
+			return {
+				glyphs: glyphs,
+				familyName: font.getEnglishName( 'fullName' ),
+				ascender: round( font.ascender * scale ),
+				descender: round( font.descender * scale ),
+				underlinePosition: font.tables.post.underlinePosition,
+				underlineThickness: font.tables.post.underlineThickness,
+				boundingBox: {
+					xMin: font.tables.head.xMin,
+					xMax: font.tables.head.xMax,
+					yMin: font.tables.head.yMin,
+					yMax: font.tables.head.yMax
+				},
+				resolution: 1000,
+				original_font_information: font.tables.name
+			};
+
+		}
+
+		function reverseCommands( commands ) {
+
+			const paths = [];
+			let path;
+
+			commands.forEach( function ( c ) {
+
+				if ( c.type.toLowerCase() === 'm' ) {
+
+					path = [ c ];
+					paths.push( path );
+
+				} else if ( c.type.toLowerCase() !== 'z' ) {
+
+					path.push( c );
+
+				}
+
+			} );
+
+			const reversed = [];
+
+			paths.forEach( function ( p ) {
+
+				const result = {
+					type: 'm',
+					x: p[ p.length - 1 ].x,
+					y: p[ p.length - 1 ].y
+				};
+
+				reversed.push( result );
+
+				for ( let i = p.length - 1; i > 0; i -- ) {
+
+					const command = p[ i ];
+					const result = { type: command.type };
+
+					if ( command.x2 !== undefined && command.y2 !== undefined ) {
+
+						result.x1 = command.x2;
+						result.y1 = command.y2;
+						result.x2 = command.x1;
+						result.y2 = command.y1;
+
+					} else if ( command.x1 !== undefined && command.y1 !== undefined ) {
+
+						result.x1 = command.x1;
+						result.y1 = command.y1;
+
+					}
+
+					result.x = p[ i - 1 ].x;
+					result.y = p[ i - 1 ].y;
+					reversed.push( result );
+
+				}
+
+			} );
+
+			return reversed;
+
+		}
+
+		if ( typeof opentype === 'undefined' ) {
+
+			console.warn( 'THREE.TTFLoader: The loader requires opentype.js. Make sure it\'s included before using the loader.' );
+			return null;
+
+		}
+
+		return convert( opentype.parse( arraybuffer ), this.reversed ); // eslint-disable-line no-undef
+
+	}
+
+}
 
 export { TTFLoader };

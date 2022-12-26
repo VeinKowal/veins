@@ -1,47 +1,63 @@
 import Node from './Node.js';
 
 class AttributeNode extends Node {
-  constructor(name, type) {
-    super(type);
 
-    this.name = name;
-  }
+	constructor( attributeName, type ) {
 
-  setAttributeName(name) {
-    this.name = name;
+		super( type );
 
-    return this;
-  }
+		this._attributeName = attributeName;
 
-  getAttributeName(/*builder*/) {
-    return this.name;
-  }
+	}
 
-  generate(builder, output) {
-    const attributeName = this.getAttributeName(builder);
-    const attributeType = this.getType(builder);
+	setAttributeName( attributeName ) {
 
-    const attribute = builder.getAttribute(attributeName, attributeType);
+		this._attributeName = attributeName;
 
-    if (builder.isShaderStage('vertex')) {
-      return builder.format(attribute.name, attribute.type, output);
-    } else {
-      const nodeData = builder.getDataFromNode(this, builder.shaderStage);
+		return this;
 
-      let nodeVary = nodeData.varyNode;
+	}
 
-      if (nodeVary === undefined) {
-        nodeVary = builder.getVaryFromNode(this, attribute.type);
-        nodeVary.snippet = attributeName;
+	getAttributeName( /*builder*/ ) {
 
-        nodeData.nodeVary = nodeVary;
-      }
+		return this._attributeName;
 
-      const varyName = builder.getPropertyName(nodeVary);
+	}
 
-      return builder.format(varyName, attribute.type, output);
-    }
-  }
+	generate( builder, output ) {
+
+		const attributeName = this.getAttributeName( builder );
+		const attributeType = this.getType( builder );
+
+		const attribute = builder.getAttribute( attributeName, attributeType );
+
+		if ( builder.isShaderStage( 'vertex' ) ) {
+
+			return builder.format( attribute.name, attribute.type, output );
+
+		} else {
+
+			const nodeData = builder.getDataFromNode( this, builder.shaderStage );
+
+			let nodeVary = nodeData.varyNode;
+
+			if ( nodeVary === undefined ) {
+
+				nodeVary = builder.getVaryFromNode( this, attribute.type );
+				nodeVary.snippet = attributeName;
+
+				nodeData.nodeVary = nodeVary;
+
+			}
+
+			const varyName = builder.getPropertyName( nodeVary );
+
+			return builder.format( varyName, attribute.type, output );
+
+		}
+
+	}
+
 }
 
 export default AttributeNode;

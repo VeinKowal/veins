@@ -1,57 +1,34 @@
 import { Texture } from './Texture.js';
-import {
-  NearestFilter,
-  UnsignedShortType,
-  UnsignedInt248Type,
-  DepthFormat,
-  DepthStencilFormat,
-} from '../constants.js';
+import { NearestFilter, UnsignedShortType, UnsignedInt248Type, DepthFormat, DepthStencilFormat } from '../constants.js';
 
 class DepthTexture extends Texture {
-  constructor(
-    width,
-    height,
-    type,
-    mapping,
-    wrapS,
-    wrapT,
-    magFilter,
-    minFilter,
-    anisotropy,
-    format,
-  ) {
-    format = format !== undefined ? format : DepthFormat;
 
-    if (format !== DepthFormat && format !== DepthStencilFormat) {
-      throw new Error(
-        'DepthTexture format must be either THREE.DepthFormat or THREE.DepthStencilFormat',
-      );
-    }
+	constructor( width, height, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, format ) {
 
-    if (type === undefined && format === DepthFormat) type = UnsignedShortType;
-    if (type === undefined && format === DepthStencilFormat)
-      type = UnsignedInt248Type;
+		format = format !== undefined ? format : DepthFormat;
 
-    super(
-      null,
-      mapping,
-      wrapS,
-      wrapT,
-      magFilter,
-      minFilter,
-      format,
-      type,
-      anisotropy,
-    );
+		if ( format !== DepthFormat && format !== DepthStencilFormat ) {
 
-    this.image = { width: width, height: height };
+			throw new Error( 'DepthTexture format must be either THREE.DepthFormat or THREE.DepthStencilFormat' );
 
-    this.magFilter = magFilter !== undefined ? magFilter : NearestFilter;
-    this.minFilter = minFilter !== undefined ? minFilter : NearestFilter;
+		}
 
-    this.flipY = false;
-    this.generateMipmaps = false;
-  }
+		if ( type === undefined && format === DepthFormat ) type = UnsignedShortType;
+		if ( type === undefined && format === DepthStencilFormat ) type = UnsignedInt248Type;
+
+		super( null, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy );
+
+		this.image = { width: width, height: height };
+
+		this.magFilter = magFilter !== undefined ? magFilter : NearestFilter;
+		this.minFilter = minFilter !== undefined ? minFilter : NearestFilter;
+
+		this.flipY = false;
+		this.generateMipmaps	= false;
+
+	}
+
+
 }
 
 DepthTexture.prototype.isDepthTexture = true;

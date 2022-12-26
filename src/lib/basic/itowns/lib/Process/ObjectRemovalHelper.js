@@ -1,86 +1,19 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _toConsumableArray2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/toConsumableArray'),
-);
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if (
-      Array.isArray(o) ||
-      (it = _unsupportedIterableToArray(o)) ||
-      (allowArrayLike && o && typeof o.length === 'number')
-    ) {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          if (i >= o.length) return { done: true };
-          return { done: false, value: o[i++] };
-        },
-        e: function e(_e) {
-          throw _e;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
-    );
-  }
-  var normalCompletion = true,
-    didErr = false,
-    err;
-  return {
-    s: function s() {
-      it = o[Symbol.iterator]();
-    },
-    n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
-    },
-    f: function f() {
-      try {
-        if (!normalCompletion && it['return'] != null) it['return']();
-      } finally {
-        if (didErr) throw err;
-      }
-    },
-  };
-}
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === 'Object' && o.constructor) n = o.constructor.name;
-  if (n === 'Map' || n === 'Set') return Array.from(o);
-  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
-}
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var _default = {
   /**
@@ -104,10 +37,10 @@ var _default = {
       if (obj.material) {
         if (Array.isArray(obj.material)) {
           var _iterator = _createForOfIteratorHelper(obj.material),
-            _step;
+              _step;
 
           try {
-            for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
               var material = _step.value;
               material.dispose();
             }
@@ -119,6 +52,7 @@ var _default = {
         } else {
           obj.material.dispose();
         } // obj.material = null;
+
       }
     }
   },
@@ -134,7 +68,7 @@ var _default = {
     var toRemove = obj.children.filter(function (c) {
       return (c.layer && c.layer.id) === layer.id;
     });
-    obj.remove.apply(obj, (0, _toConsumableArray2['default'])(toRemove));
+    obj.remove.apply(obj, (0, _toConsumableArray2["default"])(toRemove));
     return toRemove;
   },
 
@@ -149,7 +83,7 @@ var _default = {
     var toRemove = obj.children.filter(function (c) {
       return (c.layer && c.layer.id) === layer.id;
     });
-    obj.remove.apply(obj, (0, _toConsumableArray2['default'])(toRemove));
+    obj.remove.apply(obj, (0, _toConsumableArray2["default"])(toRemove));
 
     if (obj.layer === layer) {
       this.cleanup(obj);
@@ -165,33 +99,32 @@ var _default = {
    * @param {Object3D} obj The Object3D we want to clean
    * @return {Array} an array of removed Object3D from obj (not including the recursive removals)
    */
-  removeChildrenAndCleanupRecursively:
-    function removeChildrenAndCleanupRecursively(layer, obj) {
-      var toRemove = obj.children.filter(function (c) {
-        return (c.layer && c.layer.id) === layer.id;
-      });
+  removeChildrenAndCleanupRecursively: function removeChildrenAndCleanupRecursively(layer, obj) {
+    var toRemove = obj.children.filter(function (c) {
+      return (c.layer && c.layer.id) === layer.id;
+    });
 
-      var _iterator2 = _createForOfIteratorHelper(toRemove),
+    var _iterator2 = _createForOfIteratorHelper(toRemove),
         _step2;
 
-      try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
-          var c = _step2.value;
-          this.removeChildrenAndCleanupRecursively(layer, c);
-        }
-      } catch (err) {
-        _iterator2.e(err);
-      } finally {
-        _iterator2.f();
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var c = _step2.value;
+        this.removeChildrenAndCleanupRecursively(layer, c);
       }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
 
-      obj.remove.apply(obj, (0, _toConsumableArray2['default'])(toRemove));
+    obj.remove.apply(obj, (0, _toConsumableArray2["default"])(toRemove));
 
-      if (obj.layer && obj.layer.id === layer.id) {
-        this.cleanup(obj);
-      }
+    if (obj.layer && obj.layer.id === layer.id) {
+      this.cleanup(obj);
+    }
 
-      return toRemove;
-    },
+    return toRemove;
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

@@ -1,102 +1,33 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _three = require('three');
+var _three = require("three");
 
-var _pbf = _interopRequireDefault(require('pbf'));
+var _pbf = _interopRequireDefault(require("pbf"));
 
-var _vectorTile = require('@mapbox/vector-tile');
+var _vectorTile = require("@mapbox/vector-tile");
 
-var _Extent = require('../Core/Geographic/Extent');
+var _Extent = require("../Core/Geographic/Extent");
 
-var _Feature = require('../Core/Feature');
+var _Feature = require("../Core/Feature");
 
-var _Undeprecator = require('../Core/Deprecated/Undeprecator');
+var _Undeprecator = require("../Core/Deprecated/Undeprecator");
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if (
-      Array.isArray(o) ||
-      (it = _unsupportedIterableToArray(o)) ||
-      (allowArrayLike && o && typeof o.length === 'number')
-    ) {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          if (i >= o.length) return { done: true };
-          return { done: false, value: o[i++] };
-        },
-        e: function e(_e) {
-          throw _e;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
-    );
-  }
-  var normalCompletion = true,
-    didErr = false,
-    err;
-  return {
-    s: function s() {
-      it = o[Symbol.iterator]();
-    },
-    n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
-    },
-    f: function f() {
-      try {
-        if (!normalCompletion && it['return'] != null) it['return']();
-      } finally {
-        if (didErr) throw err;
-      }
-    },
-  };
-}
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === 'Object' && o.constructor) n = o.constructor.name;
-  if (n === 'Map' || n === 'Set') return Array.from(o);
-  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
-}
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var worldDimension3857 = _Extent.globalExtentTMS.get('EPSG:3857').dimensions();
 
-var globalExtent = new _three.Vector3(
-  worldDimension3857.x,
-  worldDimension3857.y,
-  1,
-);
+var globalExtent = new _three.Vector3(worldDimension3857.x, worldDimension3857.y, 1);
 var lastPoint = new _three.Vector2();
 var firstPoint = new _three.Vector2(); // Classify option, it allows to classify a full polygon and its holes.
 // Each polygon with its holes are in one FeatureGeometry.
@@ -105,8 +36,7 @@ var firstPoint = new _three.Vector2(); // Classify option, it allows to classify
 // Draw polygon with canvas doesn't need to classify however it is necessary for meshs.
 
 function vtFeatureToFeatureGeometry(vtFeature, feature) {
-  var classify =
-    arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var classify = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
   var geometry = feature.bindNewGeometry();
   classify = classify && feature.type === _Feature.FEATURE_TYPES.POLYGON;
   geometry.properties = vtFeature.properties;
@@ -169,7 +99,7 @@ function vtFeatureToFeatureGeometry(vtFeature, feature) {
         }
       }
     } else {
-      throw new Error('unknown command '.concat(cmd));
+      throw new Error("unknown command ".concat(cmd));
     }
   }
 
@@ -189,33 +119,30 @@ function vtFeatureToFeatureGeometry(vtFeature, feature) {
 
 function readPBF(file, options) {
   options.out = options.out || {};
-  var vectorTile = new _vectorTile.VectorTile(new _pbf['default'](file));
+  var vectorTile = new _vectorTile.VectorTile(new _pbf["default"](file));
   var sourceLayers = Object.keys(vectorTile.layers);
 
   if (sourceLayers.length < 1) {
     return;
   } // x,y,z tile coordinates
 
+
   var x = file.extent.col;
   var z = file.extent.zoom; // We need to move from TMS to Google/Bing/OSM coordinates
   // https://alastaira.wordpress.com/2011/07/06/converting-tms-tile-coordinates-to-googlebingosm-tile-coordinates/
   // Only if the layer.origin is top
 
-  var y = options['in'].isInverted
-    ? file.extent.row
-    : (1 << z) - file.extent.row - 1;
+  var y = options["in"].isInverted ? file.extent.row : (1 << z) - file.extent.row - 1;
   var collection = new _Feature.FeatureCollection(options.out);
   var vFeature = vectorTile.layers[sourceLayers[0]]; // TODO: verify if size is correct because is computed with only one feature (vFeature).
 
   var size = vFeature.extent * Math.pow(2, z);
   var center = -0.5 * size;
   collection.scale.set(globalExtent.x / size, -globalExtent.y / size, 1);
-  collection.position
-    .set(vFeature.extent * x + center, vFeature.extent * y + center, 0)
-    .multiply(collection.scale);
+  collection.position.set(vFeature.extent * x + center, vFeature.extent * y + center, 0).multiply(collection.scale);
   collection.updateMatrixWorld();
   sourceLayers.forEach(function (layer_id) {
-    if (!options['in'].layers[layer_id]) {
+    if (!options["in"].layers[layer_id]) {
       return;
     }
 
@@ -223,49 +150,37 @@ function readPBF(file, options) {
 
     var _loop = function (i) {
       var vtFeature = sourceLayer.feature(i);
-      var layers = options['in'].layers[layer_id].filter(function (l) {
-        return (
-          l.filterExpression.filter(
-            {
-              zoom: z,
-            },
-            vtFeature,
-          ) &&
-          z >= l.zoom.min &&
-          z < l.zoom.max
-        );
+      var layers = options["in"].layers[layer_id].filter(function (l) {
+        return l.filterExpression.filter({
+          zoom: z
+        }, vtFeature) && z >= l.zoom.min && z < l.zoom.max;
       });
       var feature = void 0;
 
       var _iterator = _createForOfIteratorHelper(layers),
-        _step;
+          _step;
 
       try {
         var _loop2 = function () {
           var layer = _step.value;
 
           if (!feature) {
-            feature = collection.requestFeatureById(
-              layer.id,
-              vtFeature.type - 1,
-            );
+            feature = collection.requestFeatureById(layer.id, vtFeature.type - 1);
             feature.id = layer.id;
             feature.order = layer.order;
-            feature.style = options['in'].styles[feature.id];
+            feature.style = options["in"].styles[feature.id];
             vtFeatureToFeatureGeometry(vtFeature, feature);
-          } else if (
-            !collection.features.find(function (f) {
-              return f.id === layer.id;
-            })
-          ) {
+          } else if (!collection.features.find(function (f) {
+            return f.id === layer.id;
+          })) {
             feature = collection.newFeatureByReference(feature);
             feature.id = layer.id;
             feature.order = layer.order;
-            feature.style = options['in'].styles[feature.id];
+            feature.style = options["in"].styles[feature.id];
           }
         };
 
-        for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
           _loop2();
         }
       } catch (err) {
@@ -287,12 +202,13 @@ function readPBF(file, options) {
 
   collection.updateExtent();
   collection.extent = file.extent;
-  collection.isInverted = options['in'].isInverted;
+  collection.isInverted = options["in"].isInverted;
   return Promise.resolve(collection);
 }
 /**
  * @module VectorTileParser
  */
+
 
 var _default = {
   /**
@@ -322,6 +238,6 @@ var _default = {
   parse: function parse(file, options) {
     options = (0, _Undeprecator.deprecatedParsingOptionsToNewOne)(options);
     return Promise.resolve(readPBF(file, options));
-  },
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

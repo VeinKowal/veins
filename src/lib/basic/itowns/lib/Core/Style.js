@@ -1,118 +1,49 @@
-'use strict';
+"use strict";
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.readExpression = readExpression;
-exports['default'] = exports.cacheStyle = void 0;
+exports["default"] = exports.cacheStyle = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _Feature = require('./Feature');
+var _Feature = require("./Feature");
 
-var _Cache = _interopRequireDefault(require('./Scheduler/Cache'));
+var _Cache = _interopRequireDefault(require("./Scheduler/Cache"));
 
-var _Fetcher = _interopRequireDefault(require('../Provider/Fetcher'));
+var _Fetcher = _interopRequireDefault(require("../Provider/Fetcher"));
 
-var mapbox = _interopRequireWildcard(require('@mapbox/mapbox-gl-style-spec'));
+var mapbox = _interopRequireWildcard(require("@mapbox/mapbox-gl-style-spec"));
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if (
-      Array.isArray(o) ||
-      (it = _unsupportedIterableToArray(o)) ||
-      (allowArrayLike && o && typeof o.length === 'number')
-    ) {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          if (i >= o.length) return { done: true };
-          return { done: false, value: o[i++] };
-        },
-        e: function e(_e) {
-          throw _e;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
-    );
-  }
-  var normalCompletion = true,
-    didErr = false,
-    err;
-  return {
-    s: function s() {
-      it = o[Symbol.iterator]();
-    },
-    n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
-    },
-    f: function f() {
-      try {
-        if (!normalCompletion && it['return'] != null) it['return']();
-      } finally {
-        if (didErr) throw err;
-      }
-    },
-  };
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === 'Object' && o.constructor) n = o.constructor.name;
-  if (n === 'Map' || n === 'Set') return Array.from(o);
-  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 /* babel-plugin-inline-import './StyleChunk/itowns_stroke_single_before.css' */
-var itowns_stroke_single_before =
-  '.itowns-stroke-single:before {\n    display: var(--text_stroke_display);\n    content: attr(data-before);\n    opacity: 1;\n    position: absolute;\n    -webkit-text-stroke-width: var(--text_stroke_width);\n    -webkit-text-stroke-color: var(--text_stroke_color);\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 0;\n    z-index: -1;\n    white-space: inherit;\n    overflow-wrap: inherit;\n    letter-spacing: inherit;\n    text-align: inherit;\n    padding: inherit;\n    font-family: inherit;\n    text-transform: inherit;\n    max-width: inherit;\n    font-size: inherit;\n}\n';
-var cacheStyle = new _Cache['default']();
+var itowns_stroke_single_before = ".itowns-stroke-single:before {\n    display: var(--text_stroke_display);\n    content: attr(data-before);\n    opacity: 1;\n    position: absolute;\n    -webkit-text-stroke-width: var(--text_stroke_width);\n    -webkit-text-stroke-color: var(--text_stroke_color);\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 0;\n    z-index: -1;\n    white-space: inherit;\n    overflow-wrap: inherit;\n    letter-spacing: inherit;\n    text-align: inherit;\n    padding: inherit;\n    font-family: inherit;\n    text-transform: inherit;\n    max-width: inherit;\n    font-size: inherit;\n}\n";
+var cacheStyle = new _Cache["default"]();
 exports.cacheStyle = cacheStyle;
 var inv255 = 1 / 255;
 var canvas = document.createElement('canvas');
 var style_properties = {};
 
 function base_altitudeDefault() {
-  var coordinates =
-    arguments.length > 1 && arguments[1] !== undefined
-      ? arguments[1]
-      : {
-          z: 0,
-        };
+  var coordinates = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+    z: 0
+  };
   return coordinates.z;
 }
 
@@ -120,10 +51,10 @@ function mapPropertiesFromContext(mainKey, from, to, context) {
   to[mainKey] = to[mainKey] || {};
 
   var _iterator = _createForOfIteratorHelper(style_properties[mainKey]),
-    _step;
+      _step;
 
   try {
-    for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
       var key = _step.value;
       var value = readExpression(from[mainKey][key], context);
 
@@ -143,43 +74,31 @@ function rgba2rgb(orig) {
     return {};
   } else if (orig.stops || orig.expression) {
     return {
-      color: orig,
+      color: orig
     };
   } else if (typeof orig == 'string') {
-    var result = orig.match(
-      /(?:((hsl|rgb)a? *\(([\d.%]+(?:deg|g?rad|turn)?)[ ,]*([\d.%]+)[ ,]*([\d.%]+)[ ,/]*([\d.%]*)\))|(#((?:[\d\w]{3}){1,2})([\d\w]{1,2})?))/i,
-    );
+    var result = orig.match(/(?:((hsl|rgb)a? *\(([\d.%]+(?:deg|g?rad|turn)?)[ ,]*([\d.%]+)[ ,]*([\d.%]+)[ ,/]*([\d.%]*)\))|(#((?:[\d\w]{3}){1,2})([\d\w]{1,2})?))/i);
 
     if (!result) {
       return {
         color: orig,
-        opacity: 1.0,
+        opacity: 1.0
       };
     } else if (result[7]) {
       var opacity = 1.0;
 
       if (result[9]) {
-        opacity =
-          parseInt(
-            result[9].length == 1
-              ? ''.concat(result[9]).concat(result[9])
-              : result[9],
-            16,
-          ) * inv255;
+        opacity = parseInt(result[9].length == 1 ? "".concat(result[9]).concat(result[9]) : result[9], 16) * inv255;
       }
 
       return {
-        color: '#'.concat(result[8]),
-        opacity: opacity,
+        color: "#".concat(result[8]),
+        opacity: opacity
       };
     } else if (result[0]) {
       return {
-        color: ''
-          .concat(result[2], '(')
-          .concat(result[3], ',')
-          .concat(result[4], ',')
-          .concat(result[5], ')'),
-        opacity: Number(result[6]) || 1.0,
+        color: "".concat(result[2], "(").concat(result[3], ",").concat(result[4], ",").concat(result[5], ")"),
+        opacity: Number(result[6]) || 1.0
       };
     }
   }
@@ -226,19 +145,7 @@ function getImage(source, key) {
     var sprite = source[key];
     canvas.width = sprite.width;
     canvas.height = sprite.height;
-    canvas
-      .getContext('2d')
-      .drawImage(
-        source.img,
-        sprite.x,
-        sprite.y,
-        sprite.width,
-        sprite.height,
-        0,
-        0,
-        sprite.width,
-        sprite.height,
-      );
+    canvas.getContext('2d').drawImage(source.img, sprite.x, sprite.y, sprite.width, sprite.height, 0, 0, sprite.width, sprite.height);
     target.src = canvas.toDataURL('image/png');
   }
 
@@ -254,7 +161,7 @@ var textAnchorPosition = {
   'bottom-left': [0, -1],
   'bottom-right': [-1, -1],
   center: [-0.5, -0.5],
-  'top-left': [0, 0],
+  'top-left': [0, 0]
 };
 
 function defineStyleProperty(style, category, name, value, defaultValue) {
@@ -270,7 +177,7 @@ function defineStyleProperty(style, category, name, value, defaultValue) {
     },
     set: function set(v) {
       property = v;
-    },
+    }
   });
   style[category][name] = value;
 }
@@ -285,6 +192,13 @@ function defineStyleProperty(style, category, name, value, defaultValue) {
  * - `stroke` is for all lines and polygons edges
  * - `point` is for all points
  * - `text` contains all {@link Label} related things
+ *
+ * Many style property can be set to functions. When that is the case, the function's
+ * return type must necessarily be the same as the types (other than function) of the property.
+ * For instance, if the `fill.pattern` property is set to a function, this function must return
+ * an `Image`, a `Canvas`, or `String`.
+ * The first parameter of functions used to set `Style` properties is always an object containing
+ * the properties of the features displayed with the current `Style` instance.
  *
  * @property {number} order - Order of the features that will be associated to
  * the style. It can helps sorting and prioritizing features if needed.
@@ -359,10 +273,15 @@ function defineStyleProperty(style, category, name, value, defaultValue) {
  * @property {string|function} text.color - The color of the text. Can be any [valid
  * color string](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
  * Default is `#000000`.
- * @property {string|function} text.anchor - The anchor of the text compared to its
+ * @property {string|number[]|function} text.anchor - The anchor of the text compared to its
  * position (see {@link Label} for the position). Can be a few value: `top`,
  * `left`, `bottom`, `right`, `center`, `top-left`, `top-right`, `bottom-left`
  * or `bottom-right`. Default is `center`.
+ *
+ * It can also be defined as an Array of two numbers. Each number defines an offset (in
+ * fraction of the label width and height) between the label position and the top-left
+ * corner of the text. The first value is the horizontal offset, and the second is the
+ * vertical offset. For example, `[-0.5, -0.5]` will be equivalent to `center`.
  * @property {Array|function} text.offset - The offset of the text, depending on its
  * anchor, in pixels. First value is from `left`, second is from `top`. Default
  * is `[0, 0]`.
@@ -394,6 +313,15 @@ function defineStyleProperty(style, category, name, value, defaultValue) {
  * @property {number|function} text.haloBlur - The blur value of the halo, in pixels.
  * Default is `0`.
  *
+ * @property {Object} icon - Defines the appearance of icons attached to label.
+ * @property {String} icon.source - The url of the icons' image file.
+ * @property {String} icon.key - The key of the icons' image in a vector tile data set.
+ * @property {string} [icon.anchor='center'] - The anchor of the icon compared to the label position.
+ * Can be `left`, `bottom`, `right`, `center`, `top-left`, `top-right`, `bottom-left`
+ * or `bottom-right`.
+ * @property {number} icon.size - If the icon's image is passed with `icon.source` or
+ * `icon.key`, it size when displayed on screen is multiplied by `icon.size`. Default is `1`.
+ *
  * @example
  * const style = new itowns.Style({
  *      stroke: { color: 'red' },
@@ -410,7 +338,8 @@ function defineStyleProperty(style, category, name, value, defaultValue) {
  * view.addLayer(layer);
  */
 
-var Style = /*#__PURE__*/ (function () {
+
+var Style = /*#__PURE__*/function () {
   /**
    * @param {Object} [params={}] An object that can contain all properties of
    * a Style.
@@ -422,10 +351,9 @@ var Style = /*#__PURE__*/ (function () {
   function Style() {
     var _this = this;
 
-    var params =
-      arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var parent = arguments.length > 1 ? arguments[1] : undefined;
-    (0, _classCallCheck2['default'])(this, Style);
+    (0, _classCallCheck2["default"])(this, Style);
     this.isStyle = true;
     this.order = 0;
     this.parent = parent || {
@@ -434,12 +362,14 @@ var Style = /*#__PURE__*/ (function () {
       stroke: {},
       point: {},
       text: {},
+      icon: {}
     };
     params.zoom = params.zoom || {};
     params.fill = params.fill || {};
     params.stroke = params.stroke || {};
     params.point = params.point || {};
     params.text = params.text || {};
+    params.icon = params.icon || {};
     this.zoom = {};
     defineStyleProperty(this, 'zoom', 'min', params.zoom.min);
     defineStyleProperty(this, 'zoom', 'max', params.zoom.max);
@@ -447,22 +377,11 @@ var Style = /*#__PURE__*/ (function () {
     defineStyleProperty(this, 'fill', 'color', params.fill.color);
     defineStyleProperty(this, 'fill', 'opacity', params.fill.opacity, 1.0);
     defineStyleProperty(this, 'fill', 'pattern', params.fill.pattern);
-    defineStyleProperty(
-      this,
-      'fill',
-      'base_altitude',
-      params.fill.base_altitude,
-      base_altitudeDefault,
-    );
-    defineStyleProperty(
-      this,
-      'fill',
-      'extrusion_height',
-      params.fill.extrusion_height,
-    );
+    defineStyleProperty(this, 'fill', 'base_altitude', params.fill.base_altitude, base_altitudeDefault);
+    defineStyleProperty(this, 'fill', 'extrusion_height', params.fill.extrusion_height);
 
     if (typeof this.fill.pattern == 'string') {
-      _Fetcher['default'].texture(this.fill.pattern).then(function (pattern) {
+      _Fetcher["default"].texture(this.fill.pattern).then(function (pattern) {
         _this.fill.pattern = pattern.image;
       });
     }
@@ -471,33 +390,15 @@ var Style = /*#__PURE__*/ (function () {
     defineStyleProperty(this, 'stroke', 'color', params.stroke.color);
     defineStyleProperty(this, 'stroke', 'opacity', params.stroke.opacity, 1.0);
     defineStyleProperty(this, 'stroke', 'width', params.stroke.width, 1.0);
-    defineStyleProperty(
-      this,
-      'stroke',
-      'dasharray',
-      params.stroke.dasharray,
-      [],
-    );
-    defineStyleProperty(
-      this,
-      'stroke',
-      'base_altitude',
-      params.stroke.base_altitude,
-      base_altitudeDefault,
-    );
+    defineStyleProperty(this, 'stroke', 'dasharray', params.stroke.dasharray, []);
+    defineStyleProperty(this, 'stroke', 'base_altitude', params.stroke.base_altitude, base_altitudeDefault);
     this.point = {};
     defineStyleProperty(this, 'point', 'color', params.point.color);
     defineStyleProperty(this, 'point', 'line', params.point.line);
     defineStyleProperty(this, 'point', 'opacity', params.point.opacity, 1.0);
     defineStyleProperty(this, 'point', 'radius', params.point.radius, 2.0);
     defineStyleProperty(this, 'point', 'width', params.point.width, 0.0);
-    defineStyleProperty(
-      this,
-      'point',
-      'base_altitude',
-      params.point.base_altitude,
-      base_altitudeDefault,
-    );
+    defineStyleProperty(this, 'point', 'base_altitude', params.point.base_altitude, base_altitudeDefault);
     this.text = {};
     defineStyleProperty(this, 'text', 'field', params.text.field);
     defineStyleProperty(this, 'text', 'zOrder', params.text.zOrder, 'auto');
@@ -506,39 +407,22 @@ var Style = /*#__PURE__*/ (function () {
     defineStyleProperty(this, 'text', 'offset', params.text.offset, [0, 0]);
     defineStyleProperty(this, 'text', 'padding', params.text.padding, 2);
     defineStyleProperty(this, 'text', 'size', params.text.size, 16);
-    defineStyleProperty(
-      this,
-      'text',
-      'placement',
-      params.text.placement,
-      'point',
-    );
+    defineStyleProperty(this, 'text', 'placement', params.text.placement, 'point');
     defineStyleProperty(this, 'text', 'rotation', params.text.rotation, 'auto');
     defineStyleProperty(this, 'text', 'wrap', params.text.wrap, 10);
     defineStyleProperty(this, 'text', 'spacing', params.text.spacing, 0);
-    defineStyleProperty(
-      this,
-      'text',
-      'transform',
-      params.text.transform,
-      'none',
-    );
+    defineStyleProperty(this, 'text', 'transform', params.text.transform, 'none');
     defineStyleProperty(this, 'text', 'justify', params.text.justify, 'center');
     defineStyleProperty(this, 'text', 'opacity', params.text.opacity, 1.0);
-    defineStyleProperty(this, 'text', 'font', params.text.font, [
-      'Open Sans Regular',
-      'Arial Unicode MS Regular',
-      'sans-serif',
-    ]);
-    defineStyleProperty(
-      this,
-      'text',
-      'haloColor',
-      params.text.haloColor,
-      '#000000',
-    );
+    defineStyleProperty(this, 'text', 'font', params.text.font, ['Open Sans Regular', 'Arial Unicode MS Regular', 'sans-serif']);
+    defineStyleProperty(this, 'text', 'haloColor', params.text.haloColor, '#000000');
     defineStyleProperty(this, 'text', 'haloWidth', params.text.haloWidth, 0);
     defineStyleProperty(this, 'text', 'haloBlur', params.text.haloBlur, 0);
+    this.icon = {};
+    defineStyleProperty(this, 'icon', 'source', params.icon.source);
+    defineStyleProperty(this, 'icon', 'key', params.icon.key);
+    defineStyleProperty(this, 'icon', 'anchor', params.icon.anchor, 'center');
+    defineStyleProperty(this, 'icon', 'size', params.icon.size, 1);
   }
   /**
    * Map drawing properties style (fill, stroke and point) from context to object.
@@ -548,464 +432,410 @@ var Style = /*#__PURE__*/ (function () {
    * @return     {Object}  mapped style depending on context.
    */
 
-  (0, _createClass2['default'])(Style, [
-    {
-      key: 'drawingStylefromContext',
-      value: function drawingStylefromContext(context) {
-        var style = {};
 
-        if (this.fill.color || this.fill.pattern || context.globals.fill) {
-          mapPropertiesFromContext('fill', this, style, context);
-        }
+  (0, _createClass2["default"])(Style, [{
+    key: "drawingStylefromContext",
+    value: function drawingStylefromContext(context) {
+      var style = {};
 
-        if (this.stroke.color || context.globals.stroke) {
-          mapPropertiesFromContext('stroke', this, style, context);
-        }
+      if (this.fill.color || this.fill.pattern || context.globals.fill) {
+        mapPropertiesFromContext('fill', this, style, context);
+      }
 
-        if (this.point.color || context.globals.point) {
-          mapPropertiesFromContext('point', this, style, context);
-        }
+      if (this.stroke.color || context.globals.stroke) {
+        mapPropertiesFromContext('stroke', this, style, context);
+      }
 
-        if (Object.keys(style).length) {
-          return style;
-        }
-      },
-      /**
-       * Map symbol properties style (symbol and icon) from context to object.
-       * Only the necessary properties are mapped to object.
-       * if a property is expression, the mapped value will be the expression result depending on context.
-       * @param      {Object}  context  The context
-       * @return     {Object}  mapped style depending on context.
-       */
-    },
-    {
-      key: 'symbolStylefromContext',
-      value: function symbolStylefromContext(context) {
-        var style = new Style();
-        mapPropertiesFromContext('text', this, style, context);
+      if (this.point.color || context.globals.point) {
+        mapPropertiesFromContext('point', this, style, context);
+      }
 
-        if (this.icon) {
-          mapPropertiesFromContext('icon', this, style, context);
-        }
-
+      if (Object.keys(style).length) {
         return style;
-      },
-      /**
-       * Copies the content of the target style into this style.
-       *
-       * @param {Style} style - The style to copy.
-       *
-       * @return {Style} This style.
-       */
-    },
-    {
-      key: 'copy',
-      value: function copy(style) {
-        Object.assign(this.fill, style.fill);
-        Object.assign(this.stroke, style.stroke);
-        Object.assign(this.point, style.point);
-        Object.assign(this.text, style.text);
-        return this;
-      },
-      /**
-       * Clones this style.
-       *
-       * @return {Style} The new style, cloned from this one.
-       */
-    },
-    {
-      key: 'clone',
-      value: function () {
-        var clone = new Style();
-        return clone.copy(this);
-      },
-      /**
-       * set Style from geojson properties.
-       * @param {object} properties geojson properties.
-       * @param {number} type
-       * @returns {Style}
-       */
-    },
-    {
-      key: 'setFromGeojsonProperties',
-      value: function setFromGeojsonProperties(properties, type) {
-        if (type === _Feature.FEATURE_TYPES.POINT) {
-          this.point.color = properties.fill;
-          this.point.opacity = properties['fill-opacity'];
-          this.point.line = properties.stroke;
-          this.point.radius = properties.radius;
-          this.text.color = properties['label-color'];
-          this.text.opacity = properties['label-opacity'];
-          this.text.size = properties['label-size'];
+      }
+    }
+    /**
+     * Map symbol properties style (symbol and icon) from context to object.
+     * Only the necessary properties are mapped to object.
+     * if a property is expression, the mapped value will be the expression result depending on context.
+     * @param      {Object}  context  The context
+     * @return     {Object}  mapped style depending on context.
+     */
 
-          if (properties.icon) {
-            this.icon = {
-              image: properties.icon,
-              size: 1,
-            };
-          }
-        } else {
-          this.stroke.color = properties.stroke;
-          this.stroke.width = properties['stroke-width'];
-          this.stroke.opacity = properties['stroke-opacity'];
+  }, {
+    key: "symbolStylefromContext",
+    value: function symbolStylefromContext(context) {
+      var style = new Style();
+      mapPropertiesFromContext('text', this, style, context);
 
-          if (type !== _Feature.FEATURE_TYPES.LINE) {
-            this.fill.color = properties.fill;
-            this.fill.opacity = properties['fill-opacity'];
-          }
+      if (this.icon) {
+        mapPropertiesFromContext('icon', this, style, context);
+      }
+
+      return style;
+    }
+    /**
+     * Copies the content of the target style into this style.
+     *
+     * @param {Style} style - The style to copy.
+     *
+     * @return {Style} This style.
+     */
+
+  }, {
+    key: "copy",
+    value: function copy(style) {
+      Object.assign(this.fill, style.fill);
+      Object.assign(this.stroke, style.stroke);
+      Object.assign(this.point, style.point);
+      Object.assign(this.text, style.text);
+      Object.assign(this.icon, style.icon);
+      return this;
+    }
+    /**
+     * Clones this style.
+     *
+     * @return {Style} The new style, cloned from this one.
+     */
+
+  }, {
+    key: "clone",
+    value: function () {
+      var clone = new Style();
+      return clone.copy(this);
+    }
+    /**
+     * set Style from geojson properties.
+     * @param {object} properties geojson properties.
+     * @param {number} type
+     * @returns {Style}
+     */
+
+  }, {
+    key: "setFromGeojsonProperties",
+    value: function setFromGeojsonProperties(properties, type) {
+      if (type === _Feature.FEATURE_TYPES.POINT) {
+        this.point.color = properties.fill;
+        this.point.opacity = properties['fill-opacity'];
+        this.point.line = properties.stroke;
+        this.point.radius = properties.radius;
+        this.text.color = properties['label-color'];
+        this.text.opacity = properties['label-opacity'];
+        this.text.size = properties['label-size'];
+
+        if (properties.icon) {
+          this.icon.source = properties.icon;
         }
+      } else {
+        this.stroke.color = properties.stroke;
+        this.stroke.width = properties['stroke-width'];
+        this.stroke.opacity = properties['stroke-opacity'];
 
-        return this;
-      },
-      /**
-       * set Style from vector tile layer properties.
-       * @param {object} layer vector tile layer.
-       * @param {Object} sprites vector tile layer.
-       * @param {number} [order=0]
-       * @param {boolean} [symbolToCircle=false]
-       * @returns {Style}
-       */
-    },
-    {
-      key: 'setFromVectorTileLayer',
-      value: function setFromVectorTileLayer(layer, sprites) {
-        var order =
-          arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-        var symbolToCircle =
-          arguments.length > 3 && arguments[3] !== undefined
-            ? arguments[3]
-            : false;
-        layer.layout = layer.layout || {};
-        layer.paint = layer.paint || {};
-        this.order = order;
+        if (type !== _Feature.FEATURE_TYPES.LINE) {
+          this.fill.color = properties.fill;
+          this.fill.opacity = properties['fill-opacity'];
+        }
+      }
 
-        if (layer.type === 'fill' && !this.fill.color) {
-          var _rgba2rgb = rgba2rgb(
-              readVectorProperty(
-                layer.paint['fill-color'] || layer.paint['fill-pattern'],
-                {
-                  type: 'color',
-                },
-              ),
-            ),
+      return this;
+    }
+    /**
+     * set Style from vector tile layer properties.
+     * @param {object} layer vector tile layer.
+     * @param {Object} sprites vector tile layer.
+     * @param {number} [order=0]
+     * @param {boolean} [symbolToCircle=false]
+     * @returns {Style}
+     */
+
+  }, {
+    key: "setFromVectorTileLayer",
+    value: function setFromVectorTileLayer(layer, sprites) {
+      var order = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      var symbolToCircle = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+      layer.layout = layer.layout || {};
+      layer.paint = layer.paint || {};
+      this.order = order;
+
+      if (layer.type === 'fill' && !this.fill.color) {
+        var _rgba2rgb = rgba2rgb(readVectorProperty(layer.paint['fill-color'] || layer.paint['fill-pattern'], {
+          type: 'color'
+        })),
             color = _rgba2rgb.color,
             opacity = _rgba2rgb.opacity;
 
-          this.fill.color = color;
-          this.fill.opacity =
-            readVectorProperty(layer.paint['fill-opacity']) || opacity;
+        this.fill.color = color;
+        this.fill.opacity = readVectorProperty(layer.paint['fill-opacity']) || opacity;
 
-          if (layer.paint['fill-pattern'] && sprites) {
-            this.fill.pattern = getImage(sprites, layer.paint['fill-pattern']);
-          }
+        if (layer.paint['fill-pattern'] && sprites) {
+          this.fill.pattern = getImage(sprites, layer.paint['fill-pattern']);
+        }
 
-          if (layer.paint['fill-outline-color']) {
-            var _rgba2rgb2 = rgba2rgb(
-                readVectorProperty(layer.paint['fill-outline-color'], {
-                  type: 'color',
-                }),
-              ),
+        if (layer.paint['fill-outline-color']) {
+          var _rgba2rgb2 = rgba2rgb(readVectorProperty(layer.paint['fill-outline-color'], {
+            type: 'color'
+          })),
               _color = _rgba2rgb2.color,
               _opacity = _rgba2rgb2.opacity;
 
-            this.stroke.color = _color;
-            this.stroke.opacity = _opacity;
-            this.stroke.width = 1.0;
-            this.stroke.dasharray = [];
-          }
-        } else if (layer.type === 'line' && !this.stroke.color) {
-          var prepare = readVectorProperty(layer.paint['line-color'], {
-            type: 'color',
-          });
+          this.stroke.color = _color;
+          this.stroke.opacity = _opacity;
+          this.stroke.width = 1.0;
+          this.stroke.dasharray = [];
+        }
+      } else if (layer.type === 'line' && !this.stroke.color) {
+        var prepare = readVectorProperty(layer.paint['line-color'], {
+          type: 'color'
+        });
 
-          var _rgba2rgb3 = rgba2rgb(prepare),
+        var _rgba2rgb3 = rgba2rgb(prepare),
             _color2 = _rgba2rgb3.color,
             _opacity2 = _rgba2rgb3.opacity;
 
-          this.stroke.dasharray = readVectorProperty(
-            layer.paint['line-dasharray'],
-          );
-          this.stroke.color = _color2;
-          this.stroke.lineCap = layer.layout['line-cap'];
-          this.stroke.width = readVectorProperty(layer.paint['line-width']);
-          this.stroke.opacity =
-            readVectorProperty(layer.paint['line-opacity']) || _opacity2;
-        } else if (layer.type === 'circle' || symbolToCircle) {
-          var _rgba2rgb4 = rgba2rgb(
-              readVectorProperty(layer.paint['circle-color'], {
-                type: 'color',
-              }),
-            ),
+        this.stroke.dasharray = readVectorProperty(layer.paint['line-dasharray']);
+        this.stroke.color = _color2;
+        this.stroke.lineCap = layer.layout['line-cap'];
+        this.stroke.width = readVectorProperty(layer.paint['line-width']);
+        this.stroke.opacity = readVectorProperty(layer.paint['line-opacity']) || _opacity2;
+      } else if (layer.type === 'circle' || symbolToCircle) {
+        var _rgba2rgb4 = rgba2rgb(readVectorProperty(layer.paint['circle-color'], {
+          type: 'color'
+        })),
             _color3 = _rgba2rgb4.color,
             _opacity3 = _rgba2rgb4.opacity;
 
-          this.point.color = _color3;
-          this.point.opacity = _opacity3;
-          this.point.radius = readVectorProperty(layer.paint['circle-radius']);
-        } else if (layer.type === 'symbol') {
-          // overlapping order
-          this.text.zOrder = readVectorProperty(layer.layout['symbol-z-order']);
+        this.point.color = _color3;
+        this.point.opacity = _opacity3;
+        this.point.radius = readVectorProperty(layer.paint['circle-radius']);
+      } else if (layer.type === 'symbol') {
+        // overlapping order
+        this.text.zOrder = readVectorProperty(layer.layout['symbol-z-order']);
 
-          if (this.text.zOrder == 'auto') {
-            this.text.zOrder =
-              readVectorProperty(layer.layout['symbol-sort-key']) || 'Y';
-          } else if (this.text.zOrder == 'viewport-y') {
-            this.text.zOrder = 'Y';
-          } else if (this.text.zOrder == 'source') {
-            this.text.zOrder = 0;
-          } // position
+        if (this.text.zOrder == 'auto') {
+          this.text.zOrder = readVectorProperty(layer.layout['symbol-sort-key']) || 'Y';
+        } else if (this.text.zOrder == 'viewport-y') {
+          this.text.zOrder = 'Y';
+        } else if (this.text.zOrder == 'source') {
+          this.text.zOrder = 0;
+        } // position
 
-          this.text.anchor = readVectorProperty(layer.layout['text-anchor']);
-          this.text.offset = readVectorProperty(layer.layout['text-offset']);
-          this.text.padding = readVectorProperty(layer.layout['text-padding']);
-          this.text.size = readVectorProperty(layer.layout['text-size']);
-          this.text.placement = readVectorProperty(
-            layer.layout['symbol-placement'],
-          );
-          this.text.rotation = readVectorProperty(
-            layer.layout['text-rotation-alignment'],
-          ); // content
 
-          this.text.field = readVectorProperty(layer.layout['text-field']);
-          this.text.wrap = readVectorProperty(layer.layout['text-max-width']);
-          this.text.spacing = readVectorProperty(
-            layer.layout['text-letter-spacing'],
-          );
-          this.text.transform = readVectorProperty(
-            layer.layout['text-transform'],
-          );
-          this.text.justify = readVectorProperty(layer.layout['text-justify']); // appearance
+        this.text.anchor = readVectorProperty(layer.layout['text-anchor']);
+        this.text.offset = readVectorProperty(layer.layout['text-offset']);
+        this.text.padding = readVectorProperty(layer.layout['text-padding']);
+        this.text.size = readVectorProperty(layer.layout['text-size']);
+        this.text.placement = readVectorProperty(layer.layout['symbol-placement']);
+        this.text.rotation = readVectorProperty(layer.layout['text-rotation-alignment']); // content
 
-          var _rgba2rgb5 = rgba2rgb(
-              readVectorProperty(layer.paint['text-color'], {
-                type: 'color',
-              }),
-            ),
+        this.text.field = readVectorProperty(layer.layout['text-field']);
+        this.text.wrap = readVectorProperty(layer.layout['text-max-width']);
+        this.text.spacing = readVectorProperty(layer.layout['text-letter-spacing']);
+        this.text.transform = readVectorProperty(layer.layout['text-transform']);
+        this.text.justify = readVectorProperty(layer.layout['text-justify']); // appearance
+
+        var _rgba2rgb5 = rgba2rgb(readVectorProperty(layer.paint['text-color'], {
+          type: 'color'
+        })),
             _color4 = _rgba2rgb5.color,
             _opacity4 = _rgba2rgb5.opacity;
 
-          this.text.color = _color4;
-          this.text.opacity =
-            readVectorProperty(layer.paint['text-opacity']) ||
-            (_opacity4 !== undefined && _opacity4);
-          this.text.font = readVectorProperty(layer.layout['text-font']);
-          var haloColor = readVectorProperty(layer.paint['text-halo-color'], {
-            type: 'color',
-          });
+        this.text.color = _color4;
+        this.text.opacity = readVectorProperty(layer.paint['text-opacity']) || _opacity4 !== undefined && _opacity4;
+        this.text.font = readVectorProperty(layer.layout['text-font']);
+        var haloColor = readVectorProperty(layer.paint['text-halo-color'], {
+          type: 'color'
+        });
 
-          if (haloColor) {
-            this.text.haloColor = haloColor.color || haloColor;
-            this.text.haloWidth = readVectorProperty(
-              layer.paint['text-halo-width'],
-            );
-            this.text.haloBlur = readVectorProperty(
-              layer.paint['text-halo-blur'],
-            );
-          } // additional icon
+        if (haloColor) {
+          this.text.haloColor = haloColor.color || haloColor;
+          this.text.haloWidth = readVectorProperty(layer.paint['text-halo-width']);
+          this.text.haloBlur = readVectorProperty(layer.paint['text-halo-blur']);
+        } // additional icon
 
-          var key = readVectorProperty(layer.layout['icon-image']);
 
-          if (key) {
-            this.icon = {
-              key: key,
-            };
-            this.icon.size = readVectorProperty(layer.layout['icon-size']) || 1;
-          }
+        var key = readVectorProperty(layer.layout['icon-image']);
+
+        if (key) {
+          this.icon.key = key;
+          this.icon.size = readVectorProperty(layer.layout['icon-size']) || 1;
         }
+      }
 
-        return this;
-      },
-      /**
-       * Applies this style to a DOM element. Limited to the `text` and `icon`
-       * properties of this style.
-       *
-       * @param {Element} domElement - The element to set the style to.
-       * @param {Object} sprites - the sprites.
-       */
-    },
-    {
-      key: 'applyToHTML',
-      value: function applyToHTML(domElement, sprites) {
-        var _this2 = this;
+      return this;
+    }
+    /**
+     * Applies this style to a DOM element. Limited to the `text` and `icon`
+     * properties of this style.
+     *
+     * @param {Element} domElement - The element to set the style to.
+     * @param {Object} sprites - the sprites.
+     */
 
-        domElement.style.padding = ''.concat(this.text.padding, 'px');
-        domElement.style.maxWidth = ''.concat(this.text.wrap, 'em');
-        domElement.style.color = this.text.color;
+  }, {
+    key: "applyToHTML",
+    value: function applyToHTML(domElement, sprites) {
+      var _this2 = this;
 
-        if (this.text.size > 0) {
-          domElement.style.fontSize = ''.concat(this.text.size, 'px');
-        }
+      domElement.style.padding = "".concat(this.text.padding, "px");
+      domElement.style.maxWidth = "".concat(this.text.wrap, "em");
+      domElement.style.color = this.text.color;
 
-        domElement.style.fontFamily = this.text.font.join(',');
-        domElement.style.textTransform = this.text.transform;
-        domElement.style.letterSpacing = ''.concat(this.text.spacing, 'em');
-        domElement.style.textAlign = this.text.justify;
-        domElement.style['white-space'] = 'pre-line';
+      if (this.text.size > 0) {
+        domElement.style.fontSize = "".concat(this.text.size, "px");
+      }
 
-        if (this.text.haloWidth > 0) {
-          domElement.style.setProperty('--text_stroke_display', 'block');
-          domElement.style.setProperty(
-            '--text_stroke_width',
-            ''.concat(this.text.haloWidth, 'px'),
-          );
-          domElement.style.setProperty(
-            '--text_stroke_color',
-            this.text.haloColor,
-          );
-          domElement.setAttribute('data-before', domElement.textContent);
-        }
+      domElement.style.fontFamily = this.text.font.join(',');
+      domElement.style.textTransform = this.text.transform;
+      domElement.style.letterSpacing = "".concat(this.text.spacing, "em");
+      domElement.style.textAlign = this.text.justify;
+      domElement.style['white-space'] = 'pre-line';
 
-        if (!this.icon) {
-          return;
-        }
+      if (this.text.haloWidth > 0) {
+        domElement.style.setProperty('--text_stroke_display', 'block');
+        domElement.style.setProperty('--text_stroke_width', "".concat(this.text.haloWidth, "px"));
+        domElement.style.setProperty('--text_stroke_color', this.text.haloColor);
+        domElement.setAttribute('data-before', domElement.textContent);
+      }
 
-        var image = this.icon.image;
-        var size = this.icon.size;
-        var key = this.icon.key;
-        var icon = cacheStyle.get(image || key, size);
+      if (!this.icon.source && !this.icon.key) {
+        return;
+      }
 
-        if (!icon) {
-          if (key && sprites) {
-            icon = getImage(sprites, key);
-          } else {
-            icon = getImage(image);
-          }
+      var image = this.icon.source;
+      var size = this.icon.size;
+      var key = this.icon.key;
+      var icon = cacheStyle.get(image || key, size);
 
-          icon.style.position = 'absolute';
-          cacheStyle.set(icon, image || key, size);
-        }
-
-        var addIcon = function () {
-          var cIcon = icon.cloneNode();
-          cIcon.width *= size;
-          cIcon.height *= size;
-
-          switch (_this2.text.anchor) {
-            case 'left':
-              cIcon.style.right = 'calc(100% - '.concat(
-                cIcon.width * 0.5,
-                'px)',
-              );
-              cIcon.style.top = 'calc(50% - '.concat(cIcon.height * 0.5, 'px)');
-              break;
-
-            case 'right':
-              cIcon.style.top = 'calc(50% - '.concat(cIcon.height * 0.5, 'px)');
-              break;
-
-            case 'top':
-              cIcon.style.right = 'calc(50% - '.concat(
-                cIcon.width * 0.5,
-                'px)',
-              );
-              break;
-
-            case 'bottom':
-              cIcon.style.top = 'calc(100% - '.concat(
-                cIcon.height * 0.5,
-                'px)',
-              );
-              cIcon.style.right = 'calc(50% - '.concat(
-                cIcon.width * 0.5,
-                'px)',
-              );
-              break;
-
-            case 'bottom-left':
-              cIcon.style.top = 'calc(100% - '.concat(
-                cIcon.height * 0.5,
-                'px)',
-              );
-              cIcon.style.right = 'calc(100% - '.concat(
-                cIcon.width * 0.5,
-                'px)',
-              );
-              break;
-
-            case 'bottom-right':
-              cIcon.style.top = 'calc(100% - '.concat(
-                cIcon.height * 0.5,
-                'px)',
-              );
-              break;
-
-            case 'top-left':
-              cIcon.style.right = 'calc(100% - '.concat(
-                cIcon.width * 0.5,
-                'px)',
-              );
-              break;
-
-            case 'top-right':
-              break;
-
-            case 'center':
-            default:
-              cIcon.style.top = 'calc(50% - '.concat(cIcon.height * 0.5, 'px)');
-              cIcon.style.right = 'calc(50% - '.concat(
-                cIcon.width * 0.5,
-                'px)',
-              );
-              break;
-          }
-
-          cIcon.style['z-index'] = -1;
-          domElement.appendChild(cIcon);
-          icon.removeEventListener('load', addIcon);
-        };
-
-        if (icon.complete) {
-          addIcon();
+      if (!icon) {
+        if (key && sprites) {
+          icon = getImage(sprites, key);
         } else {
-          icon.addEventListener('load', addIcon);
+          icon = getImage(image);
         }
-      },
-      /**
-       * Gets the values corresponding to the anchor of the text. It is
-       * proportions, to use with a `translate()` and a `transform` property.
-       *
-       * @return {number[]} Two percentage values, for x and y respectively.
-       */
-    },
-    {
-      key: 'getTextAnchorPosition',
-      value: function getTextAnchorPosition() {
-        return textAnchorPosition[this.text.anchor];
-      },
-      /**
-       * Returns a string, associating `style.text.field` and properties to use to
-       * replace the keys in `style.text.field`.
-       *
-       * @param {Object} ctx - An object containing the feature context.
-       *
-       * @return {string} The formatted string.
-       */
-    },
-    {
-      key: 'getTextFromProperties',
-      value: function getTextFromProperties(ctx) {
-        if (this.text.field.expression) {
-          return readExpression(this.text.field, ctx);
+
+        cacheStyle.set(icon, image || key, size);
+      }
+
+      var addIcon = function () {
+        var cIcon = icon.cloneNode();
+        cIcon.setAttribute('class', 'itowns-icon');
+        cIcon.width = icon.width * _this2.icon.size;
+        cIcon.height = icon.height * _this2.icon.size;
+        cIcon.style.position = 'absolute';
+        cIcon.style.top = '0';
+        cIcon.style.left = '0';
+
+        switch (_this2.icon.anchor) {
+          // center by default
+          case 'left':
+            cIcon.style.top = "".concat(-0.5 * cIcon.height, "px");
+            break;
+
+          case 'right':
+            cIcon.style.top = "".concat(-0.5 * cIcon.height, "px");
+            cIcon.style.left = "".concat(-cIcon.width, "px");
+            break;
+
+          case 'top':
+            cIcon.style.left = "".concat(-0.5 * cIcon.width, "px");
+            break;
+
+          case 'bottom':
+            cIcon.style.top = "".concat(-cIcon.height, "px");
+            cIcon.style.left = "".concat(-0.5 * cIcon.width, "px");
+            break;
+
+          case 'bottom-left':
+            cIcon.style.top = "".concat(-cIcon.height, "px");
+            break;
+
+          case 'bottom-right':
+            cIcon.style.top = "".concat(-cIcon.height, "px");
+            cIcon.style.left = "".concat(-cIcon.width, "px");
+            break;
+
+          case 'top-left':
+            break;
+
+          case 'top-right':
+            cIcon.style.left = "".concat(-cIcon.width, "px");
+            break;
+
+          case 'center':
+          default:
+            cIcon.style.top = "".concat(-0.5 * cIcon.height, "px");
+            cIcon.style.left = "".concat(-0.5 * cIcon.width, "px");
+            break;
+        }
+
+        cIcon.style['z-index'] = -1;
+        domElement.appendChild(cIcon);
+        icon.removeEventListener('load', addIcon);
+      };
+
+      if (icon.complete) {
+        addIcon();
+      } else {
+        icon.addEventListener('load', addIcon);
+      }
+    }
+    /**
+     * Gets the values corresponding to the anchor of the text. It is
+     * proportions, to use with a `translate()` and a `transform` property.
+     *
+     * @return {number[]} Two percentage values, for x and y respectively.
+     */
+
+  }, {
+    key: "getTextAnchorPosition",
+    value: function getTextAnchorPosition() {
+      if (typeof this.text.anchor === 'string') {
+        if (Object.keys(textAnchorPosition).includes(this.text.anchor)) {
+          return textAnchorPosition[this.text.anchor];
         } else {
-          return this.text.field
-            .replace(/\{(.+?)\}/g, function (a, b) {
-              return ctx.properties()[b] || '';
-            })
-            .trim();
+          console.error("".concat(this.text.anchor, " is not a valid input for Style.text.anchor parameter."));
+          return textAnchorPosition.center;
         }
-      },
-    },
-  ]);
+      } else {
+        return this.text.anchor;
+      }
+    }
+    /**
+     * Returns a string, associating `style.text.field` and properties to use to
+     * replace the keys in `style.text.field`.
+     *
+     * @param {Object} ctx - An object containing the feature context.
+     *
+     * @return {string|undefined} The formatted string if `style.text.field` is defined, nothing otherwise.
+     */
+
+  }, {
+    key: "getTextFromProperties",
+    value: function getTextFromProperties(ctx) {
+      if (!this.text.field) {
+        return;
+      }
+
+      if (this.text.field.expression) {
+        return readExpression(this.text.field, ctx);
+      } else {
+        return this.text.field.replace(/\{(.+?)\}/g, function (a, b) {
+          return ctx.properties()[b] || '';
+        }).trim();
+      }
+    }
+  }]);
   return Style;
-})(); // Add custom style sheet with iTowns specifics
+}(); // Add custom style sheet with iTowns specifics
+
 
 var CustomStyle = {
-  itowns_stroke_single_before: itowns_stroke_single_before,
+  itowns_stroke_single_before: itowns_stroke_single_before
 };
 var customStyleSheet = document.createElement('style');
 customStyleSheet.type = 'text/css';
 Object.keys(CustomStyle).forEach(function (key) {
-  customStyleSheet.innerHTML += ''.concat(CustomStyle[key], '\n\n');
+  customStyleSheet.innerHTML += "".concat(CustomStyle[key], "\n\n");
 });
 document.getElementsByTagName('head')[0].appendChild(customStyleSheet);
 var style = new Style();
@@ -1013,6 +843,6 @@ style_properties.fill = Object.keys(style.fill);
 style_properties.stroke = Object.keys(style.stroke);
 style_properties.point = Object.keys(style.point);
 style_properties.text = Object.keys(style.text);
-style_properties.icon = ['image', 'size', 'key'];
+style_properties.icon = Object.keys(style.icon);
 var _default = Style;
-exports['default'] = _default;
+exports["default"] = _default;

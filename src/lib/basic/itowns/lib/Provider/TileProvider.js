@@ -1,15 +1,13 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _CancelledCommandException = _interopRequireDefault(
-  require('../Core/Scheduler/CancelledCommandException'),
-);
+var _CancelledCommandException = _interopRequireDefault(require("../Core/Scheduler/CancelledCommandException"));
 
 var _default = {
   executeCommand: function executeCommand(command) {
@@ -19,7 +17,7 @@ var _default = {
     var extentsSource = command.extentsSource;
 
     if (requester && !requester.material) {
-      return Promise.reject(new _CancelledCommandException['default'](command));
+      return Promise.reject(new _CancelledCommandException["default"](command));
     }
 
     for (var i = 0, size = extentsSource.length; i < size; i++) {
@@ -27,6 +25,6 @@ var _default = {
     }
 
     return Promise.all(promises);
-  },
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

@@ -1,74 +1,43 @@
-'use strict';
+"use strict";
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _get2 = _interopRequireDefault(require('@babel/runtime/helpers/get'));
+var _get2 = _interopRequireDefault(require("@babel/runtime/helpers/get"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _Source2 = _interopRequireDefault(require('./Source'));
+var _Source2 = _interopRequireDefault(require("./Source"));
 
-var _URLBuilder = _interopRequireDefault(require('../Provider/URLBuilder'));
+var _URLBuilder = _interopRequireDefault(require("../Provider/URLBuilder"));
 
-var _Extent = _interopRequireWildcard(require('../Core/Geographic/Extent'));
+var _Extent = _interopRequireWildcard(require("../Core/Geographic/Extent"));
 
-var _Crs = _interopRequireDefault(require('../Core/Geographic/Crs'));
+var _Crs = _interopRequireDefault(require("../Core/Geographic/Crs"));
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-var extent = new _Extent['default'](_Crs['default'].tms_4326, 0, 0, 0);
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+var extent = new _Extent["default"](_Crs["default"].tms_4326, 0, 0, 0);
 /**
  * @classdesc
  * An object defining the source of resources to get from a [TMS]{@link
@@ -94,6 +63,10 @@ var extent = new _Extent['default'](_Crs['default'].tms_4326, 0, 0, 0);
  * is 0.
  * @property {number} zoom.max - The maximum level of the source. Default value
  * is 20.
+ * @property {function} tileMatrixCallback - a method that create a TileMatrix
+ * identifier from the zoom level. For example, if set to `(zoomLevel) => 'EPSG:4326:' + zoomLevel`,
+ * the TileMatrix that will be fetched at zoom level 5 will be the one with identifier `EPSG:4326:5`.
+ * By default, the method returns the input zoom level.
  *
  * @example <caption><b>Source from OpenStreetMap server :</b></caption>
  * // Create the source
@@ -131,8 +104,8 @@ var extent = new _Extent['default'](_Crs['default'].tms_4326, 0, 0, 0);
  * view.addLayer(imageryLayer);
  */
 
-var TMSSource = /*#__PURE__*/ (function (_Source) {
-  (0, _inherits2['default'])(TMSSource, _Source);
+var TMSSource = /*#__PURE__*/function (_Source) {
+  (0, _inherits2["default"])(TMSSource, _Source);
 
   var _super = _createSuper(TMSSource);
 
@@ -145,7 +118,7 @@ var TMSSource = /*#__PURE__*/ (function (_Source) {
   function TMSSource(source) {
     var _this;
 
-    (0, _classCallCheck2['default'])(this, TMSSource);
+    (0, _classCallCheck2["default"])(this, TMSSource);
 
     if (!source.crs && !source.projection) {
       throw new Error('New TMSSource/WMTSSource: crs projection is required');
@@ -163,9 +136,13 @@ var TMSSource = /*#__PURE__*/ (function (_Source) {
     _this.zoom = source.zoom;
     _this.isInverted = source.isInverted || false;
     _this.url = source.url;
-    _this.crs = _Crs['default'].formatToTms(source.crs);
+    _this.crs = _Crs["default"].formatToTms(source.crs);
     _this.tileMatrixSetLimits = source.tileMatrixSetLimits;
     _this.extentSetlimits = {};
+
+    _this.tileMatrixCallback = source.tileMatrixCallback || function (zoomLevel) {
+      return zoomLevel;
+    };
 
     if (!_this.zoom) {
       if (_this.tileMatrixSetLimits) {
@@ -174,12 +151,12 @@ var TMSSource = /*#__PURE__*/ (function (_Source) {
         var maxZoom = Number(arrayLimits[size - 1]);
         _this.zoom = {
           min: maxZoom - size + 1,
-          max: maxZoom,
+          max: maxZoom
         };
       } else {
         _this.zoom = {
           min: 0,
-          max: Infinity,
+          max: Infinity
         };
       }
     }
@@ -187,73 +164,50 @@ var TMSSource = /*#__PURE__*/ (function (_Source) {
     return _this;
   }
 
-  (0, _createClass2['default'])(TMSSource, [
-    {
-      key: 'urlFromExtent',
-      value: function urlFromExtent(extent) {
-        return _URLBuilder['default'].xyz(extent, this);
-      },
-    },
-    {
-      key: 'onLayerAdded',
-      value: function onLayerAdded(options) {
-        (0, _get2['default'])(
-          (0, _getPrototypeOf2['default'])(TMSSource.prototype),
-          'onLayerAdded',
-          this,
-        ).call(this, options); // Build extents of the set of identical zoom tiles.
+  (0, _createClass2["default"])(TMSSource, [{
+    key: "urlFromExtent",
+    value: function urlFromExtent(extent) {
+      return _URLBuilder["default"].xyz(extent, this);
+    }
+  }, {
+    key: "onLayerAdded",
+    value: function onLayerAdded(options) {
+      (0, _get2["default"])((0, _getPrototypeOf2["default"])(TMSSource.prototype), "onLayerAdded", this).call(this, options); // Build extents of the set of identical zoom tiles.
 
-        var parent = options.out.parent; // The extents crs is chosen to facilitate in raster tile process.
+      var parent = options.out.parent; // The extents crs is chosen to facilitate in raster tile process.
 
-        var crs = parent ? parent.extent.crs : options.out.crs;
+      var crs = parent ? parent.extent.crs : options.out.crs;
 
-        if (this.tileMatrixSetLimits && !this.extentSetlimits[crs]) {
-          this.extentSetlimits[crs] = {};
-          extent.crs = this.crs;
+      if (this.tileMatrixSetLimits && !this.extentSetlimits[crs]) {
+        this.extentSetlimits[crs] = {};
+        extent.crs = this.crs;
 
-          for (var i = this.zoom.max; i >= this.zoom.min; i--) {
-            var tmsl = this.tileMatrixSetLimits[i];
+        for (var i = this.zoom.max; i >= this.zoom.min; i--) {
+          var tmsl = this.tileMatrixSetLimits[i];
 
-            var _extent$set$as = extent
-                .set(i, tmsl.minTileRow, tmsl.minTileCol)
-                .as(crs),
+          var _extent$set$as = extent.set(i, tmsl.minTileRow, tmsl.minTileCol).as(crs),
               west = _extent$set$as.west,
               north = _extent$set$as.north;
 
-            var _extent$set$as2 = extent
-                .set(i, tmsl.maxTileRow, tmsl.maxTileCol)
-                .as(crs),
+          var _extent$set$as2 = extent.set(i, tmsl.maxTileRow, tmsl.maxTileCol).as(crs),
               east = _extent$set$as2.east,
               south = _extent$set$as2.south;
 
-            this.extentSetlimits[crs][i] = new _Extent['default'](
-              crs,
-              west,
-              east,
-              south,
-              north,
-            );
-          }
+          this.extentSetlimits[crs][i] = new _Extent["default"](crs, west, east, south, north);
         }
-      },
-    },
-    {
-      key: 'extentInsideLimit',
-      value: function extentInsideLimit(extent, zoom) {
-        // This layer provides data starting at level = layer.source.zoom.min
-        // (the zoom.max property is used when building the url to make
-        //  sure we don't use invalid levels)
-        return (
-          zoom >= this.zoom.min &&
-          zoom <= this.zoom.max &&
-          (this.extentSetlimits[extent.crs] == undefined ||
-            this.extentSetlimits[extent.crs][zoom].intersectsExtent(extent))
-        );
-      },
-    },
-  ]);
+      }
+    }
+  }, {
+    key: "extentInsideLimit",
+    value: function extentInsideLimit(extent, zoom) {
+      // This layer provides data starting at level = layer.source.zoom.min
+      // (the zoom.max property is used when building the url to make
+      //  sure we don't use invalid levels)
+      return zoom >= this.zoom.min && zoom <= this.zoom.max && (this.extentSetlimits[extent.crs] == undefined || this.extentSetlimits[extent.crs][zoom].intersectsExtent(extent));
+    }
+  }]);
   return TMSSource;
-})(_Source2['default']);
+}(_Source2["default"]);
 
 var _default = TMSSource;
-exports['default'] = _default;
+exports["default"] = _default;

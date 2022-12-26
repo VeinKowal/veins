@@ -8,70 +8,84 @@ import { BufferGeometry } from '../core/BufferGeometry.js';
 const _vector = /*@__PURE__*/ new Vector3();
 
 class SpotLightHelper extends Object3D {
-  constructor(light, color) {
-    super();
-    this.light = light;
-    this.light.updateMatrixWorld();
 
-    this.matrix = light.matrixWorld;
-    this.matrixAutoUpdate = false;
+	constructor( light, color ) {
 
-    this.color = color;
+		super();
+		this.light = light;
+		this.light.updateMatrixWorld();
 
-    const geometry = new BufferGeometry();
+		this.matrix = light.matrixWorld;
+		this.matrixAutoUpdate = false;
 
-    const positions = [
-      0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0, 1, 1,
-      0, 0, 0, 0, -1, 1,
-    ];
+		this.color = color;
 
-    for (let i = 0, j = 1, l = 32; i < l; i++, j++) {
-      const p1 = (i / l) * Math.PI * 2;
-      const p2 = (j / l) * Math.PI * 2;
+		const geometry = new BufferGeometry();
 
-      positions.push(
-        Math.cos(p1),
-        Math.sin(p1),
-        1,
-        Math.cos(p2),
-        Math.sin(p2),
-        1,
-      );
-    }
+		const positions = [
+			0, 0, 0, 	0, 0, 1,
+			0, 0, 0, 	1, 0, 1,
+			0, 0, 0,	- 1, 0, 1,
+			0, 0, 0, 	0, 1, 1,
+			0, 0, 0, 	0, - 1, 1
+		];
 
-    geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
+		for ( let i = 0, j = 1, l = 32; i < l; i ++, j ++ ) {
 
-    const material = new LineBasicMaterial({ fog: false, toneMapped: false });
+			const p1 = ( i / l ) * Math.PI * 2;
+			const p2 = ( j / l ) * Math.PI * 2;
 
-    this.cone = new LineSegments(geometry, material);
-    this.add(this.cone);
+			positions.push(
+				Math.cos( p1 ), Math.sin( p1 ), 1,
+				Math.cos( p2 ), Math.sin( p2 ), 1
+			);
 
-    this.update();
-  }
+		}
 
-  dispose() {
-    this.cone.geometry.dispose();
-    this.cone.material.dispose();
-  }
+		geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
 
-  update() {
-    this.light.updateMatrixWorld();
+		const material = new LineBasicMaterial( { fog: false, toneMapped: false } );
 
-    const coneLength = this.light.distance ? this.light.distance : 1000;
-    const coneWidth = coneLength * Math.tan(this.light.angle);
+		this.cone = new LineSegments( geometry, material );
+		this.add( this.cone );
 
-    this.cone.scale.set(coneWidth, coneWidth, coneLength);
+		this.update();
 
-    _vector.setFromMatrixPosition(this.light.target.matrixWorld);
+	}
 
-    this.cone.lookAt(_vector);
+	dispose() {
 
-    if (this.color !== undefined) {
-      this.cone.material.color.set(this.color);
-    } else {
-      this.cone.material.color.copy(this.light.color);
-    }
-  }
+		this.cone.geometry.dispose();
+		this.cone.material.dispose();
+
+	}
+
+	update() {
+
+		this.light.updateMatrixWorld();
+
+		const coneLength = this.light.distance ? this.light.distance : 1000;
+		const coneWidth = coneLength * Math.tan( this.light.angle );
+
+		this.cone.scale.set( coneWidth, coneWidth, coneLength );
+
+		_vector.setFromMatrixPosition( this.light.target.matrixWorld );
+
+		this.cone.lookAt( _vector );
+
+		if ( this.color !== undefined ) {
+
+			this.cone.material.color.set( this.color );
+
+		} else {
+
+			this.cone.material.color.copy( this.light.color );
+
+		}
+
+	}
+
 }
+
 
 export { SpotLightHelper };

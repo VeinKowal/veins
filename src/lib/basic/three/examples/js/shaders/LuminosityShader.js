@@ -1,40 +1,49 @@
-/**
+( function () {
+
+	/**
  * Luminosity
  * http://en.wikipedia.org/wiki/Luminosity
  */
+	const LuminosityShader = {
+		uniforms: {
+			'tDiffuse': {
+				value: null
+			}
+		},
+		vertexShader:
+  /* glsl */
+  `
 
-THREE.LuminosityShader = {
-  uniforms: {
-    tDiffuse: { value: null },
-  },
+		varying vec2 vUv;
 
-  vertexShader: [
-    'varying vec2 vUv;',
+		void main() {
 
-    'void main() {',
+			vUv = uv;
 
-    '	vUv = uv;',
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+		}`,
+		fragmentShader:
+  /* glsl */
+  `
 
-    '}',
-  ].join('\n'),
+		#include <common>
 
-  fragmentShader: [
-    '#include <common>',
+		uniform sampler2D tDiffuse;
 
-    'uniform sampler2D tDiffuse;',
+		varying vec2 vUv;
 
-    'varying vec2 vUv;',
+		void main() {
 
-    'void main() {',
+			vec4 texel = texture2D( tDiffuse, vUv );
 
-    '	vec4 texel = texture2D( tDiffuse, vUv );',
+			float l = linearToRelativeLuminance( texel.rgb );
 
-    '	float l = linearToRelativeLuminance( texel.rgb );',
+			gl_FragColor = vec4( l, l, l, texel.w );
 
-    '	gl_FragColor = vec4( l, l, l, texel.w );',
+		}`
+	};
 
-    '}',
-  ].join('\n'),
-};
+	THREE.LuminosityShader = LuminosityShader;
+
+} )();

@@ -6,78 +6,82 @@
  * the scale factor of 1/0.6 is subjective. see discussion in #19621.
  */
 
-var ACESFilmicToneMappingShader = {
-  uniforms: {
-    tDiffuse: { value: null },
-    exposure: { value: 1.0 },
-  },
+const ACESFilmicToneMappingShader = {
 
-  vertexShader: [
-    'varying vec2 vUv;',
+	uniforms: {
 
-    'void main() {',
+		'tDiffuse': { value: null },
+		'exposure': { value: 1.0 }
 
-    '	vUv = uv;',
-    '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+	},
 
-    '}',
-  ].join('\n'),
+	vertexShader: /* glsl */`
 
-  fragmentShader: [
-    '#define saturate(a) clamp( a, 0.0, 1.0 )',
+		varying vec2 vUv;
 
-    'uniform sampler2D tDiffuse;',
+		void main() {
 
-    'uniform float exposure;',
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    'varying vec2 vUv;',
+		}`,
 
-    'vec3 RRTAndODTFit( vec3 v ) {',
+	fragmentShader: /* glsl */`
 
-    '	vec3 a = v * ( v + 0.0245786 ) - 0.000090537;',
-    '	vec3 b = v * ( 0.983729 * v + 0.4329510 ) + 0.238081;',
-    '	return a / b;',
+		#define saturate(a) clamp( a, 0.0, 1.0 )
 
-    '}',
+		uniform sampler2D tDiffuse;
 
-    'vec3 ACESFilmicToneMapping( vec3 color ) {',
+		uniform float exposure;
 
-    // sRGB => XYZ => D65_2_D60 => AP1 => RRT_SAT
-    '	const mat3 ACESInputMat = mat3(',
-    '		vec3( 0.59719, 0.07600, 0.02840 ),', // transposed from source
-    '		vec3( 0.35458, 0.90834, 0.13383 ),',
-    '		vec3( 0.04823, 0.01566, 0.83777 )',
-    '	);',
+		varying vec2 vUv;
 
-    // ODT_SAT => XYZ => D60_2_D65 => sRGB
-    '	const mat3 ACESOutputMat = mat3(',
-    '		vec3(  1.60475, -0.10208, -0.00327 ),', // transposed from source
-    '		vec3( -0.53108,  1.10813, -0.07276 ),',
-    '		vec3( -0.07367, -0.00605,  1.07602 )',
-    '	);',
+		vec3 RRTAndODTFit( vec3 v ) {
 
-    '	color = ACESInputMat * color;',
+			vec3 a = v * ( v + 0.0245786 ) - 0.000090537;
+			vec3 b = v * ( 0.983729 * v + 0.4329510 ) + 0.238081;
+			return a / b;
 
-    // Apply RRT and ODT
-    '	color = RRTAndODTFit( color );',
+		}
 
-    '	color = ACESOutputMat * color;',
+		vec3 ACESFilmicToneMapping( vec3 color ) {
 
-    // Clamp to [0, 1]
-    '	return saturate( color );',
+		// sRGB => XYZ => D65_2_D60 => AP1 => RRT_SAT
+			const mat3 ACESInputMat = mat3(
+				vec3( 0.59719, 0.07600, 0.02840 ), // transposed from source
+				vec3( 0.35458, 0.90834, 0.13383 ),
+				vec3( 0.04823, 0.01566, 0.83777 )
+			);
 
-    '}',
+		// ODT_SAT => XYZ => D60_2_D65 => sRGB
+			const mat3 ACESOutputMat = mat3(
+				vec3(  1.60475, -0.10208, -0.00327 ), // transposed from source
+				vec3( -0.53108,  1.10813, -0.07276 ),
+				vec3( -0.07367, -0.00605,  1.07602 )
+			);
 
-    'void main() {',
+			color = ACESInputMat * color;
 
-    '	vec4 tex = texture2D( tDiffuse, vUv );',
+		// Apply RRT and ODT
+			color = RRTAndODTFit( color );
 
-    '	tex.rgb *= exposure / 0.6;', // pre-exposed, outside of the tone mapping function
+			color = ACESOutputMat * color;
 
-    '	gl_FragColor = vec4( ACESFilmicToneMapping( tex.rgb ), tex.a );',
+		// Clamp to [0, 1]
+			return saturate( color );
 
-    '}',
-  ].join('\n'),
+		}
+
+		void main() {
+
+			vec4 tex = texture2D( tDiffuse, vUv );
+
+			tex.rgb *= exposure / 0.6; // pre-exposed, outside of the tone mapping function
+
+			gl_FragColor = vec4( ACESFilmicToneMapping( tex.rgb ), tex.a );
+
+		}`
+
 };
 
 export { ACESFilmicToneMappingShader };

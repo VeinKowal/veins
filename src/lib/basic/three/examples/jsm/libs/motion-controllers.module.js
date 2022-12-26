@@ -6,20 +6,20 @@ const Constants = {
   Handedness: Object.freeze({
     NONE: 'none',
     LEFT: 'left',
-    RIGHT: 'right',
+    RIGHT: 'right'
   }),
 
   ComponentState: Object.freeze({
     DEFAULT: 'default',
     TOUCHED: 'touched',
-    PRESSED: 'pressed',
+    PRESSED: 'pressed'
   }),
 
   ComponentProperty: Object.freeze({
     BUTTON: 'button',
     X_AXIS: 'xAxis',
     Y_AXIS: 'yAxis',
-    STATE: 'state',
+    STATE: 'state'
   }),
 
   ComponentType: Object.freeze({
@@ -27,7 +27,7 @@ const Constants = {
     SQUEEZE: 'squeeze',
     TOUCHPAD: 'touchpad',
     THUMBSTICK: 'thumbstick',
-    BUTTON: 'button',
+    BUTTON: 'button'
   }),
 
   ButtonTouchThreshold: 0.05,
@@ -36,8 +36,8 @@ const Constants = {
 
   VisualResponseProperty: Object.freeze({
     TRANSFORM: 'transform',
-    VISIBILITY: 'visibility',
-  }),
+    VISIBILITY: 'visibility'
+  })
 };
 
 /**
@@ -59,18 +59,11 @@ async function fetchProfilesList(basePath) {
   }
 
   const profileListFileName = 'profilesList.json';
-  const profilesList = await fetchJsonFile(
-    `${basePath}/${profileListFileName}`,
-  );
+  const profilesList = await fetchJsonFile(`${basePath}/${profileListFileName}`);
   return profilesList;
 }
 
-async function fetchProfile(
-  xrInputSource,
-  basePath,
-  defaultProfile = null,
-  getAssetPath = true,
-) {
+async function fetchProfile(xrInputSource, basePath, defaultProfile = null, getAssetPath = true) {
   if (!xrInputSource) {
     throw new Error('No xrInputSource supplied');
   }
@@ -90,7 +83,7 @@ async function fetchProfile(
       match = {
         profileId,
         profilePath: `${basePath}/${supportedProfile.path}`,
-        deprecated: !!supportedProfile.deprecated,
+        deprecated: !!supportedProfile.deprecated
       };
     }
     return !!match;
@@ -103,15 +96,13 @@ async function fetchProfile(
 
     const supportedProfile = supportedProfilesList[defaultProfile];
     if (!supportedProfile) {
-      throw new Error(
-        `No matching profile name found and default profile "${defaultProfile}" missing.`,
-      );
+      throw new Error(`No matching profile name found and default profile "${defaultProfile}" missing.`);
     }
 
     match = {
       profileId: defaultProfile,
       profilePath: `${basePath}/${supportedProfile.path}`,
-      deprecated: !!supportedProfile.deprecated,
+      deprecated: !!supportedProfile.deprecated
     };
   }
 
@@ -127,7 +118,7 @@ async function fetchProfile(
     }
     if (!layout) {
       throw new Error(
-        `No matching handedness, ${xrInputSource.handedness}, in profile ${match.profileId}`,
+        `No matching handedness, ${xrInputSource.handedness}, in profile ${match.profileId}`
       );
     }
 
@@ -144,7 +135,7 @@ const defaultComponentValues = {
   xAxis: 0,
   yAxis: 0,
   button: 0,
-  state: Constants.ComponentState.DEFAULT,
+  state: Constants.ComponentState.DEFAULT
 };
 
 /**
@@ -161,7 +152,7 @@ function normalizeAxes(x = 0, y = 0) {
 
   // Determine if the point is outside the bounds of the circle
   // and, if so, place it on the edge of the circle
-  const hypotenuse = Math.sqrt(x * x + y * y);
+  const hypotenuse = Math.sqrt((x * x) + (y * y));
   if (hypotenuse > 1) {
     const theta = Math.atan2(y, x);
     xAxis = Math.cos(theta);
@@ -171,8 +162,8 @@ function normalizeAxes(x = 0, y = 0) {
   // Scale and move the circle so values are in the interpolation range.  The circle's origin moves
   // from (0, 0) to (0.5, 0.5). The circle's radius scales from 1 to be 0.5.
   const result = {
-    normalizedXAxis: xAxis * 0.5 + 0.5,
-    normalizedYAxis: yAxis * 0.5 + 0.5,
+    normalizedXAxis: (xAxis * 0.5) + 0.5,
+    normalizedYAxis: (yAxis * 0.5) + 0.5
   };
   return result;
 }
@@ -210,31 +201,29 @@ class VisualResponse {
    * @param {number} button - The reported value of the component's button
    * @param {string} state - The component's active state
    */
-  updateFromComponent({ xAxis, yAxis, button, state }) {
+  updateFromComponent({
+    xAxis, yAxis, button, state
+  }) {
     const { normalizedXAxis, normalizedYAxis } = normalizeAxes(xAxis, yAxis);
     switch (this.componentProperty) {
       case Constants.ComponentProperty.X_AXIS:
-        this.value = this.states.includes(state) ? normalizedXAxis : 0.5;
+        this.value = (this.states.includes(state)) ? normalizedXAxis : 0.5;
         break;
       case Constants.ComponentProperty.Y_AXIS:
-        this.value = this.states.includes(state) ? normalizedYAxis : 0.5;
+        this.value = (this.states.includes(state)) ? normalizedYAxis : 0.5;
         break;
       case Constants.ComponentProperty.BUTTON:
-        this.value = this.states.includes(state) ? button : 0;
+        this.value = (this.states.includes(state)) ? button : 0;
         break;
       case Constants.ComponentProperty.STATE:
-        if (
-          this.valueNodeProperty === Constants.VisualResponseProperty.VISIBILITY
-        ) {
-          this.value = this.states.includes(state);
+        if (this.valueNodeProperty === Constants.VisualResponseProperty.VISIBILITY) {
+          this.value = (this.states.includes(state));
         } else {
           this.value = this.states.includes(state) ? 1.0 : 0.0;
         }
         break;
       default:
-        throw new Error(
-          `Unexpected visualResponse componentProperty ${this.componentProperty}`,
-        );
+        throw new Error(`Unexpected visualResponse componentProperty ${this.componentProperty}`);
     }
   }
 }
@@ -245,13 +234,11 @@ class Component {
    * @param {Object} componentDescription - Description of the component to be created
    */
   constructor(componentId, componentDescription) {
-    if (
-      !componentId ||
-      !componentDescription ||
-      !componentDescription.visualResponses ||
-      !componentDescription.gamepadIndices ||
-      Object.keys(componentDescription.gamepadIndices).length === 0
-    ) {
+    if (!componentId
+     || !componentDescription
+     || !componentDescription.visualResponses
+     || !componentDescription.gamepadIndices
+     || Object.keys(componentDescription.gamepadIndices).length === 0) {
       throw new Error('Invalid arguments supplied');
     }
 
@@ -262,26 +249,19 @@ class Component {
 
     // Build all the visual responses for this component
     this.visualResponses = {};
-    Object.keys(componentDescription.visualResponses).forEach(
-      (responseName) => {
-        const visualResponse = new VisualResponse(
-          componentDescription.visualResponses[responseName],
-        );
-        this.visualResponses[responseName] = visualResponse;
-      },
-    );
+    Object.keys(componentDescription.visualResponses).forEach((responseName) => {
+      const visualResponse = new VisualResponse(componentDescription.visualResponses[responseName]);
+      this.visualResponses[responseName] = visualResponse;
+    });
 
     // Set default values
-    this.gamepadIndices = Object.assign(
-      {},
-      componentDescription.gamepadIndices,
-    );
+    this.gamepadIndices = Object.assign({}, componentDescription.gamepadIndices);
 
     this.values = {
       state: Constants.ComponentState.DEFAULT,
-      button: this.gamepadIndices.button !== undefined ? 0 : undefined,
-      xAxis: this.gamepadIndices.xAxis !== undefined ? 0 : undefined,
-      yAxis: this.gamepadIndices.yAxis !== undefined ? 0 : undefined,
+      button: (this.gamepadIndices.button !== undefined) ? 0 : undefined,
+      xAxis: (this.gamepadIndices.xAxis !== undefined) ? 0 : undefined,
+      yAxis: (this.gamepadIndices.yAxis !== undefined) ? 0 : undefined
     };
   }
 
@@ -299,58 +279,45 @@ class Component {
     this.values.state = Constants.ComponentState.DEFAULT;
 
     // Get and normalize button
-    if (
-      this.gamepadIndices.button !== undefined &&
-      gamepad.buttons.length > this.gamepadIndices.button
-    ) {
+    if (this.gamepadIndices.button !== undefined
+        && gamepad.buttons.length > this.gamepadIndices.button) {
       const gamepadButton = gamepad.buttons[this.gamepadIndices.button];
       this.values.button = gamepadButton.value;
-      this.values.button = this.values.button < 0 ? 0 : this.values.button;
-      this.values.button = this.values.button > 1 ? 1 : this.values.button;
+      this.values.button = (this.values.button < 0) ? 0 : this.values.button;
+      this.values.button = (this.values.button > 1) ? 1 : this.values.button;
 
       // Set the state based on the button
       if (gamepadButton.pressed || this.values.button === 1) {
         this.values.state = Constants.ComponentState.PRESSED;
-      } else if (
-        gamepadButton.touched ||
-        this.values.button > Constants.ButtonTouchThreshold
-      ) {
+      } else if (gamepadButton.touched || this.values.button > Constants.ButtonTouchThreshold) {
         this.values.state = Constants.ComponentState.TOUCHED;
       }
     }
 
     // Get and normalize x axis value
-    if (
-      this.gamepadIndices.xAxis !== undefined &&
-      gamepad.axes.length > this.gamepadIndices.xAxis
-    ) {
+    if (this.gamepadIndices.xAxis !== undefined
+        && gamepad.axes.length > this.gamepadIndices.xAxis) {
       this.values.xAxis = gamepad.axes[this.gamepadIndices.xAxis];
-      this.values.xAxis = this.values.xAxis < -1 ? -1 : this.values.xAxis;
-      this.values.xAxis = this.values.xAxis > 1 ? 1 : this.values.xAxis;
+      this.values.xAxis = (this.values.xAxis < -1) ? -1 : this.values.xAxis;
+      this.values.xAxis = (this.values.xAxis > 1) ? 1 : this.values.xAxis;
 
       // If the state is still default, check if the xAxis makes it touched
-      if (
-        this.values.state === Constants.ComponentState.DEFAULT &&
-        Math.abs(this.values.xAxis) > Constants.AxisTouchThreshold
-      ) {
+      if (this.values.state === Constants.ComponentState.DEFAULT
+        && Math.abs(this.values.xAxis) > Constants.AxisTouchThreshold) {
         this.values.state = Constants.ComponentState.TOUCHED;
       }
     }
 
     // Get and normalize Y axis value
-    if (
-      this.gamepadIndices.yAxis !== undefined &&
-      gamepad.axes.length > this.gamepadIndices.yAxis
-    ) {
+    if (this.gamepadIndices.yAxis !== undefined
+        && gamepad.axes.length > this.gamepadIndices.yAxis) {
       this.values.yAxis = gamepad.axes[this.gamepadIndices.yAxis];
-      this.values.yAxis = this.values.yAxis < -1 ? -1 : this.values.yAxis;
-      this.values.yAxis = this.values.yAxis > 1 ? 1 : this.values.yAxis;
+      this.values.yAxis = (this.values.yAxis < -1) ? -1 : this.values.yAxis;
+      this.values.yAxis = (this.values.yAxis > 1) ? 1 : this.values.yAxis;
 
       // If the state is still default, check if the yAxis makes it touched
-      if (
-        this.values.state === Constants.ComponentState.DEFAULT &&
-        Math.abs(this.values.yAxis) > Constants.AxisTouchThreshold
-      ) {
+      if (this.values.state === Constants.ComponentState.DEFAULT
+        && Math.abs(this.values.yAxis) > Constants.AxisTouchThreshold) {
         this.values.state = Constants.ComponentState.TOUCHED;
       }
     }
@@ -363,10 +330,10 @@ class Component {
 }
 
 /**
- * @description Builds a motion controller with components and visual responses based on the
- * supplied profile description. Data is polled from the xrInputSource's gamepad.
- * @author Nell Waliczek / https://github.com/NellWaliczek
- */
+  * @description Builds a motion controller with components and visual responses based on the
+  * supplied profile description. Data is polled from the xrInputSource's gamepad.
+  * @author Nell Waliczek / https://github.com/NellWaliczek
+*/
 class MotionController {
   /**
    * @param {Object} xrInputSource - The XRInputSource to build the MotionController around
@@ -390,12 +357,8 @@ class MotionController {
     this.layoutDescription = profile.layouts[xrInputSource.handedness];
     this.components = {};
     Object.keys(this.layoutDescription.components).forEach((componentId) => {
-      const componentDescription =
-        this.layoutDescription.components[componentId];
-      this.components[componentId] = new Component(
-        componentId,
-        componentDescription,
-      );
+      const componentDescription = this.layoutDescription.components[componentId];
+      this.components[componentId] = new Component(componentId, componentDescription);
     });
 
     // Initialize components based on current gamepad state

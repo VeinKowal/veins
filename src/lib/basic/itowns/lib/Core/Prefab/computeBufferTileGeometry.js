@@ -1,84 +1,23 @@
-'use strict';
+"use strict";
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = computeBuffers;
+exports["default"] = computeBuffers;
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if (
-      Array.isArray(o) ||
-      (it = _unsupportedIterableToArray(o)) ||
-      (allowArrayLike && o && typeof o.length === 'number')
-    ) {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          if (i >= o.length) return { done: true };
-          return { done: false, value: o[i++] };
-        },
-        e: function e(_e) {
-          throw _e;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
-    );
-  }
-  var normalCompletion = true,
-    didErr = false,
-    err;
-  return {
-    s: function s() {
-      it = o[Symbol.iterator]();
-    },
-    n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
-    },
-    f: function f() {
-      try {
-        if (!normalCompletion && it['return'] != null) it['return']();
-      } finally {
-        if (didErr) throw err;
-      }
-    },
-  };
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === 'Object' && o.constructor) n = o.constructor.name;
-  if (n === 'Map' || n === 'Set') return Array.from(o);
-  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function computeBuffers(params) {
   // Create output buffers.
@@ -101,7 +40,7 @@ function computeBuffers(params) {
     //      +-------------------------+
     //        * u = wgs84.u
     //        * v = textureid + v in builder texture
-    uvs: [],
+    uvs: []
   };
   var computeUvs = [];
   var builder = params.builder;
@@ -184,10 +123,10 @@ function computeBuffers(params) {
       normal.toArray(outBuffers.normal, id_m3);
 
       var _iterator = _createForOfIteratorHelper(computeUvs),
-        _step;
+          _step;
 
       try {
-        for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var computeUv = _step.value;
           computeUv(idVertex, u, v);
         }
@@ -252,9 +191,7 @@ function computeBuffers(params) {
 
   if (!params.disableSkirt) {
     // We compute the actual size of tile segment to use later for the skirt.
-    var segmentSize = new THREE.Vector3()
-      .fromArray(outBuffers.position)
-      .distanceTo(new THREE.Vector3().fromArray(outBuffers.position, 3));
+    var segmentSize = new THREE.Vector3().fromArray(outBuffers.position).distanceTo(new THREE.Vector3().fromArray(outBuffers.position, 3));
 
     var buildIndexSkirt = function () {};
 
@@ -279,15 +216,9 @@ function computeBuffers(params) {
       var _id_m = idVertex * 3;
 
       var id2_m3 = id * 3;
-      outBuffers.position[_id_m + 0] =
-        outBuffers.position[id2_m3 + 0] -
-        outBuffers.normal[id2_m3 + 0] * segmentSize;
-      outBuffers.position[_id_m + 1] =
-        outBuffers.position[id2_m3 + 1] -
-        outBuffers.normal[id2_m3 + 1] * segmentSize;
-      outBuffers.position[_id_m + 2] =
-        outBuffers.position[id2_m3 + 2] -
-        outBuffers.normal[id2_m3 + 2] * segmentSize;
+      outBuffers.position[_id_m + 0] = outBuffers.position[id2_m3 + 0] - outBuffers.normal[id2_m3 + 0] * segmentSize;
+      outBuffers.position[_id_m + 1] = outBuffers.position[id2_m3 + 1] - outBuffers.normal[id2_m3 + 1] * segmentSize;
+      outBuffers.position[_id_m + 2] = outBuffers.position[id2_m3 + 2] - outBuffers.normal[id2_m3 + 2] * segmentSize;
       outBuffers.normal[_id_m + 0] = outBuffers.normal[id2_m3 + 0];
       outBuffers.normal[_id_m + 1] = outBuffers.normal[id2_m3 + 1];
       outBuffers.normal[_id_m + 2] = outBuffers.normal[id2_m3 + 2];

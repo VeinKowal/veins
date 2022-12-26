@@ -15,252 +15,268 @@
  */
 
 import {
-  CompressedTexture,
-  CompressedTextureLoader,
-  FileLoader,
-  LinearEncoding,
-  sRGBEncoding,
-} from '../../../build/three.module.js';
-
+	CompressedTexture,
+	CompressedTextureLoader,
+	FileLoader,
+	LinearEncoding,
+	sRGBEncoding,
+} from 'three';
+import {
+	read as readKTX,
+	KTX2ChannelETC1S,
+	KTX2ChannelUASTC,
+	KTX2Flags,
+	KTX2Model,
+	KTX2SupercompressionScheme,
+	KTX2Transfer
+} from '../libs/ktx-parse.module.js';
 import { BasisTextureLoader } from './BasisTextureLoader.js';
 import { ZSTDDecoder } from '../libs/zstddec.module.js';
-import { read as readKTX } from '../libs/ktx-parse.module.js';
-
-// KTX 2.0 constants.
-
-var DFDModel = {
-  ETC1S: 163,
-  UASTC: 166,
-};
-
-var DFDChannel = {
-  ETC1S: {
-    RGB: 0,
-    RRR: 3,
-    GGG: 4,
-    AAA: 15,
-  },
-  UASTC: {
-    RGB: 0,
-    RGBA: 3,
-    RRR: 4,
-    RRRG: 5,
-  },
-};
-
-var SupercompressionScheme = {
-  ZSTD: 2,
-};
-
-var Transfer = {
-  SRGB: 2,
-};
-
-//
 
 class KTX2Loader extends CompressedTextureLoader {
-  constructor(manager) {
-    super(manager);
 
-    this.basisLoader = new BasisTextureLoader(manager);
-    this.zstd = new ZSTDDecoder();
+	constructor( manager ) {
 
-    this.zstd.init();
+		super( manager );
 
-    if (typeof MSC_TRANSCODER !== 'undefined') {
-      console.warn(
-        'THREE.KTX2Loader: Please update to latest "basis_transcoder".' +
-          ' "msc_basis_transcoder" is no longer supported in three.js r125+.',
-      );
-    }
-  }
+		this.basisLoader = new BasisTextureLoader( manager );
+		this.zstd = new ZSTDDecoder();
 
-  setTranscoderPath(path) {
-    this.basisLoader.setTranscoderPath(path);
+		this.zstd.init();
 
-    return this;
-  }
+		if ( typeof MSC_TRANSCODER !== 'undefined' ) {
 
-  setWorkerLimit(path) {
-    this.basisLoader.setWorkerLimit(path);
+			console.warn(
 
-    return this;
-  }
+				'THREE.KTX2Loader: Please update to latest "basis_transcoder".'
+				+ ' "msc_basis_transcoder" is no longer supported in three.js r125+.'
 
-  detectSupport(renderer) {
-    this.basisLoader.detectSupport(renderer);
+			);
 
-    return this;
-  }
+		}
 
-  dispose() {
-    this.basisLoader.dispose();
+	}
 
-    return this;
-  }
+	setTranscoderPath( path ) {
 
-  load(url, onLoad, onProgress, onError) {
-    var scope = this;
+		this.basisLoader.setTranscoderPath( path );
 
-    var texture = new CompressedTexture();
+		return this;
 
-    var bufferPending = new Promise(function (resolve, reject) {
-      new FileLoader(scope.manager)
-        .setPath(scope.path)
-        .setResponseType('arraybuffer')
-        .load(url, resolve, onProgress, reject);
-    });
+	}
 
-    bufferPending
-      .then(function (buffer) {
-        scope.parse(
-          buffer,
-          function (_texture) {
-            texture.copy(_texture);
-            texture.needsUpdate = true;
+	setWorkerLimit( path ) {
 
-            if (onLoad) onLoad(texture);
-          },
-          onError,
-        );
-      })
-      .catch(onError);
+		this.basisLoader.setWorkerLimit( path );
 
-    return texture;
-  }
+		return this;
 
-  parse(buffer, onLoad, onError) {
-    var scope = this;
+	}
 
-    var ktx = readKTX(new Uint8Array(buffer));
+	detectSupport( renderer ) {
 
-    if (ktx.pixelDepth > 0) {
-      throw new Error(
-        'THREE.KTX2Loader: Only 2D textures are currently supported.',
-      );
-    }
+		this.basisLoader.detectSupport( renderer );
 
-    if (ktx.layerCount > 1) {
-      throw new Error(
-        'THREE.KTX2Loader: Array textures are not currently supported.',
-      );
-    }
+		return this;
 
-    if (ktx.faceCount > 1) {
-      throw new Error(
-        'THREE.KTX2Loader: Cube textures are not currently supported.',
-      );
-    }
+	}
 
-    var dfd = KTX2Utils.getBasicDFD(ktx);
+	dispose() {
 
-    KTX2Utils.createLevels(ktx, this.zstd)
-      .then(function (levels) {
-        var basisFormat =
-          dfd.colorModel === DFDModel.UASTC
-            ? BasisTextureLoader.BasisFormat.UASTC_4x4
-            : BasisTextureLoader.BasisFormat.ETC1S;
+		this.basisLoader.dispose();
 
-        var parseConfig = {
-          levels: levels,
-          width: ktx.pixelWidth,
-          height: ktx.pixelHeight,
-          basisFormat: basisFormat,
-          hasAlpha: KTX2Utils.getAlpha(ktx),
-        };
+		return this;
 
-        if (basisFormat === BasisTextureLoader.BasisFormat.ETC1S) {
-          parseConfig.globalData = ktx.globalData;
-        }
+	}
 
-        return scope.basisLoader.parseInternalAsync(parseConfig);
-      })
-      .then(function (texture) {
-        texture.encoding =
-          dfd.transferFunction === Transfer.SRGB
-            ? sRGBEncoding
-            : LinearEncoding;
-        texture.premultiplyAlpha = KTX2Utils.getPremultiplyAlpha(ktx);
+	load( url, onLoad, onProgress, onError ) {
 
-        onLoad(texture);
-      })
-      .catch(onError);
+		var scope = this;
 
-    return this;
-  }
+		var texture = new CompressedTexture();
+
+		var bufferPending = new Promise( function ( resolve, reject ) {
+
+			new FileLoader( scope.manager )
+				.setPath( scope.path )
+				.setResponseType( 'arraybuffer' )
+				.load( url, resolve, onProgress, reject );
+
+		} );
+
+		bufferPending
+			.then( function ( buffer ) {
+
+				scope.parse( buffer, function ( _texture ) {
+
+					texture.copy( _texture );
+					texture.needsUpdate = true;
+
+					if ( onLoad ) onLoad( texture );
+
+				}, onError );
+
+			} )
+			.catch( onError );
+
+		return texture;
+
+	}
+
+	parse( buffer, onLoad, onError ) {
+
+		var scope = this;
+
+		var ktx = readKTX( new Uint8Array( buffer ) );
+
+		if ( ktx.pixelDepth > 0 ) {
+
+			throw new Error( 'THREE.KTX2Loader: Only 2D textures are currently supported.' );
+
+		}
+
+		if ( ktx.layerCount > 1 ) {
+
+			throw new Error( 'THREE.KTX2Loader: Array textures are not currently supported.' );
+
+		}
+
+		if ( ktx.faceCount > 1 ) {
+
+			throw new Error( 'THREE.KTX2Loader: Cube textures are not currently supported.' );
+
+		}
+
+		var dfd = KTX2Utils.getBasicDFD( ktx );
+
+		KTX2Utils.createLevels( ktx, this.zstd ).then( function ( levels ) {
+
+			var basisFormat = dfd.colorModel === KTX2Model.UASTC
+				? BasisTextureLoader.BasisFormat.UASTC_4x4
+				: BasisTextureLoader.BasisFormat.ETC1S;
+
+			var parseConfig = {
+
+				levels: levels,
+				width: ktx.pixelWidth,
+				height: ktx.pixelHeight,
+				basisFormat: basisFormat,
+				hasAlpha: KTX2Utils.getAlpha( ktx ),
+
+			};
+
+			if ( basisFormat === BasisTextureLoader.BasisFormat.ETC1S ) {
+
+				parseConfig.globalData = ktx.globalData;
+
+			}
+
+			return scope.basisLoader.parseInternalAsync( parseConfig );
+
+		} ).then( function ( texture ) {
+
+			texture.encoding = dfd.transferFunction === KTX2Transfer.SRGB
+				? sRGBEncoding
+				: LinearEncoding;
+			texture.premultiplyAlpha = KTX2Utils.getPremultiplyAlpha( ktx );
+
+			onLoad( texture );
+
+		} ).catch( onError );
+
+		return this;
+
+	}
+
 }
 
 var KTX2Utils = {
-  createLevels: async function (ktx, zstd) {
-    if (ktx.supercompressionScheme === SupercompressionScheme.ZSTD) {
-      await zstd.init();
-    }
 
-    var levels = [];
-    var width = ktx.pixelWidth;
-    var height = ktx.pixelHeight;
+	createLevels: async function ( ktx, zstd ) {
 
-    for (var levelIndex = 0; levelIndex < ktx.levels.length; levelIndex++) {
-      var levelWidth = Math.max(1, Math.floor(width / Math.pow(2, levelIndex)));
-      var levelHeight = Math.max(
-        1,
-        Math.floor(height / Math.pow(2, levelIndex)),
-      );
-      var levelData = ktx.levels[levelIndex].levelData;
+		if ( ktx.supercompressionScheme === KTX2SupercompressionScheme.ZSTD ) {
 
-      if (ktx.supercompressionScheme === SupercompressionScheme.ZSTD) {
-        levelData = zstd.decode(
-          levelData,
-          ktx.levels[levelIndex].uncompressedByteLength,
-        );
-      }
+			await zstd.init();
 
-      levels.push({
-        index: levelIndex,
-        width: levelWidth,
-        height: levelHeight,
-        data: levelData,
-      });
-    }
+		}
 
-    return levels;
-  },
+		var levels = [];
+		var width = ktx.pixelWidth;
+		var height = ktx.pixelHeight;
 
-  getBasicDFD: function (ktx) {
-    // Basic Data Format Descriptor Block is always the first DFD.
-    return ktx.dataFormatDescriptor[0];
-  },
+		for ( var levelIndex = 0; levelIndex < ktx.levels.length; levelIndex ++ ) {
 
-  getAlpha: function (ktx) {
-    var dfd = this.getBasicDFD(ktx);
+			var levelWidth = Math.max( 1, Math.floor( width / Math.pow( 2, levelIndex ) ) );
+			var levelHeight = Math.max( 1, Math.floor( height / Math.pow( 2, levelIndex ) ) );
+			var levelData = ktx.levels[ levelIndex ].levelData;
 
-    // UASTC
+			if ( ktx.supercompressionScheme === KTX2SupercompressionScheme.ZSTD ) {
 
-    if (dfd.colorModel === DFDModel.UASTC) {
-      if ((dfd.samples[0].channelID & 0xf) === DFDChannel.UASTC.RGBA) {
-        return true;
-      }
+				levelData = zstd.decode( levelData, ktx.levels[ levelIndex ].uncompressedByteLength );
 
-      return false;
-    }
+			}
 
-    // ETC1S
+			levels.push( {
 
-    if (
-      dfd.samples.length === 2 &&
-      (dfd.samples[1].channelID & 0xf) === DFDChannel.ETC1S.AAA
-    ) {
-      return true;
-    }
+				index: levelIndex,
+				width: levelWidth,
+				height: levelHeight,
+				data: levelData,
 
-    return false;
-  },
+			} );
 
-  getPremultiplyAlpha: function (ktx) {
-    var dfd = this.getBasicDFD(ktx);
+		}
 
-    return !!((dfd.flags & 1) /* KHR_DF_FLAG_ALPHA_PREMULTIPLIED */);
-  },
+		return levels;
+
+	},
+
+	getBasicDFD: function ( ktx ) {
+
+		// Basic Data Format Descriptor Block is always the first DFD.
+		return ktx.dataFormatDescriptor[ 0 ];
+
+	},
+
+	getAlpha: function ( ktx ) {
+
+		var dfd = this.getBasicDFD( ktx );
+
+		// UASTC
+
+		if ( dfd.colorModel === KTX2Model.UASTC ) {
+
+			if ( ( dfd.samples[ 0 ].channelID & 0xF ) === KTX2ChannelUASTC.RGBA ) {
+
+				return true;
+
+			}
+
+			return false;
+
+		}
+
+		// ETC1S
+
+		if ( dfd.samples.length === 2
+			&& ( dfd.samples[ 1 ].channelID & 0xF ) === KTX2ChannelETC1S.AAA ) {
+
+			return true;
+
+		}
+
+		return false;
+
+	},
+
+	getPremultiplyAlpha: function ( ktx ) {
+
+		var dfd = this.getBasicDFD( ktx );
+
+		return !! ( dfd.flags & KTX2Flags.ALPHA_PREMULTIPLIED );
+
+	},
+
 };
 
 export { KTX2Loader };

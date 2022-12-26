@@ -1,101 +1,31 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _three = require('three');
+var _three = require("three");
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if (
-      Array.isArray(o) ||
-      (it = _unsupportedIterableToArray(o)) ||
-      (allowArrayLike && o && typeof o.length === 'number')
-    ) {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          if (i >= o.length) return { done: true };
-          return { done: false, value: o[i++] };
-        },
-        e: function e(_e) {
-          throw _e;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
-    );
-  }
-  var normalCompletion = true,
-    didErr = false,
-    err;
-  return {
-    s: function s() {
-      it = o[Symbol.iterator]();
-    },
-    n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
-    },
-    f: function f() {
-      try {
-        if (!normalCompletion && it['return'] != null) it['return']();
-      } finally {
-        if (didErr) throw err;
-      }
-    },
-  };
-}
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === 'Object' && o.constructor) n = o.constructor.name;
-  if (n === 'Map' || n === 'Set') return Array.from(o);
-  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
-}
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var textureLoader = new _three.TextureLoader();
 var SIZE_TEXTURE_TILE = 256;
 
 function checkResponse(response) {
   if (!response.ok) {
-    var error = new Error(
-      'Error loading '
-        .concat(response.url, ': status ')
-        .concat(response.status),
-    );
+    var error = new Error("Error loading ".concat(response.url, ": status ").concat(response.status));
     error.response = response;
     throw error;
   }
 }
 
 var arrayBuffer = function (url) {
-  var options =
-    arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   return fetch(url, options).then(function (response) {
     checkResponse(response);
     return response.arrayBuffer();
@@ -103,27 +33,14 @@ var arrayBuffer = function (url) {
 };
 
 function getTextureFloat(buffer) {
-  var isWebGL2 =
-    arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  var isWebGL2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
   if (isWebGL2) {
-    var texture = new _three.DataTexture(
-      buffer,
-      SIZE_TEXTURE_TILE,
-      SIZE_TEXTURE_TILE,
-      _three.RedFormat,
-      _three.FloatType,
-    );
+    var texture = new _three.DataTexture(buffer, SIZE_TEXTURE_TILE, SIZE_TEXTURE_TILE, _three.RedFormat, _three.FloatType);
     texture.internalFormat = 'R32F';
     return texture;
   } else {
-    return new _three.DataTexture(
-      buffer,
-      SIZE_TEXTURE_TILE,
-      SIZE_TEXTURE_TILE,
-      _three.AlphaFormat,
-      _three.FloatType,
-    );
+    return new _three.DataTexture(buffer, SIZE_TEXTURE_TILE, SIZE_TEXTURE_TILE, _three.AlphaFormat, _three.FloatType);
   }
 }
 /**
@@ -132,6 +49,7 @@ function getTextureFloat(buffer) {
  *
  * @module Fetcher
  */
+
 
 var _default = {
   /**
@@ -145,8 +63,7 @@ var _default = {
    * @return {Promise<string>} Promise containing the text.
    */
   text: function text(url) {
-    var options =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     return fetch(url, options).then(function (response) {
       checkResponse(response);
       return response.text();
@@ -164,8 +81,7 @@ var _default = {
    * @return {Promise<Object>} Promise containing the JSON object.
    */
   json: function json(url) {
-    var options =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     return fetch(url, options).then(function (response) {
       checkResponse(response);
       return response.json();
@@ -183,16 +99,13 @@ var _default = {
    * @return {Promise<Document>} Promise containing the XML Document.
    */
   xml: function xml(url) {
-    var options =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    return fetch(url, options)
-      .then(function (response) {
-        checkResponse(response);
-        return response.text();
-      })
-      .then(function (text) {
-        return new window.DOMParser().parseFromString(text, 'text/xml');
-      });
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    return fetch(url, options).then(function (response) {
+      checkResponse(response);
+      return response.text();
+    }).then(function (text) {
+      return new window.DOMParser().parseFromString(text, 'text/xml');
+    });
   },
 
   /**
@@ -209,8 +122,7 @@ var _default = {
    * THREE.Texture}.
    */
   texture: function texture(url) {
-    var options =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var res;
     var rej;
     textureLoader.crossOrigin = options.crossOrigin;
@@ -245,8 +157,7 @@ var _default = {
    * @return {Promise<THREE.DataTexture>} Promise containing the DataTexture.
    */
   textureFloat: function textureFloat(url) {
-    var options =
-      arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     return arrayBuffer(url, options).then(function (buffer) {
       var floatArray = new Float32Array(buffer);
       var texture = getTextureFloat(floatArray, options.isWebGL2);
@@ -292,35 +203,30 @@ var _default = {
   multiple: function multiple(baseUrl, extensions) {
     var _this = this;
 
-    var options =
-      arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var promises = [];
     var url;
 
     for (var fetchType in extensions) {
       if (!this[fetchType]) {
-        throw new Error(
-          ''.concat(fetchType, ' is not a valid Fetcher method.'),
-        );
+        throw new Error("".concat(fetchType, " is not a valid Fetcher method."));
       } else {
         var _iterator = _createForOfIteratorHelper(extensions[fetchType]),
-          _step;
+            _step;
 
         try {
           var _loop = function () {
             var extension = _step.value;
-            url = ''.concat(baseUrl, '.').concat(extension);
-            promises.push(
-              _this[fetchType](url, options).then(function (result) {
-                return {
-                  type: extension,
-                  result: result,
-                };
-              }),
-            );
+            url = "".concat(baseUrl, ".").concat(extension);
+            promises.push(_this[fetchType](url, options).then(function (result) {
+              return {
+                type: extension,
+                result: result
+              };
+            }));
           };
 
-          for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
             _loop();
           }
         } catch (err) {
@@ -335,10 +241,10 @@ var _default = {
       var all = {};
 
       var _iterator2 = _createForOfIteratorHelper(result),
-        _step2;
+          _step2;
 
       try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
           var res = _step2.value;
           all[res.type] = res.result;
         }
@@ -350,6 +256,6 @@ var _default = {
 
       return Promise.resolve(all);
     });
-  },
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

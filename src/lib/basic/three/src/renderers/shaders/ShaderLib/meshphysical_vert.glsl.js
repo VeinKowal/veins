@@ -1,4 +1,4 @@
-export default /* glsl */ `
+export default /* glsl */`
 #define STANDARD
 
 varying vec3 vViewPosition;
@@ -13,6 +13,12 @@ varying vec3 vViewPosition;
 		varying vec3 vBitangent;
 
 	#endif
+
+#endif
+
+#ifdef USE_TRANSMISSION
+
+	varying vec4 vWorldPosition;
 
 #endif
 
@@ -67,5 +73,10 @@ void main() {
 	#include <shadowmap_vertex>
 	#include <fog_vertex>
 
+#ifdef USE_TRANSMISSION
+
+	vWorldPosition = worldPosition;
+
+#endif
 }
 `;

@@ -7,110 +7,127 @@ import { BufferGeometry } from '../core/BufferGeometry.js';
 import { Float32BufferAttribute } from '../core/BufferAttribute.js';
 import { Vector3 } from '../math/Vector3.js';
 
-function ParametricGeometry(func, slices, stacks) {
-  BufferGeometry.call(this);
+class ParametricGeometry extends BufferGeometry {
 
-  this.type = 'ParametricGeometry';
+	constructor( func, slices, stacks ) {
 
-  this.parameters = {
-    func: func,
-    slices: slices,
-    stacks: stacks,
-  };
+		super();
 
-  // buffers
+		this.type = 'ParametricGeometry';
 
-  const indices = [];
-  const vertices = [];
-  const normals = [];
-  const uvs = [];
+		this.parameters = {
+			func: func,
+			slices: slices,
+			stacks: stacks
+		};
 
-  const EPS = 0.00001;
+		// buffers
 
-  const normal = new Vector3();
+		const indices = [];
+		const vertices = [];
+		const normals = [];
+		const uvs = [];
 
-  const p0 = new Vector3(),
-    p1 = new Vector3();
-  const pu = new Vector3(),
-    pv = new Vector3();
+		const EPS = 0.00001;
 
-  if (func.length < 3) {
-    console.error(
-      'THREE.ParametricGeometry: Function must now modify a Vector3 as third parameter.',
-    );
-  }
+		const normal = new Vector3();
 
-  // generate vertices, normals and uvs
+		const p0 = new Vector3(), p1 = new Vector3();
+		const pu = new Vector3(), pv = new Vector3();
 
-  const sliceCount = slices + 1;
+		if ( func.length < 3 ) {
 
-  for (let i = 0; i <= stacks; i++) {
-    const v = i / stacks;
+			console.error( 'THREE.ParametricGeometry: Function must now modify a Vector3 as third parameter.' );
 
-    for (let j = 0; j <= slices; j++) {
-      const u = j / slices;
+		}
 
-      // vertex
+		// generate vertices, normals and uvs
 
-      func(u, v, p0);
-      vertices.push(p0.x, p0.y, p0.z);
+		const sliceCount = slices + 1;
 
-      // normal
+		for ( let i = 0; i <= stacks; i ++ ) {
 
-      // approximate tangent vectors via finite differences
+			const v = i / stacks;
 
-      if (u - EPS >= 0) {
-        func(u - EPS, v, p1);
-        pu.subVectors(p0, p1);
-      } else {
-        func(u + EPS, v, p1);
-        pu.subVectors(p1, p0);
-      }
+			for ( let j = 0; j <= slices; j ++ ) {
 
-      if (v - EPS >= 0) {
-        func(u, v - EPS, p1);
-        pv.subVectors(p0, p1);
-      } else {
-        func(u, v + EPS, p1);
-        pv.subVectors(p1, p0);
-      }
+				const u = j / slices;
 
-      // cross product of tangent vectors returns surface normal
+				// vertex
 
-      normal.crossVectors(pu, pv).normalize();
-      normals.push(normal.x, normal.y, normal.z);
+				func( u, v, p0 );
+				vertices.push( p0.x, p0.y, p0.z );
 
-      // uv
+				// normal
 
-      uvs.push(u, v);
-    }
-  }
+				// approximate tangent vectors via finite differences
 
-  // generate indices
+				if ( u - EPS >= 0 ) {
 
-  for (let i = 0; i < stacks; i++) {
-    for (let j = 0; j < slices; j++) {
-      const a = i * sliceCount + j;
-      const b = i * sliceCount + j + 1;
-      const c = (i + 1) * sliceCount + j + 1;
-      const d = (i + 1) * sliceCount + j;
+					func( u - EPS, v, p1 );
+					pu.subVectors( p0, p1 );
 
-      // faces one and two
+				} else {
 
-      indices.push(a, b, d);
-      indices.push(b, c, d);
-    }
-  }
+					func( u + EPS, v, p1 );
+					pu.subVectors( p1, p0 );
 
-  // build geometry
+				}
 
-  this.setIndex(indices);
-  this.setAttribute('position', new Float32BufferAttribute(vertices, 3));
-  this.setAttribute('normal', new Float32BufferAttribute(normals, 3));
-  this.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
+				if ( v - EPS >= 0 ) {
+
+					func( u, v - EPS, p1 );
+					pv.subVectors( p0, p1 );
+
+				} else {
+
+					func( u, v + EPS, p1 );
+					pv.subVectors( p1, p0 );
+
+				}
+
+				// cross product of tangent vectors returns surface normal
+
+				normal.crossVectors( pu, pv ).normalize();
+				normals.push( normal.x, normal.y, normal.z );
+
+				// uv
+
+				uvs.push( u, v );
+
+			}
+
+		}
+
+		// generate indices
+
+		for ( let i = 0; i < stacks; i ++ ) {
+
+			for ( let j = 0; j < slices; j ++ ) {
+
+				const a = i * sliceCount + j;
+				const b = i * sliceCount + j + 1;
+				const c = ( i + 1 ) * sliceCount + j + 1;
+				const d = ( i + 1 ) * sliceCount + j;
+
+				// faces one and two
+
+				indices.push( a, b, d );
+				indices.push( b, c, d );
+
+			}
+
+		}
+
+		// build geometry
+
+		this.setIndex( indices );
+		this.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
+		this.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
+		this.setAttribute( 'uv', new Float32BufferAttribute( uvs, 2 ) );
+
+	}
+
 }
-
-ParametricGeometry.prototype = Object.create(BufferGeometry.prototype);
-ParametricGeometry.prototype.constructor = ParametricGeometry;
 
 export { ParametricGeometry, ParametricGeometry as ParametricBufferGeometry };

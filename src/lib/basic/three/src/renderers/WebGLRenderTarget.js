@@ -9,105 +9,102 @@ import { Vector4 } from '../math/Vector4.js';
  * depthBuffer/stencilBuffer: Booleans to indicate if we should generate these buffers
 */
 class WebGLRenderTarget extends EventDispatcher {
-  constructor(width, height, options) {
-    super();
 
-    this.width = width;
-    this.height = height;
-    this.depth = 1;
+	constructor( width, height, options ) {
 
-    this.scissor = new Vector4(0, 0, width, height);
-    this.scissorTest = false;
+		super();
 
-    this.viewport = new Vector4(0, 0, width, height);
+		this.width = width;
+		this.height = height;
+		this.depth = 1;
 
-    options = options || {};
+		this.scissor = new Vector4( 0, 0, width, height );
+		this.scissorTest = false;
 
-    this.texture = new Texture(
-      undefined,
-      options.mapping,
-      options.wrapS,
-      options.wrapT,
-      options.magFilter,
-      options.minFilter,
-      options.format,
-      options.type,
-      options.anisotropy,
-      options.encoding,
-    );
+		this.viewport = new Vector4( 0, 0, width, height );
 
-    this.texture.image = {};
-    this.texture.image.width = width;
-    this.texture.image.height = height;
-    this.texture.image.depth = 1;
+		options = options || {};
 
-    this.texture.generateMipmaps =
-      options.generateMipmaps !== undefined ? options.generateMipmaps : false;
-    this.texture.minFilter =
-      options.minFilter !== undefined ? options.minFilter : LinearFilter;
+		this.texture = new Texture( undefined, options.mapping, options.wrapS, options.wrapT, options.magFilter, options.minFilter, options.format, options.type, options.anisotropy, options.encoding );
 
-    this.depthBuffer =
-      options.depthBuffer !== undefined ? options.depthBuffer : true;
-    this.stencilBuffer =
-      options.stencilBuffer !== undefined ? options.stencilBuffer : false;
-    this.depthTexture =
-      options.depthTexture !== undefined ? options.depthTexture : null;
-  }
+		this.texture.image = {};
+		this.texture.image.width = width;
+		this.texture.image.height = height;
+		this.texture.image.depth = 1;
 
-  setTexture(texture) {
-    texture.image = {
-      width: this.width,
-      height: this.height,
-      depth: this.depth,
-    };
+		this.texture.generateMipmaps = options.generateMipmaps !== undefined ? options.generateMipmaps : false;
+		this.texture.minFilter = options.minFilter !== undefined ? options.minFilter : LinearFilter;
 
-    this.texture = texture;
-  }
+		this.depthBuffer = options.depthBuffer !== undefined ? options.depthBuffer : true;
+		this.stencilBuffer = options.stencilBuffer !== undefined ? options.stencilBuffer : false;
+		this.depthTexture = options.depthTexture !== undefined ? options.depthTexture : null;
 
-  setSize(width, height, depth = 1) {
-    if (
-      this.width !== width ||
-      this.height !== height ||
-      this.depth !== depth
-    ) {
-      this.width = width;
-      this.height = height;
-      this.depth = depth;
+	}
 
-      this.texture.image.width = width;
-      this.texture.image.height = height;
-      this.texture.image.depth = depth;
+	setTexture( texture ) {
 
-      this.dispose();
-    }
+		texture.image = {
+			width: this.width,
+			height: this.height,
+			depth: this.depth
+		};
 
-    this.viewport.set(0, 0, width, height);
-    this.scissor.set(0, 0, width, height);
-  }
+		this.texture = texture;
 
-  clone() {
-    return new this.constructor().copy(this);
-  }
+	}
 
-  copy(source) {
-    this.width = source.width;
-    this.height = source.height;
-    this.depth = source.depth;
+	setSize( width, height, depth = 1 ) {
 
-    this.viewport.copy(source.viewport);
+		if ( this.width !== width || this.height !== height || this.depth !== depth ) {
 
-    this.texture = source.texture.clone();
+			this.width = width;
+			this.height = height;
+			this.depth = depth;
 
-    this.depthBuffer = source.depthBuffer;
-    this.stencilBuffer = source.stencilBuffer;
-    this.depthTexture = source.depthTexture;
+			this.texture.image.width = width;
+			this.texture.image.height = height;
+			this.texture.image.depth = depth;
 
-    return this;
-  }
+			this.dispose();
 
-  dispose() {
-    this.dispatchEvent({ type: 'dispose' });
-  }
+		}
+
+		this.viewport.set( 0, 0, width, height );
+		this.scissor.set( 0, 0, width, height );
+
+	}
+
+	clone() {
+
+		return new this.constructor().copy( this );
+
+	}
+
+	copy( source ) {
+
+		this.width = source.width;
+		this.height = source.height;
+		this.depth = source.depth;
+
+		this.viewport.copy( source.viewport );
+
+		this.texture = source.texture.clone();
+		this.texture.image = { ...this.texture.image }; // See #20328.
+
+		this.depthBuffer = source.depthBuffer;
+		this.stencilBuffer = source.stencilBuffer;
+		this.depthTexture = source.depthTexture;
+
+		return this;
+
+	}
+
+	dispose() {
+
+		this.dispatchEvent( { type: 'dispose' } );
+
+	}
+
 }
 
 WebGLRenderTarget.prototype.isWebGLRenderTarget = true;

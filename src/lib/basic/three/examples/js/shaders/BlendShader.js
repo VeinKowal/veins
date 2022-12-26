@@ -1,41 +1,56 @@
-/**
+( function () {
+
+	/**
  * Blend two textures
  */
+	const BlendShader = {
+		uniforms: {
+			'tDiffuse1': {
+				value: null
+			},
+			'tDiffuse2': {
+				value: null
+			},
+			'mixRatio': {
+				value: 0.5
+			},
+			'opacity': {
+				value: 1.0
+			}
+		},
+		vertexShader:
+  /* glsl */
+  `
 
-THREE.BlendShader = {
-  uniforms: {
-    tDiffuse1: { value: null },
-    tDiffuse2: { value: null },
-    mixRatio: { value: 0.5 },
-    opacity: { value: 1.0 },
-  },
+		varying vec2 vUv;
 
-  vertexShader: [
-    'varying vec2 vUv;',
+		void main() {
 
-    'void main() {',
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    '	vUv = uv;',
-    '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+		}`,
+		fragmentShader:
+  /* glsl */
+  `
 
-    '}',
-  ].join('\n'),
+		uniform float opacity;
+		uniform float mixRatio;
 
-  fragmentShader: [
-    'uniform float opacity;',
-    'uniform float mixRatio;',
+		uniform sampler2D tDiffuse1;
+		uniform sampler2D tDiffuse2;
 
-    'uniform sampler2D tDiffuse1;',
-    'uniform sampler2D tDiffuse2;',
+		varying vec2 vUv;
 
-    'varying vec2 vUv;',
+		void main() {
 
-    'void main() {',
+			vec4 texel1 = texture2D( tDiffuse1, vUv );
+			vec4 texel2 = texture2D( tDiffuse2, vUv );
+			gl_FragColor = opacity * mix( texel1, texel2, mixRatio );
 
-    '	vec4 texel1 = texture2D( tDiffuse1, vUv );',
-    '	vec4 texel2 = texture2D( tDiffuse2, vUv );',
-    '	gl_FragColor = opacity * mix( texel1, texel2, mixRatio );',
+		}`
+	};
 
-    '}',
-  ].join('\n'),
-};
+	THREE.BlendShader = BlendShader;
+
+} )();

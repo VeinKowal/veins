@@ -297,7 +297,6 @@ class App {
         complete && complete();
       });
     }
-
     return true;
   }
 }

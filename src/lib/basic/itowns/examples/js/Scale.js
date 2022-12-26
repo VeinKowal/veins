@@ -8,33 +8,33 @@
  */
 // eslint-disable-next-line no-unused-vars
 function roundPixelsFromMeters(view, pixelSize) {
-  // Calculate the metric distance which match the given pixel distance :
-  var distanceMeters = view.getPixelsToMeters(pixelSize);
+    // Calculate the metric distance which match the given pixel distance :
+    var distanceMeters = view.getPixelsToMeters(pixelSize);
 
-  // Round the metric distance :
-  distanceMeters = Math.floor(distanceMeters);
-  var digit = Math.pow(10, distanceMeters.toString().length - 1);
-  distanceMeters = Math.round(distanceMeters / digit) * digit;
+    // Round the metric distance :
+    distanceMeters = Math.floor(distanceMeters);
+    var digit = Math.pow(10, distanceMeters.toString().length - 1);
+    distanceMeters = Math.round(distanceMeters / digit) * digit;
 
-  // Round the pixel distance to match the rounded metric distance :
-  var roundedPixDistance = view.getMetersToPixels(distanceMeters);
+    // Round the pixel distance to match the rounded metric distance :
+    var roundedPixDistance = view.getMetersToPixels(distanceMeters);
 
-  return {
-    pixels: roundedPixDistance,
-    meters: distanceMeters,
-  };
+    return {
+        pixels: roundedPixDistance,
+        meters: distanceMeters,
+    };
 }
 
 // eslint-disable-next-line no-unused-vars
 function getMetersUnit(distanceMeters) {
-  var distance = distanceMeters;
-  var unit = 'm';
-  if (distanceMeters >= 1000) {
-    distance /= 1000;
-    unit = 'km';
-  }
-  return {
-    distance: distance,
-    unit: unit,
-  };
+    var distance = distanceMeters;
+    var unit = 'm';
+    if (distanceMeters >= 1000) {
+        distance /= 1000;
+        unit = 'km';
+    }
+    return {
+        distance: distance,
+        unit: unit,
+    };
 }

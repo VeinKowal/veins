@@ -1,18 +1,15 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _proj = _interopRequireDefault(require('proj4'));
+var _proj = _interopRequireDefault(require("proj4"));
 
-_proj['default'].defs(
-  'EPSG:4978',
-  '+proj=geocent +datum=WGS84 +units=m +no_defs',
-);
+_proj["default"].defs('EPSG:4978', '+proj=geocent +datum=WGS84 +units=m +no_defs');
 
 function isTms(crs) {
   return crs.startsWith('TMS');
@@ -23,16 +20,16 @@ function isEpsg(crs) {
 }
 
 function formatToTms(crs) {
-  return isTms(crs) ? crs : 'TMS:'.concat(crs.match(/\d+/)[0]);
+  return isTms(crs) ? crs : "TMS:".concat(crs.match(/\d+/)[0]);
 }
 
 function formatToEPSG(crs) {
-  return isEpsg(crs) ? crs : 'EPSG:'.concat(crs.match(/\d+/)[0]);
+  return isEpsg(crs) ? crs : "EPSG:".concat(crs.match(/\d+/)[0]);
 }
 
 var UNIT = {
   DEGREE: 1,
-  METER: 2,
+  METER: 2
 };
 
 function is4326(crs) {
@@ -57,15 +54,16 @@ function toUnit(crs) {
     case 'EPSG:4978':
       return UNIT.METER;
 
-    default: {
-      var p = _proj['default'].defs(formatToEPSG(crs));
+    default:
+      {
+        var p = _proj["default"].defs(formatToEPSG(crs));
 
-      if (!p) {
-        return undefined;
+        if (!p) {
+          return undefined;
+        }
+
+        return _unitFromProj4Unit(p.units);
       }
-
-      return _unitFromProj4Unit(p.units);
-    }
   }
 }
 
@@ -83,6 +81,7 @@ function toUnitWithError(crs) {
  *
  * @module CRS
  */
+
 
 var _default = {
   /**
@@ -183,7 +182,7 @@ var _default = {
    * @return {undefined}
    */
   defs: function defs(code, proj4def) {
-    return _proj['default'].defs(code, proj4def);
-  },
+    return _proj["default"].defs(code, proj4def);
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

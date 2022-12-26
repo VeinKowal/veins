@@ -1,94 +1,32 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-var _RenderMode = _interopRequireDefault(require('../Renderer/RenderMode'));
+var _RenderMode = _interopRequireDefault(require("../Renderer/RenderMode"));
 
-var _LayeredMaterial = require('../Renderer/LayeredMaterial');
+var _LayeredMaterial = require("../Renderer/LayeredMaterial");
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if (
-      Array.isArray(o) ||
-      (it = _unsupportedIterableToArray(o)) ||
-      (allowArrayLike && o && typeof o.length === 'number')
-    ) {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          if (i >= o.length) return { done: true };
-          return { done: false, value: o[i++] };
-        },
-        e: function e(_e) {
-          throw _e;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
-    );
-  }
-  var normalCompletion = true,
-    didErr = false,
-    err;
-  return {
-    s: function s() {
-      it = o[Symbol.iterator]();
-    },
-    n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
-    },
-    f: function f() {
-      try {
-        if (!normalCompletion && it['return'] != null) it['return']();
-      } finally {
-        if (didErr) throw err;
-      }
-    },
-  };
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === 'Object' && o.constructor) n = o.constructor.name;
-  if (n === 'Map' || n === 'Set') return Array.from(o);
-  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function hideEverythingElse(view) {
-  var threejsLayer =
-    arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var threejsLayer = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
   // We want to render only 'object' and its hierarchy.
   // So if it uses threejsLayer defined -> force it on the camera
   // (or use the default one: 0)
@@ -102,32 +40,22 @@ function hideEverythingElse(view) {
 var depthRGBA = new THREE.Vector4(); // TileMesh picking support function
 
 function screenCoordsToNodeId(view, tileLayer, viewCoords) {
-  var radius =
-    arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+  var radius = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
   var dim = view.mainLoop.gfxEngine.getWindowSize();
-  viewCoords =
-    viewCoords ||
-    new THREE.Vector2(Math.floor(dim.x / 2), Math.floor(dim.y / 2));
+  viewCoords = viewCoords || new THREE.Vector2(Math.floor(dim.x / 2), Math.floor(dim.y / 2));
   var restore = tileLayer.level0Nodes.map(function (n) {
-    return _RenderMode['default'].push(n, _RenderMode['default'].MODES.ID);
+    return _RenderMode["default"].push(n, _RenderMode["default"].MODES.ID);
   });
-  var undoHide = hideEverythingElse(
-    view,
-    tileLayer.object3d,
-    tileLayer.threejsLayer,
-  );
-  var buffer = view.mainLoop.gfxEngine.renderViewToBuffer(
-    {
-      camera: view.camera,
-      scene: tileLayer.object3d,
-    },
-    {
-      x: viewCoords.x - radius,
-      y: viewCoords.y - radius,
-      width: 1 + radius * 2,
-      height: 1 + radius * 2,
-    },
-  );
+  var undoHide = hideEverythingElse(view, tileLayer.object3d, tileLayer.threejsLayer);
+  var buffer = view.mainLoop.gfxEngine.renderViewToBuffer({
+    camera: view.camera,
+    scene: tileLayer.object3d
+  }, {
+    x: viewCoords.x - radius,
+    y: viewCoords.y - radius,
+    width: 1 + radius * 2,
+    height: 1 + radius * 2
+  });
   undoHide();
   restore.forEach(function (r) {
     return r();
@@ -172,6 +100,7 @@ function traversePickingCircle(radius, callback) {
           continue;
         } // skip if belongs to previous
 
+
         if (dist <= prevSq) {
           continue;
         }
@@ -213,8 +142,7 @@ var raycaster = new THREE.Raycaster();
 
 var _default = {
   pickTilesAt: function pickTilesAt(view, viewCoords, radius, layer) {
-    var results =
-      arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+    var results = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
 
     var _ids = screenCoordsToNodeId(view, layer, viewCoords, radius);
 
@@ -222,16 +150,16 @@ var _default = {
       if (_ids.includes(node.id) && node.isTileMesh) {
         results.push({
           object: node,
-          layer: layer,
+          layer: layer
         });
       }
     };
 
     var _iterator = _createForOfIteratorHelper(layer.level0Nodes),
-      _step;
+        _step;
 
     try {
-      for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var n = _step.value;
         n.traverse(extractResult);
       }
@@ -244,12 +172,12 @@ var _default = {
     return results;
   },
   pickPointsAt: function pickPointsAt(view, viewCoords, radius, layer) {
-    var result =
-      arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+    var result = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
 
     if (!layer.root) {
       return;
     } // enable picking mode for points material
+
 
     layer.object3d.traverse(function (o) {
       if (o.isPoints && o.baseId) {
@@ -259,29 +187,26 @@ var _default = {
     var undoHide = hideEverythingElse(view, layer.object3d, layer.threejsLayer); // render 1 pixel
     // TODO: support more than 1 pixel selection
 
-    var buffer = view.mainLoop.gfxEngine.renderViewToBuffer(
-      {
-        camera: view.camera,
-        scene: layer.object3d,
-      },
-      {
-        x: viewCoords.x - radius,
-        y: viewCoords.y - radius,
-        width: 1 + radius * 2,
-        height: 1 + radius * 2,
-      },
-    );
+    var buffer = view.mainLoop.gfxEngine.renderViewToBuffer({
+      camera: view.camera,
+      scene: layer.object3d
+    }, {
+      x: viewCoords.x - radius,
+      y: viewCoords.y - radius,
+      width: 1 + radius * 2,
+      height: 1 + radius * 2
+    });
     undoHide();
     var candidates = [];
     traversePickingCircle(radius, function (x, y) {
       var idx = (y * 2 * radius + x) * 4;
       var data = buffer.slice(idx, idx + 4); // see PotreeProvider and the construction of unique_id
 
-      var objId = (data[0] << 8) | data[1];
-      var index = (data[2] << 8) | data[3];
+      var objId = data[0] << 8 | data[1];
+      var index = data[2] << 8 | data[3];
       var r = {
         objId: objId,
-        index: index,
+        index: index
       };
 
       for (var i = 0; i < candidates.length; i++) {
@@ -302,7 +227,7 @@ var _default = {
             result.push({
               object: o,
               index: candidates[i].index,
-              layer: layer,
+              layer: layer
             });
           }
         }
@@ -315,8 +240,7 @@ var _default = {
    * Default picking method. Uses THREE.Raycaster
    */
   pickObjectsAt: function pickObjectsAt(view, viewCoords, radius, object) {
-    var target =
-      arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+    var target = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
     var threejsLayer = arguments.length > 5 ? arguments[5] : undefined;
 
     if (threejsLayer !== undefined) {
@@ -332,10 +256,10 @@ var _default = {
       var intersects = raycaster.intersectObject(object, true);
 
       var _iterator2 = _createForOfIteratorHelper(intersects),
-        _step2;
+          _step2;
 
       try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
           var inter = _step2.value;
           inter.layer = findLayerInParent(inter.object);
           target.push(inter);
@@ -351,19 +275,17 @@ var _default = {
     // we force render the zone of interest.
     // Then we'll only do raycasting for the pixels where something was drawn.
 
+
     var zone = {
       x: viewCoords.x - radius,
       y: viewCoords.y - radius,
       width: 1 + radius * 2,
-      height: 1 + radius * 2,
+      height: 1 + radius * 2
     };
-    var pixels = view.mainLoop.gfxEngine.renderViewToBuffer(
-      {
-        scene: object,
-        camera: view.camera,
-      },
-      zone,
-    );
+    var pixels = view.mainLoop.gfxEngine.renderViewToBuffer({
+      scene: object,
+      camera: view.camera
+    }, zone);
     var clearColor = new THREE.Color();
     view.mainLoop.gfxEngine.renderer.getClearColor(clearColor);
     var clearR = Math.round(255 * clearColor.r);
@@ -382,30 +304,26 @@ var _default = {
       var b = pixels[offset + 2]; // Use approx. test to avoid rounding error or to behave
       // differently depending on hardware rounding mode.
 
-      if (
-        Math.abs(clearR - r) <= 1 &&
-        Math.abs(clearG - g) <= 1 &&
-        Math.abs(clearB - b) <= 1
-      ) {
+      if (Math.abs(clearR - r) <= 1 && Math.abs(clearG - g) <= 1 && Math.abs(clearB - b) <= 1) {
         // skip because nothing has been rendered here
         return;
       } // Perform raycasting
 
-      tmp
-        .setX(normalized.x + x / view.camera.width)
-        .setY(normalized.y + y / view.camera.height);
+
+      tmp.setX(normalized.x + x / view.camera.width).setY(normalized.y + y / view.camera.height);
       raycaster.setFromCamera(tmp, view.camera.camera3D);
       var intersects = raycaster.intersectObject(object, true);
 
       var _iterator3 = _createForOfIteratorHelper(intersects),
-        _step3;
+          _step3;
 
       try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
           var _inter = _step3.value;
           _inter.layer = findLayerInParent(_inter.object);
           target.push(_inter);
         } // Stop at first hit
+
       } catch (err) {
         _iterator3.e(err);
       } finally {
@@ -415,6 +333,6 @@ var _default = {
       return target.length == 0;
     });
     return target;
-  },
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

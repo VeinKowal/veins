@@ -1,72 +1,86 @@
-import Node from '../core/Node.js';
-import Vector3Node from '../inputs/Vector3Node.js';
+import Object3DNode from './Object3DNode.js';
 import Matrix4Node from '../inputs/Matrix4Node.js';
-import { NodeUpdateType } from '../core/constants.js';
 
-class CameraNode extends Node {
-  static POSITION = 'position';
-  static PROJECTION = 'projection';
-  static VIEW = 'view';
+class CameraNode extends Object3DNode {
 
-  constructor(scope = CameraNode.POSITION) {
-    super();
+	static PROJECTION_MATRIX = 'projectionMatrix';
 
-    this.updateType = NodeUpdateType.Frame;
+	constructor( scope = CameraNode.POSITION ) {
 
-    this.scope = scope;
+		super( scope );
 
-    this._inputNode = null;
-  }
+	}
 
-  getType() {
-    const scope = this.scope;
+	getType( builder ) {
 
-    if (scope === CameraNode.PROJECTION || scope === CameraNode.VIEW) {
-      return 'mat4';
-    }
+		const scope = this.scope;
 
-    return 'vec3';
-  }
+		if ( scope === CameraNode.PROJECTION_MATRIX ) {
 
-  update(frame) {
-    const camera = frame.camera;
-    const inputNode = this._inputNode;
-    const scope = this.scope;
+			return 'mat4';
 
-    if (scope === CameraNode.PROJECTION) {
-      inputNode.value = camera.projectionMatrix;
-    } else if (scope === CameraNode.VIEW) {
-      inputNode.value = camera.matrixWorldInverse;
-    } else if (scope === CameraNode.POSITION) {
-      camera.getWorldPosition(inputNode.value);
-    }
-  }
+		}
 
-  generate(builder, output) {
-    const nodeData = builder.getDataFromNode(this);
+		return super.getType( builder );
 
-    let inputNode = this._inputNode;
+	}
 
-    if (nodeData.inputNode === undefined) {
-      const scope = this.scope;
+	update( frame ) {
 
-      if (scope === CameraNode.PROJECTION || scope === CameraNode.VIEW) {
-        if (inputNode === null || inputNode.isMatrix4Node !== true) {
-          inputNode = new Matrix4Node(null);
-        }
-      } else if (scope === CameraNode.POSITION) {
-        if (inputNode === null || inputNode.isVector3Node !== true) {
-          inputNode = new Vector3Node();
-        }
-      }
+		const camera = frame.camera;
+		const inputNode = this._inputNode;
+		const scope = this.scope;
 
-      this._inputNode = inputNode;
+		if ( scope === CameraNode.PROJECTION_MATRIX ) {
 
-      nodeData.inputNode = inputNode;
-    }
+			inputNode.value = camera.projectionMatrix;
 
-    return inputNode.build(builder, output);
-  }
+		} else if ( scope === CameraNode.VIEW_MATRIX ) {
+
+			inputNode.value = camera.matrixWorldInverse;
+
+		} else {
+
+			super.update( frame );
+
+		}
+
+	}
+
+	generate( builder, output ) {
+
+		const nodeData = builder.getDataFromNode( this );
+
+		let inputNode = this._inputNode;
+
+		if ( nodeData.inputNode === undefined ) {
+
+			const scope = this.scope;
+
+			if ( scope === CameraNode.PROJECTION_MATRIX ) {
+
+				if ( inputNode === null || inputNode.isMatrix4Node !== true ) {
+
+					inputNode = new Matrix4Node( null );
+
+				}
+
+			} else {
+
+				return super.generate( builder, output );
+
+			}
+
+			this._inputNode = inputNode;
+
+			nodeData.inputNode = inputNode;
+
+		}
+
+		return inputNode.build( builder, output );
+
+	}
+
 }
 
 export default CameraNode;

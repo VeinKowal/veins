@@ -2,34 +2,44 @@ import { SphericalHarmonics3 } from '../math/SphericalHarmonics3.js';
 import { Light } from './Light.js';
 
 class LightProbe extends Light {
-  constructor(sh = new SphericalHarmonics3(), intensity = 1) {
-    super(undefined, intensity);
 
-    this.sh = sh;
-  }
+	constructor( sh = new SphericalHarmonics3(), intensity = 1 ) {
 
-  copy(source) {
-    super.copy(source);
+		super( undefined, intensity );
 
-    this.sh.copy(source.sh);
+		this.sh = sh;
 
-    return this;
-  }
+	}
 
-  fromJSON(json) {
-    this.intensity = json.intensity; // TODO: Move this bit to Light.fromJSON();
-    this.sh.fromArray(json.sh);
+	copy( source ) {
 
-    return this;
-  }
+		super.copy( source );
 
-  toJSON(meta) {
-    const data = super.toJSON(meta);
+		this.sh.copy( source.sh );
 
-    data.object.sh = this.sh.toArray();
+		return this;
 
-    return data;
-  }
+	}
+
+	fromJSON( json ) {
+
+		this.intensity = json.intensity; // TODO: Move this bit to Light.fromJSON();
+		this.sh.fromArray( json.sh );
+
+		return this;
+
+	}
+
+	toJSON( meta ) {
+
+		const data = super.toJSON( meta );
+
+		data.object.sh = this.sh.toArray();
+
+		return data;
+
+	}
+
 }
 
 LightProbe.prototype.isLightProbe = true;

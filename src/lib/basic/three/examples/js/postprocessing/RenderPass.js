@@ -1,78 +1,74 @@
-THREE.RenderPass = function (
-  scene,
-  camera,
-  overrideMaterial,
-  clearColor,
-  clearAlpha,
-) {
-  THREE.Pass.call(this);
+( function () {
 
-  this.scene = scene;
-  this.camera = camera;
+	class RenderPass extends THREE.Pass {
 
-  this.overrideMaterial = overrideMaterial;
+		constructor( scene, camera, overrideMaterial, clearColor, clearAlpha ) {
 
-  this.clearColor = clearColor;
-  this.clearAlpha = clearAlpha !== undefined ? clearAlpha : 0;
+			super();
+			this.scene = scene;
+			this.camera = camera;
+			this.overrideMaterial = overrideMaterial;
+			this.clearColor = clearColor;
+			this.clearAlpha = clearAlpha !== undefined ? clearAlpha : 0;
+			this.clear = true;
+			this.clearDepth = false;
+			this.needsSwap = false;
+			this._oldClearColor = new THREE.Color();
 
-  this.clear = true;
-  this.clearDepth = false;
-  this.needsSwap = false;
-  this._oldClearColor = new THREE.Color();
-};
+		}
 
-THREE.RenderPass.prototype = Object.assign(
-  Object.create(THREE.Pass.prototype),
-  {
-    constructor: THREE.RenderPass,
+		render( renderer, writeBuffer, readBuffer
+			/*, deltaTime, maskActive */
+		) {
 
-    render: function (
-      renderer,
-      writeBuffer,
-      readBuffer /*, deltaTime, maskActive */,
-    ) {
-      var oldAutoClear = renderer.autoClear;
-      renderer.autoClear = false;
+			const oldAutoClear = renderer.autoClear;
+			renderer.autoClear = false;
+			let oldClearAlpha, oldOverrideMaterial;
 
-      var oldClearAlpha, oldOverrideMaterial;
+			if ( this.overrideMaterial !== undefined ) {
 
-      if (this.overrideMaterial !== undefined) {
-        oldOverrideMaterial = this.scene.overrideMaterial;
+				oldOverrideMaterial = this.scene.overrideMaterial;
+				this.scene.overrideMaterial = this.overrideMaterial;
 
-        this.scene.overrideMaterial = this.overrideMaterial;
-      }
+			}
 
-      if (this.clearColor) {
-        renderer.getClearColor(this._oldClearColor);
-        oldClearAlpha = renderer.getClearAlpha();
+			if ( this.clearColor ) {
 
-        renderer.setClearColor(this.clearColor, this.clearAlpha);
-      }
+				renderer.getClearColor( this._oldClearColor );
+				oldClearAlpha = renderer.getClearAlpha();
+				renderer.setClearColor( this.clearColor, this.clearAlpha );
 
-      if (this.clearDepth) {
-        renderer.clearDepth();
-      }
+			}
 
-      renderer.setRenderTarget(this.renderToScreen ? null : readBuffer);
+			if ( this.clearDepth ) {
 
-      // TODO: Avoid using autoClear properties, see https://github.com/mrdoob/three.js/pull/15571#issuecomment-465669600
-      if (this.clear)
-        renderer.clear(
-          renderer.autoClearColor,
-          renderer.autoClearDepth,
-          renderer.autoClearStencil,
-        );
-      renderer.render(this.scene, this.camera);
+				renderer.clearDepth();
 
-      if (this.clearColor) {
-        renderer.setClearColor(this._oldClearColor, oldClearAlpha);
-      }
+			}
 
-      if (this.overrideMaterial !== undefined) {
-        this.scene.overrideMaterial = oldOverrideMaterial;
-      }
+			renderer.setRenderTarget( this.renderToScreen ? null : readBuffer ); // TODO: Avoid using autoClear properties, see https://github.com/mrdoob/three.js/pull/15571#issuecomment-465669600
 
-      renderer.autoClear = oldAutoClear;
-    },
-  },
-);
+			if ( this.clear ) renderer.clear( renderer.autoClearColor, renderer.autoClearDepth, renderer.autoClearStencil );
+			renderer.render( this.scene, this.camera );
+
+			if ( this.clearColor ) {
+
+				renderer.setClearColor( this._oldClearColor, oldClearAlpha );
+
+			}
+
+			if ( this.overrideMaterial !== undefined ) {
+
+				this.scene.overrideMaterial = oldOverrideMaterial;
+
+			}
+
+			renderer.autoClear = oldAutoClear;
+
+		}
+
+	}
+
+	THREE.RenderPass = RenderPass;
+
+} )();

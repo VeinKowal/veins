@@ -1,283 +1,318 @@
 import { Quaternion } from '../math/Quaternion.js';
 
 class PropertyMixer {
-  constructor(binding, typeName, valueSize) {
-    this.binding = binding;
-    this.valueSize = valueSize;
 
-    let mixFunction, mixFunctionAdditive, setIdentity;
+	constructor( binding, typeName, valueSize ) {
 
-    // buffer layout: [ incoming | accu0 | accu1 | orig | addAccu | (optional work) ]
-    //
-    // interpolators can use .buffer as their .result
-    // the data then goes to 'incoming'
-    //
-    // 'accu0' and 'accu1' are used frame-interleaved for
-    // the cumulative result and are compared to detect
-    // changes
-    //
-    // 'orig' stores the original state of the property
-    //
-    // 'add' is used for additive cumulative results
-    //
-    // 'work' is optional and is only present for quaternion types. It is used
-    // to store intermediate quaternion multiplication results
+		this.binding = binding;
+		this.valueSize = valueSize;
 
-    switch (typeName) {
-      case 'quaternion':
-        mixFunction = this._slerp;
-        mixFunctionAdditive = this._slerpAdditive;
-        setIdentity = this._setAdditiveIdentityQuaternion;
+		let mixFunction,
+			mixFunctionAdditive,
+			setIdentity;
 
-        this.buffer = new Float64Array(valueSize * 6);
-        this._workIndex = 5;
-        break;
+		// buffer layout: [ incoming | accu0 | accu1 | orig | addAccu | (optional work) ]
+		//
+		// interpolators can use .buffer as their .result
+		// the data then goes to 'incoming'
+		//
+		// 'accu0' and 'accu1' are used frame-interleaved for
+		// the cumulative result and are compared to detect
+		// changes
+		//
+		// 'orig' stores the original state of the property
+		//
+		// 'add' is used for additive cumulative results
+		//
+		// 'work' is optional and is only present for quaternion types. It is used
+		// to store intermediate quaternion multiplication results
 
-      case 'string':
-      case 'bool':
-        mixFunction = this._select;
+		switch ( typeName ) {
 
-        // Use the regular mix function and for additive on these types,
-        // additive is not relevant for non-numeric types
-        mixFunctionAdditive = this._select;
+			case 'quaternion':
+				mixFunction = this._slerp;
+				mixFunctionAdditive = this._slerpAdditive;
+				setIdentity = this._setAdditiveIdentityQuaternion;
 
-        setIdentity = this._setAdditiveIdentityOther;
+				this.buffer = new Float64Array( valueSize * 6 );
+				this._workIndex = 5;
+				break;
 
-        this.buffer = new Array(valueSize * 5);
-        break;
+			case 'string':
+			case 'bool':
+				mixFunction = this._select;
 
-      default:
-        mixFunction = this._lerp;
-        mixFunctionAdditive = this._lerpAdditive;
-        setIdentity = this._setAdditiveIdentityNumeric;
+				// Use the regular mix function and for additive on these types,
+				// additive is not relevant for non-numeric types
+				mixFunctionAdditive = this._select;
 
-        this.buffer = new Float64Array(valueSize * 5);
-    }
+				setIdentity = this._setAdditiveIdentityOther;
 
-    this._mixBufferRegion = mixFunction;
-    this._mixBufferRegionAdditive = mixFunctionAdditive;
-    this._setIdentity = setIdentity;
-    this._origIndex = 3;
-    this._addIndex = 4;
+				this.buffer = new Array( valueSize * 5 );
+				break;
 
-    this.cumulativeWeight = 0;
-    this.cumulativeWeightAdditive = 0;
+			default:
+				mixFunction = this._lerp;
+				mixFunctionAdditive = this._lerpAdditive;
+				setIdentity = this._setAdditiveIdentityNumeric;
 
-    this.useCount = 0;
-    this.referenceCount = 0;
-  }
+				this.buffer = new Float64Array( valueSize * 5 );
 
-  // accumulate data in the 'incoming' region into 'accu<i>'
-  accumulate(accuIndex, weight) {
-    // note: happily accumulating nothing when weight = 0, the caller knows
-    // the weight and shouldn't have made the call in the first place
+		}
 
-    const buffer = this.buffer,
-      stride = this.valueSize,
-      offset = accuIndex * stride + stride;
+		this._mixBufferRegion = mixFunction;
+		this._mixBufferRegionAdditive = mixFunctionAdditive;
+		this._setIdentity = setIdentity;
+		this._origIndex = 3;
+		this._addIndex = 4;
 
-    let currentWeight = this.cumulativeWeight;
+		this.cumulativeWeight = 0;
+		this.cumulativeWeightAdditive = 0;
 
-    if (currentWeight === 0) {
-      // accuN := incoming * weight
+		this.useCount = 0;
+		this.referenceCount = 0;
 
-      for (let i = 0; i !== stride; ++i) {
-        buffer[offset + i] = buffer[i];
-      }
+	}
 
-      currentWeight = weight;
-    } else {
-      // accuN := accuN + incoming * weight
+	// accumulate data in the 'incoming' region into 'accu<i>'
+	accumulate( accuIndex, weight ) {
 
-      currentWeight += weight;
-      const mix = weight / currentWeight;
-      this._mixBufferRegion(buffer, offset, 0, mix, stride);
-    }
+		// note: happily accumulating nothing when weight = 0, the caller knows
+		// the weight and shouldn't have made the call in the first place
 
-    this.cumulativeWeight = currentWeight;
-  }
+		const buffer = this.buffer,
+			stride = this.valueSize,
+			offset = accuIndex * stride + stride;
 
-  // accumulate data in the 'incoming' region into 'add'
-  accumulateAdditive(weight) {
-    const buffer = this.buffer,
-      stride = this.valueSize,
-      offset = stride * this._addIndex;
+		let currentWeight = this.cumulativeWeight;
 
-    if (this.cumulativeWeightAdditive === 0) {
-      // add = identity
+		if ( currentWeight === 0 ) {
 
-      this._setIdentity();
-    }
+			// accuN := incoming * weight
 
-    // add := add + incoming * weight
+			for ( let i = 0; i !== stride; ++ i ) {
 
-    this._mixBufferRegionAdditive(buffer, offset, 0, weight, stride);
-    this.cumulativeWeightAdditive += weight;
-  }
+				buffer[ offset + i ] = buffer[ i ];
 
-  // apply the state of 'accu<i>' to the binding when accus differ
-  apply(accuIndex) {
-    const stride = this.valueSize,
-      buffer = this.buffer,
-      offset = accuIndex * stride + stride,
-      weight = this.cumulativeWeight,
-      weightAdditive = this.cumulativeWeightAdditive,
-      binding = this.binding;
+			}
 
-    this.cumulativeWeight = 0;
-    this.cumulativeWeightAdditive = 0;
+			currentWeight = weight;
 
-    if (weight < 1) {
-      // accuN := accuN + original * ( 1 - cumulativeWeight )
+		} else {
 
-      const originalValueOffset = stride * this._origIndex;
+			// accuN := accuN + incoming * weight
 
-      this._mixBufferRegion(
-        buffer,
-        offset,
-        originalValueOffset,
-        1 - weight,
-        stride,
-      );
-    }
+			currentWeight += weight;
+			const mix = weight / currentWeight;
+			this._mixBufferRegion( buffer, offset, 0, mix, stride );
 
-    if (weightAdditive > 0) {
-      // accuN := accuN + additive accuN
+		}
 
-      this._mixBufferRegionAdditive(
-        buffer,
-        offset,
-        this._addIndex * stride,
-        1,
-        stride,
-      );
-    }
+		this.cumulativeWeight = currentWeight;
 
-    for (let i = stride, e = stride + stride; i !== e; ++i) {
-      if (buffer[i] !== buffer[i + stride]) {
-        // value has changed -> update scene graph
+	}
 
-        binding.setValue(buffer, offset);
-        break;
-      }
-    }
-  }
+	// accumulate data in the 'incoming' region into 'add'
+	accumulateAdditive( weight ) {
 
-  // remember the state of the bound property and copy it to both accus
-  saveOriginalState() {
-    const binding = this.binding;
+		const buffer = this.buffer,
+			stride = this.valueSize,
+			offset = stride * this._addIndex;
 
-    const buffer = this.buffer,
-      stride = this.valueSize,
-      originalValueOffset = stride * this._origIndex;
+		if ( this.cumulativeWeightAdditive === 0 ) {
 
-    binding.getValue(buffer, originalValueOffset);
+			// add = identity
 
-    // accu[0..1] := orig -- initially detect changes against the original
-    for (let i = stride, e = originalValueOffset; i !== e; ++i) {
-      buffer[i] = buffer[originalValueOffset + (i % stride)];
-    }
+			this._setIdentity();
 
-    // Add to identity for additive
-    this._setIdentity();
+		}
 
-    this.cumulativeWeight = 0;
-    this.cumulativeWeightAdditive = 0;
-  }
+		// add := add + incoming * weight
 
-  // apply the state previously taken via 'saveOriginalState' to the binding
-  restoreOriginalState() {
-    const originalValueOffset = this.valueSize * 3;
-    this.binding.setValue(this.buffer, originalValueOffset);
-  }
+		this._mixBufferRegionAdditive( buffer, offset, 0, weight, stride );
+		this.cumulativeWeightAdditive += weight;
 
-  _setAdditiveIdentityNumeric() {
-    const startIndex = this._addIndex * this.valueSize;
-    const endIndex = startIndex + this.valueSize;
+	}
 
-    for (let i = startIndex; i < endIndex; i++) {
-      this.buffer[i] = 0;
-    }
-  }
+	// apply the state of 'accu<i>' to the binding when accus differ
+	apply( accuIndex ) {
 
-  _setAdditiveIdentityQuaternion() {
-    this._setAdditiveIdentityNumeric();
-    this.buffer[this._addIndex * this.valueSize + 3] = 1;
-  }
+		const stride = this.valueSize,
+			buffer = this.buffer,
+			offset = accuIndex * stride + stride,
 
-  _setAdditiveIdentityOther() {
-    const startIndex = this._origIndex * this.valueSize;
-    const targetIndex = this._addIndex * this.valueSize;
+			weight = this.cumulativeWeight,
+			weightAdditive = this.cumulativeWeightAdditive,
 
-    for (let i = 0; i < this.valueSize; i++) {
-      this.buffer[targetIndex + i] = this.buffer[startIndex + i];
-    }
-  }
+			binding = this.binding;
 
-  // mix functions
+		this.cumulativeWeight = 0;
+		this.cumulativeWeightAdditive = 0;
 
-  _select(buffer, dstOffset, srcOffset, t, stride) {
-    if (t >= 0.5) {
-      for (let i = 0; i !== stride; ++i) {
-        buffer[dstOffset + i] = buffer[srcOffset + i];
-      }
-    }
-  }
+		if ( weight < 1 ) {
 
-  _slerp(buffer, dstOffset, srcOffset, t) {
-    Quaternion.slerpFlat(
-      buffer,
-      dstOffset,
-      buffer,
-      dstOffset,
-      buffer,
-      srcOffset,
-      t,
-    );
-  }
+			// accuN := accuN + original * ( 1 - cumulativeWeight )
 
-  _slerpAdditive(buffer, dstOffset, srcOffset, t, stride) {
-    const workOffset = this._workIndex * stride;
+			const originalValueOffset = stride * this._origIndex;
 
-    // Store result in intermediate buffer offset
-    Quaternion.multiplyQuaternionsFlat(
-      buffer,
-      workOffset,
-      buffer,
-      dstOffset,
-      buffer,
-      srcOffset,
-    );
+			this._mixBufferRegion(
+				buffer, offset, originalValueOffset, 1 - weight, stride );
 
-    // Slerp to the intermediate result
-    Quaternion.slerpFlat(
-      buffer,
-      dstOffset,
-      buffer,
-      dstOffset,
-      buffer,
-      workOffset,
-      t,
-    );
-  }
+		}
 
-  _lerp(buffer, dstOffset, srcOffset, t, stride) {
-    const s = 1 - t;
+		if ( weightAdditive > 0 ) {
 
-    for (let i = 0; i !== stride; ++i) {
-      const j = dstOffset + i;
+			// accuN := accuN + additive accuN
 
-      buffer[j] = buffer[j] * s + buffer[srcOffset + i] * t;
-    }
-  }
+			this._mixBufferRegionAdditive( buffer, offset, this._addIndex * stride, 1, stride );
 
-  _lerpAdditive(buffer, dstOffset, srcOffset, t, stride) {
-    for (let i = 0; i !== stride; ++i) {
-      const j = dstOffset + i;
+		}
 
-      buffer[j] = buffer[j] + buffer[srcOffset + i] * t;
-    }
-  }
+		for ( let i = stride, e = stride + stride; i !== e; ++ i ) {
+
+			if ( buffer[ i ] !== buffer[ i + stride ] ) {
+
+				// value has changed -> update scene graph
+
+				binding.setValue( buffer, offset );
+				break;
+
+			}
+
+		}
+
+	}
+
+	// remember the state of the bound property and copy it to both accus
+	saveOriginalState() {
+
+		const binding = this.binding;
+
+		const buffer = this.buffer,
+			stride = this.valueSize,
+
+			originalValueOffset = stride * this._origIndex;
+
+		binding.getValue( buffer, originalValueOffset );
+
+		// accu[0..1] := orig -- initially detect changes against the original
+		for ( let i = stride, e = originalValueOffset; i !== e; ++ i ) {
+
+			buffer[ i ] = buffer[ originalValueOffset + ( i % stride ) ];
+
+		}
+
+		// Add to identity for additive
+		this._setIdentity();
+
+		this.cumulativeWeight = 0;
+		this.cumulativeWeightAdditive = 0;
+
+	}
+
+	// apply the state previously taken via 'saveOriginalState' to the binding
+	restoreOriginalState() {
+
+		const originalValueOffset = this.valueSize * 3;
+		this.binding.setValue( this.buffer, originalValueOffset );
+
+	}
+
+	_setAdditiveIdentityNumeric() {
+
+		const startIndex = this._addIndex * this.valueSize;
+		const endIndex = startIndex + this.valueSize;
+
+		for ( let i = startIndex; i < endIndex; i ++ ) {
+
+			this.buffer[ i ] = 0;
+
+		}
+
+	}
+
+	_setAdditiveIdentityQuaternion() {
+
+		this._setAdditiveIdentityNumeric();
+		this.buffer[ this._addIndex * this.valueSize + 3 ] = 1;
+
+	}
+
+	_setAdditiveIdentityOther() {
+
+		const startIndex = this._origIndex * this.valueSize;
+		const targetIndex = this._addIndex * this.valueSize;
+
+		for ( let i = 0; i < this.valueSize; i ++ ) {
+
+			this.buffer[ targetIndex + i ] = this.buffer[ startIndex + i ];
+
+		}
+
+	}
+
+
+	// mix functions
+
+	_select( buffer, dstOffset, srcOffset, t, stride ) {
+
+		if ( t >= 0.5 ) {
+
+			for ( let i = 0; i !== stride; ++ i ) {
+
+				buffer[ dstOffset + i ] = buffer[ srcOffset + i ];
+
+			}
+
+		}
+
+	}
+
+	_slerp( buffer, dstOffset, srcOffset, t ) {
+
+		Quaternion.slerpFlat( buffer, dstOffset, buffer, dstOffset, buffer, srcOffset, t );
+
+	}
+
+	_slerpAdditive( buffer, dstOffset, srcOffset, t, stride ) {
+
+		const workOffset = this._workIndex * stride;
+
+		// Store result in intermediate buffer offset
+		Quaternion.multiplyQuaternionsFlat( buffer, workOffset, buffer, dstOffset, buffer, srcOffset );
+
+		// Slerp to the intermediate result
+		Quaternion.slerpFlat( buffer, dstOffset, buffer, dstOffset, buffer, workOffset, t );
+
+	}
+
+	_lerp( buffer, dstOffset, srcOffset, t, stride ) {
+
+		const s = 1 - t;
+
+		for ( let i = 0; i !== stride; ++ i ) {
+
+			const j = dstOffset + i;
+
+			buffer[ j ] = buffer[ j ] * s + buffer[ srcOffset + i ] * t;
+
+		}
+
+	}
+
+	_lerpAdditive( buffer, dstOffset, srcOffset, t, stride ) {
+
+		for ( let i = 0; i !== stride; ++ i ) {
+
+			const j = dstOffset + i;
+
+			buffer[ j ] = buffer[ j ] + buffer[ srcOffset + i ] * t;
+
+		}
+
+	}
+
 }
+
 
 export { PropertyMixer };

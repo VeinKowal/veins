@@ -1,104 +1,29 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _jsPriorityQueue = _interopRequireDefault(require('js-priority-queue'));
+var _jsPriorityQueue = _interopRequireDefault(require("js-priority-queue"));
 
-var _DataSourceProvider = _interopRequireDefault(
-  require('../../Provider/DataSourceProvider'),
-);
+var _DataSourceProvider = _interopRequireDefault(require("../../Provider/DataSourceProvider"));
 
-var _TileProvider = _interopRequireDefault(
-  require('../../Provider/TileProvider'),
-);
+var _TileProvider = _interopRequireDefault(require("../../Provider/TileProvider"));
 
-var _dTilesProvider = _interopRequireDefault(
-  require('../../Provider/3dTilesProvider'),
-);
+var _dTilesProvider = _interopRequireDefault(require("../../Provider/3dTilesProvider"));
 
-var _PointCloudProvider = _interopRequireDefault(
-  require('../../Provider/PointCloudProvider'),
-);
+var _PointCloudProvider = _interopRequireDefault(require("../../Provider/PointCloudProvider"));
 
-var _CancelledCommandException = _interopRequireDefault(
-  require('./CancelledCommandException'),
-);
+var _CancelledCommandException = _interopRequireDefault(require("./CancelledCommandException"));
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if (
-      Array.isArray(o) ||
-      (it = _unsupportedIterableToArray(o)) ||
-      (allowArrayLike && o && typeof o.length === 'number')
-    ) {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          if (i >= o.length) return { done: true };
-          return { done: false, value: o[i++] };
-        },
-        e: function e(_e) {
-          throw _e;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
-    );
-  }
-  var normalCompletion = true,
-    didErr = false,
-    err;
-  return {
-    s: function s() {
-      it = o[Symbol.iterator]();
-    },
-    n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
-    },
-    f: function f() {
-      try {
-        if (!normalCompletion && it['return'] != null) it['return']();
-      } finally {
-        if (didErr) throw err;
-      }
-    },
-  };
-}
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === 'Object' && o.constructor) n = o.constructor.name;
-  if (n === 'Map' || n === 'Set') return Array.from(o);
-  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
-}
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function queueOrdering(a, b) {
   var cmp = b.priority - a.priority; // Prioritize recent commands
@@ -118,10 +43,10 @@ function drawNextLayer(storages) {
   var max;
 
   var _iterator = _createForOfIteratorHelper(storages),
-    _step;
+      _step;
 
   try {
-    for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
       var item = _step.value;
       var st = item[1];
 
@@ -155,14 +80,15 @@ function _instanciateQueue() {
 
       if (!st) {
         st = {
-          q: new _jsPriorityQueue['default']({
-            comparator: queueOrdering,
+          q: new _jsPriorityQueue["default"]({
+            comparator: queueOrdering
           }),
           priority: 1,
-          accumulator: 0,
+          accumulator: 0
         };
         this.storages.set(layer.id, st);
       } // update priority (layer.priority may have changed)
+
 
       st.priority = layer.priority || 1;
       st.q.queue(command);
@@ -179,27 +105,24 @@ function _instanciateQueue() {
       // commands cancelled
       cancelled: 0,
       // commands pending
-      pending: 0,
+      pending: 0
     },
     execute: function execute(cmd, provider) {
       var _this = this;
 
       this.counters.pending--;
       this.counters.executing++;
-      return provider.executeCommand(cmd).then(
-        function (result) {
-          _this.counters.executing--;
-          cmd.resolve(result); // only count successul commands
+      return provider.executeCommand(cmd).then(function (result) {
+        _this.counters.executing--;
+        cmd.resolve(result); // only count successul commands
 
-          _this.counters.executed++;
-        },
-        function (err) {
-          _this.counters.executing--;
-          cmd.reject(err);
-          _this.counters.failed++;
-        },
-      );
-    },
+        _this.counters.executed++;
+      }, function (err) {
+        _this.counters.executing--;
+        cmd.reject(err);
+        _this.counters.failed++;
+      });
+    }
   };
 }
 /**
@@ -210,6 +133,7 @@ function _instanciateQueue() {
  *
  * @constructor
  */
+
 
 function Scheduler() {
   // Constructor
@@ -225,22 +149,18 @@ Scheduler.prototype.constructor = Scheduler;
 
 Scheduler.prototype.initDefaultProviders = function () {
   // Register all providers
-  this.addProtocolProvider('tile', _TileProvider['default']);
-  this.addProtocolProvider('3d-tiles', _dTilesProvider['default']);
-  this.addProtocolProvider('pointcloud', _PointCloudProvider['default']);
+  this.addProtocolProvider('tile', _TileProvider["default"]);
+  this.addProtocolProvider('3d-tiles', _dTilesProvider["default"]);
+  this.addProtocolProvider('pointcloud', _PointCloudProvider["default"]);
 };
 
-Scheduler.prototype.runCommand = function (
-  command,
-  queue,
-  executingCounterUpToDate,
-) {
+Scheduler.prototype.runCommand = function (command, queue, executingCounterUpToDate) {
   var _this2 = this;
 
   var provider = this.getProtocolProvider(command.layer.protocol);
 
   if (!provider) {
-    throw new Error('No known provider for layer '.concat(command.layer.id));
+    throw new Error("No known provider for layer ".concat(command.layer.id));
   }
 
   queue.execute(command, provider, executingCounterUpToDate).then(function () {
@@ -263,10 +183,7 @@ Scheduler.prototype.execute = function (command) {
   // TODO: check for mandatory commands fields
   // parse host
   var layer = command.layer;
-  var host =
-    layer.source && layer.source.url & (layer.source.url !== 'none')
-      ? new URL(layer.source.url, document.location).host
-      : undefined;
+  var host = layer.source && layer.source.url ? new URL(layer.source.url, document.location).host : undefined;
   command.promise = new Promise(function (resolve, reject) {
     command.resolve = resolve;
     command.reject = reject;
@@ -366,14 +283,10 @@ Scheduler.prototype.execute = function (command) {
  * in the provider.
  */
 
+
 Scheduler.prototype.addProtocolProvider = function (protocol, provider) {
   if (typeof provider.executeCommand !== 'function') {
-    throw new Error(
-      "Can't add provider for ".concat(
-        protocol,
-        ': missing a executeCommand function.',
-      ),
-    );
+    throw new Error("Can't add provider for ".concat(protocol, ": missing a executeCommand function."));
   }
 
   this.providers[protocol] = provider;
@@ -386,19 +299,19 @@ Scheduler.prototype.addProtocolProvider = function (protocol, provider) {
  * @return {Provider}
  */
 
+
 Scheduler.prototype.getProtocolProvider = function (protocol) {
-  return this.providers[protocol] || _DataSourceProvider['default'];
+  return this.providers[protocol] || _DataSourceProvider["default"];
 };
 
 Scheduler.prototype.commandsWaitingExecutionCount = function () {
-  var sum =
-    this.defaultQueue.counters.pending + this.defaultQueue.counters.executing;
+  var sum = this.defaultQueue.counters.pending + this.defaultQueue.counters.executing;
 
   var _iterator2 = _createForOfIteratorHelper(this.hostQueues),
-    _step2;
+      _step2;
 
   try {
-    for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
       var q = _step2.value;
       sum += q[1].counters.pending + q[1].counters.executing;
     }
@@ -415,10 +328,10 @@ Scheduler.prototype.commandsRunningCount = function () {
   var sum = this.defaultQueue.counters.executing;
 
   var _iterator3 = _createForOfIteratorHelper(this.hostQueues),
-    _step3;
+      _step3;
 
   try {
-    for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
+    for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
       var q = _step3.value;
       sum += q[1].counters.executing;
     }
@@ -436,10 +349,10 @@ Scheduler.prototype.resetCommandsCount = function (type) {
   this.defaultQueue.counters[type] = 0;
 
   var _iterator4 = _createForOfIteratorHelper(this.hostQueues),
-    _step4;
+      _step4;
 
   try {
-    for (_iterator4.s(); !(_step4 = _iterator4.n()).done; ) {
+    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
       var q = _step4.value;
       sum += q[1].counters[type];
       q[1].counters[type] = 0;
@@ -462,7 +375,7 @@ Scheduler.prototype.deQueue = function (queue) {
     if (cmd.earlyDropFunction && cmd.earlyDropFunction(cmd)) {
       queue.counters.pending--;
       queue.counters.cancelled++;
-      cmd.reject(new _CancelledCommandException['default'](cmd));
+      cmd.reject(new _CancelledCommandException["default"](cmd));
     } else {
       return cmd;
     }
@@ -472,4 +385,4 @@ Scheduler.prototype.deQueue = function (queue) {
 };
 
 var _default = Scheduler;
-exports['default'] = _default;
+exports["default"] = _default;

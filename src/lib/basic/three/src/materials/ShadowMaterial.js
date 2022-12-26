@@ -8,24 +8,30 @@ import { Color } from '../math/Color.js';
  */
 
 class ShadowMaterial extends Material {
-  constructor(parameters) {
-    super();
 
-    this.type = 'ShadowMaterial';
+	constructor( parameters ) {
 
-    this.color = new Color(0x000000);
-    this.transparent = true;
+		super();
 
-    this.setValues(parameters);
-  }
+		this.type = 'ShadowMaterial';
 
-  copy(source) {
-    super.copy(source);
+		this.color = new Color( 0x000000 );
+		this.transparent = true;
 
-    this.color.copy(source.color);
+		this.setValues( parameters );
 
-    return this;
-  }
+	}
+
+	copy( source ) {
+
+		super.copy( source );
+
+		this.color.copy( source.color );
+
+		return this;
+
+	}
+
 }
 
 ShadowMaterial.prototype.isShadowMaterial = true;

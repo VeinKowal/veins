@@ -12,89 +12,94 @@ const _axis = /*@__PURE__*/ new Vector3();
 let _lineGeometry, _coneGeometry;
 
 class ArrowHelper extends Object3D {
-  // dir is assumed to be normalized
 
-  constructor(
-    dir = new Vector3(0, 0, 1),
-    origin = new Vector3(0, 0, 0),
-    length = 1,
-    color = 0xffff00,
-    headLength = length * 0.2,
-    headWidth = headLength * 0.2,
-  ) {
-    super();
+	// dir is assumed to be normalized
 
-    this.type = 'ArrowHelper';
+	constructor( dir = new Vector3( 0, 0, 1 ), origin = new Vector3( 0, 0, 0 ), length = 1, color = 0xffff00, headLength = length * 0.2, headWidth = headLength * 0.2 ) {
 
-    if (_lineGeometry === undefined) {
-      _lineGeometry = new BufferGeometry();
-      _lineGeometry.setAttribute(
-        'position',
-        new Float32BufferAttribute([0, 0, 0, 0, 1, 0], 3),
-      );
+		super();
 
-      _coneGeometry = new CylinderGeometry(0, 0.5, 1, 5, 1);
-      _coneGeometry.translate(0, -0.5, 0);
-    }
+		this.type = 'ArrowHelper';
 
-    this.position.copy(origin);
+		if ( _lineGeometry === undefined ) {
 
-    this.line = new Line(
-      _lineGeometry,
-      new LineBasicMaterial({ color: color, toneMapped: false }),
-    );
-    this.line.matrixAutoUpdate = false;
-    this.add(this.line);
+			_lineGeometry = new BufferGeometry();
+			_lineGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0, 0, 0, 0, 1, 0 ], 3 ) );
 
-    this.cone = new Mesh(
-      _coneGeometry,
-      new MeshBasicMaterial({ color: color, toneMapped: false }),
-    );
-    this.cone.matrixAutoUpdate = false;
-    this.add(this.cone);
+			_coneGeometry = new CylinderGeometry( 0, 0.5, 1, 5, 1 );
+			_coneGeometry.translate( 0, - 0.5, 0 );
 
-    this.setDirection(dir);
-    this.setLength(length, headLength, headWidth);
-  }
+		}
 
-  setDirection(dir) {
-    // dir is assumed to be normalized
+		this.position.copy( origin );
 
-    if (dir.y > 0.99999) {
-      this.quaternion.set(0, 0, 0, 1);
-    } else if (dir.y < -0.99999) {
-      this.quaternion.set(1, 0, 0, 0);
-    } else {
-      _axis.set(dir.z, 0, -dir.x).normalize();
+		this.line = new Line( _lineGeometry, new LineBasicMaterial( { color: color, toneMapped: false } ) );
+		this.line.matrixAutoUpdate = false;
+		this.add( this.line );
 
-      const radians = Math.acos(dir.y);
+		this.cone = new Mesh( _coneGeometry, new MeshBasicMaterial( { color: color, toneMapped: false } ) );
+		this.cone.matrixAutoUpdate = false;
+		this.add( this.cone );
 
-      this.quaternion.setFromAxisAngle(_axis, radians);
-    }
-  }
+		this.setDirection( dir );
+		this.setLength( length, headLength, headWidth );
 
-  setLength(length, headLength = length * 0.2, headWidth = headLength * 0.2) {
-    this.line.scale.set(1, Math.max(0.0001, length - headLength), 1); // see #17458
-    this.line.updateMatrix();
+	}
 
-    this.cone.scale.set(headWidth, headLength, headWidth);
-    this.cone.position.y = length;
-    this.cone.updateMatrix();
-  }
+	setDirection( dir ) {
 
-  setColor(color) {
-    this.line.material.color.set(color);
-    this.cone.material.color.set(color);
-  }
+		// dir is assumed to be normalized
 
-  copy(source) {
-    super.copy(source, false);
+		if ( dir.y > 0.99999 ) {
 
-    this.line.copy(source.line);
-    this.cone.copy(source.cone);
+			this.quaternion.set( 0, 0, 0, 1 );
 
-    return this;
-  }
+		} else if ( dir.y < - 0.99999 ) {
+
+			this.quaternion.set( 1, 0, 0, 0 );
+
+		} else {
+
+			_axis.set( dir.z, 0, - dir.x ).normalize();
+
+			const radians = Math.acos( dir.y );
+
+			this.quaternion.setFromAxisAngle( _axis, radians );
+
+		}
+
+	}
+
+	setLength( length, headLength = length * 0.2, headWidth = headLength * 0.2 ) {
+
+		this.line.scale.set( 1, Math.max( 0.0001, length - headLength ), 1 ); // see #17458
+		this.line.updateMatrix();
+
+		this.cone.scale.set( headWidth, headLength, headWidth );
+		this.cone.position.y = length;
+		this.cone.updateMatrix();
+
+	}
+
+	setColor( color ) {
+
+		this.line.material.color.set( color );
+		this.cone.material.color.set( color );
+
+	}
+
+	copy( source ) {
+
+		super.copy( source, false );
+
+		this.line.copy( source.line );
+		this.cone.copy( source.cone );
+
+		return this;
+
+	}
+
 }
+
 
 export { ArrowHelper };

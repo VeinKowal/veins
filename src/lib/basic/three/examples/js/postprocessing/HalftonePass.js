@@ -1,59 +1,75 @@
-/**
+( function () {
+
+	/**
  * RGB Halftone pass for three.js effects composer. Requires THREE.HalftoneShader.
  */
 
-THREE.HalftonePass = function (width, height, params) {
-  THREE.Pass.call(this);
+	class HalftonePass extends THREE.Pass {
 
-  if (THREE.HalftoneShader === undefined) {
-    console.error('THREE.HalftonePass requires THREE.HalftoneShader');
-  }
+		constructor( width, height, params ) {
 
-  this.uniforms = THREE.UniformsUtils.clone(THREE.HalftoneShader.uniforms);
-  this.material = new THREE.ShaderMaterial({
-    uniforms: this.uniforms,
-    fragmentShader: THREE.HalftoneShader.fragmentShader,
-    vertexShader: THREE.HalftoneShader.vertexShader,
-  });
+			super();
 
-  // set params
-  this.uniforms.width.value = width;
-  this.uniforms.height.value = height;
+			if ( THREE.HalftoneShader === undefined ) {
 
-  for (var key in params) {
-    if (params.hasOwnProperty(key) && this.uniforms.hasOwnProperty(key)) {
-      this.uniforms[key].value = params[key];
-    }
-  }
+				console.error( 'THREE.HalftonePass requires THREE.HalftoneShader' );
 
-  this.fsQuad = new THREE.Pass.FullScreenQuad(this.material);
-};
+			}
 
-THREE.HalftonePass.prototype = Object.assign(
-  Object.create(THREE.Pass.prototype),
-  {
-    constructor: THREE.HalftonePass,
+			this.uniforms = THREE.UniformsUtils.clone( THREE.HalftoneShader.uniforms );
+			this.material = new THREE.ShaderMaterial( {
+				uniforms: this.uniforms,
+				fragmentShader: THREE.HalftoneShader.fragmentShader,
+				vertexShader: THREE.HalftoneShader.vertexShader
+			} ); // set params
 
-    render: function (
-      renderer,
-      writeBuffer,
-      readBuffer /*, deltaTime, maskActive*/,
-    ) {
-      this.material.uniforms['tDiffuse'].value = readBuffer.texture;
+			this.uniforms.width.value = width;
+			this.uniforms.height.value = height;
 
-      if (this.renderToScreen) {
-        renderer.setRenderTarget(null);
-        this.fsQuad.render(renderer);
-      } else {
-        renderer.setRenderTarget(writeBuffer);
-        if (this.clear) renderer.clear();
-        this.fsQuad.render(renderer);
-      }
-    },
+			for ( const key in params ) {
 
-    setSize: function (width, height) {
-      this.uniforms.width.value = width;
-      this.uniforms.height.value = height;
-    },
-  },
-);
+				if ( params.hasOwnProperty( key ) && this.uniforms.hasOwnProperty( key ) ) {
+
+					this.uniforms[ key ].value = params[ key ];
+
+				}
+
+			}
+
+			this.fsQuad = new THREE.FullScreenQuad( this.material );
+
+		}
+
+		render( renderer, writeBuffer, readBuffer
+			/*, deltaTime, maskActive*/
+		) {
+
+			this.material.uniforms[ 'tDiffuse' ].value = readBuffer.texture;
+
+			if ( this.renderToScreen ) {
+
+				renderer.setRenderTarget( null );
+				this.fsQuad.render( renderer );
+
+			} else {
+
+				renderer.setRenderTarget( writeBuffer );
+				if ( this.clear ) renderer.clear();
+				this.fsQuad.render( renderer );
+
+			}
+
+		}
+
+		setSize( width, height ) {
+
+			this.uniforms.width.value = width;
+			this.uniforms.height.value = height;
+
+		}
+
+	}
+
+	THREE.HalftonePass = HalftonePass;
+
+} )();

@@ -1,58 +1,64 @@
-import { Color } from '../../../build/three.module.js';
+import {
+	Color
+} from 'three';
 
 /**
  * Luminosity
  * http://en.wikipedia.org/wiki/Luminosity
  */
 
-var LuminosityHighPassShader = {
-  shaderID: 'luminosityHighPass',
+const LuminosityHighPassShader = {
 
-  uniforms: {
-    tDiffuse: { value: null },
-    luminosityThreshold: { value: 1.0 },
-    smoothWidth: { value: 1.0 },
-    defaultColor: { value: new Color(0x000000) },
-    defaultOpacity: { value: 0.0 },
-  },
+	shaderID: 'luminosityHighPass',
 
-  vertexShader: [
-    'varying vec2 vUv;',
+	uniforms: {
 
-    'void main() {',
+		'tDiffuse': { value: null },
+		'luminosityThreshold': { value: 1.0 },
+		'smoothWidth': { value: 1.0 },
+		'defaultColor': { value: new Color( 0x000000 ) },
+		'defaultOpacity': { value: 0.0 }
 
-    '	vUv = uv;',
+	},
 
-    '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+	vertexShader: /* glsl */`
 
-    '}',
-  ].join('\n'),
+		varying vec2 vUv;
 
-  fragmentShader: [
-    'uniform sampler2D tDiffuse;',
-    'uniform vec3 defaultColor;',
-    'uniform float defaultOpacity;',
-    'uniform float luminosityThreshold;',
-    'uniform float smoothWidth;',
+		void main() {
 
-    'varying vec2 vUv;',
+			vUv = uv;
 
-    'void main() {',
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    '	vec4 texel = texture2D( tDiffuse, vUv );',
+		}`,
 
-    '	vec3 luma = vec3( 0.299, 0.587, 0.114 );',
+	fragmentShader: /* glsl */`
 
-    '	float v = dot( texel.xyz, luma );',
+		uniform sampler2D tDiffuse;
+		uniform vec3 defaultColor;
+		uniform float defaultOpacity;
+		uniform float luminosityThreshold;
+		uniform float smoothWidth;
 
-    '	vec4 outputColor = vec4( defaultColor.rgb, defaultOpacity );',
+		varying vec2 vUv;
 
-    '	float alpha = smoothstep( luminosityThreshold, luminosityThreshold + smoothWidth, v );',
+		void main() {
 
-    '	gl_FragColor = mix( outputColor, texel, alpha );',
+			vec4 texel = texture2D( tDiffuse, vUv );
 
-    '}',
-  ].join('\n'),
+			vec3 luma = vec3( 0.299, 0.587, 0.114 );
+
+			float v = dot( texel.xyz, luma );
+
+			vec4 outputColor = vec4( defaultColor.rgb, defaultOpacity );
+
+			float alpha = smoothstep( luminosityThreshold, luminosityThreshold + smoothWidth, v );
+
+			gl_FragColor = mix( outputColor, texel, alpha );
+
+		}`
+
 };
 
 export { LuminosityHighPassShader };

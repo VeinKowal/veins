@@ -1,85 +1,47 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports.InfoTiledGeometryLayer = exports['default'] = void 0;
+exports.InfoTiledGeometryLayer = exports["default"] = void 0;
 
-var _toConsumableArray2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/toConsumableArray'),
-);
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _Extent = _interopRequireDefault(require('../Core/Geographic/Extent'));
+var _Extent = _interopRequireDefault(require("../Core/Geographic/Extent"));
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-var InfoLayer = /*#__PURE__*/ (function () {
+var InfoLayer = /*#__PURE__*/function () {
   function InfoLayer(layer) {
-    (0, _classCallCheck2['default'])(this, InfoLayer);
+    (0, _classCallCheck2["default"])(this, InfoLayer);
     this.layer = layer;
   } // eslint-disable-next-line
 
-  (0, _createClass2['default'])(InfoLayer, [
-    {
-      key: 'clear',
-      value: function clear() {}, // eslint-disable-next-line
-    },
-    {
-      key: 'update',
-      value: function update() {},
-    },
-  ]);
+
+  (0, _createClass2["default"])(InfoLayer, [{
+    key: "clear",
+    value: function clear() {} // eslint-disable-next-line
+
+  }, {
+    key: "update",
+    value: function update() {}
+  }]);
   return InfoLayer;
-})();
+}();
 /**
  * InfoTiledGeometryLayer that provides some states layer informations. These
  * informations are displayed tiles, displayed {@link ColorLayer} and {@link
@@ -93,20 +55,21 @@ var InfoLayer = /*#__PURE__*/ (function () {
  * @property {Set} displayed.tiles - Set of displayed tiles.
  */
 
-exports['default'] = InfoLayer;
 
-var InfoTiledGeometryLayer = /*#__PURE__*/ (function (_InfoLayer) {
-  (0, _inherits2['default'])(InfoTiledGeometryLayer, _InfoLayer);
+exports["default"] = InfoLayer;
+
+var InfoTiledGeometryLayer = /*#__PURE__*/function (_InfoLayer) {
+  (0, _inherits2["default"])(InfoTiledGeometryLayer, _InfoLayer);
 
   var _super = _createSuper(InfoTiledGeometryLayer);
 
   function InfoTiledGeometryLayer(tiledGeometryLayer) {
     var _this;
 
-    (0, _classCallCheck2['default'])(this, InfoTiledGeometryLayer);
+    (0, _classCallCheck2["default"])(this, InfoTiledGeometryLayer);
     _this = _super.call(this, tiledGeometryLayer);
     _this.displayed = {
-      tiles: new Set(),
+      tiles: new Set()
     };
     Object.defineProperty(_this.displayed, 'layers', {
       get: function get() {
@@ -114,35 +77,19 @@ var InfoTiledGeometryLayer = /*#__PURE__*/ (function (_InfoLayer) {
 
         _this.displayed.tiles.forEach(function (tile) {
           var m = tile.material;
-          layers = (0, _toConsumableArray2['default'])(
-            new Set(
-              [].concat(
-                (0, _toConsumableArray2['default'])(layers),
-                (0, _toConsumableArray2['default'])(
-                  m.colorLayerIds.filter(function (id) {
-                    return m.getLayer(id);
-                  }),
-                ),
-                (0, _toConsumableArray2['default'])(m.elevationLayerIds),
-              ),
-            ),
-          );
+          layers = (0, _toConsumableArray2["default"])(new Set([].concat((0, _toConsumableArray2["default"])(layers), (0, _toConsumableArray2["default"])(m.colorLayerIds.filter(function (id) {
+            return m.getLayer(id);
+          })), (0, _toConsumableArray2["default"])(m.elevationLayerIds))));
         });
 
         return _this.layer.attachedLayers.filter(function (l) {
           return layers.includes(l.id);
         });
-      },
+      }
     });
     Object.defineProperty(_this.displayed, 'extent', {
       get: function get() {
-        var extent = new _Extent['default'](
-          _this.layer.extent.crs,
-          Infinity,
-          -Infinity,
-          Infinity,
-          -Infinity,
-        );
+        var extent = new _Extent["default"](_this.layer.extent.crs, Infinity, -Infinity, Infinity, -Infinity);
         extent.min = +Infinity;
         extent.max = -Infinity;
 
@@ -153,30 +100,27 @@ var InfoTiledGeometryLayer = /*#__PURE__*/ (function (_InfoLayer) {
         });
 
         return extent;
-      },
+      }
     });
     return _this;
   }
 
-  (0, _createClass2['default'])(InfoTiledGeometryLayer, [
-    {
-      key: 'clear',
-      value: function clear() {
-        this.displayed.tiles.clear();
-      },
-    },
-    {
-      key: 'update',
-      value: function update(tile) {
-        if (tile.material.visible) {
-          this.displayed.tiles.add(tile);
-        } else {
-          this.displayed.tiles['delete'](tile);
-        }
-      },
-    },
-  ]);
+  (0, _createClass2["default"])(InfoTiledGeometryLayer, [{
+    key: "clear",
+    value: function clear() {
+      this.displayed.tiles.clear();
+    }
+  }, {
+    key: "update",
+    value: function update(tile) {
+      if (tile.material.visible) {
+        this.displayed.tiles.add(tile);
+      } else {
+        this.displayed.tiles["delete"](tile);
+      }
+    }
+  }]);
   return InfoTiledGeometryLayer;
-})(InfoLayer);
+}(InfoLayer);
 
 exports.InfoTiledGeometryLayer = InfoTiledGeometryLayer;

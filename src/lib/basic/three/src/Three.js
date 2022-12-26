@@ -1,5 +1,6 @@
 import { REVISION } from './constants.js';
 
+export { WebGLMultipleRenderTargets } from './renderers/WebGLMultipleRenderTargets.js';
 export { WebGLMultisampleRenderTarget } from './renderers/WebGLMultisampleRenderTarget.js';
 export { WebGLCubeRenderTarget } from './renderers/WebGLCubeRenderTarget.js';
 export { WebGLRenderTarget } from './renderers/WebGLRenderTarget.js';
@@ -43,10 +44,7 @@ export { TextureLoader } from './loaders/TextureLoader.js';
 export { ObjectLoader } from './loaders/ObjectLoader.js';
 export { MaterialLoader } from './loaders/MaterialLoader.js';
 export { BufferGeometryLoader } from './loaders/BufferGeometryLoader.js';
-export {
-  DefaultLoadingManager,
-  LoadingManager,
-} from './loaders/LoadingManager.js';
+export { DefaultLoadingManager, LoadingManager } from './loaders/LoadingManager.js';
 export { ImageLoader } from './loaders/ImageLoader.js';
 export { ImageBitmapLoader } from './loaders/ImageBitmapLoader.js';
 export { FontLoader } from './loaders/FontLoader.js';
@@ -109,7 +107,7 @@ export { DiscreteInterpolant } from './math/interpolants/DiscreteInterpolant.js'
 export { CubicInterpolant } from './math/interpolants/CubicInterpolant.js';
 export { Interpolant } from './math/Interpolant.js';
 export { Triangle } from './math/Triangle.js';
-export { MathUtils } from './math/MathUtils.js';
+export * as MathUtils from './math/MathUtils.js';
 export { Spherical } from './math/Spherical.js';
 export { Cylindrical } from './math/Cylindrical.js';
 export { Plane } from './math/Plane.js';
@@ -157,22 +155,26 @@ export { WebGLUtils } from './renderers/webgl/WebGLUtils.js';
 export * from './constants.js';
 export * from './Three.Legacy.js';
 
-if (typeof __THREE_DEVTOOLS__ !== 'undefined') {
-  /* eslint-disable no-undef */
-  __THREE_DEVTOOLS__.dispatchEvent(
-    new CustomEvent('register', {
-      detail: {
-        revision: REVISION,
-      },
-    }),
-  );
-  /* eslint-enable no-undef */
+if ( typeof __THREE_DEVTOOLS__ !== 'undefined' ) {
+
+	/* eslint-disable no-undef */
+	__THREE_DEVTOOLS__.dispatchEvent( new CustomEvent( 'register', { detail: {
+		revision: REVISION,
+	} } ) );
+	/* eslint-enable no-undef */
+
 }
 
-if (typeof window !== 'undefined') {
-  if (window.__THREE__) {
-    console.warn('WARNING: Multiple instances of Three.js being imported.');
-  } else {
-    window.__THREE__ = REVISION;
-  }
+if ( typeof window !== 'undefined' ) {
+
+	if ( window.__THREE__ ) {
+
+		console.warn( 'WARNING: Multiple instances of Three.js being imported.' );
+
+	} else {
+
+		window.__THREE__ = REVISION;
+
+	}
+
 }

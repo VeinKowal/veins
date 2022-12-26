@@ -1,17 +1,15 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
 /* babel-plugin-inline-import '../../Renderer/Shader/SampleTestFS.glsl' */
-var SampleTestFS =
-  'uniform sampler2D uni[SAMPLE];\nvoid main() {\n    gl_FragColor += texture2D(uni[SAMPLE-1], vec2(0));\n}';
+var SampleTestFS = "uniform sampler2D uni[SAMPLE];\nvoid main() {\n    gl_FragColor += texture2D(uni[SAMPLE-1], vec2(0));\n}";
 
 /* babel-plugin-inline-import '../../Renderer/Shader/SampleTestVS.glsl' */
-var SampleTestVS =
-  'void main() {\n    gl_Position = vec4( 0.0, 0.0, 0.0, 1.0 );\n}'; // default values
+var SampleTestVS = "void main() {\n    gl_Position = vec4( 0.0, 0.0, 0.0, 1.0 );\n}"; // default values
 
 var logDepthBufferSupported = false;
 var maxTexturesUnits = 8;
@@ -26,11 +24,7 @@ function _WebGLShader(renderer, type, string) {
 }
 
 function isFirefox() {
-  return (
-    navigator &&
-    navigator.userAgent &&
-    navigator.userAgent.toLowerCase().includes('firefox')
-  );
+  return navigator && navigator.userAgent && navigator.userAgent.toLowerCase().includes('firefox');
 }
 
 var _default = {
@@ -56,14 +50,10 @@ var _default = {
 
     var glVertexShader = _WebGLShader(renderer, gl.VERTEX_SHADER, SampleTestVS);
 
-    var fragmentShader = '#define SAMPLE '.concat(maxTexturesUnits, '\n');
+    var fragmentShader = "#define SAMPLE ".concat(maxTexturesUnits, "\n");
     fragmentShader += SampleTestFS;
 
-    var glFragmentShader = _WebGLShader(
-      renderer,
-      gl.FRAGMENT_SHADER,
-      fragmentShader,
-    );
+    var glFragmentShader = _WebGLShader(renderer, gl.FRAGMENT_SHADER, fragmentShader);
 
     gl.attachShader(program, glVertexShader);
     gl.attachShader(program, glFragmentShader);
@@ -73,29 +63,16 @@ var _default = {
       if (maxTexturesUnits > 16) {
         var info = gl.getProgramInfoLog(program); // eslint-disable-next-line no-console
 
-        console.warn(
-          ''
-            .concat(
-              info,
-              ': using a maximum of 16 texture units instead of the reported value (',
-            )
-            .concat(maxTexturesUnits, ')'),
-        );
+        console.warn("".concat(info, ": using a maximum of 16 texture units instead of the reported value (").concat(maxTexturesUnits, ")"));
 
         if (isFirefox()) {
           // eslint-disable-next-line no-console
-          console.warn(
-            'It can come from a Mesa/Firefox bug;\n                        the shader compiles to an error when using more than 16 sampler uniforms,\n                        see https://bugzilla.mozilla.org/show_bug.cgi?id=777028',
-          );
+          console.warn("It can come from a Mesa/Firefox bug;\n                        the shader compiles to an error when using more than 16 sampler uniforms,\n                        see https://bugzilla.mozilla.org/show_bug.cgi?id=777028");
         }
 
         maxTexturesUnits = 16;
       } else {
-        throw new Error(
-          'The GPU capabilities could not be determined accurately.\n                    Impossible to link a shader with the Maximum texture units '.concat(
-            maxTexturesUnits,
-          ),
-        );
+        throw new Error("The GPU capabilities could not be determined accurately.\n                    Impossible to link a shader with the Maximum texture units ".concat(maxTexturesUnits));
       }
     }
 
@@ -103,6 +80,6 @@ var _default = {
     gl.deleteShader(glVertexShader);
     gl.deleteShader(glFragmentShader);
     logDepthBufferSupported = renderer.capabilities.logarithmicDepthBuffer;
-  },
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;

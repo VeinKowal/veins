@@ -1,68 +1,33 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var _classCallCheck2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/classCallCheck'),
-);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/createClass'),
-);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _get2 = _interopRequireDefault(require('@babel/runtime/helpers/get'));
+var _get2 = _interopRequireDefault(require("@babel/runtime/helpers/get"));
 
-var _inherits2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/inherits'),
-);
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/possibleConstructorReturn'),
-);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _getPrototypeOf2 = _interopRequireDefault(
-  require('@babel/runtime/helpers/getPrototypeOf'),
-);
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _Source2 = _interopRequireDefault(require('./Source'));
+var _Source2 = _interopRequireDefault(require("./Source"));
 
-var _URLBuilder = _interopRequireDefault(require('../Provider/URLBuilder'));
+var _URLBuilder = _interopRequireDefault(require("../Provider/URLBuilder"));
 
-var _Crs = _interopRequireDefault(require('../Core/Geographic/Crs'));
+var _Crs = _interopRequireDefault(require("../Core/Geographic/Crs"));
 
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function () {
-    var Super = (0, _getPrototypeOf2['default'])(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = (0, _getPrototypeOf2['default'])(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return (0, _possibleConstructorReturn2['default'])(this, result);
-  };
-}
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === 'function') return true;
-  try {
-    Boolean.prototype.valueOf.call(
-      Reflect.construct(Boolean, [], function () {}),
-    );
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 /**
  * @classdesc
@@ -151,8 +116,8 @@ function _isNativeReflectConstruct() {
  * // Add the layer
  * view.addLayer(geometryLayer);
  */
-var WFSSource = /*#__PURE__*/ (function (_Source) {
-  (0, _inherits2['default'])(WFSSource, _Source);
+var WFSSource = /*#__PURE__*/function (_Source) {
+  (0, _inherits2["default"])(WFSSource, _Source);
 
   var _super = _createSuper(WFSSource);
 
@@ -166,12 +131,10 @@ var WFSSource = /*#__PURE__*/ (function (_Source) {
   function WFSSource(source) {
     var _this;
 
-    (0, _classCallCheck2['default'])(this, WFSSource);
+    (0, _classCallCheck2["default"])(this, WFSSource);
 
     if (source.projection) {
-      console.warn(
-        'WFSSource projection parameter is deprecated, use crs instead.',
-      );
+      console.warn('WFSSource projection parameter is deprecated, use crs instead.');
       source.crs = source.crs || source.projection;
     }
 
@@ -188,100 +151,62 @@ var WFSSource = /*#__PURE__*/ (function (_Source) {
     _this.isWFSSource = true;
     _this.typeName = source.typeName;
     _this.version = source.version || '2.0.2';
-    _this.url = ''
-      .concat(source.url, 'SERVICE=WFS&REQUEST=GetFeature&typeName=')
-      .concat(_this.typeName, '&VERSION=')
-      .concat(_this.version, '&SRSNAME=')
-      .concat(_this.crs, '&outputFormat=')
-      .concat(_this.format, '&BBOX=%bbox,')
-      .concat(_this.crs);
+    _this.url = "".concat(source.url, "SERVICE=WFS&REQUEST=GetFeature&typeName=").concat(_this.typeName, "&VERSION=").concat(_this.version, "&SRSNAME=").concat(_this.crs, "&outputFormat=").concat(_this.format, "&BBOX=%bbox,").concat(_this.crs);
     _this.zoom = {
       min: 0,
-      max: Infinity,
+      max: Infinity
     };
     _this.vendorSpecific = source.vendorSpecific;
 
     for (var name in _this.vendorSpecific) {
       if (Object.prototype.hasOwnProperty.call(_this.vendorSpecific, name)) {
-        _this.url = ''
-          .concat(_this.url, '&')
-          .concat(name, '=')
-          .concat(_this.vendorSpecific[name]);
+        _this.url = "".concat(_this.url, "&").concat(name, "=").concat(_this.vendorSpecific[name]);
       }
     }
 
     return _this;
   }
 
-  (0, _createClass2['default'])(WFSSource, [
-    {
-      key: 'handlingError',
-      value: function handlingError(err) {
-        var _this2 = this;
+  (0, _createClass2["default"])(WFSSource, [{
+    key: "handlingError",
+    value: function handlingError(err) {
+      var _this2 = this;
 
-        if (err.response && err.response.status == 400) {
-          return err.response.text().then(function (text) {
-            var getCapUrl = ''
-              .concat(
-                _this2.url,
-                'SERVICE=WFS&REQUEST=GetCapabilities&VERSION=',
-              )
-              .concat(_this2.version);
-            var xml = new DOMParser().parseFromString(text, 'application/xml');
-            var errorElem = xml.querySelector('Exception');
-            var errorCode = errorElem.getAttribute('exceptionCode');
-            var errorMessage =
-              errorElem.querySelector('ExceptionText').textContent;
-            console.error(
-              'Source '
-                .concat(
-                  _this2.typeName,
-                  ': bad request when fetching data. Server says: "',
-                )
-                .concat(errorCode, ': ')
-                .concat(errorMessage, '". \nReviewing ')
-                .concat(getCapUrl, ' may help.'),
-              err,
-            );
-          });
-        }
+      if (err.response && err.response.status == 400) {
+        return err.response.text().then(function (text) {
+          var getCapUrl = "".concat(_this2.url, "SERVICE=WFS&REQUEST=GetCapabilities&VERSION=").concat(_this2.version);
+          var xml = new DOMParser().parseFromString(text, 'application/xml');
+          var errorElem = xml.querySelector('Exception');
+          var errorCode = errorElem.getAttribute('exceptionCode');
+          var errorMessage = errorElem.querySelector('ExceptionText').textContent;
+          console.error("Source ".concat(_this2.typeName, ": bad request when fetching data. Server says: \"").concat(errorCode, ": ").concat(errorMessage, "\". \nReviewing ").concat(getCapUrl, " may help."), err);
+        });
+      }
 
-        return (0, _get2['default'])(
-          (0, _getPrototypeOf2['default'])(WFSSource.prototype),
-          'handlingError',
-          this,
-        ).call(this, err);
-      },
-    },
-    {
-      key: 'requestToKey',
-      value: function requestToKey(extent) {
-        if (_Crs['default'].isTms(extent.crs)) {
-          return (0, _get2['default'])(
-            (0, _getPrototypeOf2['default'])(WFSSource.prototype),
-            'requestToKey',
-            this,
-          ).call(this, extent);
-        } else {
-          return [extent.zoom, extent.south, extent.west];
-        }
-      },
-    },
-    {
-      key: 'urlFromExtent',
-      value: function urlFromExtent(extent) {
-        return _URLBuilder['default'].bbox(extent, this);
-      },
-    },
-    {
-      key: 'extentInsideLimit',
-      value: function extentInsideLimit(extent) {
-        return this.extent.intersectsExtent(extent);
-      },
-    },
-  ]);
+      return (0, _get2["default"])((0, _getPrototypeOf2["default"])(WFSSource.prototype), "handlingError", this).call(this, err);
+    }
+  }, {
+    key: "requestToKey",
+    value: function requestToKey(extent) {
+      if (_Crs["default"].isTms(extent.crs)) {
+        return (0, _get2["default"])((0, _getPrototypeOf2["default"])(WFSSource.prototype), "requestToKey", this).call(this, extent);
+      } else {
+        return [extent.zoom, extent.south, extent.west];
+      }
+    }
+  }, {
+    key: "urlFromExtent",
+    value: function urlFromExtent(extent) {
+      return _URLBuilder["default"].bbox(extent, this);
+    }
+  }, {
+    key: "extentInsideLimit",
+    value: function extentInsideLimit(extent) {
+      return this.extent.intersectsExtent(extent);
+    }
+  }]);
   return WFSSource;
-})(_Source2['default']);
+}(_Source2["default"]);
 
 var _default = WFSSource;
-exports['default'] = _default;
+exports["default"] = _default;

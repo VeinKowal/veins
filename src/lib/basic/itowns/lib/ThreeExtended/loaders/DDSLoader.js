@@ -1,52 +1,61 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.DDSLoader = void 0;
 
-var _three = require('three');
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var DDSLoader = function (manager) {
-  _three.CompressedTextureLoader.call(this, manager);
-};
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-exports.DDSLoader = DDSLoader;
-DDSLoader.prototype = Object.assign(
-  Object.create(_three.CompressedTextureLoader.prototype),
-  {
-    constructor: DDSLoader,
-    parse: function parse(buffer, loadMipmaps) {
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
+var _three = require("three");
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+var DDSLoader = /*#__PURE__*/function (_CompressedTextureLoa) {
+  (0, _inherits2["default"])(DDSLoader, _CompressedTextureLoa);
+
+  var _super = _createSuper(DDSLoader);
+
+  function DDSLoader(manager) {
+    (0, _classCallCheck2["default"])(this, DDSLoader);
+    return _super.call(this, manager);
+  }
+
+  (0, _createClass2["default"])(DDSLoader, [{
+    key: "parse",
+    value: function parse(buffer, loadMipmaps) {
       var dds = {
         mipmaps: [],
         width: 0,
         height: 0,
         format: null,
-        mipmapCount: 1,
+        mipmapCount: 1
       }; // Adapted from @toji's DDS utils
       // https://github.com/toji/webgl-texture-utils/blob/master/texture-util/dds.js
       // All values and structures referenced from:
       // http://msdn.microsoft.com/en-us/library/bb943991.aspx/
 
-      // var DDPF_RGB = 0x40;
-      // var DDPF_YUV = 0x200;
-      // var DDPF_LUMINANCE = 0x20000;
+      // let DDPF_RGB = 0x40;
+      // let DDPF_YUV = 0x200;
+      // let DDPF_LUMINANCE = 0x20000;
       function fourCCToInt32(value) {
-        return (
-          value.charCodeAt(0) +
-          (value.charCodeAt(1) << 8) +
-          (value.charCodeAt(2) << 16) +
-          (value.charCodeAt(3) << 24)
-        );
+        return value.charCodeAt(0) + (value.charCodeAt(1) << 8) + (value.charCodeAt(2) << 16) + (value.charCodeAt(3) << 24);
       }
 
       function int32ToFourCC(value) {
-        return String.fromCharCode(
-          value & 0xff,
-          (value >> 8) & 0xff,
-          (value >> 16) & 0xff,
-          (value >> 24) & 0xff,
-        );
+        return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
       }
 
       function loadARGBMip(buffer, dataOffset, width, height) {
@@ -87,22 +96,18 @@ DDSLoader.prototype = Object.assign(
       var FOURCC_DXT3 = fourCCToInt32('DXT3');
       var FOURCC_DXT5 = fourCCToInt32('DXT5');
       var FOURCC_ETC1 = fourCCToInt32('ETC1');
-      // var off_caps3 = 29;
-      // var off_caps4 = 30;
+      // let off_caps3 = 29;
+      // let off_caps4 = 30;
       // Parse header
       var header = new Int32Array(buffer, 0, 31);
 
       if (header[0] !== 0x20534444) {
-        console.error(
-          'THREE.DDSLoader.parse: Invalid magic number in DDS header.',
-        );
+        console.error('THREE.DDSLoader.parse: Invalid magic number in DDS header.');
         return dds;
       }
 
       if (!header[20] & 0x4) {
-        console.error(
-          'THREE.DDSLoader.parse: Unsupported format, must contain a FourCC code.',
-        );
+        console.error('THREE.DDSLoader.parse: Unsupported format, must contain a FourCC code.');
         return dds;
       }
 
@@ -132,23 +137,15 @@ DDSLoader.prototype = Object.assign(
           break;
 
         default:
-          if (
-            header[22] === 32 &&
-            header[23] & 0xff0000 &&
-            header[24] & 0xff00 &&
-            header[25] & 0xff &&
-            header[26] & 0xff000000
-          ) {
+          if (header[22] === 32 && header[23] & 0xff0000 && header[24] & 0xff00 && header[25] & 0xff && header[26] & 0xff000000) {
             isRGBAUncompressed = true;
             blockBytes = 64;
             dds.format = _three.RGBAFormat;
           } else {
-            console.error(
-              'THREE.DDSLoader.parse: Unsupported FourCC code ',
-              int32ToFourCC(fourCC),
-            );
+            console.error('THREE.DDSLoader.parse: Unsupported FourCC code ', int32ToFourCC(fourCC));
             return dds;
           }
+
       }
 
       dds.mipmapCount = 1;
@@ -160,15 +157,7 @@ DDSLoader.prototype = Object.assign(
       var caps2 = header[28];
       dds.isCubemap = caps2 & 0x200 ? true : false;
 
-      if (
-        dds.isCubemap &&
-        (!(caps2 & 0x400) ||
-          !(caps2 & 0x800) ||
-          !(caps2 & 0x1000) ||
-          !(caps2 & 0x2000) ||
-          !(caps2 & 0x4000) ||
-          !(caps2 & 0x8000))
-      ) {
+      if (dds.isCubemap && (!(caps2 & 0x400) || !(caps2 & 0x800) || !(caps2 & 0x1000) || !(caps2 & 0x2000) || !(caps2 & 0x4000) || !(caps2 & 0x8000))) {
         console.error('THREE.DDSLoader.parse: Incomplete cubemap faces');
         return dds;
       }
@@ -184,20 +173,21 @@ DDSLoader.prototype = Object.assign(
         var height = dds.height;
 
         for (var i = 0; i < dds.mipmapCount; i++) {
+          var byteArray = void 0,
+              dataLength = void 0;
+
           if (isRGBAUncompressed) {
-            var byteArray = loadARGBMip(buffer, dataOffset, width, height);
-            var dataLength = byteArray.length;
+            byteArray = loadARGBMip(buffer, dataOffset, width, height);
+            dataLength = byteArray.length;
           } else {
-            var dataLength =
-              (((Math.max(4, width) / 4) * Math.max(4, height)) / 4) *
-              blockBytes;
-            var byteArray = new Uint8Array(buffer, dataOffset, dataLength);
+            dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
+            byteArray = new Uint8Array(buffer, dataOffset, dataLength);
           }
 
           var mipmap = {
-            data: byteArray,
-            width: width,
-            height: height,
+            'data': byteArray,
+            'width': width,
+            'height': height
           };
           dds.mipmaps.push(mipmap);
           dataOffset += dataLength;
@@ -207,6 +197,9 @@ DDSLoader.prototype = Object.assign(
       }
 
       return dds;
-    },
-  },
-);
+    }
+  }]);
+  return DDSLoader;
+}(_three.CompressedTextureLoader);
+
+exports.DDSLoader = DDSLoader;

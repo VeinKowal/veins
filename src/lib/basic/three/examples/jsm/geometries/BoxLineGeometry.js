@@ -1,71 +1,69 @@
 import {
-  BufferGeometry,
-  Float32BufferAttribute,
-} from '../../../build/three.module.js';
+	BufferGeometry,
+	Float32BufferAttribute
+} from 'three';
 
-var BoxLineGeometry = function (
-  width,
-  height,
-  depth,
-  widthSegments,
-  heightSegments,
-  depthSegments,
-) {
-  BufferGeometry.call(this);
+class BoxLineGeometry extends BufferGeometry {
 
-  width = width || 1;
-  height = height || 1;
-  depth = depth || 1;
+	constructor( width = 1, height = 1, depth = 1, widthSegments = 1, heightSegments = 1, depthSegments = 1 ) {
 
-  widthSegments = Math.floor(widthSegments) || 1;
-  heightSegments = Math.floor(heightSegments) || 1;
-  depthSegments = Math.floor(depthSegments) || 1;
+		super();
 
-  var widthHalf = width / 2;
-  var heightHalf = height / 2;
-  var depthHalf = depth / 2;
+		widthSegments = Math.floor( widthSegments );
+		heightSegments = Math.floor( heightSegments );
+		depthSegments = Math.floor( depthSegments );
 
-  var segmentWidth = width / widthSegments;
-  var segmentHeight = height / heightSegments;
-  var segmentDepth = depth / depthSegments;
+		const widthHalf = width / 2;
+		const heightHalf = height / 2;
+		const depthHalf = depth / 2;
 
-  var vertices = [];
+		const segmentWidth = width / widthSegments;
+		const segmentHeight = height / heightSegments;
+		const segmentDepth = depth / depthSegments;
 
-  var x = -widthHalf,
-    y = -heightHalf,
-    z = -depthHalf;
+		const vertices = [];
 
-  for (var i = 0; i <= widthSegments; i++) {
-    vertices.push(x, -heightHalf, -depthHalf, x, heightHalf, -depthHalf);
-    vertices.push(x, heightHalf, -depthHalf, x, heightHalf, depthHalf);
-    vertices.push(x, heightHalf, depthHalf, x, -heightHalf, depthHalf);
-    vertices.push(x, -heightHalf, depthHalf, x, -heightHalf, -depthHalf);
+		let x = - widthHalf;
+		let y = - heightHalf;
+		let z = - depthHalf;
 
-    x += segmentWidth;
-  }
+		for ( let i = 0; i <= widthSegments; i ++ ) {
 
-  for (var i = 0; i <= heightSegments; i++) {
-    vertices.push(-widthHalf, y, -depthHalf, widthHalf, y, -depthHalf);
-    vertices.push(widthHalf, y, -depthHalf, widthHalf, y, depthHalf);
-    vertices.push(widthHalf, y, depthHalf, -widthHalf, y, depthHalf);
-    vertices.push(-widthHalf, y, depthHalf, -widthHalf, y, -depthHalf);
+			vertices.push( x, - heightHalf, - depthHalf, x, heightHalf, - depthHalf );
+			vertices.push( x, heightHalf, - depthHalf, x, heightHalf, depthHalf );
+			vertices.push( x, heightHalf, depthHalf, x, - heightHalf, depthHalf );
+			vertices.push( x, - heightHalf, depthHalf, x, - heightHalf, - depthHalf );
 
-    y += segmentHeight;
-  }
+			x += segmentWidth;
 
-  for (var i = 0; i <= depthSegments; i++) {
-    vertices.push(-widthHalf, -heightHalf, z, -widthHalf, heightHalf, z);
-    vertices.push(-widthHalf, heightHalf, z, widthHalf, heightHalf, z);
-    vertices.push(widthHalf, heightHalf, z, widthHalf, -heightHalf, z);
-    vertices.push(widthHalf, -heightHalf, z, -widthHalf, -heightHalf, z);
+		}
 
-    z += segmentDepth;
-  }
+		for ( let i = 0; i <= heightSegments; i ++ ) {
 
-  this.setAttribute('position', new Float32BufferAttribute(vertices, 3));
-};
+			vertices.push( - widthHalf, y, - depthHalf, widthHalf, y, - depthHalf );
+			vertices.push( widthHalf, y, - depthHalf, widthHalf, y, depthHalf );
+			vertices.push( widthHalf, y, depthHalf, - widthHalf, y, depthHalf );
+			vertices.push( - widthHalf, y, depthHalf, - widthHalf, y, - depthHalf );
 
-BoxLineGeometry.prototype = Object.create(BufferGeometry.prototype);
-BoxLineGeometry.prototype.constructor = BoxLineGeometry;
+			y += segmentHeight;
+
+		}
+
+		for ( let i = 0; i <= depthSegments; i ++ ) {
+
+			vertices.push( - widthHalf, - heightHalf, z, - widthHalf, heightHalf, z );
+			vertices.push( - widthHalf, heightHalf, z, widthHalf, heightHalf, z );
+			vertices.push( widthHalf, heightHalf, z, widthHalf, - heightHalf, z );
+			vertices.push( widthHalf, - heightHalf, z, - widthHalf, - heightHalf, z );
+
+			z += segmentDepth;
+
+		}
+
+		this.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
+
+	}
+
+}
 
 export { BoxLineGeometry };

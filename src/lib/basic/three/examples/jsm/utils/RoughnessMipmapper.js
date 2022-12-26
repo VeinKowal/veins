@@ -7,175 +7,166 @@
  */
 
 import {
-  MathUtils,
-  Mesh,
-  NoBlending,
-  OrthographicCamera,
-  PlaneGeometry,
-  RawShaderMaterial,
-  Vector2,
-  WebGLRenderTarget,
-} from '../../../build/three.module.js';
+	MathUtils,
+	Mesh,
+	NoBlending,
+	OrthographicCamera,
+	PlaneGeometry,
+	RawShaderMaterial,
+	Vector2,
+	WebGLRenderTarget
+} from 'three';
 
-var _mipmapMaterial = _getMipmapMaterial();
+const _mipmapMaterial = _getMipmapMaterial();
 
-var _mesh = new Mesh(new PlaneGeometry(2, 2), _mipmapMaterial);
+const _mesh = new Mesh( new PlaneGeometry( 2, 2 ), _mipmapMaterial );
 
-var _flatCamera = new OrthographicCamera(0, 1, 0, 1, 0, 1);
+const _flatCamera = new OrthographicCamera( 0, 1, 0, 1, 0, 1 );
 
-var _tempTarget = null;
+let _tempTarget = null;
 
-var _renderer = null;
+let _renderer = null;
 
-function RoughnessMipmapper(renderer) {
-  _renderer = renderer;
+class RoughnessMipmapper {
 
-  _renderer.compile(_mesh, _flatCamera);
+	constructor( renderer ) {
+
+		_renderer = renderer;
+
+		_renderer.compile( _mesh, _flatCamera );
+
+	}
+
+	generateMipmaps( material ) {
+
+		if ( 'roughnessMap' in material === false ) return;
+
+		const { roughnessMap, normalMap } = material;
+
+		if ( roughnessMap === null || normalMap === null || ! roughnessMap.generateMipmaps || material.userData.roughnessUpdated ) return;
+
+		material.userData.roughnessUpdated = true;
+
+		let width = Math.max( roughnessMap.image.width, normalMap.image.width );
+		let height = Math.max( roughnessMap.image.height, normalMap.image.height );
+
+		if ( ! MathUtils.isPowerOfTwo( width ) || ! MathUtils.isPowerOfTwo( height ) ) return;
+
+		const oldTarget = _renderer.getRenderTarget();
+
+		const autoClear = _renderer.autoClear;
+
+		_renderer.autoClear = false;
+
+		if ( _tempTarget === null || _tempTarget.width !== width || _tempTarget.height !== height ) {
+
+			if ( _tempTarget !== null ) _tempTarget.dispose();
+
+			_tempTarget = new WebGLRenderTarget( width, height, { depthBuffer: false } );
+
+			_tempTarget.scissorTest = true;
+
+		}
+
+		if ( width !== roughnessMap.image.width || height !== roughnessMap.image.height ) {
+
+			const params = {
+				wrapS: roughnessMap.wrapS,
+				wrapT: roughnessMap.wrapT,
+				magFilter: roughnessMap.magFilter,
+				minFilter: roughnessMap.minFilter,
+				depthBuffer: false
+			};
+
+			const newRoughnessTarget = new WebGLRenderTarget( width, height, params );
+
+			newRoughnessTarget.texture.generateMipmaps = true;
+
+			// Setting the render target causes the memory to be allocated.
+
+			_renderer.setRenderTarget( newRoughnessTarget );
+
+			material.roughnessMap = newRoughnessTarget.texture;
+
+			if ( material.metalnessMap == roughnessMap ) material.metalnessMap = material.roughnessMap;
+
+			if ( material.aoMap == roughnessMap ) material.aoMap = material.roughnessMap;
+
+			// Copy UV transform parameters
+
+			material.roughnessMap.offset.copy( roughnessMap.offset );
+			material.roughnessMap.repeat.copy( roughnessMap.repeat );
+			material.roughnessMap.center.copy( roughnessMap.center );
+			material.roughnessMap.rotation = roughnessMap.rotation;
+
+			material.roughnessMap.matrixAutoUpdate = roughnessMap.matrixAutoUpdate;
+			material.roughnessMap.matrix.copy( roughnessMap.matrix );
+
+		}
+
+		_mipmapMaterial.uniforms.roughnessMap.value = roughnessMap;
+
+		_mipmapMaterial.uniforms.normalMap.value = normalMap;
+
+		const position = new Vector2( 0, 0 );
+
+		const texelSize = _mipmapMaterial.uniforms.texelSize.value;
+
+		for ( let mip = 0; width >= 1 && height >= 1; ++ mip, width /= 2, height /= 2 ) {
+
+			// Rendering to a mip level is not allowed in webGL1. Instead we must set
+			// up a secondary texture to write the result to, then copy it back to the
+			// proper mipmap level.
+
+			texelSize.set( 1.0 / width, 1.0 / height );
+
+			if ( mip == 0 ) texelSize.set( 0.0, 0.0 );
+
+			_tempTarget.viewport.set( position.x, position.y, width, height );
+
+			_tempTarget.scissor.set( position.x, position.y, width, height );
+
+			_renderer.setRenderTarget( _tempTarget );
+
+			_renderer.render( _mesh, _flatCamera );
+
+			_renderer.copyFramebufferToTexture( position, material.roughnessMap, mip );
+
+			_mipmapMaterial.uniforms.roughnessMap.value = material.roughnessMap;
+
+		}
+
+		if ( roughnessMap !== material.roughnessMap ) roughnessMap.dispose();
+
+		_renderer.setRenderTarget( oldTarget );
+
+		_renderer.autoClear = autoClear;
+
+	}
+
+	dispose() {
+
+		_mipmapMaterial.dispose();
+
+		_mesh.geometry.dispose();
+
+		if ( _tempTarget != null ) _tempTarget.dispose();
+
+	}
+
 }
 
-RoughnessMipmapper.prototype = {
-  constructor: RoughnessMipmapper,
-
-  generateMipmaps: function (material) {
-    if ('roughnessMap' in material === false) return;
-
-    var { roughnessMap, normalMap } = material;
-
-    if (
-      roughnessMap === null ||
-      normalMap === null ||
-      !roughnessMap.generateMipmaps ||
-      material.userData.roughnessUpdated
-    )
-      return;
-
-    material.userData.roughnessUpdated = true;
-
-    var width = Math.max(roughnessMap.image.width, normalMap.image.width);
-
-    var height = Math.max(roughnessMap.image.height, normalMap.image.height);
-
-    if (!MathUtils.isPowerOfTwo(width) || !MathUtils.isPowerOfTwo(height))
-      return;
-
-    var oldTarget = _renderer.getRenderTarget();
-
-    var autoClear = _renderer.autoClear;
-
-    _renderer.autoClear = false;
-
-    if (
-      _tempTarget === null ||
-      _tempTarget.width !== width ||
-      _tempTarget.height !== height
-    ) {
-      if (_tempTarget !== null) _tempTarget.dispose();
-
-      _tempTarget = new WebGLRenderTarget(width, height, {
-        depthBuffer: false,
-      });
-
-      _tempTarget.scissorTest = true;
-    }
-
-    if (
-      width !== roughnessMap.image.width ||
-      height !== roughnessMap.image.height
-    ) {
-      var params = {
-        wrapS: roughnessMap.wrapS,
-        wrapT: roughnessMap.wrapT,
-        magFilter: roughnessMap.magFilter,
-        minFilter: roughnessMap.minFilter,
-        depthBuffer: false,
-      };
-
-      var newRoughnessTarget = new WebGLRenderTarget(width, height, params);
-
-      newRoughnessTarget.texture.generateMipmaps = true;
-
-      // Setting the render target causes the memory to be allocated.
-
-      _renderer.setRenderTarget(newRoughnessTarget);
-
-      material.roughnessMap = newRoughnessTarget.texture;
-
-      if (material.metalnessMap == roughnessMap)
-        material.metalnessMap = material.roughnessMap;
-
-      if (material.aoMap == roughnessMap)
-        material.aoMap = material.roughnessMap;
-
-      // Copy UV transform parameters
-
-      material.roughnessMap.offset.copy(roughnessMap.offset);
-      material.roughnessMap.repeat.copy(roughnessMap.repeat);
-      material.roughnessMap.center.copy(roughnessMap.center);
-      material.roughnessMap.rotation = roughnessMap.rotation;
-
-      material.roughnessMap.matrixAutoUpdate = roughnessMap.matrixAutoUpdate;
-      material.roughnessMap.matrix.copy(roughnessMap.matrix);
-    }
-
-    _mipmapMaterial.uniforms.roughnessMap.value = roughnessMap;
-
-    _mipmapMaterial.uniforms.normalMap.value = normalMap;
-
-    var position = new Vector2(0, 0);
-
-    var texelSize = _mipmapMaterial.uniforms.texelSize.value;
-
-    for (
-      var mip = 0;
-      width >= 1 && height >= 1;
-      ++mip, width /= 2, height /= 2
-    ) {
-      // Rendering to a mip level is not allowed in webGL1. Instead we must set
-      // up a secondary texture to write the result to, then copy it back to the
-      // proper mipmap level.
-
-      texelSize.set(1.0 / width, 1.0 / height);
-
-      if (mip == 0) texelSize.set(0.0, 0.0);
-
-      _tempTarget.viewport.set(position.x, position.y, width, height);
-
-      _tempTarget.scissor.set(position.x, position.y, width, height);
-
-      _renderer.setRenderTarget(_tempTarget);
-
-      _renderer.render(_mesh, _flatCamera);
-
-      _renderer.copyFramebufferToTexture(position, material.roughnessMap, mip);
-
-      _mipmapMaterial.uniforms.roughnessMap.value = material.roughnessMap;
-    }
-
-    if (roughnessMap !== material.roughnessMap) roughnessMap.dispose();
-
-    _renderer.setRenderTarget(oldTarget);
-
-    _renderer.autoClear = autoClear;
-  },
-
-  dispose: function () {
-    _mipmapMaterial.dispose();
-
-    _mesh.geometry.dispose();
-
-    if (_tempTarget != null) _tempTarget.dispose();
-  },
-};
-
 function _getMipmapMaterial() {
-  var shaderMaterial = new RawShaderMaterial({
-    uniforms: {
-      roughnessMap: { value: null },
-      normalMap: { value: null },
-      texelSize: { value: new Vector2(1, 1) },
-    },
 
-    vertexShader: /* glsl */ `
+	const shaderMaterial = new RawShaderMaterial( {
+
+		uniforms: {
+			roughnessMap: { value: null },
+			normalMap: { value: null },
+			texelSize: { value: new Vector2( 1, 1 ) }
+		},
+
+		vertexShader: /* glsl */`
 			precision mediump float;
 			precision mediump int;
 
@@ -193,7 +184,7 @@ function _getMipmapMaterial() {
 			}
 		`,
 
-    fragmentShader: /* glsl */ `
+		fragmentShader: /* glsl */`
 			precision mediump float;
 			precision mediump int;
 
@@ -294,14 +285,16 @@ function _getMipmapMaterial() {
 			}
 		`,
 
-    blending: NoBlending,
-    depthTest: false,
-    depthWrite: false,
-  });
+		blending: NoBlending,
+		depthTest: false,
+		depthWrite: false
 
-  shaderMaterial.type = 'RoughnessMipmapper';
+	} );
 
-  return shaderMaterial;
+	shaderMaterial.type = 'RoughnessMipmapper';
+
+	return shaderMaterial;
+
 }
 
 export { RoughnessMipmapper };

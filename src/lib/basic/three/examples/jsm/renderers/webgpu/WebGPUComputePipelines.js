@@ -1,63 +1,67 @@
+import WebGPUProgrammableStage from './WebGPUProgrammableStage.js';
+
 class WebGPUComputePipelines {
-  constructor(device, glslang) {
-    this.device = device;
-    this.glslang = glslang;
 
-    this.pipelines = new WeakMap();
-    this.shaderModules = {
-      compute: new WeakMap(),
-    };
-  }
+	constructor( device, glslang ) {
 
-  get(param) {
-    let pipeline = this.pipelines.get(param);
+		this.device = device;
+		this.glslang = glslang;
 
-    if (pipeline === undefined) {
-      const device = this.device;
-      const shader = {
-        computeShader: param.shader,
-      };
+		this.pipelines = new WeakMap();
+		this.stages = {
+			compute: new WeakMap()
+		};
 
-      // shader modules
+	}
 
-      const glslang = this.glslang;
+	get( param ) {
 
-      let moduleCompute = this.shaderModules.compute.get(shader);
+		let pipeline = this.pipelines.get( param );
 
-      if (moduleCompute === undefined) {
-        const byteCodeCompute = glslang.compileGLSL(
-          shader.computeShader,
-          'compute',
-        );
+		// @TODO: Reuse compute pipeline if possible, introduce WebGPUComputePipeline
 
-        moduleCompute = device.createShaderModule({ code: byteCodeCompute });
+		if ( pipeline === undefined ) {
 
-        this.shaderModules.compute.set(shader, moduleCompute);
-      }
+			const device = this.device;
+			const glslang = this.glslang;
 
-      //
+			const shader = {
+				computeShader: param.shader
+			};
 
-      const computeStage = {
-        module: moduleCompute,
-        entryPoint: 'main',
-      };
+			// programmable stage
 
-      pipeline = device.createComputePipeline({
-        computeStage: computeStage,
-      });
+			let stageCompute = this.stages.compute.get( shader );
 
-      this.pipelines.set(param, pipeline);
-    }
+			if ( stageCompute === undefined ) {
 
-    return pipeline;
-  }
+ 				stageCompute = new WebGPUProgrammableStage( device, glslang, shader.computeShader, 'compute' );
 
-  dispose() {
-    this.pipelines = new WeakMap();
-    this.shaderModules = {
-      compute: new WeakMap(),
-    };
-  }
+				this.stages.compute.set( shader, stageCompute );
+
+			}
+
+			pipeline = device.createComputePipeline( {
+				compute: stageCompute.stage
+			} );
+
+			this.pipelines.set( param, pipeline );
+
+		}
+
+		return pipeline;
+
+	}
+
+	dispose() {
+
+		this.pipelines = new WeakMap();
+		this.stages = {
+			compute: new WeakMap()
+		};
+
+	}
+
 }
 
 export default WebGPUComputePipelines;

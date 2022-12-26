@@ -45,7 +45,6 @@ import { Color } from '../math/Color.js';
  *  wireframe: <boolean>,
  *  wireframeLinewidth: <float>,
  *
- *  skinning: <bool>,
  *  morphTargets: <bool>,
  *  morphNormals: <bool>,
  *
@@ -54,113 +53,117 @@ import { Color } from '../math/Color.js';
  */
 
 class MeshPhongMaterial extends Material {
-  constructor(parameters) {
-    super();
 
-    this.type = 'MeshPhongMaterial';
+	constructor( parameters ) {
 
-    this.color = new Color(0xffffff); // diffuse
-    this.specular = new Color(0x111111);
-    this.shininess = 30;
+		super();
 
-    this.map = null;
+		this.type = 'MeshPhongMaterial';
 
-    this.lightMap = null;
-    this.lightMapIntensity = 1.0;
+		this.color = new Color( 0xffffff ); // diffuse
+		this.specular = new Color( 0x111111 );
+		this.shininess = 30;
 
-    this.aoMap = null;
-    this.aoMapIntensity = 1.0;
+		this.map = null;
 
-    this.emissive = new Color(0x000000);
-    this.emissiveIntensity = 1.0;
-    this.emissiveMap = null;
+		this.lightMap = null;
+		this.lightMapIntensity = 1.0;
 
-    this.bumpMap = null;
-    this.bumpScale = 1;
+		this.aoMap = null;
+		this.aoMapIntensity = 1.0;
 
-    this.normalMap = null;
-    this.normalMapType = TangentSpaceNormalMap;
-    this.normalScale = new Vector2(1, 1);
+		this.emissive = new Color( 0x000000 );
+		this.emissiveIntensity = 1.0;
+		this.emissiveMap = null;
 
-    this.displacementMap = null;
-    this.displacementScale = 1;
-    this.displacementBias = 0;
+		this.bumpMap = null;
+		this.bumpScale = 1;
 
-    this.specularMap = null;
+		this.normalMap = null;
+		this.normalMapType = TangentSpaceNormalMap;
+		this.normalScale = new Vector2( 1, 1 );
 
-    this.alphaMap = null;
+		this.displacementMap = null;
+		this.displacementScale = 1;
+		this.displacementBias = 0;
 
-    this.envMap = null;
-    this.combine = MultiplyOperation;
-    this.reflectivity = 1;
-    this.refractionRatio = 0.98;
+		this.specularMap = null;
 
-    this.wireframe = false;
-    this.wireframeLinewidth = 1;
-    this.wireframeLinecap = 'round';
-    this.wireframeLinejoin = 'round';
+		this.alphaMap = null;
 
-    this.skinning = false;
-    this.morphTargets = false;
-    this.morphNormals = false;
+		this.envMap = null;
+		this.combine = MultiplyOperation;
+		this.reflectivity = 1;
+		this.refractionRatio = 0.98;
 
-    this.flatShading = false;
+		this.wireframe = false;
+		this.wireframeLinewidth = 1;
+		this.wireframeLinecap = 'round';
+		this.wireframeLinejoin = 'round';
 
-    this.setValues(parameters);
-  }
+		this.morphTargets = false;
+		this.morphNormals = false;
 
-  copy(source) {
-    super.copy(source);
+		this.flatShading = false;
 
-    this.color.copy(source.color);
-    this.specular.copy(source.specular);
-    this.shininess = source.shininess;
+		this.setValues( parameters );
 
-    this.map = source.map;
+	}
 
-    this.lightMap = source.lightMap;
-    this.lightMapIntensity = source.lightMapIntensity;
+	copy( source ) {
 
-    this.aoMap = source.aoMap;
-    this.aoMapIntensity = source.aoMapIntensity;
+		super.copy( source );
 
-    this.emissive.copy(source.emissive);
-    this.emissiveMap = source.emissiveMap;
-    this.emissiveIntensity = source.emissiveIntensity;
+		this.color.copy( source.color );
+		this.specular.copy( source.specular );
+		this.shininess = source.shininess;
 
-    this.bumpMap = source.bumpMap;
-    this.bumpScale = source.bumpScale;
+		this.map = source.map;
 
-    this.normalMap = source.normalMap;
-    this.normalMapType = source.normalMapType;
-    this.normalScale.copy(source.normalScale);
+		this.lightMap = source.lightMap;
+		this.lightMapIntensity = source.lightMapIntensity;
 
-    this.displacementMap = source.displacementMap;
-    this.displacementScale = source.displacementScale;
-    this.displacementBias = source.displacementBias;
+		this.aoMap = source.aoMap;
+		this.aoMapIntensity = source.aoMapIntensity;
 
-    this.specularMap = source.specularMap;
+		this.emissive.copy( source.emissive );
+		this.emissiveMap = source.emissiveMap;
+		this.emissiveIntensity = source.emissiveIntensity;
 
-    this.alphaMap = source.alphaMap;
+		this.bumpMap = source.bumpMap;
+		this.bumpScale = source.bumpScale;
 
-    this.envMap = source.envMap;
-    this.combine = source.combine;
-    this.reflectivity = source.reflectivity;
-    this.refractionRatio = source.refractionRatio;
+		this.normalMap = source.normalMap;
+		this.normalMapType = source.normalMapType;
+		this.normalScale.copy( source.normalScale );
 
-    this.wireframe = source.wireframe;
-    this.wireframeLinewidth = source.wireframeLinewidth;
-    this.wireframeLinecap = source.wireframeLinecap;
-    this.wireframeLinejoin = source.wireframeLinejoin;
+		this.displacementMap = source.displacementMap;
+		this.displacementScale = source.displacementScale;
+		this.displacementBias = source.displacementBias;
 
-    this.skinning = source.skinning;
-    this.morphTargets = source.morphTargets;
-    this.morphNormals = source.morphNormals;
+		this.specularMap = source.specularMap;
 
-    this.flatShading = source.flatShading;
+		this.alphaMap = source.alphaMap;
 
-    return this;
-  }
+		this.envMap = source.envMap;
+		this.combine = source.combine;
+		this.reflectivity = source.reflectivity;
+		this.refractionRatio = source.refractionRatio;
+
+		this.wireframe = source.wireframe;
+		this.wireframeLinewidth = source.wireframeLinewidth;
+		this.wireframeLinecap = source.wireframeLinecap;
+		this.wireframeLinejoin = source.wireframeLinejoin;
+
+		this.morphTargets = source.morphTargets;
+		this.morphNormals = source.morphNormals;
+
+		this.flatShading = source.flatShading;
+
+		return this;
+
+	}
+
 }
 
 MeshPhongMaterial.prototype.isMeshPhongMaterial = true;

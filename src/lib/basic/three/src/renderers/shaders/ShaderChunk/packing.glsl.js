@@ -1,4 +1,4 @@
-export default /* glsl */ `
+export default /* glsl */`
 vec3 packNormalToRGB( const in vec3 normal ) {
 	return normalize( normal ) * 0.5 + 0.5;
 }
@@ -41,6 +41,8 @@ float viewZToOrthographicDepth( const in float viewZ, const in float near, const
 float orthographicDepthToViewZ( const in float linearClipZ, const in float near, const in float far ) {
 	return linearClipZ * ( near - far ) - near;
 }
+
+// NOTE: https://twitter.com/gonnavis/status/1377183786949959682
 
 float viewZToPerspectiveDepth( const in float viewZ, const in float near, const in float far ) {
 	return (( near + viewZ ) * far ) / (( far - near ) * viewZ );

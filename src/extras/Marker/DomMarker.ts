@@ -5,7 +5,7 @@
  *@author guoweiyu.
  *@date 2021-08-24 14:51:26.
  */
-import { MarkerConfigType } from './type';
+import type { MarkerConfigType } from './type';
 import { CSS3DSprite, CSS3DObject } from '../../lib/renderers/CSS3DRenderer';
 import { Group, Sprite, SpriteMaterial } from 'three';
 import Marker from './index';
@@ -13,6 +13,8 @@ import Marker from './index';
 class DomMarker extends Group {
   constructor(config: MarkerConfigType) {
     super();
+    this.isDomMarker = true;
+    this.domElement = config.dom;
     this.userData.type = 'Marker';
     this.createMarker(config);
   }

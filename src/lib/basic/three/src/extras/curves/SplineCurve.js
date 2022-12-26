@@ -3,77 +3,93 @@ import { CatmullRom } from '../core/Interpolations.js';
 import { Vector2 } from '../../math/Vector2.js';
 
 class SplineCurve extends Curve {
-  constructor(points = []) {
-    super();
 
-    this.type = 'SplineCurve';
+	constructor( points = [] ) {
 
-    this.points = points;
-  }
+		super();
 
-  getPoint(t, optionalTarget = new Vector2()) {
-    const point = optionalTarget;
+		this.type = 'SplineCurve';
 
-    const points = this.points;
-    const p = (points.length - 1) * t;
+		this.points = points;
 
-    const intPoint = Math.floor(p);
-    const weight = p - intPoint;
+	}
 
-    const p0 = points[intPoint === 0 ? intPoint : intPoint - 1];
-    const p1 = points[intPoint];
-    const p2 =
-      points[intPoint > points.length - 2 ? points.length - 1 : intPoint + 1];
-    const p3 =
-      points[intPoint > points.length - 3 ? points.length - 1 : intPoint + 2];
+	getPoint( t, optionalTarget = new Vector2() ) {
 
-    point.set(
-      CatmullRom(weight, p0.x, p1.x, p2.x, p3.x),
-      CatmullRom(weight, p0.y, p1.y, p2.y, p3.y),
-    );
+		const point = optionalTarget;
 
-    return point;
-  }
+		const points = this.points;
+		const p = ( points.length - 1 ) * t;
 
-  copy(source) {
-    super.copy(source);
+		const intPoint = Math.floor( p );
+		const weight = p - intPoint;
 
-    this.points = [];
+		const p0 = points[ intPoint === 0 ? intPoint : intPoint - 1 ];
+		const p1 = points[ intPoint ];
+		const p2 = points[ intPoint > points.length - 2 ? points.length - 1 : intPoint + 1 ];
+		const p3 = points[ intPoint > points.length - 3 ? points.length - 1 : intPoint + 2 ];
 
-    for (let i = 0, l = source.points.length; i < l; i++) {
-      const point = source.points[i];
+		point.set(
+			CatmullRom( weight, p0.x, p1.x, p2.x, p3.x ),
+			CatmullRom( weight, p0.y, p1.y, p2.y, p3.y )
+		);
 
-      this.points.push(point.clone());
-    }
+		return point;
 
-    return this;
-  }
+	}
 
-  toJSON() {
-    const data = super.toJSON();
+	copy( source ) {
 
-    data.points = [];
+		super.copy( source );
 
-    for (let i = 0, l = this.points.length; i < l; i++) {
-      const point = this.points[i];
-      data.points.push(point.toArray());
-    }
+		this.points = [];
 
-    return data;
-  }
+		for ( let i = 0, l = source.points.length; i < l; i ++ ) {
 
-  fromJSON(json) {
-    super.fromJSON(json);
+			const point = source.points[ i ];
 
-    this.points = [];
+			this.points.push( point.clone() );
 
-    for (let i = 0, l = json.points.length; i < l; i++) {
-      const point = json.points[i];
-      this.points.push(new Vector2().fromArray(point));
-    }
+		}
 
-    return this;
-  }
+		return this;
+
+	}
+
+	toJSON() {
+
+		const data = super.toJSON();
+
+		data.points = [];
+
+		for ( let i = 0, l = this.points.length; i < l; i ++ ) {
+
+			const point = this.points[ i ];
+			data.points.push( point.toArray() );
+
+		}
+
+		return data;
+
+	}
+
+	fromJSON( json ) {
+
+		super.fromJSON( json );
+
+		this.points = [];
+
+		for ( let i = 0, l = json.points.length; i < l; i ++ ) {
+
+			const point = json.points[ i ];
+			this.points.push( new Vector2().fromArray( point ) );
+
+		}
+
+		return this;
+
+	}
+
 }
 
 SplineCurve.prototype.isSplineCurve = true;

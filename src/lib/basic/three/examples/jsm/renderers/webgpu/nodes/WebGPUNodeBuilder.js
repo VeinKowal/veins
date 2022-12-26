@@ -1,271 +1,433 @@
 import WebGPUNodeUniformsGroup from './WebGPUNodeUniformsGroup.js';
 import {
-  FloatNodeUniform,
-  Vector2NodeUniform,
-  Vector3NodeUniform,
-  Vector4NodeUniform,
-  ColorNodeUniform,
-  Matrix3NodeUniform,
-  Matrix4NodeUniform,
+	FloatNodeUniform, Vector2NodeUniform, Vector3NodeUniform, Vector4NodeUniform,
+	ColorNodeUniform, Matrix3NodeUniform, Matrix4NodeUniform
 } from './WebGPUNodeUniform.js';
-import WebGPUSampler from '../WebGPUSampler.js';
-import { WebGPUSampledTexture } from '../WebGPUSampledTexture.js';
+import WebGPUNodeSampler from './WebGPUNodeSampler.js';
+import { WebGPUNodeSampledTexture } from './WebGPUNodeSampledTexture.js';
 
 import NodeSlot from '../../nodes/core/NodeSlot.js';
 import NodeBuilder from '../../nodes/core/NodeBuilder.js';
+import MaterialNode from '../../nodes/accessors/MaterialNode.js';
 import ModelViewProjectionNode from '../../nodes/accessors/ModelViewProjectionNode.js';
-
+import LightContextNode from '../../nodes/lights/LightContextNode.js';
 import ShaderLib from './ShaderLib.js';
 
 class WebGPUNodeBuilder extends NodeBuilder {
-  constructor(material, renderer) {
-    super(material, renderer);
 
-    this.bindings = { vertex: [], fragment: [] };
-    this.bindingsOffset = { vertex: 0, fragment: 0 };
+	constructor( material, renderer ) {
 
-    this.uniformsGroup = {};
+		super( material, renderer );
 
-    this.nativeShader = null;
+		this.bindings = { vertex: [], fragment: [] };
+		this.bindingsOffset = { vertex: 0, fragment: 0 };
 
-    this._parseMaterial();
-  }
+		this.uniformsGroup = {};
 
-  _parseMaterial() {
-    const material = this.material;
+		this.nativeShader = null;
 
-    // get shader
+		this._parseMaterial();
 
-    this.nativeShader = ShaderLib.common;
+	}
 
-    // parse inputs
+	_parseMaterial() {
 
-    if (
-      material.isMeshBasicMaterial ||
-      material.isPointsMaterial ||
-      material.isLineBasicMaterial
-    ) {
-      const mvpNode = new ModelViewProjectionNode();
+		const material = this.material;
 
-      if (material.positionNode !== undefined) {
-        mvpNode.position = material.positionNode;
-      }
+		// get shader
 
-      this.addSlot('vertex', new NodeSlot(mvpNode, 'MVP', 'vec4'));
+		let shader = null;
 
-      if (material.colorNode !== undefined) {
-        this.addSlot(
-          'fragment',
-          new NodeSlot(material.colorNode, 'COLOR', 'vec4'),
-        );
-      }
+		if ( material.isMeshPhongMaterial ) {
 
-      if (material.opacityNode !== undefined) {
-        this.addSlot(
-          'fragment',
-          new NodeSlot(material.opacityNode, 'OPACITY', 'float'),
-        );
-      }
-    }
-  }
+			shader = ShaderLib.phong;
 
-  getTexture(textureProperty, uvSnippet) {
-    return `texture( sampler2D( ${textureProperty}, ${textureProperty}_sampler ), ${uvSnippet} )`;
-  }
+		} else {
 
-  getPropertyName(node) {
-    if (node.isNodeUniform) {
-      const name = node.name;
-      const type = node.type;
+			shader = ShaderLib.common;
 
-      if (type === 'texture') {
-        return name;
-      } else {
-        return `nodeUniforms.${name}`;
-      }
-    }
+		}
 
-    return super.getPropertyName(node);
-  }
+		this.nativeShader = shader;
 
-  getBindings() {
-    const bindings = this.bindings;
+		// parse inputs
 
-    return [...bindings.vertex, ...bindings.fragment];
-  }
+		if ( material.isMeshPhongMaterial || material.isMeshBasicMaterial || material.isPointsMaterial || material.isLineBasicMaterial ) {
 
-  getUniformFromNode(node, shaderStage, type) {
-    const uniformNode = super.getUniformFromNode(node, shaderStage, type);
-    const nodeData = this.getDataFromNode(node, shaderStage);
+			const mvpNode = new ModelViewProjectionNode();
+			const lightNode = material.lightNode;
 
-    if (nodeData.uniformGPU === undefined) {
-      let uniformGPU;
+			if ( material.positionNode !== undefined ) {
 
-      const bindings = this.bindings[shaderStage];
+				mvpNode.position = material.positionNode;
 
-      if (type === 'texture') {
-        const sampler = new WebGPUSampler(
-          `${uniformNode.name}_sampler`,
-          uniformNode.value,
-        );
-        const texture = new WebGPUSampledTexture(
-          uniformNode.name,
-          uniformNode.value,
-        );
+			}
 
-        // add first textures in sequence and group for last
-        const lastBinding = bindings[bindings.length - 1];
-        const index =
-          lastBinding && lastBinding.isUniformsGroup
-            ? bindings.length - 1
-            : bindings.length;
+			this.addSlot( 'vertex', new NodeSlot( mvpNode, 'MVP', 'vec4' ) );
 
-        bindings.splice(index, 0, sampler, texture);
+			if ( material.alphaTestNode !== undefined ) {
 
-        uniformGPU = { sampler, texture };
-      } else {
-        let uniformsGroup = this.uniformsGroup[shaderStage];
+				this.addSlot( 'fragment', new NodeSlot( material.alphaTestNode, 'ALPHA_TEST', 'float' ) );
 
-        if (uniformsGroup === undefined) {
-          uniformsGroup = new WebGPUNodeUniformsGroup(shaderStage);
+			} else {
 
-          this.uniformsGroup[shaderStage] = uniformsGroup;
+				this.addSlot( 'fragment', new NodeSlot( new MaterialNode( MaterialNode.ALPHA_TEST ), 'ALPHA_TEST', 'float' ) );
 
-          bindings.push(uniformsGroup);
-        }
+			}
 
-        if (type === 'float') {
-          uniformGPU = new FloatNodeUniform(uniformNode);
-        } else if (type === 'vec2') {
-          uniformGPU = new Vector2NodeUniform(uniformNode);
-        } else if (type === 'vec3') {
-          uniformGPU = new Vector3NodeUniform(uniformNode);
-        } else if (type === 'vec4') {
-          uniformGPU = new Vector4NodeUniform(uniformNode);
-        } else if (type === 'color') {
-          uniformGPU = new ColorNodeUniform(uniformNode);
-        } else if (type === 'mat3') {
-          uniformGPU = new Matrix3NodeUniform(uniformNode);
-        } else if (type === 'mat4') {
-          uniformGPU = new Matrix4NodeUniform(uniformNode);
-        } else {
-          throw new Error(`Uniform "${type}" not declared.`);
-        }
+			if ( material.colorNode !== undefined ) {
 
-        uniformsGroup.addUniform(uniformGPU);
-      }
+				this.addSlot( 'fragment', new NodeSlot( material.colorNode, 'COLOR', 'vec4' ) );
 
-      nodeData.uniformGPU = uniformGPU;
+			} else {
 
-      if (shaderStage === 'vertex') {
-        this.bindingsOffset['fragment'] = bindings.length;
-      }
-    }
+				this.addSlot( 'fragment', new NodeSlot( new MaterialNode( MaterialNode.COLOR ), 'COLOR', 'vec4' ) );
 
-    return uniformNode;
-  }
+			}
 
-  getAttributesHeaderSnippet(shaderStage) {
-    let snippet = '';
+			if ( material.opacityNode !== undefined ) {
 
-    if (shaderStage === 'vertex') {
-      const attributes = this.attributes;
+				this.addSlot( 'fragment', new NodeSlot( material.opacityNode, 'OPACITY', 'float' ) );
 
-      for (let index = 0; index < attributes.length; index++) {
-        const attribute = attributes[index];
+			} else {
 
-        snippet += `layout(location = ${index}) in ${attribute.type} ${attribute.name};`;
-      }
-    }
+				this.addSlot( 'fragment', new NodeSlot( new MaterialNode( MaterialNode.OPACITY ), 'OPACITY', 'float' ) );
 
-    return snippet;
-  }
+			}
 
-  getVarysHeaderSnippet(shaderStage) {
-    let snippet = '';
+			if ( material.isMeshPhongMaterial ) {
 
-    const varys = this.varys;
+				if ( material.specularNode !== undefined ) {
 
-    const ioStage = shaderStage === 'vertex' ? 'out' : 'in';
+					this.addSlot( 'fragment', new NodeSlot( material.specularNode, 'SPECULAR', 'vec3' ) );
 
-    for (let index = 0; index < varys.length; index++) {
-      const vary = varys[index];
+				} else {
 
-      snippet += `layout(location = ${index}) ${ioStage} ${vary.type} ${vary.name};`;
-    }
+					this.addSlot( 'fragment', new NodeSlot( new MaterialNode( MaterialNode.SPECULAR ), 'SPECULAR', 'vec3' ) );
 
-    return snippet;
-  }
+				}
 
-  getVarysBodySnippet(shaderStage) {
-    let snippet = '';
+				if ( material.shininessNode !== undefined ) {
 
-    if (shaderStage === 'vertex') {
-      for (const vary of this.varys) {
-        snippet += `${vary.name} = ${vary.snippet};`;
-      }
-    }
+					this.addSlot( 'fragment', new NodeSlot( material.shininessNode, 'SHININESS', 'float' ) );
 
-    return snippet;
-  }
+				} else {
 
-  getUniformsHeaderSnippet(shaderStage) {
-    const uniforms = this.uniforms[shaderStage];
+					this.addSlot( 'fragment', new NodeSlot( new MaterialNode( MaterialNode.SHININESS ), 'SHININESS', 'float' ) );
 
-    let snippet = '';
-    let groupSnippet = '';
+				}
 
-    let index = this.bindingsOffset[shaderStage];
+			}
 
-    for (const uniform of uniforms) {
-      if (uniform.type === 'texture') {
-        snippet += `layout(set = 0, binding = ${index++}) uniform sampler ${
-          uniform.name
-        }_sampler;`;
-        snippet += `layout(set = 0, binding = ${index++}) uniform texture2D ${
-          uniform.name
-        };`;
-      } else {
-        const vectorType = this.getVectorType(uniform.type);
+			if ( lightNode !== undefined ) {
 
-        groupSnippet += `uniform ${vectorType} ${uniform.name};`;
-      }
-    }
+				const lightContextNode = new LightContextNode( lightNode );
 
-    if (groupSnippet) {
-      snippet += `layout(set = 0, binding = ${index++}) uniform NodeUniforms { ${groupSnippet} } nodeUniforms;`;
-    }
+				this.addSlot( 'fragment', new NodeSlot( lightContextNode, 'LIGHT', 'vec3' ) );
 
-    return snippet;
-  }
+			}
 
-  composeShaderCode(code, snippet) {
-    // use regex maybe for security?
-    const versionStrIndex = code.indexOf('\n');
+		}
 
-    let finalCode = code.substr(0, versionStrIndex) + '\n\n';
+	}
 
-    finalCode += snippet;
+	getTexture( textureProperty, uvSnippet ) {
 
-    finalCode += code.substr(versionStrIndex);
+		return `texture( sampler2D( ${textureProperty}, ${textureProperty}_sampler ), ${uvSnippet} )`;
 
-    return finalCode;
-  }
+	}
 
-  build() {
-    super.build();
+	getPropertyName( node ) {
 
-    this.vertexShader = this.composeShaderCode(
-      this.nativeShader.vertexShader,
-      this.vertexShader,
-    );
-    this.fragmentShader = this.composeShaderCode(
-      this.nativeShader.fragmentShader,
-      this.fragmentShader,
-    );
+		if ( node.isNodeUniform === true ) {
 
-    return this;
-  }
+			const name = node.name;
+			const type = node.type;
+
+			if ( type === 'texture' ) {
+
+				return name;
+
+			} else {
+
+				return `nodeUniforms.${name}`;
+
+			}
+
+		}
+
+		return super.getPropertyName( node );
+
+	}
+
+	getBindings() {
+
+		const bindings = this.bindings;
+
+		return [ ...bindings.vertex, ...bindings.fragment ];
+
+	}
+
+	getUniformFromNode( node, shaderStage, type ) {
+
+		const uniformNode = super.getUniformFromNode( node, shaderStage, type );
+		const nodeData = this.getDataFromNode( node, shaderStage );
+
+		if ( nodeData.uniformGPU === undefined ) {
+
+			let uniformGPU;
+
+			const bindings = this.bindings[ shaderStage ];
+
+			if ( type === 'texture' ) {
+
+				const sampler = new WebGPUNodeSampler( `${uniformNode.name}_sampler`, uniformNode.node );
+				const texture = new WebGPUNodeSampledTexture( uniformNode.name, uniformNode.node );
+
+				// add first textures in sequence and group for last
+				const lastBinding = bindings[ bindings.length - 1 ];
+				const index = lastBinding && lastBinding.isUniformsGroup ? bindings.length - 1 : bindings.length;
+
+				bindings.splice( index, 0, sampler, texture );
+
+				uniformGPU = { sampler, texture };
+
+			} else {
+
+				let uniformsGroup = this.uniformsGroup[ shaderStage ];
+
+				if ( uniformsGroup === undefined ) {
+
+					uniformsGroup = new WebGPUNodeUniformsGroup( shaderStage );
+
+					this.uniformsGroup[ shaderStage ] = uniformsGroup;
+
+					bindings.push( uniformsGroup );
+
+				}
+
+				if ( type === 'float' ) {
+
+					uniformGPU = new FloatNodeUniform( uniformNode );
+
+				} else if ( type === 'vec2' ) {
+
+					uniformGPU = new Vector2NodeUniform( uniformNode );
+
+				} else if ( type === 'vec3' ) {
+
+					uniformGPU = new Vector3NodeUniform( uniformNode );
+
+				} else if ( type === 'vec4' ) {
+
+					uniformGPU = new Vector4NodeUniform( uniformNode );
+
+				} else if ( type === 'color' ) {
+
+					uniformGPU = new ColorNodeUniform( uniformNode );
+
+				} else if ( type === 'mat3' ) {
+
+					uniformGPU = new Matrix3NodeUniform( uniformNode );
+
+				} else if ( type === 'mat4' ) {
+
+					uniformGPU = new Matrix4NodeUniform( uniformNode );
+
+				} else {
+
+					throw new Error( `Uniform "${type}" not declared.` );
+
+				}
+
+				uniformsGroup.addUniform( uniformGPU );
+
+			}
+
+			nodeData.uniformGPU = uniformGPU;
+
+			if ( shaderStage === 'vertex' ) {
+
+				this.bindingsOffset[ 'fragment' ] = bindings.length;
+
+			}
+
+		}
+
+		return uniformNode;
+
+	}
+
+	getAttributesHeaderSnippet( shaderStage ) {
+
+		let snippet = '';
+
+		if ( shaderStage === 'vertex' ) {
+
+			const attributes = this.attributes;
+
+			for ( let index = 0; index < attributes.length; index ++ ) {
+
+				const attribute = attributes[ index ];
+
+				snippet += `layout(location = ${index}) in ${attribute.type} ${attribute.name}; `;
+
+			}
+
+		}
+
+		return snippet;
+
+	}
+
+	getVarysHeaderSnippet( shaderStage ) {
+
+		let snippet = '';
+
+		const varys = this.varys;
+
+		const ioStage = shaderStage === 'vertex' ? 'out' : 'in';
+
+		for ( let index = 0; index < varys.length; index ++ ) {
+
+			const vary = varys[ index ];
+
+			snippet += `layout(location = ${index}) ${ioStage} ${vary.type} ${vary.name}; `;
+
+		}
+
+		return snippet;
+
+	}
+
+	getVarysBodySnippet( shaderStage ) {
+
+		let snippet = '';
+
+		if ( shaderStage === 'vertex' ) {
+
+			for ( const vary of this.varys ) {
+
+				snippet += `${vary.name} = ${vary.snippet}; `;
+
+			}
+
+		}
+
+		return snippet;
+
+	}
+
+	getVarsHeaderSnippet( shaderStage ) {
+
+		let snippet = '';
+
+		const vars = this.vars[ shaderStage ];
+
+		for ( let index = 0; index < vars.length; index ++ ) {
+
+			const variable = vars[ index ];
+
+			snippet += `${variable.type} ${variable.name}; `;
+
+		}
+
+		return snippet;
+
+	}
+
+	getVarsBodySnippet( shaderStage ) {
+
+		let snippet = '';
+
+		const vars = this.vars[ shaderStage ];
+
+		for ( const variable of vars ) {
+
+			if ( variable.snippet !== '' ) {
+
+				snippet += `${variable.name} = ${variable.snippet}; `;
+
+			}
+
+		}
+
+		return snippet;
+
+	}
+
+	getUniformsHeaderSnippet( shaderStage ) {
+
+		const uniforms = this.uniforms[ shaderStage ];
+
+		let snippet = '';
+		let groupSnippet = '';
+
+		let index = this.bindingsOffset[ shaderStage ];
+
+		for ( const uniform of uniforms ) {
+
+			if ( uniform.type === 'texture' ) {
+
+				snippet += `layout(set = 0, binding = ${index ++}) uniform sampler ${uniform.name}_sampler; `;
+				snippet += `layout(set = 0, binding = ${index ++}) uniform texture2D ${uniform.name}; `;
+
+			} else {
+
+				const vectorType = this.getVectorType( uniform.type );
+
+				groupSnippet += `uniform ${vectorType} ${uniform.name}; `;
+
+			}
+
+		}
+
+		if ( groupSnippet ) {
+
+			snippet += `layout(set = 0, binding = ${index ++}) uniform NodeUniforms { ${groupSnippet} } nodeUniforms; `;
+
+		}
+
+		return snippet;
+
+	}
+
+	composeShaderCode( code, snippet ) {
+
+		// use regex maybe for security?
+		const versionStrIndex = code.indexOf( '\n' );
+
+		let finalCode = code.substr( 0, versionStrIndex ) + '\n\n';
+
+		finalCode += snippet;
+
+		finalCode += code.substr( versionStrIndex );
+
+		return finalCode;
+
+	}
+
+	build() {
+
+		const keywords = this.getContextParameter( 'keywords' );
+
+		for ( const shaderStage of [ 'vertex', 'fragment' ] ) {
+
+			this.shaderStage = shaderStage;
+
+			keywords.include( this, this.nativeShader.fragmentShader );
+
+		}
+
+		super.build();
+
+		this.vertexShader = this.composeShaderCode( this.nativeShader.vertexShader, this.vertexShader );
+		this.fragmentShader = this.composeShaderCode( this.nativeShader.fragmentShader, this.fragmentShader );
+
+		return this;
+
+	}
+
 }
 
 export default WebGPUNodeBuilder;

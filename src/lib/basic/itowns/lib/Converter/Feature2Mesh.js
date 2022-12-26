@@ -1,92 +1,31 @@
-'use strict';
+"use strict";
 
-var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault');
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _interopRequireWildcard = require('@babel/runtime/helpers/interopRequireWildcard');
+var _typeof = require("@babel/runtime/helpers/typeof");
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports['default'] = void 0;
+exports["default"] = void 0;
 
-var THREE = _interopRequireWildcard(require('three'));
+var THREE = _interopRequireWildcard(require("three"));
 
-var _earcut = _interopRequireDefault(require('earcut'));
+var _earcut = _interopRequireDefault(require("earcut"));
 
-var _Feature = require('../Core/Feature');
+var _Feature = require("../Core/Feature");
 
-var _Undeprecator = require('../Core/Deprecated/Undeprecator');
+var _Undeprecator = require("../Core/Deprecated/Undeprecator");
 
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-  if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) {
-    if (
-      Array.isArray(o) ||
-      (it = _unsupportedIterableToArray(o)) ||
-      (allowArrayLike && o && typeof o.length === 'number')
-    ) {
-      if (it) o = it;
-      var i = 0;
-      var F = function F() {};
-      return {
-        s: F,
-        n: function n() {
-          if (i >= o.length) return { done: true };
-          return { done: false, value: o[i++] };
-        },
-        e: function e(_e) {
-          throw _e;
-        },
-        f: F,
-      };
-    }
-    throw new TypeError(
-      'Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
-    );
-  }
-  var normalCompletion = true,
-    didErr = false,
-    err;
-  return {
-    s: function s() {
-      it = o[Symbol.iterator]();
-    },
-    n: function n() {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function e(_e2) {
-      didErr = true;
-      err = _e2;
-    },
-    f: function f() {
-      try {
-        if (!normalCompletion && it['return'] != null) it['return']();
-      } finally {
-        if (didErr) throw err;
-      }
-    },
-  };
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === 'Object' && o.constructor) n = o.constructor.name;
-  if (n === 'Map' || n === 'Set') return Array.from(o);
-  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var _color = new THREE.Color();
 
@@ -103,8 +42,7 @@ function toColor(color) {
 }
 
 function fillColorArray(colors, length, color) {
-  var offset =
-    arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+  var offset = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
   offset *= 3;
   var len = offset + length * 3;
 
@@ -132,17 +70,11 @@ function fillBatchIdArray(batchId, batchIdArray, start, end) {
  * @param      {number} startIn - The offser array to strat reading in ptsIn
  */
 
+
 function coordinatesToVertices(ptsIn, normals, target, zTranslation) {
-  var offsetOut =
-    arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-  var countIn =
-    arguments.length > 5 && arguments[5] !== undefined
-      ? arguments[5]
-      : ptsIn.length / 3;
-  var startIn =
-    arguments.length > 6 && arguments[6] !== undefined
-      ? arguments[6]
-      : offsetOut;
+  var offsetOut = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+  var countIn = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : ptsIn.length / 3;
+  var startIn = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : offsetOut;
   startIn *= 3;
   countIn *= 3;
   offsetOut *= 3;
@@ -172,13 +104,8 @@ function coordinatesToVertices(ptsIn, normals, target, zTranslation) {
  * @param {boolean} isClockWise - Wrapping direction
  */
 
-function addExtrudedPolygonSideFaces(
-  indices,
-  length,
-  offset,
-  count,
-  isClockWise,
-) {
+
+function addExtrudedPolygonSideFaces(indices, length, offset, count, isClockWise) {
   // loop over contour length, and for each point of the contour,
   // add indices to make two triangle, that make the side face
   var startIndice = indices.length;
@@ -213,9 +140,7 @@ function featureToPoint(feature, options) {
   var ptsIn = feature.vertices;
   var normals = feature.normals;
   var colors = new Uint8Array(ptsIn.length);
-  var batchIds = options.batchId
-    ? new Uint32Array(ptsIn.length / 3)
-    : undefined;
+  var batchIds = options.batchId ? new Uint32Array(ptsIn.length / 3) : undefined;
   var featureId = 0;
   var vertices;
   var zTranslation = options.GlobalZTrans - feature.altitude.min;
@@ -228,11 +153,11 @@ function featureToPoint(feature, options) {
   }
 
   var globals = {
-    point: true,
+    point: true
   };
 
   var _iterator = _createForOfIteratorHelper(feature.geometries),
-    _step;
+      _step;
 
   try {
     var _loop = function () {
@@ -241,7 +166,7 @@ function featureToPoint(feature, options) {
         globals: globals,
         properties: function properties() {
           return geometry.properties;
-        },
+        }
       });
       var start = geometry.indices[0].offset;
       var count = geometry.indices[0].count;
@@ -254,7 +179,7 @@ function featureToPoint(feature, options) {
       }
     };
 
-    for (_iterator.s(); !(_step = _iterator.n()).done; ) {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
       _loop();
     }
   } catch (err) {
@@ -300,7 +225,7 @@ function featureToLine(feature, options) {
 
   lineMaterial.linewidth = feature.style.stroke.width;
   var globals = {
-    stroke: true,
+    stroke: true
   };
 
   if (feature.geometries.length > 1) {
@@ -309,7 +234,7 @@ function featureToLine(feature, options) {
     var i = 0; // Multi line case
 
     var _iterator2 = _createForOfIteratorHelper(feature.geometries),
-      _step2;
+        _step2;
 
     try {
       var _loop2 = function () {
@@ -318,15 +243,13 @@ function featureToLine(feature, options) {
           globals: globals,
           properties: function properties() {
             return geometry.properties;
-          },
+          }
         });
         var start = geometry.indices[0].offset; // To avoid integer overflow with indice value (16 bits)
 
         if (start > 0xffff) {
-          console.warn(
-            'Feature to Line: integer overflow, too many points in lines',
-          );
-          return 'break';
+          console.warn('Feature to Line: integer overflow, too many points in lines');
+          return "break";
         }
 
         var count = geometry.indices[0].count;
@@ -349,10 +272,10 @@ function featureToLine(feature, options) {
         }
       };
 
-      for (_iterator2.s(); !(_step2 = _iterator2.n()).done; ) {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
         var _ret = _loop2();
 
-        if (_ret === 'break') break;
+        if (_ret === "break") break;
       }
     } catch (err) {
       _iterator2.e(err);
@@ -373,7 +296,7 @@ function featureToLine(feature, options) {
       globals: globals,
       properties: function properties() {
         return feature.geometries[0].properties;
-      },
+      }
     });
     fillColorArray(colors, count, toColor(style.stroke.color));
     geom.setAttribute('color', new THREE.BufferAttribute(colors, 3, true));
@@ -407,16 +330,14 @@ function featureToPolygon(feature, options) {
 
   var colors = new Uint8Array(ptsIn.length);
   var indices = [];
-  var batchIds = options.batchId
-    ? new Uint32Array(vertices.length / 3)
-    : undefined;
+  var batchIds = options.batchId ? new Uint32Array(vertices.length / 3) : undefined;
   var globals = {
-    fill: true,
+    fill: true
   };
   var featureId = 0;
 
   var _iterator3 = _createForOfIteratorHelper(feature.geometries),
-    _step3;
+      _step3;
 
   try {
     var _loop3 = function () {
@@ -424,28 +345,24 @@ function featureToPolygon(feature, options) {
       var start = geometry.indices[0].offset; // To avoid integer overflow with indice value (16 bits)
 
       if (start > 0xffff) {
-        console.warn(
-          'Feature to Polygon: integer overflow, too many points in polygons',
-        );
-        return 'break';
+        console.warn('Feature to Polygon: integer overflow, too many points in polygons');
+        return "break";
       }
 
       var style = feature.style.drawingStylefromContext({
         globals: globals,
         properties: function properties() {
           return geometry.properties;
-        },
+        }
       });
       var lastIndice = geometry.indices.slice(-1)[0];
       var end = lastIndice.offset + lastIndice.count;
       fillColorArray(colors, end - start, toColor(style.fill.color), start);
       var geomVertices = vertices.slice(start * 3, end * 3);
-      var holesOffsets = geometry.indices
-        .map(function (i) {
-          return i.offset - start;
-        })
-        .slice(1);
-      var triangles = (0, _earcut['default'])(geomVertices, holesOffsets, 3);
+      var holesOffsets = geometry.indices.map(function (i) {
+        return i.offset - start;
+      }).slice(1);
+      var triangles = (0, _earcut["default"])(geomVertices, holesOffsets, 3);
       var startIndice = indices.length;
       indices.length += triangles.length;
 
@@ -460,10 +377,10 @@ function featureToPolygon(feature, options) {
       }
     };
 
-    for (_iterator3.s(); !(_step3 = _iterator3.n()).done; ) {
+    for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
       var _ret2 = _loop3();
 
-      if (_ret2 === 'break') break;
+      if (_ret2 === "break") break;
     }
   } catch (err) {
     _iterator3.e(err);
@@ -507,17 +424,15 @@ function featureToExtrudedPolygon(feature, options) {
   var colors = new Uint8Array(ptsIn.length * 2);
   var indices = [];
   var totalVertices = ptsIn.length / 3;
-  var batchIds = options.batchId
-    ? new Uint32Array(vertices.length / 3)
-    : undefined;
+  var batchIds = options.batchId ? new Uint32Array(vertices.length / 3) : undefined;
   var featureId = 0;
   var z = options.GlobalZTrans - feature.altitude.min;
   var globals = {
-    fill: true,
+    fill: true
   };
 
   var _iterator4 = _createForOfIteratorHelper(feature.geometries),
-    _step4;
+      _step4;
 
   try {
     var _loop4 = function () {
@@ -526,7 +441,7 @@ function featureToExtrudedPolygon(feature, options) {
         globals: globals,
         properties: function properties() {
           return geometry.properties;
-        },
+        }
       }); // topColor is assigned to the top of extruded polygon
 
       var topColor = toColor(style.fill.color); // bottomColor is assigned to the bottom of extruded polygon
@@ -541,23 +456,13 @@ function featureToExtrudedPolygon(feature, options) {
       fillColorArray(colors, count, bottomColor, start);
       var startTop = start + totalVertices;
       var endTop = end + totalVertices;
-      coordinatesToVertices(
-        ptsIn,
-        normals,
-        vertices,
-        z + style.fill.extrusion_height,
-        startTop,
-        count,
-        start,
-      );
+      coordinatesToVertices(ptsIn, normals, vertices, z + style.fill.extrusion_height, startTop, count, start);
       fillColorArray(colors, count, topColor, startTop);
       var geomVertices = vertices.slice(startTop * 3, endTop * 3);
-      var holesOffsets = geometry.indices
-        .map(function (i) {
-          return i.offset - start;
-        })
-        .slice(1);
-      var triangles = (0, _earcut['default'])(geomVertices, holesOffsets, 3);
+      var holesOffsets = geometry.indices.map(function (i) {
+        return i.offset - start;
+      }).slice(1);
+      var triangles = (0, _earcut["default"])(geomVertices, holesOffsets, 3);
       var startIndice = indices.length;
       indices.length += triangles.length;
 
@@ -566,18 +471,12 @@ function featureToExtrudedPolygon(feature, options) {
       }
 
       var _iterator5 = _createForOfIteratorHelper(geometry.indices),
-        _step5;
+          _step5;
 
       try {
-        for (_iterator5.s(); !(_step5 = _iterator5.n()).done; ) {
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
           var indice = _step5.value;
-          addExtrudedPolygonSideFaces(
-            indices,
-            totalVertices,
-            indice.offset,
-            indice.count,
-            isClockWise,
-          );
+          addExtrudedPolygonSideFaces(indices, totalVertices, indice.offset, indice.count, isClockWise);
         }
       } catch (err) {
         _iterator5.e(err);
@@ -593,7 +492,7 @@ function featureToExtrudedPolygon(feature, options) {
       }
     };
 
-    for (_iterator4.s(); !(_step4 = _iterator4.n()).done; ) {
+    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
       _loop4();
     }
   } catch (err) {
@@ -621,6 +520,7 @@ function featureToExtrudedPolygon(feature, options) {
  * @param {Object} options - options controlling the conversion
  * @return {THREE.Mesh} mesh
  */
+
 
 function featureToMesh(feature, options) {
   if (!feature.vertices) {
@@ -650,6 +550,7 @@ function featureToMesh(feature, options) {
     default:
   } // set mesh material
 
+
   mesh.material.vertexColors = true;
   mesh.material.color = new THREE.Color(0xffffff);
   mesh.feature = feature;
@@ -659,6 +560,7 @@ function featureToMesh(feature, options) {
 /**
  * @module Feature2Mesh
  */
+
 
 var _default = {
   /**
@@ -693,8 +595,7 @@ var _default = {
    * });
    */
   convert: function convert() {
-    var options =
-      arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     (0, _Undeprecator.deprecatedFeature2MeshOptions)(options);
     return function (collection) {
       if (!collection) {
@@ -716,6 +617,6 @@ var _default = {
       group.position.copy(collection.position);
       return group;
     };
-  },
+  }
 };
-exports['default'] = _default;
+exports["default"] = _default;
