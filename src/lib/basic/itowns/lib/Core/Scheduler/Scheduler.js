@@ -19,7 +19,7 @@ var _PointCloudProvider = _interopRequireDefault(require("../../Provider/PointCl
 
 var _CancelledCommandException = _interopRequireDefault(require("./CancelledCommandException"));
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() { }; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
@@ -43,7 +43,7 @@ function drawNextLayer(storages) {
   var max;
 
   var _iterator = _createForOfIteratorHelper(storages),
-      _step;
+    _step;
 
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -183,7 +183,7 @@ Scheduler.prototype.execute = function (command) {
   // TODO: check for mandatory commands fields
   // parse host
   var layer = command.layer;
-  var host = layer.source && layer.source.url ? new URL(layer.source.url, document.location).host : undefined;
+  var host = layer.source && layer.source.url && !layer.source.url.includes('none') ? new URL(layer.source.url, document.location).host : undefined;
   command.promise = new Promise(function (resolve, reject) {
     command.resolve = resolve;
     command.reject = reject;
@@ -308,7 +308,7 @@ Scheduler.prototype.commandsWaitingExecutionCount = function () {
   var sum = this.defaultQueue.counters.pending + this.defaultQueue.counters.executing;
 
   var _iterator2 = _createForOfIteratorHelper(this.hostQueues),
-      _step2;
+    _step2;
 
   try {
     for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
@@ -328,7 +328,7 @@ Scheduler.prototype.commandsRunningCount = function () {
   var sum = this.defaultQueue.counters.executing;
 
   var _iterator3 = _createForOfIteratorHelper(this.hostQueues),
-      _step3;
+    _step3;
 
   try {
     for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
@@ -349,7 +349,7 @@ Scheduler.prototype.resetCommandsCount = function (type) {
   this.defaultQueue.counters[type] = 0;
 
   var _iterator4 = _createForOfIteratorHelper(this.hostQueues),
-      _step4;
+    _step4;
 
   try {
     for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
