@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "webpack",
     "watch": "webpack --watch",
-    "build": "cross-env NODE_ENV=production webpack",
+    "build": "cross-env NODE_ENV=production webpack --config ./webpack.prod.js",
     "start": "webpack-dev-server --open",
     "lint:js": "eslint --cache --ext .js,.jsx,.ts,.tsx ./src",
     "lint:fix": "eslint --fix --cache --ext .js,.jsx,.ts,.tsx",

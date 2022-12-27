@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const WebpackBar = require('webpackbar');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -6,14 +7,12 @@ const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
 module.exports = {
-  mode: 'production',
   entry: './src/index',
   output: {
     filename: 'veins.min.js',
     path: path.resolve(__dirname, 'dist'),
     library: "VEINS",
   },
-  devtool: 'inline-source-map',
   performance: {
     hints: 'error',
     maxAssetSize: 30000000, // 整数类型（以字节为单位）
@@ -22,7 +21,12 @@ module.exports = {
   plugins: [
     // 进度条
     new WebpackBar(),
-    new CleanWebpackPlugin()
+    new CleanWebpackPlugin(),
+    new webpack.DefinePlugin({
+      "process.env": {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+      }
+    })
   ],
   module: {
     rules: [
