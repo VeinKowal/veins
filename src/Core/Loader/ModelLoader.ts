@@ -47,15 +47,39 @@ export default abstract class ModelLoader extends Group {
       // line.visible = false;
       // child.line = line;
       child.cursor = 'pointer';
+      child.selected = false;
+      const that = this;
+      let isSelected = child.selected;
       child.on('pointermove', () => {
-        this.outlinePass.selectedObjects = [child];
+        const objIndex = this.outlinePass.selectedObjects.findIndex(o => o === child);
+        if (objIndex < 0) {
+          this.outlinePass.selectedObjects.push(child);
+        }
         // child.add(line);
         // line.visible = true;
       });
       child.on('pointerout', () => {
-        this.outlinePass.selectedObjects = [];
+        const objIndex = this.outlinePass.selectedObjects.findIndex(o => o === child);
+        if (objIndex >= 0 && !child.selected) {
+          this.outlinePass.selectedObjects.splice(objIndex, 1);
+        }
         // child.remove(line);
         // line.visible = false;
+      });
+      Object.defineProperty(child, 'selected', {
+        get() {
+          return isSelected;
+        },
+        set(val) {
+          isSelected = val;
+          const objIndex = that.outlinePass.selectedObjects.findIndex(o => o === child);
+          if (objIndex < 0 && val) {
+            that.outlinePass.selectedObjects.push(child);
+          }
+          if (objIndex >= 0 && !val) {
+            that.outlinePass.selectedObjects.splice(objIndex, 1);
+          }
+        }
       });
     });
   };
