@@ -34,6 +34,7 @@ export default abstract class ModelLoader extends Group {
 
   // 添加鼠标悬浮勾边的方法
   addEdgeOutline = (model: Object3D) => {
+    let hoverdChild = undefined;
     model.traverse((child: any) => {
       if (!(child instanceof Mesh)) return;
       // const edges = new EdgesGeometry(child.geometry);
@@ -51,7 +52,15 @@ export default abstract class ModelLoader extends Group {
       const that = this;
       let isSelected = child.selected;
       child.on('pointermove', () => {
+        if (child !== hoverdChild) {
+          const index = this.outlinePass.selectedObjects.findIndex(o => o === hoverdChild);
+          if (index >= 0 && !hoverdChild?.selected) {
+            this.outlinePass.selectedObjects.splice(index, 1);
+          }
+        }
+        hoverdChild = child;
         const objIndex = this.outlinePass.selectedObjects.findIndex(o => o === child);
+
         if (objIndex < 0) {
           this.outlinePass.selectedObjects.push(child);
         }
