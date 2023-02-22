@@ -51,4 +51,4 @@ If you are interested in contributing to Veins, please contact us with
 
 ## Support
 
-Mr. Guoweiyu(郭为宇) from China-NanJing.
+Mr.Guo
