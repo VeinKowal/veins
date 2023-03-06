@@ -20,6 +20,15 @@ class ITownsInitializer extends BaseInitializer {
     const view = this.initView(initConfig);
     this.view = view;
     this.app = app;
+
+    Object.getOwnPropertyNames(itowns.ShaderChunk).forEach((key) => {
+      if (key !== 'path' || key !== 'target') {
+        const path = itowns.ShaderChunk.path + key;
+        if (!THREE.ShaderChunk[path]) {
+          THREE.ShaderChunk[path] = itowns.ShaderChunk[key];
+        }
+      }
+    });
   }
 
   private initView(config: ITownsInitializerType): itowns.GlobeView {
