@@ -56,13 +56,13 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
-    "@types/three": "^0.131.0",
+    "@types/three": "^0.129.0",
     "buffer": "^6.0.3",
     "core-js": "2",
     "default-passive-events": "^2.0.0",
-    "itowns": "^2.33.0",
+    "itowns": "^2.34.0",
     "jszip": "^3.6.0",
-    "three": "^0.127.0",
+    "three": "^0.129.0",
     "webpackbar": "^5.0.0-3"
   }
 }
