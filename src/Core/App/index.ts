@@ -88,12 +88,15 @@ class App {
       e(this.scene, this.camera);
     });
 
-    this.cssRenderer.render(this.scene, this.camera);
     if (!this.view) {
       this.renderer.render(this.scene, this.camera);
       this.controls.forEach((control) => control.update());
     }
 
+    // 这两句置于下方
+    // 防止css3object抖动
+    this.cssRenderer.render(this.scene, this.camera);
+    // 抗锯齿生效
     this.composer.render();
   };
 
