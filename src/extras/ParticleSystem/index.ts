@@ -76,7 +76,7 @@ class ParticleSystem {
     const particles: any[] = [];
 
     // 添加更新方法
-    effect.forEach((el) => {
+    effect?.forEach((el) => {
       const particle = el();
       // 保存
       particles.push(particle);
