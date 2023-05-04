@@ -3,7 +3,7 @@
  *@author guoweiyu.
  *@date 2021-08-24 09:26:49.
  */
-import { GLTFModelLoaderType } from './type';
+import type { GLTFModelLoaderType } from './type';
 import ModelLoader from './ModelLoader';
 import { GLTFLoader } from '../../lib/loaders/GLTFLoader';
 
@@ -13,6 +13,7 @@ class OBJModelLoader extends ModelLoader {
       url,
       complete,
       isOutline = true,
+      isOutlinePass = false,
       process,
       position,
       angles,
@@ -25,7 +26,7 @@ class OBJModelLoader extends ModelLoader {
         const { scene } = gltf;
         if (!scene) return;
         this.moveToCenter(scene);
-        isOutline && this.addEdgeOutline(scene);
+        isOutline && this.addEdgeOutline(scene, isOutlinePass);
         this.add(scene);
         position && this.position.set(...position);
         angles && this.rotation.set(...angles);

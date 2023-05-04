@@ -3,7 +3,7 @@
  *@author guoweiyu.
  *@date 2021-08-24 09:26:49.
  */
-import { OBJModelLoaderType } from './type';
+import type { OBJModelLoaderType } from './type';
 import { OBJLoader2 } from '../../lib/loaders/OBJLoader2';
 import ModelLoader from './ModelLoader';
 
@@ -13,6 +13,7 @@ class OBJModelLoader extends ModelLoader {
       url,
       complete,
       isOutline = true,
+      isOutlinePass = false,
       process,
       position,
       angles,
@@ -23,7 +24,7 @@ class OBJModelLoader extends ModelLoader {
       url,
       (obj) => {
         this.moveToCenter(obj);
-        isOutline && this.addEdgeOutline(obj);
+        isOutline && this.addEdgeOutline(obj, isOutlinePass);
         this.add(obj);
         position && this.position.set(...position);
         angles && this.rotation.set(...angles);

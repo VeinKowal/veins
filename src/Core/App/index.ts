@@ -10,6 +10,7 @@ import * as TWEEN from '@tweenjs/tween.js';
 // import 'default-passive-events';
 import type { OrbitControls } from '../../lib/controls/OrbitControls';
 import type { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
+import type { RenderPass } from '../../lib/postprocessing/RenderPass.js';
 import type { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
 import type { ShaderPass } from '../../lib/postprocessing/ShaderPass.js';
 import ThreeInitializer from '../Initializer/ThreeInitializer';
@@ -30,6 +31,7 @@ class App {
   renderer: THREE.WebGLRenderer;
   cssRenderer: CSS3DRenderer;
   composer: EffectComposer;
+  renderPass: RenderPass;
   outlinePass: OutlinePass;
   interaction: Interaction;
   controls: OrbitControls[] = [];
@@ -44,17 +46,19 @@ class App {
       renderer,
       cssRenderer,
       composer,
+      renderPass,
       outlinePass,
+      effectFXAA,
       orbitControl,
       cssOrbitControl,
       interaction,
-      effectFXAA,
     } = ThreeInitializer.init(config);
     this.camera = camera;
     this.scene = scene;
     this.renderer = renderer;
     this.cssRenderer = cssRenderer;
     this.composer = composer;
+    this.renderPass = renderPass;
     this.outlinePass = outlinePass;
     this.controls = [orbitControl, cssOrbitControl];
     this.interaction = interaction;
@@ -92,7 +96,6 @@ class App {
       this.renderer.render(this.scene, this.camera);
       this.controls.forEach((control) => control.update());
     }
-
     // 这两句置于下方
     // 防止css3object抖动
     this.cssRenderer.render(this.scene, this.camera);
@@ -146,7 +149,25 @@ class App {
   };
 
   create = (config: CreateConfig) => {
-    const { type } = config;
+    const {
+      type,
+      isOutlinePass,
+    } = config;
+
+    // 一旦开启outline后处理 性能会显著下降
+    if (isOutlinePass) {
+      const { passes } = this.composer;
+      if (!passes.includes(this.renderPass)) {
+        this.composer.addPass(this.renderPass);
+      }
+      if (!passes.includes(this.outlinePass)) {
+        this.composer.addPass(this.outlinePass);
+      }
+      if (!passes.includes(this.effectFXAA)) {
+        this.composer.addPass(this.effectFXAA);
+      }
+    }
+
     if (type === 'OBJ') {
       const obj = new OBJModelLoader(this.outlinePass);
       obj.load(config);

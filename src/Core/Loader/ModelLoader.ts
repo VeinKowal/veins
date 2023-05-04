@@ -33,63 +33,98 @@ export default abstract class ModelLoader extends Group {
   };
 
   // 添加鼠标悬浮勾边的方法
-  addEdgeOutline = (model: Object3D) => {
-    let hoverdChild = undefined;
+  addEdgeOutline = (model: Object3D, isOutlinePass?: boolean) => {
+    let hoverdChild: Mesh | undefined = undefined;
     model.traverse((child: any) => {
       if (!(child instanceof Mesh)) return;
-      // const edges = new EdgesGeometry(child.geometry);
-      // const lintMat = new LineMaterial({
-      //   color: '#f56d00',
-      //   linewidth: 0.003,
-      // });
-      // const lineGeo = new LineSegmentsGeometry().fromEdgesGeometry(edges);
-      // const line = new LineSegments2(lineGeo, lintMat);
-      // model.add(line);
-      // line.visible = false;
-      // child.line = line;
       child.cursor = 'pointer';
       child.selected = false;
-      const that = this;
       let isSelected = child.selected;
-      child.on('pointermove', () => {
-        if (child !== hoverdChild) {
-          const index = this.outlinePass.selectedObjects.findIndex(o => o === hoverdChild);
-          if (index >= 0 && !hoverdChild?.selected) {
-            this.outlinePass.selectedObjects.splice(index, 1);
-          }
-        }
-        hoverdChild = child;
-        const objIndex = this.outlinePass.selectedObjects.findIndex(o => o === child);
+      const that = this;
 
-        if (objIndex < 0) {
-          this.outlinePass.selectedObjects.push(child);
-        }
-        // child.add(line);
-        // line.visible = true;
-      });
-      child.on('pointerout', () => {
-        const objIndex = this.outlinePass.selectedObjects.findIndex(o => o === child);
-        if (objIndex >= 0 && !child.selected) {
-          this.outlinePass.selectedObjects.splice(objIndex, 1);
-        }
-        // child.remove(line);
-        // line.visible = false;
-      });
-      Object.defineProperty(child, 'selected', {
-        get() {
-          return isSelected;
-        },
-        set(val) {
-          isSelected = val;
-          const objIndex = that.outlinePass.selectedObjects.findIndex(o => o === child);
-          if (objIndex < 0 && val) {
-            that.outlinePass.selectedObjects.push(child);
+      if (isOutlinePass) {
+        child.on('pointermove', () => {
+          if (child !== hoverdChild) {
+            const index = this.outlinePass.selectedObjects.findIndex(o => o === hoverdChild);
+            if (index >= 0 && !hoverdChild?.selected) {
+              this.outlinePass.selectedObjects.splice(index, 1);
+            }
           }
-          if (objIndex >= 0 && !val) {
-            that.outlinePass.selectedObjects.splice(objIndex, 1);
+          hoverdChild = child;
+          const objIndex = this.outlinePass.selectedObjects.findIndex(o => o === child);
+
+          if (objIndex < 0) {
+            this.outlinePass.selectedObjects.push(child);
           }
-        }
-      });
+        });
+        child.on('pointerout', () => {
+          const objIndex = this.outlinePass.selectedObjects.findIndex(o => o === child);
+          if (objIndex >= 0 && !child.selected) {
+            this.outlinePass.selectedObjects.splice(objIndex, 1);
+          }
+        });
+        Object.defineProperty(child, 'selected', {
+          get() {
+            return isSelected;
+          },
+          set(val) {
+            isSelected = val;
+            const objIndex = that.outlinePass.selectedObjects.findIndex(o => o === child);
+            if (objIndex < 0 && val) {
+              that.outlinePass.selectedObjects.push(child);
+            }
+            if (objIndex >= 0 && !val) {
+              that.outlinePass.selectedObjects.splice(objIndex, 1);
+            }
+          }
+        });
+      } else {
+        const edges = new EdgesGeometry(child.geometry, 10);
+        const lintMat = new LineMaterial({
+          color: '#f56d00',
+          linewidth: 0.002,
+        });
+        const lineGeo = new LineSegmentsGeometry().fromEdgesGeometry(edges);
+        const line = new LineSegments2(lineGeo, lintMat);
+        line.visible = false;
+        child.line = line;
+
+        child.on('pointermove', () => {
+          if (hoverdChild && child !== hoverdChild) {
+            if (!hoverdChild.selected && hoverdChild.line) {
+              hoverdChild.remove(hoverdChild.line);
+              hoverdChild.line.visible = false;
+            }
+          }
+          hoverdChild = child;
+          child.add(line);
+          line.visible = true;
+        });
+        child.on('pointerout', () => {
+          if (!child.selected) {
+            child.remove(line);
+            line.visible = false;
+          }
+        });
+
+        Object.defineProperty(child, 'selected', {
+          get() {
+            return isSelected;
+          },
+          set(val) {
+            isSelected = val;
+            if (typeof val === 'boolean') {
+              if (val) {
+                child.add(line);
+                line.visible = true;
+              } else {
+                child.remove(line);
+                line.visible = false;
+              }
+            }
+          }
+        });
+      }
     });
   };
 

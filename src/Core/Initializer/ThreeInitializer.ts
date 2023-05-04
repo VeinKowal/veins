@@ -29,12 +29,12 @@ class ThreeInitializer extends BaseInitializer {
     const renderer = ThreeInitializer.initRenderer(config);
     const composer = new EffectComposer(renderer);
     const renderPass = new RenderPass(scene, camera);
-    composer.addPass(renderPass);
+    // composer.addPass(renderPass);
     const outlinePass = new OutlinePass(new THREE.Vector2(width, height), scene, camera);
-    composer.addPass(outlinePass);
+    // composer.addPass(outlinePass);
     const effectFXAA = new ShaderPass(FXAAShader);
     effectFXAA.uniforms.resolution.value.set(1 / width, 1 / height);
-    composer.addPass(effectFXAA);
+    // composer.addPass(effectFXAA);
     ThreeInitializer.initSkyBox(config.skyBox, scene);
     const cssOrbitControl = ThreeInitializer.initOrbitControl(
       camera,
@@ -55,13 +55,14 @@ class ThreeInitializer extends BaseInitializer {
       scene,
       renderer,
       composer,
+      renderPass,
       outlinePass,
+      effectFXAA,
       orbitControl,
-      interaction,
       cssRenderer,
       cssOrbitControl,
+      interaction,
       raycaster,
-      effectFXAA,
     };
 
     ThreeInitializer.initLights(scene);
