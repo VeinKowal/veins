@@ -38,6 +38,7 @@ class App {
   animate?: number;
   view?: itowns.GlobeView;
   effectFXAA?: ShaderPass;
+  isPostprocessing?: boolean;
 
   constructor(config: AppConfig) {
     const {
@@ -64,6 +65,7 @@ class App {
     this.interaction = interaction;
     this.renderDom = config.renderDom;
     this.effectFXAA = effectFXAA;
+    this.isPostprocessing = false;
     this.init(config);
   }
 
@@ -92,15 +94,30 @@ class App {
       e(this.scene, this.camera);
     });
 
-    if (!this.view) {
-      this.renderer.render(this.scene, this.camera);
-      this.controls.forEach((control) => control.update());
+    // 后处理未开启时
+    // cssrenderer应放置于renderer上方，control下方
+    if (!this.isPostprocessing) {
+      if (!this.view) {
+        this.controls.forEach((control) => control.update());
+      }
+      this.cssRenderer.render(this.scene, this.camera);
+      if (!this.view) {
+        this.renderer.render(this.scene, this.camera);
+      }
     }
-    // 这两句置于下方
-    // 防止css3object抖动
-    this.cssRenderer.render(this.scene, this.camera);
-    // 抗锯齿生效
-    this.composer.render();
+
+    // 当后处理开始后
+    if (this.isPostprocessing) {
+      if (!this.view) {
+        this.controls.forEach((control) => control.update());
+        this.renderer.render(this.scene, this.camera);
+      }
+      // 这两句置于下方
+      // 防止css3object抖动
+      this.cssRenderer.render(this.scene, this.camera);
+      // 抗锯齿生效
+      this.composer.render();
+    }
   };
 
   /**
@@ -154,8 +171,9 @@ class App {
       isOutlinePass,
     } = config;
 
-    // 一旦开启outline后处理 性能会显著下降
+    // 一旦开启outline后处理 性能会下降
     if (isOutlinePass) {
+      this.isPostprocessing = true;
       const { passes } = this.composer;
       if (!passes.includes(this.renderPass)) {
         this.composer.addPass(this.renderPass);
