@@ -41,7 +41,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () { })); return true; } catch (e) { return false; } }
 
 // matrix to convert sphere to ellipsoid
 var worldToScaledEllipsoid = new THREE.Matrix4(); // camera's position in worldToScaledEllipsoid system
@@ -113,7 +113,7 @@ var GlobeLayer = /*#__PURE__*/function (_TiledGeometryLayer) {
     _this.options.defaultPickingRadius = 5;
     _this.minSubdivisionLevel = _this.minSubdivisionLevel == undefined ? 2 : _this.minSubdivisionLevel;
     _this.maxSubdivisionLevel = _this.maxSubdivisionLevel == undefined ? 19 : _this.maxSubdivisionLevel;
-    _this.maxDeltaElevation = _this.maxDeltaElevation || 4.0;
+    _this.maxDeltaElevationLevel = _this.maxDeltaElevationLevel || 4.0;
     _this.extent = _this.schemeTile[0].clone();
 
     for (var i = 1; i < _this.schemeTile.length; i++) {

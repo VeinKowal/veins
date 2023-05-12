@@ -33,7 +33,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () { })); return true; } catch (e) { return false; } }
 
 /**
  * @property {boolean} isPlanarLayer - Used to checkout whether this layer is a
@@ -92,7 +92,7 @@ var PlanarLayer = /*#__PURE__*/function (_TiledGeometryLayer) {
     _this.extent = extent;
     _this.minSubdivisionLevel = _this.minSubdivisionLevel == undefined ? 0 : _this.minSubdivisionLevel;
     _this.maxSubdivisionLevel = _this.maxSubdivisionLevel == undefined ? 5 : _this.maxSubdivisionLevel;
-    _this.maxDeltaElevation = _this.maxDeltaElevation || 4.0;
+    _this.maxDeltaElevationLevel = _this.maxDeltaElevationLevel || 4.0;
     return _this;
   }
 
