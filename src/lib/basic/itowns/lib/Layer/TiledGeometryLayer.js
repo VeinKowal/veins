@@ -7,7 +7,7 @@ var _typeof = require("@babel/runtime/helpers/typeof");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
@@ -43,15 +43,15 @@ var _Cache = require("../Core/Scheduler/Cache");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() { }; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() { }; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
 
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () { })); return true; } catch (e) { return false; } }
 
@@ -66,7 +66,7 @@ var boundingSphereCenter = new THREE.Vector3();
  */
 
 var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
-  (0, _inherits2.default)(TiledGeometryLayer, _GeometryLayer);
+  (0, _inherits2["default"])(TiledGeometryLayer, _GeometryLayer);
 
   var _super = _createSuper(TiledGeometryLayer);
 
@@ -113,7 +113,7 @@ var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
   function TiledGeometryLayer(id, object3d, schemeTile, builder, config) {
     var _this;
 
-    (0, _classCallCheck2.default)(this, TiledGeometryLayer);
+    (0, _classCallCheck2["default"])(this, TiledGeometryLayer);
     // cacheLifeTime = CACHE_POLICIES.INFINITE because the cache is handled by the builder
     config.cacheLifeTime = _Cache.CACHE_POLICIES.INFINITE;
     config.source = false;
@@ -123,7 +123,7 @@ var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
     _this.sseSubdivisionThreshold = _this.sseSubdivisionThreshold || 1.0;
     _this.schemeTile = schemeTile;
     _this.builder = builder;
-    _this.info = new _InfoLayer.InfoTiledGeometryLayer((0, _assertThisInitialized2.default)(_this));
+    _this.info = new _InfoLayer.InfoTiledGeometryLayer((0, _assertThisInitialized2["default"])(_this));
 
     if (!_this.schemeTile) {
       throw new Error("Cannot init tiled layer without schemeTile for layer ".concat(_this.id));
@@ -155,7 +155,7 @@ var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
 
       _this.level0Nodes = level0s;
 
-      (_this$object3d = _this.object3d).add.apply(_this$object3d, (0, _toConsumableArray2.default)(level0s));
+      (_this$object3d = _this.object3d).add.apply(_this$object3d, (0, _toConsumableArray2["default"])(level0s));
 
       _this.object3d.updateMatrixWorld();
     }));
@@ -177,12 +177,12 @@ var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
    */
 
 
-  (0, _createClass2.default)(TiledGeometryLayer, [{
+  (0, _createClass2["default"])(TiledGeometryLayer, [{
     key: "pickObjectsAt",
     value: function pickObjectsAt(view, coordinates) {
       var radius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.options.defaultPickingRadius;
       var target = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-      return _Picking.default.pickTilesAt(view, coordinates, radius, this, target);
+      return _Picking["default"].pickTilesAt(view, coordinates, radius, this, target);
     }
     /**
      * Does pre-update work on the context:
@@ -319,7 +319,7 @@ var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
       var _this3 = this;
 
       if (!node.parent) {
-        return _ObjectRemovalHelper.default.removeChildrenAndCleanup(this, node);
+        return _ObjectRemovalHelper["default"].removeChildrenAndCleanup(this, node);
       } // early exit if parent' subdivision is in progress
 
 
@@ -348,7 +348,7 @@ var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
 
         if (node.material.visible) {
           if (!requestChildrenUpdate) {
-            return _ObjectRemovalHelper.default.removeChildren(this, node);
+            return _ObjectRemovalHelper["default"].removeChildren(this, node);
           }
         }
 
@@ -359,12 +359,12 @@ var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
 
       node.material.visible = false;
       this.info.update(node);
-      return _ObjectRemovalHelper.default.removeChildren(this, node);
+      return _ObjectRemovalHelper["default"].removeChildren(this, node);
     }
   }, {
     key: "convert",
     value: function convert(requester, extent) {
-      return _convertToTile.default.convert(requester, extent, this);
+      return _convertToTile["default"].convert(requester, extent, this);
     }
   }, {
     key: "countColorLayersTextures",
@@ -485,11 +485,6 @@ var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
       var nodeLayer = node.material.getElevationLayer();
 
       if (nodeLayer) {
-        var elevationLayer = nodeLayer.layer;
-        var level = node.level;
-        if (level >= elevationLayer.zoom.max) {
-          return false;
-        }
         var currentTexture = nodeLayer.textures[0];
 
         if (currentTexture && currentTexture.extent) {
@@ -504,19 +499,7 @@ var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
 
       subdivisionVector.setFromMatrixScale(node.matrixWorld);
       boundingSphereCenter.copy(node.boundingSphere.center).applyMatrix4(node.matrixWorld);
-
-      var nodeElevation = 0;
-      if (!Number.isNaN(node.obb.z.max)) {
-        nodeElevation = node.obb.z.max;
-      }
-      if (nodeLayer) {
-        if (!node.geometry.boundingSphere) {
-          node.geometry.computeBoundingSphere();
-        }
-        nodeElevation = node.geometry.boundingSphere.radius * 2;
-      }
-
-      var distance = Math.max(0.0, nodeElevation + context.camera.camera3D.position.distanceTo(boundingSphereCenter) - node.boundingSphere.radius * subdivisionVector.x); // Size projection on pixel of bounding
+      var distance = Math.max(0.0, context.camera.camera3D.position.distanceTo(boundingSphereCenter) - node.boundingSphere.radius * subdivisionVector.x); // Size projection on pixel of bounding
 
       if (context.camera.camera3D.isOrthographicCamera) {
         var camera3D = context.camera.camera3D;
@@ -605,7 +588,7 @@ var TiledGeometryLayer = /*#__PURE__*/function (_GeometryLayer) {
     }
   }]);
   return TiledGeometryLayer;
-}(_GeometryLayer2.default);
+}(_GeometryLayer2["default"]);
 
 var _default = TiledGeometryLayer;
-exports.default = _default;
+exports["default"] = _default;

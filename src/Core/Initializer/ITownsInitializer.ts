@@ -32,7 +32,7 @@ class ITownsInitializer extends BaseInitializer {
   }
 
   private initView(config: ITownsInitializerType): itowns.GlobeView {
-    const { placement, renderer, scene, camera, url, zoom = [0, 17] } = config;
+    const { placement, renderer, scene, camera, url, zoom = [0, 17], options = {} } = config;
     camera.position.set(0, 0, 0);
     const initPlacement = {
       coord: new itowns.Coordinates('EPSG:4326', 116.403694, 39.915378),
@@ -40,6 +40,7 @@ class ITownsInitializer extends BaseInitializer {
     };
 
     const view = new itowns.GlobeView(config.renderDom, placement || initPlacement, {
+      ...options,
       renderer: renderer,
       scene3D: scene,
       camera: camera,

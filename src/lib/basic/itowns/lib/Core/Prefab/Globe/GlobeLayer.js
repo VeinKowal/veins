@@ -1,4 +1,4 @@
-"use strict";
+
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
@@ -111,9 +111,9 @@ var GlobeLayer = /*#__PURE__*/function (_TiledGeometryLayer) {
     _this = _super.call(this, id, object3d || new THREE.Group(), schemeTile, builder, config);
     _this.isGlobeLayer = true;
     _this.options.defaultPickingRadius = 5;
-    _this.minSubdivisionLevel = _this.minSubdivisionLevel == undefined ? 2 : _this.minSubdivisionLevel;
-    _this.maxSubdivisionLevel = _this.maxSubdivisionLevel == undefined ? 19 : _this.maxSubdivisionLevel;
-    _this.maxDeltaElevationLevel = _this.maxDeltaElevationLevel || 4.0;
+    _this.minSubdivisionLevel = config.minSubdivisionLevel == undefined ? 2 : config.minSubdivisionLevel;
+    _this.maxSubdivisionLevel = config.maxSubdivisionLevel == undefined ? 19 : config.maxSubdivisionLevel;
+    _this.maxDeltaElevationLevel = config.maxDeltaElevationLevel || 4.0;
     _this.extent = _this.schemeTile[0].clone();
 
     for (var i = 1; i < _this.schemeTile.length; i++) {

@@ -1,4 +1,4 @@
-"use strict";
+
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
@@ -90,9 +90,9 @@ var PlanarLayer = /*#__PURE__*/function (_TiledGeometryLayer) {
     }), config);
     _this.isPlanarLayer = true;
     _this.extent = extent;
-    _this.minSubdivisionLevel = _this.minSubdivisionLevel == undefined ? 0 : _this.minSubdivisionLevel;
-    _this.maxSubdivisionLevel = _this.maxSubdivisionLevel == undefined ? 5 : _this.maxSubdivisionLevel;
-    _this.maxDeltaElevationLevel = _this.maxDeltaElevationLevel || 4.0;
+    _this.minSubdivisionLevel = config.minSubdivisionLevel == undefined ? 0 : config.minSubdivisionLevel;
+    _this.maxSubdivisionLevel = config.maxSubdivisionLevel == undefined ? 5 : config.maxSubdivisionLevel;
+    _this.maxDeltaElevationLevel = config.maxDeltaElevationLevel || 4.0;
     return _this;
   }
 
