@@ -115,9 +115,10 @@ class App {
       // 这两句置于下方
       // 防止css3object抖动
       this.cssRenderer.render(this.scene, this.camera);
-      // 抗锯齿生效
-      this.composer.render();
     }
+
+    // 抗锯齿生效
+    this.composer.render();
   };
 
   /**
@@ -199,6 +200,10 @@ class App {
     if (type === 'MAP') {
       if (!this.view) {
         const { renderDom, camera, scene, renderer } = this;
+        const { passes } = this.composer;
+        if (!passes.includes(this.renderPass)) {
+          this.composer.addPass(this.renderPass);
+        }
         this.controls.length &&
           ThreeInitializer.removeOribitControl(this.controls);
         this.view = new ITownsInitializer({
