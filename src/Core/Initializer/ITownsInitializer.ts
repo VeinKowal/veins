@@ -93,7 +93,9 @@ class ITownsInitializer extends BaseInitializer {
     r.setFromQuaternion(quaternion);
 
     o.rotation.copy(r);
-    o.rotateX(-Math.PI * 0.5);
+    o.lookAt(coord.geodesicNormal.clone().add(o.position));
+    o.rotateZ(-Math.PI * 0.5);
+    o.rotateX(Math.PI * 0.5);
     const { x, y, z } = o.rotation;
 
     return [x, y, z];
