@@ -20,6 +20,8 @@ class OBJModelLoader extends ModelLoader {
     } = config;
     if (!url) return;
     const loader = new GLTFLoader();
+    // loader.withCredentials = true;
+    // loader.crossOrigin = 'use-credentials';
     loader.load(
       url,
       (gltf: any) => {

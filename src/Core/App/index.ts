@@ -133,8 +133,16 @@ class App {
     window.removeEventListener('resize', this.onResize);
     this.scene.traverse((child: any) => {
       const { geometry, material } = child;
-      geometry && geometry.dispose();
-      material && material.dispose();
+      if (geometry) {
+        geometry.destroy();
+      }
+      if (material) {
+        if (Array.isArray(material)) {
+          material.forEach(m => m.dispose());
+        } else {
+          material.dispose();
+        }
+      }
     });
     if (this.renderer && this.renderer.domElement) {
       const { domElement } = this.renderer;

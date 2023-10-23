@@ -79,7 +79,7 @@ export default abstract class ModelLoader extends Group {
           }
         });
       } else {
-        const edges = new EdgesGeometry(child.geometry, 10);
+        const edges = new EdgesGeometry(child.geometry, 3);
         const lintMat = new LineMaterial({
           color: '#f56d00',
           linewidth: 0.002,

@@ -104,7 +104,6 @@ class ITownsInitializer extends BaseInitializer {
   public dispose() {
     try {
       const app = this.app;
-      app.renderer.setClearAlpha(0.0);
       app.view = undefined;
       this.view.controls.dispose();
       this.view.dispose();
