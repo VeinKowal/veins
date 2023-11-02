@@ -134,7 +134,7 @@ class App {
     this.scene.traverse((child: any) => {
       const { geometry, material } = child;
       if (geometry) {
-        geometry.destroy();
+        geometry.destroy?.();
       }
       if (material) {
         if (Array.isArray(material)) {
