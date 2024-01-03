@@ -1,8 +1,8 @@
-import { Color, Texture, Object3D, Vector3 } from 'three';
+import type { Color, Texture, Object3D, Scene } from 'three';
 
 export type AppConfig = {
   renderDom: HTMLDivElement;
-  url?: String;
+  url?: string;
   background?: Color | string | number | Texture;
   skyBox?: string;
   complete?: Function;
@@ -29,3 +29,8 @@ export type FlyToTargetConfig = {
   time?: number;
   complete?: Function;
 };
+
+export type updateFunction = (
+  scene: Scene,
+  camera: THREE.PerspectiveCamera,
+) => void;

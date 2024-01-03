@@ -3,7 +3,7 @@
  *@author guoweiyu.
  *@date 2021-08-18 09:28:42.
  */
-import type { AppConfig, CreateConfig, FlyToTargetConfig } from './type';
+import type { AppConfig, CreateConfig, FlyToTargetConfig, updateFunction } from './type';
 import * as THREE from 'three';
 import * as itowns from '../../lib/basic/itowns';
 import * as TWEEN from '@tweenjs/tween.js';
@@ -30,6 +30,7 @@ class App {
   scene: THREE.Scene;
   renderer: THREE.WebGLRenderer;
   cssRenderer: CSS3DRenderer;
+  updateFunctions: Map<string, updateFunction>;
   composer: EffectComposer;
   renderPass: RenderPass;
   outlinePass: OutlinePass;
@@ -58,6 +59,7 @@ class App {
     this.scene = scene;
     this.renderer = renderer;
     this.cssRenderer = cssRenderer;
+    this.updateFunctions = ParticleSystem.updateFunctions;
     this.composer = composer;
     this.renderPass = renderPass;
     this.outlinePass = outlinePass;
@@ -90,8 +92,8 @@ class App {
     this.animate = requestAnimationFrame(this.run);
 
     // 运行已注册的更新方法
-    ParticleSystem.updateFunctions.forEach((e) => {
-      e(this.scene, this.camera);
+    this.updateFunctions.forEach((e) => {
+      e?.(this.scene, this.camera);
     });
 
     // 后处理未开启时

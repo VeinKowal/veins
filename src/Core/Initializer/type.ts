@@ -12,6 +12,7 @@ import type { Interaction } from 'three.interaction';
 import type { OrbitControls } from '../../lib/controls/OrbitControls';
 import type { CSS3DRenderer } from '../../lib/renderers/CSS3DRenderer';
 import type { EffectComposer } from '../../lib/postprocessing/EffectComposer.js';
+import type { RenderPass } from '../../lib/postprocessing/RenderPass.js';
 import type { OutlinePass } from '../../lib/postprocessing/OutlinePass.js';
 import type { ShaderPass } from '../../lib/postprocessing/ShaderPass.js';
 
@@ -30,6 +31,7 @@ export type ThreeInitializerReturn = {
   renderer: WebGLRenderer;
   cssRenderer: CSS3DRenderer;
   composer: EffectComposer;
+  renderPass: RenderPass;
   outlinePass: OutlinePass;
   orbitControl: OrbitControls;
   cssOrbitControl: OrbitControls;
@@ -39,7 +41,7 @@ export type ThreeInitializerReturn = {
 };
 
 export type ITownsInitializerType = {
-  app,
+  app: App,
   renderDom: HTMLDivElement;
   scene: Scene;
   camera: PerspectiveCamera;
