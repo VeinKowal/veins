@@ -67,6 +67,10 @@ class ITownsInitializer extends BaseInitializer {
       view.addLayer(colorLayer);
     }
 
+    if (!THREE.Object3D.DefaultUp.equals(new THREE.Vector3(0, 0, 1))) {
+      THREE.Object3D.DefaultUp.set(0, 0, 1);
+    }
+
     return view;
   }
 
@@ -96,6 +100,7 @@ class ITownsInitializer extends BaseInitializer {
     o.lookAt(coord.geodesicNormal.clone().add(o.position));
     o.rotateZ(-Math.PI * 0.5);
     o.rotateX(Math.PI * 0.5);
+
     const { x, y, z } = o.rotation;
 
     return [x, y, z];

@@ -171,16 +171,16 @@ class ThreeInitializer extends BaseInitializer {
 
   private static initLights(scene: THREE.Scene) {
     const ambientLight = new THREE.AmbientLight(0x404040, 1);
-    const directionalLight1 = new THREE.DirectionalLight(0xc0c0c0, 0.2);
-    const directionalLight2 = new THREE.DirectionalLight(0xc0c0c0, 0.2);
+    const directionalLight1 = new THREE.DirectionalLight(0xc0c0c0, 0.9);
+    const directionalLight2 = new THREE.DirectionalLight(0xc0c0c0, 0.9);
     directionalLight1.position.set(1000, 1000, 1000);
     directionalLight2.position.set(-1000, -1000, -1000);
     directionalLight1.castShadow = true;
     directionalLight2.castShadow = true;
-    const topLight = new THREE.DirectionalLight(0xffffff, 0.3);
-    topLight.position.set(0, 5000000, 0);
+    const topLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    topLight.position.set(0, 1000, 0);
     topLight.castShadow = true;
-    const bottomLight = new THREE.DirectionalLight(0xffffff, 0.2);
+    const bottomLight = new THREE.DirectionalLight(0xffffff, 0.9);
     bottomLight.position.set(0, -5000000, 0);
     bottomLight.castShadow = true;
 
